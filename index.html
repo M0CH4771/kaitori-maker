@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（グリッド版）</title>
-    <!-- html2canvasライブラリ（画像化用） -->
+    <title>買取表ジェネレーター（完成版）</title>
+    <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -32,6 +32,8 @@
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             height: fit-content;
+            position: sticky;
+            top: 20px;
         }
         .control-group {
             margin-bottom: 20px;
@@ -74,7 +76,7 @@
             background-color: #c00010;
         }
 
-        /* プレビューエリア（画像化される部分） */
+        /* プレビューエリア */
         .preview-container {
             flex: 1;
             overflow-x: auto;
@@ -83,7 +85,7 @@
             background: #fff;
             padding: 40px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 1100px; /* カード表でよくある横長サイズ */
+            width: 1100px; 
             margin: 0 auto;
             position: relative;
         }
@@ -111,7 +113,7 @@
         /* グリッドレイアウト */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(6, 1fr); /* 6列 */
+            grid-template-columns: repeat(6, 1fr); 
             gap: 15px;
             margin-bottom: 30px;
         }
@@ -126,6 +128,7 @@
             justify-content: space-between;
             align-items: center;
             box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
+            position: relative;
         }
         .card-item img {
             width: 90%;
@@ -134,6 +137,7 @@
             object-fit: contain;
             margin-bottom: 10px;
             border-radius: 4px;
+            background-color: #f8f9fa; /* 画像読み込み前のプレースホルダー色 */
         }
         .card-name {
             font-size: 13px;
@@ -144,7 +148,7 @@
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
-            height: 2.6em; /* 2行固定 */
+            height: 2.6em; 
             width: 100%;
         }
         .card-grade {
@@ -165,6 +169,24 @@
             letter-spacing: 0.5px;
         }
         
+        /* 掲載状況のバッジ表示 */
+        .status-badge {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #ff9800;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+        .status-keisai {
+            background-color: #3498db; /* 掲載は青色 */
+        }
+
         .footer-area {
             border-top: 4px solid var(--primary-color);
             padding-top: 15px;
@@ -190,12 +212,41 @@
             .preview-container { box-shadow: none; overflow: visible; }
             #exportArea { width: 100%; box-shadow: none; padding: 0; }
         }
+        
+        /* 読み込み中オーバーレイ */
+        #loadingOverlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.8);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            flex-direction: column;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--accent-color);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 10px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
+<div id="loadingOverlay">
+    <div class="spinner"></div>
+    画像を生成中です。数秒お待ちください...
+</div>
+
 <div class="app-container">
-    <!-- 左側：コントロールパネル -->
     <div class="control-panel">
         <h2 style="margin-top:0; font-size:1.2em; color:var(--primary-color);">⚙️ 設定パネル</h2>
         
@@ -231,12 +282,11 @@
         <button class="btn-export" onclick="exportToImage()">📸 画像として書き出し</button>
     </div>
 
-    <!-- 右側：プレビュー＆エクスポートエリア -->
     <div class="preview-container">
         <div id="exportArea">
             <div class="header-area">
                 <div class="logo-container">
-                    <img id="previewLogo" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
+                    <img id="previewLogo" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo" crossorigin="anonymous">
                 </div>
                 <div class="title-container">
                     <h1 id="previewTitle">PSA10買取表 1</h1>
@@ -244,7 +294,6 @@
             </div>
 
             <div id="cardGrid" class="card-grid">
-                <!-- ここにカードが生成されます -->
                 <div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: #888; font-size: 1.2em;">
                     CSVファイルを読み込むとここにカードが並びます
                 </div>
@@ -264,14 +313,12 @@
 </div>
 
 <script>
-    // 日付の初期設定
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
     
-    // YYYY/MM/DD フォーマットの更新
     function updateDateDisplay(dateStr) {
         const dateObj = new Date(dateStr);
         if(!isNaN(dateObj)) {
@@ -283,7 +330,6 @@
     }
     updateDateDisplay(`${yyyy}-${mm}-${dd}`);
 
-    // 入力イベントリスナー
     document.getElementById('titleInput').addEventListener('input', function(e) {
         document.getElementById('previewTitle').innerText = e.target.value;
     });
@@ -318,32 +364,74 @@
         }
     });
 
+    // スプレッドシートからエクスポートされたCSV（ダブルクォーテーションを考慮）を正しくパースする関数
+    function parseCSVLine(text) {
+        let result = [];
+        let inQuotes = false;
+        let value = "";
+        for (let i = 0; i < text.length; i++) {
+            let char = text[i];
+            if (char === '"' && text[i+1] === '"') {
+                value += '"'; // エスケープされたダブルクォーテーション
+                i++;
+            } else if (char === '"') {
+                inQuotes = !inQuotes;
+            } else if (char === ',' && !inQuotes) {
+                result.push(value);
+                value = "";
+            } else {
+                value += char;
+            }
+        }
+        result.push(value);
+        return result;
+    }
+
     function parseCSV(text) {
         const lines = text.split('\n');
         const grid = document.getElementById('cardGrid');
-        grid.innerHTML = ''; // クリア
+        grid.innerHTML = ''; 
 
         let count = 0;
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
-            const parts = line.split(',');
+            // 自作のCSVパーサーを通す
+            const parts = parseCSVLine(line);
+            
+            // データが正しく10列抽出できているか確認（ヘッダー通りなら10列）
             if(parts.length < 10) continue;
 
-            const name = parts[3];
+            const status = parts[1]; // 強化 / 掲載
+            const name = parts[3]; // カード名
             const type = parts[5]; // PSA10 など
-            const imgUrl = parts[parts.length - 1];
             
-            // 金額（カンマ対応）
-            const price = parts.slice(6, parts.length - 3).join(',');
+            // CSVが "¥2,280,000" のように出力された場合、そのままキレイに取り出せる
+            const price = parts[6];
+            const imgUrl = parts[9]; // 画像リンク
+
+            // ★Google Drive等の画像をプロキシ経由に変換する処理★
+            let proxyUrl = imgUrl;
+            if (imgUrl.includes('drive.google.com')) {
+                proxyUrl = 'https://wsrv.nl/?url=' + encodeURIComponent(imgUrl);
+            }
 
             const item = document.createElement('div');
             item.className = 'card-item';
             
-            // X (Twitter) 等でよく見るカード1枚ごとのレイアウト
+            // 強化の場合はオレンジのバッジ、掲載の場合は青のバッジをつける（任意でお使いください）
+            let badgeHtml = '';
+            if(status === '強化') {
+                badgeHtml = '<div class="status-badge">強化買取</div>';
+            } else if(status === '掲載') {
+                badgeHtml = '<div class="status-badge status-keisai">掲載</div>';
+            }
+
+            // crossorigin="anonymous" を付与することでキャンバスの汚染を防ぐ
             item.innerHTML = `
-                <img src="${imgUrl}" crossorigin="anonymous" alt="カード画像">
+                ${badgeHtml}
+                <img src="${proxyUrl}" crossorigin="anonymous" alt="カード画像">
                 <div class="card-name">${name}</div>
                 <div><span class="card-grade">${type}</span></div>
                 <div class="card-price">${price}</div>
@@ -358,19 +446,28 @@
     }
 
     function exportToImage() {
+        const overlay = document.getElementById('loadingOverlay');
+        overlay.style.display = 'flex'; // ローディング画面を表示
+
         const exportArea = document.getElementById('exportArea');
-        html2canvas(exportArea, {
-            useCORS: true,
-            allowTaint: true,
-            scale: 2
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `買取表_${document.getElementById('dateInput').value}.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-        }).catch(err => {
-            alert("画像の生成に失敗しました。\n詳細: " + err);
-        });
+        
+        // 画像がすべて読み込まれるまで少し待つためのタイムアウト処理
+        setTimeout(() => {
+            html2canvas(exportArea, {
+                useCORS: true,       // クロスオリジン画像を許可
+                allowTaint: false,   // Taintは許可しない（画像出力できなくなるため）
+                scale: 2             // 高画質化
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = `買取表_${document.getElementById('dateInput').value}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                overlay.style.display = 'none'; // ローディング非表示
+            }).catch(err => {
+                overlay.style.display = 'none';
+                alert("画像の生成に失敗しました。\n詳細: " + err);
+            });
+        }, 1000); // 描画待機（プロキシ経由の画像ロードに時間がかかる場合を考慮）
     }
 </script>
 </body>
