@@ -1538,6 +1538,22 @@
             background-size: 100% 100%;
         }
 
+        /*
+         * ページ本体は単色で固定する。
+         * カード枚数が少ないページでも、背景グラデーションの強い色が
+         * 空白部分へ露出せず、1ページ目と同じ色を保つ。
+         */
+        .exportArea[data-theme="luxury"] { background: #0b101a; }
+        .exportArea[data-theme="fire"] { background: #180006; }
+        .exportArea[data-theme="royal"] { background: #091c3b; }
+        .exportArea[data-theme="clean"] { background: #f7f9fc; }
+        .exportArea[data-theme="neon"] { background: #0d0718; }
+        .exportArea[data-theme="sakura"] { background: #fff5f9; }
+        .exportArea[data-theme="forest"] { background: #0d291d; }
+        .exportArea[data-theme="pop"] { background: #ffd91a; }
+        .exportArea[data-theme="retro"] { background: #ead7b0; }
+        .exportArea[data-theme="hologram"] { background: #edf2f8; }
+
         #loadingOverlay {
             position: fixed;
             z-index: 9999;
@@ -2362,7 +2378,7 @@
                     const canvas = await html2canvas(targetArea, {
                         useCORS: true,
                         allowTaint: false,
-                        backgroundColor: null,
+                        backgroundColor: getComputedStyle(targetArea).backgroundColor,
                         scale: 2,
                         width: targetArea.offsetWidth,
                         height: targetArea.offsetHeight,
