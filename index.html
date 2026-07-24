@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（完成版）</title>
+    <title>買取表ジェネレーター（修正版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -137,7 +137,7 @@
             object-fit: contain;
             margin-bottom: 10px;
             border-radius: 4px;
-            background-color: #f8f9fa; /* 画像読み込み前のプレースホルダー色 */
+            background-color: #f8f9fa;
         }
         .card-name {
             font-size: 13px;
@@ -182,9 +182,6 @@
             font-weight: bold;
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
             z-index: 10;
-        }
-        .status-keisai {
-            background-color: #3498db; /* 掲載は青色 */
         }
 
         .footer-area {
@@ -364,7 +361,6 @@
         }
     });
 
-    // スプレッドシートからエクスポートされたCSV（ダブルクォーテーションを考慮）を正しくパースする関数
     function parseCSVLine(text) {
         let result = [];
         let inQuotes = false;
@@ -372,7 +368,7 @@
         for (let i = 0; i < text.length; i++) {
             let char = text[i];
             if (char === '"' && text[i+1] === '"') {
-                value += '"'; // エスケープされたダブルクォーテーション
+                value += '"';
                 i++;
             } else if (char === '"') {
                 inQuotes = !inQuotes;
@@ -393,45 +389,53 @@
         grid.innerHTML = ''; 
 
         let count = 0;
-        for (let i = 1; i < lines.length; i++) {
+        for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
-            // 自作のCSVパーサーを通す
             const parts = parseCSVLine(line);
             
-            // データが正しく10列抽出できているか確認（ヘッダー通りなら10列）
+            // データが正しく10列抽出できているか確認
             if(parts.length < 10) continue;
+
+            // ★修正1: ヘッダー行（項目名）がカードとして混入するのを防ぐ
+            if (parts[0] === '掲載グループ' || parts[3] === 'カード名') {
+                continue;
+            }
 
             const status = parts[1]; // 強化 / 掲載
             const name = parts[3]; // カード名
             const type = parts[5]; // PSA10 など
-            
-            // CSVが "¥2,280,000" のように出力された場合、そのままキレイに取り出せる
             const price = parts[6];
-            const imgUrl = parts[9]; // 画像リンク
+            let imgUrl = parts[9].trim(); // 画像リンク
 
-            // ★Google Drive等の画像をプロキシ経由に変換する処理★
+            // ★修正2: Google Drive画像の表示問題を解決（APIの裏技を使用）
             let proxyUrl = imgUrl;
             if (imgUrl.includes('drive.google.com')) {
-                proxyUrl = 'https://wsrv.nl/?url=' + encodeURIComponent(imgUrl);
+                // urlから id=〇〇 の部分を抽出
+                const match = imgUrl.match(/id=([^&]+)/);
+                if (match && match[1]) {
+                    const fileId = match[1];
+                    // Googleのユーザーコンテンツ用URLに変換（CORSに引っかからず表示可能）
+                    proxyUrl = `https://lh3.googleusercontent.com/d/${fileId}`;
+                } else {
+                    proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(imgUrl);
+                }
             }
 
             const item = document.createElement('div');
             item.className = 'card-item';
             
-            // 強化の場合はオレンジのバッジ、掲載の場合は青のバッジをつける（任意でお使いください）
+            // ★修正3: 「掲載」の青いバッジを削除。強化買取のみ表示する。
             let badgeHtml = '';
             if(status === '強化') {
                 badgeHtml = '<div class="status-badge">強化買取</div>';
-            } else if(status === '掲載') {
-                badgeHtml = '<div class="status-badge status-keisai">掲載</div>';
             }
 
-            // crossorigin="anonymous" を付与することでキャンバスの汚染を防ぐ
+            // 画像エラー時にプレースホルダーを表示する処理を追加
             item.innerHTML = `
                 ${badgeHtml}
-                <img src="${proxyUrl}" crossorigin="anonymous" alt="カード画像">
+                <img src="${proxyUrl}" crossorigin="anonymous" alt="カード画像" onerror="this.src='https://via.placeholder.com/200x280?text=No+Image'">
                 <div class="card-name">${name}</div>
                 <div><span class="card-grade">${type}</span></div>
                 <div class="card-price">${price}</div>
@@ -447,27 +451,26 @@
 
     function exportToImage() {
         const overlay = document.getElementById('loadingOverlay');
-        overlay.style.display = 'flex'; // ローディング画面を表示
+        overlay.style.display = 'flex';
 
         const exportArea = document.getElementById('exportArea');
         
-        // 画像がすべて読み込まれるまで少し待つためのタイムアウト処理
         setTimeout(() => {
             html2canvas(exportArea, {
-                useCORS: true,       // クロスオリジン画像を許可
-                allowTaint: false,   // Taintは許可しない（画像出力できなくなるため）
-                scale: 2             // 高画質化
+                useCORS: true,       
+                allowTaint: false,   
+                scale: 2             
             }).then(canvas => {
                 const link = document.createElement('a');
                 link.download = `買取表_${document.getElementById('dateInput').value}.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                overlay.style.display = 'none'; // ローディング非表示
+                overlay.style.display = 'none'; 
             }).catch(err => {
                 overlay.style.display = 'none';
                 alert("画像の生成に失敗しました。\n詳細: " + err);
             });
-        }, 1000); // 描画待機（プロキシ経由の画像ロードに時間がかかる場合を考慮）
+        }, 1000); 
     }
 </script>
 </body>
