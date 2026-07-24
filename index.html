@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（A4縦横・カスタムレイアウト版）</title>
+    <title>買取表ジェネレーター（バッジ見切れ修正版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -111,7 +111,8 @@
         .card-item {
             background: #fff; border: 2px solid var(--primary-color); border-radius: 8px; padding: 8px 6px; text-align: center;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.1); position: relative; min-height: 0; overflow: hidden;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1); position: relative; min-height: 0; 
+            /* overflow: hidden を外してバッジが切れないようにする */
         }
         .card-img-container {
             flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 6px;
@@ -144,7 +145,7 @@
         
         /* 強化バッジ */
         .status-badge {
-            position: absolute; top: -8px; right: -8px; background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;
+            position: absolute; top: -10px; right: -10px; background-color: #ff9800; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;
         }
 
         /* フッター */
@@ -220,8 +221,8 @@
         <div class="control-group">
             <label>6. レイアウト設定</label>
             <select id="layoutSelect">
-                <!-- 縦A4の10列x6段版 -->
-                <option value="portrait_10x6">A4縦 (横10列 × 縦6段) - 60枚</option>
+                <!-- 縦のレイアウトを削除し、横のみにする -->
+                <option value="landscape_10x6">A4横 (横10列 × 縦6段) - 60枚</option>
                 <option value="landscape_15x4">A4横 (横15列 × 縦4段) - 60枚</option>
             </select>
             <small style="color:#777;">※テンプレート保存対象</small>
@@ -241,7 +242,7 @@
 
     <div class="preview-container" id="pagesContainer">
         <!-- 初期表示 -->
-        <div class="exportArea portrait">
+        <div class="exportArea landscape">
             <div class="header-area">
                 <div class="logo-container">
                     <img class="logo-img" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
@@ -283,7 +284,7 @@
         if (savedTitle) document.getElementById('titleInput').value = savedTitle;
         if (savedDisclaimer) document.getElementById('disclaimerInput').value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
-        if (savedLayout && (savedLayout === 'portrait_10x6' || savedLayout === 'landscape_15x4')) {
+        if (savedLayout && savedLayout !== 'portrait_6x10' && savedLayout !== 'portrait_10x6') {
             document.getElementById('layoutSelect').value = savedLayout;
         }
 
@@ -625,7 +626,8 @@
                 
                 await new Promise(r => setTimeout(r, 1000));
             } catch (err) {
-                alert(`ページ ${i + 1} の生成に失敗しました。\n詳細: ` + err);
+                alert(`ページ ${i + 1} の生成に失敗しました。
+詳細: ` + err);
             }
         }
         
