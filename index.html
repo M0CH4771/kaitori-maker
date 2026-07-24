@@ -5505,56 +5505,46 @@
             left: 100%;
         }
 
-        /* 強化買取：テーマ連動の小型ブランドタグ */
+        /* 強化買取：カード右上を横切るテーマ連動の斜め帯 */
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
             [data-theme="scoreboard"]
         ) .status-badge {
-            --boost-bg: #111827;
-            --boost-accent: #d7aa43;
-            --boost-text: #ffffff;
-            --boost-accent-text: #17120a;
-            top: 9px;
-            right: auto;
-            left: 9px;
-            display: inline-flex;
-            width: auto;
-            min-width: 0;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 7px 3px 3px;
-            color: var(--boost-text);
-            border: 1px solid var(--boost-accent);
-            border-radius: 999px 7px 7px 999px;
-            background: var(--boost-bg);
-            box-shadow:
-                0 4px 10px rgba(0,0,0,0.24),
-                inset 0 1px 0 rgba(255,255,255,0.1);
-            font-weight: 950;
-            line-height: 1;
-            letter-spacing: 0;
-            transform: none;
-        }
-
-        .exportArea:is(
-            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
-            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
-            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
-        ) .status-badge span {
-            display: inline-flex;
-            min-width: 26px;
-            height: 18px;
+            --boost-bg: #e0b54f;
+            --boost-bg-2: #b88628;
+            --boost-text: #17120a;
+            --boost-border: #fff0ad;
+            top: 13px;
+            right: -33px;
+            left: auto;
+            display: flex;
+            width: 112px;
+            height: 25px;
             align-items: center;
             justify-content: center;
-            padding: 0 5px;
-            color: var(--boost-accent-text);
-            border-radius: 999px;
-            background: var(--boost-accent);
-            font-size: 8px;
-            letter-spacing: 0.03em;
+            padding: 0 18px;
+            color: var(--boost-text);
+            border: 0;
+            border-top: 1px solid var(--boost-border);
+            border-bottom: 1px solid var(--boost-border);
+            border-radius: 0;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.24), transparent 48%),
+                linear-gradient(90deg, var(--boost-bg-2), var(--boost-bg) 50%, var(--boost-bg-2));
+            box-shadow:
+                0 3px 8px rgba(0,0,0,0.3),
+                inset 0 1px 0 rgba(255,255,255,0.22);
+            font-size: 9px;
+            font-weight: 1000;
+            line-height: 1;
+            letter-spacing: 0.08em;
+            text-align: center;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.18);
+            transform: rotate(38deg);
+            transform-origin: center;
+            white-space: nowrap;
         }
 
         .exportArea:is(
@@ -5562,63 +5552,56 @@
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
             [data-theme="scoreboard"]
-        ) .status-badge strong {
-            color: var(--boost-text);
-            font-size: 10px;
-            font-weight: 1000;
-            letter-spacing: 0.04em;
+        ) .status-badge::after {
+            position: absolute;
+            right: 0;
+            bottom: 3px;
+            left: 0;
+            height: 1px;
+            content: "";
+            background: rgba(0,0,0,0.13);
         }
 
         .exportArea[data-theme="signal"] .status-badge {
-            --boost-bg: #111827; --boost-accent: #e0b54f;
-            --boost-text: #fff9e9; --boost-accent-text: #17120a;
+            --boost-bg: #edca70; --boost-bg-2: #aa7722;
+            --boost-text: #17120a; --boost-border: #fff0ad;
         }
         .exportArea[data-theme="trust"] .status-badge {
-            --boost-bg: #ffffff; --boost-accent: #1684d8;
-            --boost-text: #073b6c; --boost-accent-text: #ffffff;
+            --boost-bg: #238fdf; --boost-bg-2: #075da8;
+            --boost-text: #ffffff; --boost-border: #c7ebff;
         }
         .exportArea[data-theme="market"] .status-badge {
-            --boost-bg: #ffffff; --boost-accent: #e00025;
-            --boost-text: #202938; --boost-accent-text: #ffffff;
+            --boost-bg: #f01a3d; --boost-bg-2: #a9001c;
+            --boost-text: #ffffff; --boost-border: #ffc2cc;
         }
         .exportArea[data-theme="alert"] .status-badge {
-            --boost-bg: #11151d; --boost-accent: #ffcf4a;
-            --boost-text: #ffffff; --boost-accent-text: #11151d;
+            --boost-bg: #ffdc61; --boost-bg-2: #d59e16;
+            --boost-text: #17120a; --boost-border: #fff3bb;
         }
         .exportArea[data-theme="editorial"] .status-badge {
-            --boost-bg: #2a2320; --boost-accent: #d4b377;
-            --boost-text: #fff8e9; --boost-accent-text: #2a2320;
+            --boost-bg: #9a3347; --boost-bg-2: #5f1827;
+            --boost-text: #fff8e9; --boost-border: #e8cf9d;
         }
         .exportArea[data-theme="wa"] .status-badge {
-            --boost-bg: #ffffff; --boost-accent: #c4142d;
-            --boost-text: #2b211c; --boost-accent-text: #ffffff;
-            border-radius: 3px;
-        }
-        .exportArea[data-theme="wa"] .status-badge span {
-            border-radius: 2px;
+            --boost-bg: #df1f39; --boost-bg-2: #930016;
+            --boost-text: #ffffff; --boost-border: #f2d487;
         }
         .exportArea[data-theme="cyber"] .status-badge {
-            --boost-bg: #090a1d; --boost-accent: #00e5f4;
-            --boost-text: #ffffff; --boost-accent-text: #050613;
-            border-radius: 0 8px 0 8px;
+            --boost-bg: #ec24c8; --boost-bg-2: #7600a4;
+            --boost-text: #ffffff; --boost-border: #00e5f4;
             box-shadow: 0 0 13px rgba(0,229,244,0.42);
         }
-        .exportArea[data-theme="cyber"] .status-badge span {
-            border-radius: 0 5px 0 5px;
-        }
         .exportArea[data-theme="soft"] .status-badge {
-            --boost-bg: #ffffff; --boost-accent: #d85b88;
-            --boost-text: #71364f; --boost-accent-text: #ffffff;
+            --boost-bg: #e96f9c; --boost-bg-2: #b73567;
+            --boost-text: #ffffff; --boost-border: #ffd7e5;
         }
         .exportArea[data-theme="ticket"] .status-badge {
-            --boost-bg: #183249; --boost-accent: #e4ad58;
-            --boost-text: #fff6e2; --boost-accent-text: #183249;
-            border-radius: 3px;
+            --boost-bg: #315d7b; --boost-bg-2: #173148;
+            --boost-text: #fff6e2; --boost-border: #e9b963;
         }
         .exportArea[data-theme="scoreboard"] .status-badge {
-            --boost-bg: #17231a; --boost-accent: #a7dd3b;
-            --boost-text: #f2ffdc; --boost-accent-text: #17231a;
-            border-radius: 4px;
+            --boost-bg: #baf055; --boost-bg-2: #6e9e1f;
+            --boost-text: #17231a; --boost-border: #efffa4;
         }
 
         /* 単品告知の見出しも、同じ視認性ルールで整える */
@@ -8926,11 +8909,7 @@
 
             const cardsHtml = pageCards.map(card => {
                 const badgeHtml = card.status.includes("強化")
-                    ? `
-                        <div class="status-badge" aria-label="強化買取">
-                            <span>強化</span><strong>買取</strong>
-                        </div>
-                    `
+                    ? '<div class="status-badge">強化買取</div>'
                     : "";
                 const imageSource = card.resolvedImg || LOADING_IMAGE;
                 const grade = escapeHtml(card.type || "");
