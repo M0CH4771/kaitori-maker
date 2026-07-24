@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（列ズレ修正版）</title>
+    <title>買取表ジェネレーター（A4最適化・テンプレート機能版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -22,9 +22,11 @@
         .app-container {
             display: flex;
             gap: 20px;
-            max-width: 1600px;
+            max-width: 1800px;
             margin: 0 auto;
         }
+        
+        /* コントロールパネル */
         .control-panel {
             width: 350px;
             background: #fff;
@@ -34,212 +36,118 @@
             height: fit-content;
             position: sticky;
             top: 20px;
+            flex-shrink: 0;
         }
-        .control-group {
-            margin-bottom: 20px;
-        }
+        .control-group { margin-bottom: 20px; }
         .control-group label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: var(--primary-color);
-            font-size: 0.9em;
+            display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary-color); font-size: 0.9em;
         }
         input[type="file"], input[type="date"], input[type="text"], textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            box-sizing: border-box;
-            font-family: inherit;
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit;
         }
         button {
-            width: 100%;
-            padding: 12px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 10px;
+            width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
         }
-        button:hover {
-            background-color: #000;
-        }
-        .btn-export {
-            background-color: var(--accent-color);
-        }
-        .btn-export:hover {
-            background-color: #c00010;
-        }
+        .btn-primary { background-color: var(--primary-color); }
+        .btn-primary:hover { background-color: #000; }
+        .btn-export { background-color: var(--accent-color); }
+        .btn-export:hover { background-color: #c00010; }
+        .btn-template { background-color: #27ae60; margin-top: 10px; }
+        .btn-template:hover { background-color: #2ecc71; }
 
-        /* プレビューエリア */
+        /* プレビューエリア (A4ページ群) */
         .preview-container {
             flex: 1;
-            overflow-x: auto;
-        }
-        #exportArea {
-            background: #fff;
-            padding: 40px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 1100px; 
-            margin: 0 auto;
-            position: relative;
-        }
-        .header-area {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 4px solid var(--primary-color);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        .logo-container img {
-            max-height: 80px;
-            max-width: 300px;
-            object-fit: contain;
-        }
-        .title-container h1 {
-            margin: 0;
-            font-size: 36px;
-            color: var(--primary-color);
-            text-align: center;
-            letter-spacing: 2px;
-        }
-        
-        /* グリッドレイアウト */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(6, 1fr); 
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        .card-item {
-            background: #fff;
-            border: 2px solid var(--primary-color);
-            border-radius: 8px;
-            padding: 12px 8px;
-            text-align: center;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 40px;
+            padding-bottom: 40px;
             align-items: center;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        .card-img-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-bottom: 10px;
-            min-height: 180px;
-            background-color: #f8f9fa;
-            border-radius: 4px;
-        }
-        .card-item img {
-            width: 90%;
-            height: auto;
-            aspect-ratio: 63/88;
-            object-fit: contain;
-            border-radius: 4px;
-        }
-        .card-name {
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            line-height: 1.3;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            height: 2.6em; 
-            width: 100%;
-        }
-        .card-grade {
-            background-color: #222;
-            color: #fff;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 3px 12px;
-            border-radius: 20px;
-            display: inline-block;
-            margin-bottom: 5px;
-            letter-spacing: 1px;
-        }
-        .card-price {
-            color: var(--accent-color);
-            font-size: 20px;
-            font-weight: 900;
-            letter-spacing: 0.5px;
         }
         
-        /* 強化買取のバッジ表示 */
+        /* A4サイズ (1:1.414の比率) */
+        .exportArea {
+            background: #fff;
+            width: 1414px; 
+            height: 2000px; /* A4比率を強制 */
+            box-sizing: border-box;
+            padding: 40px 50px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* ヘッダー */
+        .header-area {
+            display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--primary-color); padding-bottom: 15px; margin-bottom: 25px; flex-shrink: 0;
+        }
+        .logo-container img { max-height: 80px; max-width: 300px; object-fit: contain; }
+        .title-container h1 { margin: 0; font-size: 42px; color: var(--primary-color); text-align: center; letter-spacing: 2px; }
+        
+        /* グリッドレイアウト (6列 × 10段 = 60枚) */
+        .card-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); 
+            grid-template-rows: repeat(10, 1fr); /* 縦10段を均等に割る */
+            gap: 12px;
+            margin-bottom: 20px;
+            min-height: 0; /* Flexbox内のGrid縮小を防ぐ */
+        }
+        
+        /* カード1枚のスタイル */
+        .card-item {
+            background: #fff; border: 2px solid var(--primary-color); border-radius: 8px; padding: 8px 6px; text-align: center;
+            display: flex; flex-direction: column; justify-content: space-between; align-items: center;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1); position: relative; min-height: 0;
+        }
+        .card-img-container {
+            flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 6px;
+        }
+        .card-item img {
+            max-width: 95%; max-height: 100%; object-fit: contain; border-radius: 4px;
+        }
+        .card-name {
+            font-size: 13px; font-weight: bold; margin-bottom: 4px; line-height: 1.2;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.4em; width: 100%;
+        }
+        .card-grade {
+            background-color: #222; color: #fff; font-size: 12px; font-weight: bold; padding: 2px 10px; border-radius: 20px; display: inline-block; margin-bottom: 3px; letter-spacing: 1px;
+        }
+        .card-price {
+            color: var(--accent-color); font-size: 20px; font-weight: 900; letter-spacing: 0px; margin-bottom: 2px;
+        }
+        
+        /* 強化バッジ */
         .status-badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background-color: #ff9800;
-            color: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            z-index: 10;
+            position: absolute; top: -8px; right: -8px; background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;
         }
 
+        /* フッター */
         .footer-area {
-            border-top: 4px solid var(--primary-color);
-            padding-top: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            margin-top: auto; border-top: 4px solid var(--primary-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0;
         }
-        .disclaimer {
-            font-size: 15px;
-            font-weight: bold;
-            color: #333;
-            line-height: 1.6;
-        }
-        .update-date {
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color);
-        }
+        .disclaimer { font-size: 16px; font-weight: bold; color: #333; line-height: 1.6; }
+        .update-date { font-size: 26px; font-weight: bold; color: var(--primary-color); text-align: right; }
+        .page-number { font-size: 14px; color: #666; margin-top: 5px; text-align: right; }
 
         @media print {
             .control-panel { display: none; }
             body { background: white; padding: 0; }
-            .preview-container { box-shadow: none; overflow: visible; }
-            #exportArea { width: 100%; box-shadow: none; padding: 0; }
+            .preview-container { box-shadow: none; overflow: visible; display: block; padding: 0; gap: 0; }
+            .exportArea { 
+                width: 100%; height: 100vh; box-shadow: none; padding: 20px; margin-bottom: 0 !important; page-break-after: always;
+            }
+            .exportArea:last-child { page-break-after: auto; }
         }
         
-        /* 読み込み中オーバーレイ */
+        /* オーバーレイ */
         #loadingOverlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.8);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            font-size: 24px;
-            font-weight: bold;
-            color: var(--primary-color);
-            flex-direction: column;
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--primary-color); flex-direction: column;
         }
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid var(--accent-color);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 10px;
+            border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -248,7 +156,7 @@
 
 <div id="loadingOverlay">
     <div class="spinner"></div>
-    画像を生成中です。数秒お待ちください...
+    <div id="loadingText">画像を生成中です...</div>
 </div>
 
 <div class="app-container">
@@ -263,11 +171,13 @@
         <div class="control-group">
             <label>2. ショップロゴ</label>
             <input type="file" id="logoInput" accept="image/*">
+            <small style="color:#777;">※テンプレート保存対象</small>
         </div>
 
         <div class="control-group">
             <label>3. タイトル</label>
-            <input type="text" id="titleInput" value="PSA10買取表 1">
+            <input type="text" id="titleInput" value="PSA10買取表">
+            <small style="color:#777;">※テンプレート保存対象</small>
         </div>
 
         <div class="control-group">
@@ -279,101 +189,124 @@
             <label>5. 注意書き (フッター)</label>
             <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
+            <small style="color:#777;">※テンプレート保存対象</small>
         </div>
+
+        <button class="btn-template" onclick="saveTemplate()">💾 現在の設定をテンプレート保存</button>
 
         <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
         
-        <div style="font-size: 0.8em; color: #555; margin-bottom: 10px;">
-            画像がすべて表示されてから「画像として書き出し」を押してください。
-        </div>
-
-        <button onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
-        <button class="btn-export" onclick="exportToImage()">📸 画像として書き出し</button>
+        <button class="btn-primary" onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
+        <button class="btn-export" onclick="exportToImage()">📸 一括画像書き出し</button>
     </div>
 
-    <div class="preview-container">
-        <div id="exportArea">
+    <!-- ここにA4ページが追加されていく -->
+    <div class="preview-container" id="pagesContainer">
+        <div class="exportArea">
             <div class="header-area">
                 <div class="logo-container">
-                    <img id="previewLogo" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
+                    <img class="logo-img" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
                 </div>
                 <div class="title-container">
-                    <h1 id="previewTitle">PSA10買取表 1</h1>
+                    <h1 class="title-text">PSA10買取表</h1>
                 </div>
             </div>
-
-            <div id="cardGrid" class="card-grid">
-                <div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: #888; font-size: 1.2em;">
-                    CSVファイルを読み込むとここにカードが並びます
+            <div class="card-grid">
+                <div style="grid-column: 1 / -1; grid-row: 1 / -1; display:flex; align-items:center; justify-content:center; color: #888; font-size: 1.4em; font-weight:bold;">
+                    CSVファイルを読み込むとここにカードが並びます<br>
+                    （自動でA4サイズに分割されます）
                 </div>
             </div>
-
             <div class="footer-area">
-                <div class="disclaimer" id="previewDisclaimer">
-                    ※相場や在庫状況、状態等により価格が変動する場合がございます。<br>
-                    買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。
-                </div>
-                <div class="update-date" id="previewDate">
-                    2026/07/24
-                </div>
+                <div class="disclaimer disclaimer-text">※相場や在庫状況、状態等により価格が変動する場合がございます。<br>買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</div>
+                <div class="update-date date-text">----/--/--</div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    const today = new Date();
-    const yyyy = today.getFullYear();
-    const mm = String(today.getMonth() + 1).padStart(2, '0');
-    const dd = String(today.getDate()).padStart(2, '0');
-    document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+    let logoDataUrl = 'https://via.placeholder.com/300x80?text=Shop+Logo';
+
+    // === 初期化とテンプレートロード ===
+    document.addEventListener("DOMContentLoaded", () => {
+        // 日付セット
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+
+        // テンプレート読み込み
+        const savedTitle = localStorage.getItem('kaitori_title');
+        const savedDisclaimer = localStorage.getItem('kaitori_disclaimer');
+        const savedLogo = localStorage.getItem('kaitori_logo');
+
+        if (savedTitle) document.getElementById('titleInput').value = savedTitle;
+        if (savedDisclaimer) document.getElementById('disclaimerInput').value = savedDisclaimer;
+        if (savedLogo) logoDataUrl = savedLogo;
+
+        updateAllPages();
+    });
+
+    // === テンプレート保存処理 ===
+    function saveTemplate() {
+        localStorage.setItem('kaitori_title', document.getElementById('titleInput').value);
+        localStorage.setItem('kaitori_disclaimer', document.getElementById('disclaimerInput').value);
+        localStorage.setItem('kaitori_logo', logoDataUrl);
+        alert('設定をテンプレートとして保存しました！\n次回からページを開くたびに自動で適用されます。');
+    }
     
-    function updateDateDisplay(dateStr) {
+    function formatDate(dateStr) {
         const dateObj = new Date(dateStr);
         if(!isNaN(dateObj)) {
             const y = dateObj.getFullYear();
             const m = String(dateObj.getMonth() + 1).padStart(2, '0');
             const d = String(dateObj.getDate()).padStart(2, '0');
-            document.getElementById('previewDate').innerText = `${y}/${m}/${d}`;
+            return `${y}/${m}/${d}`;
         }
+        return dateStr;
     }
-    updateDateDisplay(`${yyyy}-${mm}-${dd}`);
 
-    document.getElementById('titleInput').addEventListener('input', function(e) {
-        document.getElementById('previewTitle').innerText = e.target.value;
-    });
-    
-    document.getElementById('disclaimerInput').addEventListener('input', function(e) {
-        document.getElementById('previewDisclaimer').innerHTML = e.target.value.replace(/\n/g, '<br>');
-    });
+    // === 入力監視とリアルタイム更新 ===
+    function updateAllPages() {
+        const titleText = document.getElementById('titleInput').value;
+        const dateText = formatDate(document.getElementById('dateInput').value);
+        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
 
-    document.getElementById('dateInput').addEventListener('change', function(e) {
-        updateDateDisplay(e.target.value);
-    });
+        document.querySelectorAll('.title-text').forEach(el => el.innerText = titleText);
+        document.querySelectorAll('.date-text').forEach(el => el.innerText = dateText);
+        document.querySelectorAll('.disclaimer-text').forEach(el => el.innerHTML = disclaimerHtml);
+        document.querySelectorAll('.logo-img').forEach(el => el.src = logoDataUrl);
+    }
 
+    document.getElementById('titleInput').addEventListener('input', updateAllPages);
+    document.getElementById('disclaimerInput').addEventListener('input', updateAllPages);
+    document.getElementById('dateInput').addEventListener('change', updateAllPages);
     document.getElementById('logoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('previewLogo').src = e.target.result;
+                logoDataUrl = e.target.result;
+                updateAllPages();
             }
             reader.readAsDataURL(file);
         }
     });
 
+    // === CSV処理 ===
     document.getElementById('csvInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                parseCSV(e.target.result);
+                parseCSVAndRender(e.target.result);
             }
             reader.readAsText(file);
         }
     });
 
-    // カンマ入りの金額やダブルクォーテーションを正しく処理するパーサー
     function parseCSVLine(text) {
         let result = [];
         let inQuotes = false;
@@ -425,113 +358,186 @@
                         success = true;
                     }
                 }
-            } catch (e) {
-                console.warn("Proxy retry...");
-            }
+            } catch (e) {}
         }
-        
         if (!success) {
             imgEl.src = 'https://via.placeholder.com/200x280?text=Error';
         }
     }
 
-    async function parseCSV(text) {
+    async function parseCSVAndRender(text) {
         const lines = text.split('\n');
-        const grid = document.getElementById('cardGrid');
-        grid.innerHTML = ''; 
+        
+        const MAX_PER_PAGE = 60; // 6列 × 10段 = A4で60枚
+        let pages = [];
+        let currentPage = [];
+        let currentGroupId = null;
 
-        let count = 0;
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
             const parts = parseCSVLine(line);
-            if(parts.length < 10) continue;
+            if(parts.length < 10) continue; 
 
-            // ヘッダー行をスキップ
-            if (parts[0] === '掲載グループ' || parts[3] === 'カード名') {
-                continue;
-            }
+            if (parts[0] === '掲載グループ' || parts[3] === 'カード名') continue; 
 
-            const status = parts[1]; 
-            const name = parts[3]; 
-            const type = parts[5]; 
+            let price = parts[6] ? parts[6].trim() : '';
+            if (!price || price === '' || price === '-' || price === '終了') continue;
 
-            // ★修正ポイント：金額のカンマで列がズレている問題に対応★
-            // 常に一番最後の列を「画像リンク」として扱う
+            let groupId = parts[0];
+            let status = parts[1]; 
+            let name = parts[3]; 
+            let type = parts[5]; 
             let imgUrl = parts[parts.length - 1] ? parts[parts.length - 1].trim() : ''; 
 
-            // 6列目から、後ろ3列（上限、減額幅、URL）を除いた間の文字列をすべて結合して金額にする
-            // 例： "¥2", "280", "000" を結合して "¥2,280,000" にする
-            let price = parts.slice(6, parts.length - 3).join(',');
-            
-            // もしCSVエクスポート時にダブルクォーテーションで囲まれていた場合の保険
-            price = price.replace(/"/g, ''); 
-
-            let fileId = null;
-            if (imgUrl.includes('drive.google.com')) {
-                const match = imgUrl.match(/id=([^&]+)/);
-                if (match && match[1]) {
-                    fileId = match[1];
+            // スマートページ分割ロジック
+            // グループが変わり、かつ現在のページに24枚(4段)以上ある場合は、新しいページへ分割
+            if (currentGroupId !== null && currentGroupId !== groupId) {
+                if (currentPage.length >= 24) {
+                    pages.push(currentPage);
+                    currentPage = [];
                 }
             }
+            currentGroupId = groupId;
 
-            const item = document.createElement('div');
-            item.className = 'card-item';
-            
-            let badgeHtml = '';
-            if(status === '強化') {
-                badgeHtml = '<div class="status-badge">強化買取</div>';
+            currentPage.push({ status, name, type, price, imgUrl });
+
+            // 1ページ最大枚数(60枚)に達したら次へ
+            if (currentPage.length >= MAX_PER_PAGE) {
+                pages.push(currentPage);
+                currentPage = [];
             }
-
-            const imgId = `card-img-${count}`;
-            item.innerHTML = `
-                ${badgeHtml}
-                <div class="card-img-container">
-                    <img id="${imgId}" src="https://via.placeholder.com/200x280?text=Loading..." alt="Loading">
-                </div>
-                <div class="card-name">${name}</div>
-                <div><span class="card-grade">${type}</span></div>
-                <div class="card-price">${price}</div>
-            `;
-            grid.appendChild(item);
-
-            if (fileId) {
-                loadDriveImage(fileId, imgId);
-            } else if (imgUrl) {
-                document.getElementById(imgId).src = imgUrl; 
-            }
-            
-            count++;
         }
         
-        if (count === 0) {
-            grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: #888;">有効なデータが見つかりませんでした</div>';
+        if (currentPage.length > 0) {
+            pages.push(currentPage);
+        }
+
+        // ============================
+        // DOMの生成
+        // ============================
+        const container = document.getElementById('pagesContainer');
+        container.innerHTML = ''; 
+
+        if (pages.length === 0) {
+            container.innerHTML = '<div class="exportArea"><div style="text-align:center; padding:50px;">有効なデータが見つかりませんでした</div></div>';
+            return;
+        }
+
+        let globalCardCount = 0;
+        const titleText = document.getElementById('titleInput').value;
+        const dateText = formatDate(document.getElementById('dateInput').value);
+        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
+
+        pages.forEach((pageCards, pageIndex) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = 'exportArea';
+            pageDiv.id = `exportArea_${pageIndex + 1}`;
+
+            const headerHtml = `
+                <div class="header-area">
+                    <div class="logo-container">
+                        <img class="logo-img" src="${logoDataUrl}" alt="Shop Logo" crossorigin="anonymous">
+                    </div>
+                    <div class="title-container">
+                        <h1 class="title-text">${titleText}</h1>
+                    </div>
+                </div>
+            `;
+
+            let gridHtml = '<div class="card-grid">';
+            pageCards.forEach(card => {
+                let badgeHtml = card.status === '強化' ? '<div class="status-badge">強化買取</div>' : '';
+                const imgId = `card-img-${globalCardCount}`;
+                
+                gridHtml += `
+                    <div class="card-item">
+                        ${badgeHtml}
+                        <div class="card-img-container">
+                            <img id="${imgId}" src="https://via.placeholder.com/200x280?text=Loading..." alt="Loading" crossorigin="anonymous">
+                        </div>
+                        <div class="card-name">${card.name}</div>
+                        <div><span class="card-grade">${card.type}</span></div>
+                        <div class="card-price">${card.price}</div>
+                    </div>
+                `;
+                globalCardCount++;
+            });
+            gridHtml += '</div>';
+
+            const footerHtml = `
+                <div class="footer-area">
+                    <div class="disclaimer disclaimer-text">${disclaimerHtml}</div>
+                    <div>
+                        <div class="update-date date-text">${dateText}</div>
+                        <div class="page-number">${pageIndex + 1} / ${pages.length} ページ</div>
+                    </div>
+                </div>
+            `;
+
+            pageDiv.innerHTML = headerHtml + gridHtml + footerHtml;
+            container.appendChild(pageDiv);
+        });
+
+        // 非同期で画像ロード
+        globalCardCount = 0;
+        for (let p = 0; p < pages.length; p++) {
+            for (let c = 0; c < pages[p].length; c++) {
+                const card = pages[p][c];
+                const imgId = `card-img-${globalCardCount}`;
+                
+                let fileId = null;
+                if (card.imgUrl.includes('drive.google.com')) {
+                    const match = card.imgUrl.match(/id=([^&]+)/);
+                    if (match && match[1]) fileId = match[1];
+                }
+
+                if (fileId) {
+                    loadDriveImage(fileId, imgId);
+                } else if (card.imgUrl) {
+                    document.getElementById(imgId).src = card.imgUrl; 
+                } else {
+                    document.getElementById(imgId).src = 'https://via.placeholder.com/200x280?text=No+Image';
+                }
+                globalCardCount++;
+            }
         }
     }
 
-    function exportToImage() {
+    // === 一括画像書き出し処理 ===
+    async function exportToImage() {
+        const areas = document.querySelectorAll('.exportArea');
+        if(areas.length === 0) return;
+
         const overlay = document.getElementById('loadingOverlay');
+        const overlayText = document.getElementById('loadingText');
         overlay.style.display = 'flex';
 
-        const exportArea = document.getElementById('exportArea');
-        
-        setTimeout(() => {
-            html2canvas(exportArea, {
-                useCORS: true,       
-                allowTaint: false,   
-                scale: 2             
-            }).then(canvas => {
+        for (let i = 0; i < areas.length; i++) {
+            overlayText.innerText = `${i + 1}枚目の画像を生成中... (${i + 1}/${areas.length})`;
+            try {
+                await new Promise(r => setTimeout(r, 500)); 
+                
+                const canvas = await html2canvas(areas[i], {
+                    useCORS: true,       
+                    allowTaint: false,   
+                    scale: 2             
+                });
+                
                 const link = document.createElement('a');
-                link.download = `買取表_${document.getElementById('dateInput').value}.png`;
+                link.download = `買取表_${document.getElementById('dateInput').value}_${i+1}枚目.png`;
                 link.href = canvas.toDataURL('image/png');
                 link.click();
-                overlay.style.display = 'none'; 
-            }).catch(err => {
-                overlay.style.display = 'none';
-                alert("画像の生成に失敗しました。\n詳細: " + err);
-            });
-        }, 100); 
+                
+                await new Promise(r => setTimeout(r, 1000));
+            } catch (err) {
+                alert(`ページ ${i + 1} の生成に失敗しました。\n詳細: ` + err);
+            }
+        }
+        
+        overlay.style.display = 'none';
+        overlayText.innerText = "画像を生成中です...";
     }
 </script>
 </body>
