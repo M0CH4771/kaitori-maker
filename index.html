@@ -74,7 +74,6 @@
         .exportArea {
             background: #fff;
             box-sizing: border-box;
-            /* パディング調整（内側にしっかりと収める） */
             padding: 35px 45px 30px 45px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             position: relative;
@@ -109,7 +108,7 @@
             padding: 5px;
         }
         
-        /* ★カード1枚のスタイル（完全同一サイズ固定）★ */
+        /* カード1枚のスタイル（完全同一サイズ固定） */
         .card-item {
             background: #fff; 
             border: 2px solid var(--primary-color); 
@@ -126,7 +125,7 @@
             width: 100%;
             height: 100%;
             min-height: 0; 
-            overflow: hidden; /* 内側に確実に収める */
+            overflow: hidden;
         }
         .card-img-container {
             flex: 1; 
@@ -170,7 +169,7 @@
             color: var(--accent-color); font-size: 20px; font-weight: 900; letter-spacing: 0px; white-space: nowrap; transform-origin: center center; line-height: 1.1;
         }
         
-        /* 強化バッジ（枠の内側に配置してはみ出しを完全防止） */
+        /* 強化バッジ */
         .status-badge {
             position: absolute; 
             top: 2px; 
@@ -343,8 +342,7 @@
         localStorage.setItem('kaitori_disclaimer', document.getElementById('disclaimerInput').value);
         localStorage.setItem('kaitori_logo', logoDataUrl);
         localStorage.setItem('kaitori_layout', document.getElementById('layoutSelect').value);
-        alert('設定をテンプレートとして保存しました！
-次回から自動で適用されます。');
+        alert("設定をテンプレートとして保存しました！\n次回から自動で適用されます。");
     }
     
     function formatDate(dateStr) {
@@ -361,8 +359,7 @@
     function updateAllPages() {
         const titleText = document.getElementById('titleInput').value;
         const dateText = formatDate(document.getElementById('dateInput').value);
-        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/
-/g, '<br>');
+        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
 
         document.querySelectorAll('.title-text').forEach(el => el.innerText = titleText);
         document.querySelectorAll('.date-text').forEach(el => el.innerText = dateText);
@@ -440,9 +437,8 @@
     }
 
     function parseCSV(text) {
-        const lines = text.split(/
-?
-/);
+        // CRLF / LF のどちらの改行コードにも安全に対応
+        const lines = text.split(/\r?\n/);
         globalCardData = [];
         
         let headerMap = {};
@@ -562,8 +558,7 @@
 
         const titleText = document.getElementById('titleInput').value;
         const dateText = formatDate(document.getElementById('dateInput').value);
-        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/
-/g, '<br>');
+        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
 
         pages.forEach((pageCards, pageIndex) => {
             const pageDiv = document.createElement('div');
@@ -619,7 +614,6 @@
         loadMissingImages();
     }
 
-    // ★幅と高さをミリ単位で計測し、枠内（100%以内）に完璧に収まるよう自動スケールダウンする関数★
     function adjustTextSize() {
         document.querySelectorAll('.card-price-container').forEach(container => {
             const textEl = container.querySelector('.card-price-text');
@@ -642,7 +636,6 @@
                     scaleY = containerHeight / textHeight;
                 }
 
-                // 横幅・高さのどちらかはみ出している方に合わせて縮小（安全率 0.90）
                 const finalScale = Math.min(scaleX, scaleY) * 0.90;
                 if (finalScale < 1) {
                     textEl.style.transform = `scale(${finalScale})`;
@@ -713,8 +706,7 @@
                 
                 await new Promise(r => setTimeout(r, 1000));
             } catch (err) {
-                alert(`ページ ${i + 1} の生成に失敗しました。
-詳細: ` + err);
+                alert(`ページ ${i + 1} の生成に失敗しました。\n詳細: ` + err);
             }
         }
         
