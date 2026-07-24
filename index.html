@@ -1,16 +1,15 @@
-
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター</title>
+    <title>買取表ジェネレーター（グリッド版）</title>
     <!-- html2canvasライブラリ（画像化用） -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #e74c3c;
+            --primary-color: #222;
+            --accent-color: #e60012;
             --bg-color: #f4f6f9;
         }
         body {
@@ -18,12 +17,12 @@
             background-color: var(--bg-color);
             margin: 0;
             padding: 20px;
-            color: #333;
+            color: #111;
         }
         .app-container {
             display: flex;
             gap: 20px;
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
         .control-panel {
@@ -44,12 +43,13 @@
             color: var(--primary-color);
             font-size: 0.9em;
         }
-        input[type="file"], input[type="date"], input[type="text"] {
+        input[type="file"], input[type="date"], input[type="text"], textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 6px;
             box-sizing: border-box;
+            font-family: inherit;
         }
         button {
             width: 100%;
@@ -65,13 +65,13 @@
             margin-bottom: 10px;
         }
         button:hover {
-            background-color: #1a252f;
+            background-color: #000;
         }
         .btn-export {
             background-color: var(--accent-color);
         }
         .btn-export:hover {
-            background-color: #c0392b;
+            background-color: #c00010;
         }
 
         /* プレビューエリア（画像化される部分） */
@@ -82,88 +82,112 @@
         #exportArea {
             background: #fff;
             padding: 40px;
-            border-radius: 0; /* 買取表っぽく四角く */
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            width: 1000px; /* 固定幅でレイアウトを安定させる */
+            width: 1100px; /* カード表でよくある横長サイズ */
             margin: 0 auto;
             position: relative;
         }
         .header-area {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
-            border-bottom: 3px solid var(--primary-color);
+            align-items: center;
+            border-bottom: 4px solid var(--primary-color);
             padding-bottom: 15px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
         }
         .logo-container img {
             max-height: 80px;
-            max-width: 250px;
+            max-width: 300px;
             object-fit: contain;
         }
         .title-container h1 {
             margin: 0;
-            font-size: 32px;
+            font-size: 36px;
             color: var(--primary-color);
             text-align: center;
-        }
-        .info-container {
-            text-align: right;
-            font-size: 16px;
-            font-weight: bold;
-        }
-        .update-date {
-            color: #555;
+            letter-spacing: 2px;
         }
         
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
+        /* グリッドレイアウト */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr); /* 6列 */
+            gap: 15px;
+            margin-bottom: 30px;
         }
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
+        .card-item {
+            background: #fff;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 12px 8px;
             text-align: center;
-            vertical-align: middle;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 3px 3px 0px rgba(0,0,0,0.1);
         }
-        th {
-            background-color: var(--primary-color);
-            color: white;
-            font-weight: bold;
-        }
-        td.card-name {
-            text-align: left;
-            font-weight: bold;
-            font-size: 1.1em;
-        }
-        td.price {
-            color: var(--accent-color);
-            font-weight: bold;
-            font-size: 1.3em;
-        }
-        .card-img {
-            width: 60px;
-            height: 84px;
-            object-fit: cover;
+        .card-item img {
+            width: 90%;
+            height: auto;
+            aspect-ratio: 63/88;
+            object-fit: contain;
+            margin-bottom: 10px;
             border-radius: 4px;
-            border: 1px solid #ddd;
         }
-        .status-badge {
+        .card-name {
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.6em; /* 2行固定 */
+            width: 100%;
+        }
+        .card-grade {
+            background-color: #222;
+            color: #fff;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 3px 12px;
+            border-radius: 20px;
             display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8em;
-            font-weight: bold;
-            color: white;
+            margin-bottom: 5px;
+            letter-spacing: 1px;
         }
-        .bg-kyoka { background-color: #e67e22; }
-        .bg-keisai { background-color: #3498db; }
+        .card-price {
+            color: var(--accent-color);
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+        }
+        
+        .footer-area {
+            border-top: 4px solid var(--primary-color);
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .disclaimer {
+            font-size: 15px;
+            font-weight: bold;
+            color: #333;
+            line-height: 1.6;
+        }
+        .update-date {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
 
         @media print {
             .control-panel { display: none; }
             body { background: white; padding: 0; }
-            .preview-container { box-shadow: none; }
+            .preview-container { box-shadow: none; overflow: visible; }
             #exportArea { width: 100%; box-shadow: none; padding: 0; }
         }
     </style>
@@ -178,29 +202,33 @@
         <div class="control-group">
             <label>1. CSVファイルを読み込む</label>
             <input type="file" id="csvInput" accept=".csv">
-            <small style="color:#777; display:block; margin-top:5px;">※スプレッドシートからダウンロードしたCSV</small>
         </div>
 
         <div class="control-group">
-            <label>2. ショップロゴ設定</label>
+            <label>2. ショップロゴ</label>
             <input type="file" id="logoInput" accept="image/*">
         </div>
 
         <div class="control-group">
-            <label>3. 買取表のタイトル</label>
-            <input type="text" id="titleInput" value="ポケモンカード 高価買取表">
+            <label>3. タイトル</label>
+            <input type="text" id="titleInput" value="PSA10買取表 1">
         </div>
 
         <div class="control-group">
             <label>4. 更新日</label>
             <input type="date" id="dateInput">
         </div>
+        
+        <div class="control-group">
+            <label>5. 注意書き (フッター)</label>
+            <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
+買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
+        </div>
 
         <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
 
         <button onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
         <button class="btn-export" onclick="exportToImage()">📸 画像として書き出し</button>
-        <small style="color:#e74c3c; display:block; margin-top:5px; font-size: 0.8em;">※GoogleDrive画像の仕様上、画像書き出しが白紙になる場合は「PDFとして保存」を使用してください。</small>
     </div>
 
     <!-- 右側：プレビュー＆エクスポートエリア -->
@@ -208,57 +236,64 @@
         <div id="exportArea">
             <div class="header-area">
                 <div class="logo-container">
-                    <img id="previewLogo" src="https://via.placeholder.com/250x80?text=Your+Shop+Logo" alt="Shop Logo">
+                    <img id="previewLogo" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
                 </div>
                 <div class="title-container">
-                    <h1 id="previewTitle">ポケモンカード 高価買取表</h1>
-                </div>
-                <div class="info-container">
-                    <div style="color: #e74c3c; margin-bottom: 5px;">※美品状態での買取価格です</div>
-                    <div class="update-date">更新日: <span id="previewDate">----年--月--日</span></div>
+                    <h1 id="previewTitle">PSA10買取表 1</h1>
                 </div>
             </div>
 
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th width="80">画像</th>
-                        <th width="80">状態</th>
-                        <th>カード名</th>
-                        <th width="120">型番</th>
-                        <th width="80">種別</th>
-                        <th width="150">買取金額</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="6" style="padding: 40px; color: #888;">CSVファイルを読み込むとここにデータが表示されます</td>
-                    </tr>
-                </tbody>
-            </table>
+            <div id="cardGrid" class="card-grid">
+                <!-- ここにカードが生成されます -->
+                <div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: #888; font-size: 1.2em;">
+                    CSVファイルを読み込むとここにカードが並びます
+                </div>
+            </div>
+
+            <div class="footer-area">
+                <div class="disclaimer" id="previewDisclaimer">
+                    ※相場や在庫状況、状態等により価格が変動する場合がございます。<br>
+                    買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。
+                </div>
+                <div class="update-date" id="previewDate">
+                    2026/07/24
+                </div>
+            </div>
         </div>
     </div>
 </div>
 
 <script>
-    // 今日の日付をセット
+    // 日付の初期設定
     const today = new Date();
     const yyyy = today.getFullYear();
     const mm = String(today.getMonth() + 1).padStart(2, '0');
     const dd = String(today.getDate()).padStart(2, '0');
     document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
-    document.getElementById('previewDate').innerText = `${yyyy}年${mm}月${dd}日`;
+    
+    // YYYY/MM/DD フォーマットの更新
+    function updateDateDisplay(dateStr) {
+        const dateObj = new Date(dateStr);
+        if(!isNaN(dateObj)) {
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const d = String(dateObj.getDate()).padStart(2, '0');
+            document.getElementById('previewDate').innerText = `${y}/${m}/${d}`;
+        }
+    }
+    updateDateDisplay(`${yyyy}-${mm}-${dd}`);
 
     // 入力イベントリスナー
     document.getElementById('titleInput').addEventListener('input', function(e) {
         document.getElementById('previewTitle').innerText = e.target.value;
     });
+    
+    document.getElementById('disclaimerInput').addEventListener('input', function(e) {
+        document.getElementById('previewDisclaimer').innerHTML = e.target.value.replace(/\n/g, '<br>');
+    });
 
     document.getElementById('dateInput').addEventListener('change', function(e) {
-        const dateObj = new Date(e.target.value);
-        if(!isNaN(dateObj)) {
-            document.getElementById('previewDate').innerText = `${dateObj.getFullYear()}年${String(dateObj.getMonth()+1).padStart(2,'0')}月${String(dateObj.getDate()).padStart(2,'0')}日`;
-        }
+        updateDateDisplay(e.target.value);
     });
 
     document.getElementById('logoInput').addEventListener('change', function(e) {
@@ -285,69 +320,56 @@
 
     function parseCSV(text) {
         const lines = text.split('\n');
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = ''; // クリア
+        const grid = document.getElementById('cardGrid');
+        grid.innerHTML = ''; // クリア
 
-        // ヘッダーをスキップしてデータ行を処理
         let count = 0;
         for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
-            // CSVのパース（簡易版）
             const parts = line.split(',');
             if(parts.length < 10) continue;
 
-            const status = parts[1];
             const name = parts[3];
-            const model = parts[4];
-            const type = parts[5];
+            const type = parts[5]; // PSA10 など
             const imgUrl = parts[parts.length - 1];
             
-            // 金額部分（カンマが含まれている可能性があるため、6列目〜末尾3列目前までを結合）
+            // 金額（カンマ対応）
             const price = parts.slice(6, parts.length - 3).join(',');
 
-            // ステータスバッジ
-            const badgeClass = status === '強化' ? 'bg-kyoka' : 'bg-keisai';
-            const badgeHtml = `<span class="status-badge ${badgeClass}">${status}</span>`;
-
-            // 画像（Google Driveのリンク等）
-            // 実際のエクスポート時にCORSエラーを防ぐため、クロスオリジン設定を追加するか、単純なimgタグにする
-            let imgSrc = imgUrl;
+            const item = document.createElement('div');
+            item.className = 'card-item';
             
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><img src="${imgSrc}" class="card-img" crossorigin="anonymous"></td>
-                <td>${badgeHtml}</td>
-                <td class="card-name">${name}</td>
-                <td>${model}</td>
-                <td>${type}</td>
-                <td class="price">${price}</td>
+            // X (Twitter) 等でよく見るカード1枚ごとのレイアウト
+            item.innerHTML = `
+                <img src="${imgUrl}" crossorigin="anonymous" alt="カード画像">
+                <div class="card-name">${name}</div>
+                <div><span class="card-grade">${type}</span></div>
+                <div class="card-price">${price}</div>
             `;
-            tbody.appendChild(tr);
+            grid.appendChild(item);
             count++;
         }
         
         if (count === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" style="padding: 40px; color: #888;">有効なデータが見つかりませんでした</td></tr>';
+            grid.innerHTML = '<div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: #888;">有効なデータが見つかりませんでした</div>';
         }
     }
 
-    // 画像化してダウンロードする機能
     function exportToImage() {
         const exportArea = document.getElementById('exportArea');
-        
         html2canvas(exportArea, {
             useCORS: true,
             allowTaint: true,
-            scale: 2 // 高画質化
+            scale: 2
         }).then(canvas => {
             const link = document.createElement('a');
             link.download = `買取表_${document.getElementById('dateInput').value}.png`;
             link.href = canvas.toDataURL('image/png');
             link.click();
         }).catch(err => {
-            alert("画像の生成に失敗しました。PDFとして保存をお試しください。\n詳細: " + err);
+            alert("画像の生成に失敗しました。\n詳細: " + err);
         });
     }
 </script>
