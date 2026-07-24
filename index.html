@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（列ズレ完全対応・A4版）</title>
+    <title>買取表ジェネレーター（横レイアウト専用・パネルスクロール対応版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -24,6 +24,7 @@
             gap: 20px;
             max-width: 1800px;
             margin: 0 auto;
+            align-items: flex-start; /* stickyを正常に動作させるため */
         }
         
         /* コントロールパネル */
@@ -33,17 +34,31 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            height: fit-content;
+            /* ▼ はみ出す場合にスクロールできるようにする修正 ▼ */
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
             position: sticky;
             top: 20px;
             flex-shrink: 0;
         }
+        /* スクロールバーのデザインを少し綺麗にする */
+        .control-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        .control-panel::-webkit-scrollbar-thumb {
+            background-color: #ddd;
+            border-radius: 4px;
+        }
+        .control-panel::-webkit-scrollbar-thumb:hover {
+            background-color: #bbb;
+        }
+
         .control-group { margin-bottom: 20px; }
         .control-group label {
             display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary-color); font-size: 0.9em;
         }
-        input[type="file"], input[type="date"], input[type="text"], textarea {
-            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit;
+        input[type="file"], input[type="date"], input[type="text"], select, textarea {
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px;
         }
         button {
             width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
@@ -65,17 +80,20 @@
             align-items: center;
         }
         
-        /* A4サイズ (1:1.414の比率) */
+        /* A4サイズの基本ベース */
         .exportArea {
             background: #fff;
-            width: 1414px; 
-            height: 2000px; /* A4比率を強制 */
             box-sizing: border-box;
             padding: 40px 50px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             position: relative;
             display: flex;
             flex-direction: column;
+        }
+        
+        /* 横A4用 (今回は横のみ) */
+        .exportArea.landscape {
+            width: 2000px; height: 1414px;
         }
         
         /* ヘッダー */
@@ -85,12 +103,10 @@
         .logo-container img { max-height: 80px; max-width: 300px; object-fit: contain; }
         .title-container h1 { margin: 0; font-size: 42px; color: var(--primary-color); text-align: center; letter-spacing: 2px; }
         
-        /* グリッドレイアウト (6列 × 10段 = 60枚) */
+        /* グリッドレイアウト */
         .card-grid {
             flex: 1;
             display: grid;
-            grid-template-columns: repeat(6, 1fr); 
-            grid-template-rows: repeat(10, 1fr); 
             gap: 12px;
             margin-bottom: 20px;
             min-height: 0; 
@@ -100,19 +116,30 @@
         .card-item {
             background: #fff; border: 2px solid var(--primary-color); border-radius: 8px; padding: 8px 6px; text-align: center;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.1); position: relative; min-height: 0;
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.1); position: relative; min-height: 0; overflow: hidden;
         }
         .card-img-container {
             flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 6px;
-            background-color: #f8f9fa; border-radius: 4px;
+            background-color: #f8f9fa; border-radius: 4px; overflow: hidden;
         }
         .card-item img {
-            max-width: 95%; max-height: 100%; object-fit: contain; border-radius: 4px;
+            max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 4px;
         }
-        .card-name {
-            font-size: 13px; font-weight: bold; margin-bottom: 4px; line-height: 1.2;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; height: 2.4em; width: 100%;
+        
+        /* カード名コンテナ (改行禁止・自動縮小用) */
+        .card-name-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
         }
+        .card-name-text {
+            font-size: 14px; font-weight: bold; white-space: nowrap; transform-origin: center center;
+        }
+        
         .card-grade {
             background-color: #222; color: #fff; font-size: 12px; font-weight: bold; padding: 2px 10px; border-radius: 20px; display: inline-block; margin-bottom: 3px; letter-spacing: 1px;
         }
@@ -136,10 +163,11 @@
         @media print {
             .control-panel { display: none; }
             body { background: white; padding: 0; }
-            .preview-container { box-shadow: none; overflow: visible; display: block; padding: 0; gap: 0; }
+            .preview-container { box-shadow: none; overflow: visible; display: block; padding: 0; gap: 0; align-items: flex-start; }
             .exportArea { 
-                width: 100%; height: 100vh; box-shadow: none; padding: 20px; margin-bottom: 0 !important; page-break-after: always;
+                box-shadow: none; padding: 20px; margin: 0 !important; page-break-after: always;
             }
+            .exportArea.landscape { width: 100vw; height: 70.7vw; }
             .exportArea:last-child { page-break-after: auto; }
         }
         
@@ -192,6 +220,16 @@
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
             <small style="color:#777;">※テンプレート保存対象</small>
         </div>
+        
+        <div class="control-group">
+            <label>6. レイアウト設定</label>
+            <select id="layoutSelect">
+                <!-- 縦のレイアウトを削除 -->
+                <option value="landscape_10x6">A4横 (横10列 × 縦6段) - 60枚</option>
+                <option value="landscape_15x4">A4横 (横15列 × 縦4段) - 60枚</option>
+            </select>
+            <small style="color:#777;">※テンプレート保存対象</small>
+        </div>
 
         <button class="btn-template" onclick="saveTemplate()">💾 現在の設定をテンプレート保存</button>
 
@@ -206,7 +244,8 @@
     </div>
 
     <div class="preview-container" id="pagesContainer">
-        <div class="exportArea">
+        <!-- 初期表示 -->
+        <div class="exportArea landscape">
             <div class="header-area">
                 <div class="logo-container">
                     <img class="logo-img" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
@@ -215,10 +254,10 @@
                     <h1 class="title-text">PSA10買取表</h1>
                 </div>
             </div>
-            <div class="card-grid">
+            <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
                 <div style="grid-column: 1 / -1; grid-row: 1 / -1; display:flex; align-items:center; justify-content:center; color: #888; font-size: 1.4em; font-weight:bold;">
                     CSVファイルを読み込むとここにカードが並びます<br>
-                    （自動でA4サイズに分割されます）
+                    （自動でサイズに分割されます）
                 </div>
             </div>
             <div class="footer-area">
@@ -231,6 +270,7 @@
 
 <script>
     let logoDataUrl = 'https://via.placeholder.com/300x80?text=Shop+Logo';
+    let globalCardData = []; 
 
     document.addEventListener("DOMContentLoaded", () => {
         const today = new Date();
@@ -242,10 +282,15 @@
         const savedTitle = localStorage.getItem('kaitori_title');
         const savedDisclaimer = localStorage.getItem('kaitori_disclaimer');
         const savedLogo = localStorage.getItem('kaitori_logo');
+        const savedLayout = localStorage.getItem('kaitori_layout');
 
         if (savedTitle) document.getElementById('titleInput').value = savedTitle;
         if (savedDisclaimer) document.getElementById('disclaimerInput').value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
+        // 保存されたレイアウトがもし縦(portrait_6x10)だったら無視して横にする
+        if (savedLayout && savedLayout !== 'portrait_6x10') {
+            document.getElementById('layoutSelect').value = savedLayout;
+        }
 
         updateAllPages();
     });
@@ -254,7 +299,8 @@
         localStorage.setItem('kaitori_title', document.getElementById('titleInput').value);
         localStorage.setItem('kaitori_disclaimer', document.getElementById('disclaimerInput').value);
         localStorage.setItem('kaitori_logo', logoDataUrl);
-        alert('設定をテンプレートとして保存しました！\n次回からページを開くたびに自動で適用されます。');
+        localStorage.setItem('kaitori_layout', document.getElementById('layoutSelect').value);
+        alert('設定をテンプレートとして保存しました！\n次回から自動で適用されます。');
     }
     
     function formatDate(dateStr) {
@@ -282,6 +328,11 @@
     document.getElementById('titleInput').addEventListener('input', updateAllPages);
     document.getElementById('disclaimerInput').addEventListener('input', updateAllPages);
     document.getElementById('dateInput').addEventListener('change', updateAllPages);
+    document.getElementById('layoutSelect').addEventListener('change', () => {
+        if (globalCardData.length > 0) {
+            renderPages(); 
+        }
+    });
     document.getElementById('logoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -299,13 +350,12 @@
         if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                parseCSVAndRender(e.target.result);
+                parseCSV(e.target.result);
             }
             reader.readAsText(file);
         }
     });
 
-    // カンマ入りの金額を保護する高機能パーサー
     function parseCSVLine(text) {
         let result = [];
         let inQuotes = false;
@@ -328,51 +378,10 @@
         return result;
     }
 
-    async function loadDriveImage(fileId, imgElementId) {
-        const imgEl = document.getElementById(imgElementId);
-        const targetUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
-        const encodedUrl = encodeURIComponent(targetUrl);
-        
-        const proxies = [
-            `https://wsrv.nl/?url=${encodedUrl}`,
-            `https://api.allorigins.win/raw?url=${encodedUrl}`,
-            `https://api.codetabs.com/v1/proxy?quest=${encodedUrl}`,
-            `https://corsproxy.io/?${encodedUrl}`
-        ];
-
-        let success = false;
-        for (let proxy of proxies) {
-            if (success) break;
-            try {
-                const response = await fetch(proxy);
-                if (response.ok) {
-                    const blob = await response.blob();
-                    if (blob.type.includes('image')) {
-                        const base64 = await new Promise((resolve) => {
-                            const reader = new FileReader();
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.readAsDataURL(blob);
-                        });
-                        imgEl.src = base64; 
-                        success = true;
-                    }
-                }
-            } catch (e) {}
-        }
-        if (!success) {
-            imgEl.src = 'https://via.placeholder.com/200x280?text=Error';
-        }
-    }
-
-    async function parseCSVAndRender(text) {
+    function parseCSV(text) {
         const lines = text.split('\n');
+        globalCardData = [];
         
-        const MAX_PER_PAGE = 60; // 6列 × 10段 = 60枚
-        let pages = [];
-        let currentPage = [];
-        let currentGroupId = null;
-        
-        // ★ 列ズレ防止！項目名を自動で探索して記録するマップ ★
         let headerMap = {};
         let isHeaderFound = false;
 
@@ -382,7 +391,6 @@
 
             const parts = parseCSVLine(line);
 
-            // ヘッダー行を探す（「カード名」が含まれていればヘッダーとみなす）
             if (!isHeaderFound) {
                 if (parts.includes('カード名') || parts.includes('強化買取金額')) {
                     parts.forEach((colName, idx) => {
@@ -392,11 +400,8 @@
                 }
                 continue;
             }
-            
-            // ヘッダーが見つかっていないうちはデータをスキップ
             if (!isHeaderFound) continue;
 
-            // 自動探索した列番号を使ってデータを抽出（列がズレても絶対に間違えない）
             let groupId = parts[headerMap['掲載グループ']] !== undefined ? parts[headerMap['掲載グループ']].trim() : '';
             let status  = parts[headerMap['掲載状況']] !== undefined ? parts[headerMap['掲載状況']].trim() : '';
             let name    = parts[headerMap['カード名']] !== undefined ? parts[headerMap['カード名']].trim() : '';
@@ -404,56 +409,101 @@
             let price   = parts[headerMap['強化買取金額']] !== undefined ? parts[headerMap['強化買取金額']].trim() : '';
             let imgUrl  = parts[headerMap['画像リンク']] !== undefined ? parts[headerMap['画像リンク']].trim() : '';
 
-            // 余計なクォーテーションを削除
             price = price.replace(/"/g, ''); 
 
-            // ★ 金額が空欄、ハイフン、終了の行は完全に弾く ★
-            if (!price || price === '' || price === '-' || price === '終了') {
-                continue;
-            }
+            if (!price || price === '' || price === '-' || price === '終了') continue;
 
-            // スマートページ分割ロジック
-            if (currentGroupId !== null && currentGroupId !== groupId) {
-                // グループが変わり、かつ現在のページに十分な枚数(3段=18枚以上)があれば区切る
-                if (currentPage.length >= 18) {
+            globalCardData.push({ groupId, status, name, type, price, imgUrl, resolvedImg: null });
+        }
+        
+        if(globalCardData.length > 0) {
+            renderPages();
+        } else {
+            document.getElementById('pagesContainer').innerHTML = '<div class="exportArea landscape"><div style="text-align:center; padding:50px; font-weight:bold; font-size:1.4em;">有効なデータが見つかりませんでした</div></div>';
+        }
+    }
+
+    async function fetchImageBase64(imgUrl) {
+        let targetUrl = imgUrl;
+        if (imgUrl.includes('drive.google.com')) {
+            const match = imgUrl.match(/id=([^&]+)/);
+            if (match && match[1]) {
+                targetUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+            }
+        }
+        const encodedUrl = encodeURIComponent(targetUrl);
+        const proxies = [
+            `https://wsrv.nl/?url=${encodedUrl}`,
+            `https://api.allorigins.win/raw?url=${encodedUrl}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodedUrl}`,
+            `https://corsproxy.io/?${encodedUrl}`
+        ];
+
+        for (let proxy of proxies) {
+            try {
+                const response = await fetch(proxy);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    if (blob.type.includes('image')) {
+                        return await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        });
+                    }
+                }
+            } catch (e) {}
+        }
+        return 'https://via.placeholder.com/200x280?text=Error';
+    }
+
+    async function renderPages() {
+        const layout = document.getElementById('layoutSelect').value;
+        let cols, rows, maxPerPage, orientationClass;
+        
+        // 縦を削除したため、横のみに分岐
+        if (layout === 'landscape_15x4') {
+            cols = 15; rows = 4; maxPerPage = 60; orientationClass = 'landscape';
+        } else {
+            // default (landscape_10x6)
+            cols = 10; rows = 6; maxPerPage = 60; orientationClass = 'landscape';
+        }
+
+        let pages = [];
+        let currentPage = [];
+        let currentGroupId = null;
+
+        const groupBreakThreshold = maxPerPage * 0.4; 
+
+        for (let i = 0; i < globalCardData.length; i++) {
+            const card = globalCardData[i];
+            
+            if (currentGroupId !== null && currentGroupId !== card.groupId) {
+                if (currentPage.length >= groupBreakThreshold) {
                     pages.push(currentPage);
                     currentPage = [];
                 }
             }
-            currentGroupId = groupId;
+            currentGroupId = card.groupId;
+            currentPage.push(card);
 
-            currentPage.push({ status, name, type, price, imgUrl });
-
-            // 1ページ最大枚数(60枚)に達したら次へ
-            if (currentPage.length >= MAX_PER_PAGE) {
+            if (currentPage.length >= maxPerPage) {
                 pages.push(currentPage);
                 currentPage = [];
             }
         }
-        
-        if (currentPage.length > 0) {
-            pages.push(currentPage);
-        }
+        if (currentPage.length > 0) pages.push(currentPage);
 
-        // ============================
-        // DOMの生成
-        // ============================
         const container = document.getElementById('pagesContainer');
         container.innerHTML = ''; 
 
-        if (pages.length === 0) {
-            container.innerHTML = '<div class="exportArea"><div style="text-align:center; padding:50px; font-weight:bold; font-size:1.4em;">有効なデータが見つかりませんでした<br><br><small style="font-size:0.7em; color:#888;">※1行目に「カード名」や「強化買取金額」という項目名が含まれているか確認してください</small></div></div>';
-            return;
-        }
-
-        let globalCardCount = 0;
         const titleText = document.getElementById('titleInput').value;
         const dateText = formatDate(document.getElementById('dateInput').value);
         const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
 
         pages.forEach((pageCards, pageIndex) => {
             const pageDiv = document.createElement('div');
-            pageDiv.className = 'exportArea';
+            pageDiv.className = `exportArea ${orientationClass}`;
             pageDiv.id = `exportArea_${pageIndex + 1}`;
 
             const headerHtml = `
@@ -467,23 +517,25 @@
                 </div>
             `;
 
-            let gridHtml = '<div class="card-grid">';
+            let gridHtml = `<div class="card-grid" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr);">`;
             pageCards.forEach(card => {
                 let badgeHtml = card.status === '強化' ? '<div class="status-badge">強化買取</div>' : '';
-                const imgId = `card-img-${globalCardCount}`;
+                
+                let imgSrc = card.resolvedImg ? card.resolvedImg : 'https://via.placeholder.com/200x280?text=Loading...';
                 
                 gridHtml += `
                     <div class="card-item">
                         ${badgeHtml}
                         <div class="card-img-container">
-                            <img id="${imgId}" src="https://via.placeholder.com/200x280?text=Loading..." alt="Loading" crossorigin="anonymous">
+                            <img src="${imgSrc}" class="dynamic-img" data-url="${card.imgUrl}" alt="Card" crossorigin="anonymous">
                         </div>
-                        <div class="card-name">${card.name}</div>
+                        <div class="card-name-container">
+                            <span class="card-name-text">${card.name}</span>
+                        </div>
                         <div><span class="card-grade">${card.type}</span></div>
                         <div class="card-price">${card.price}</div>
                     </div>
                 `;
-                globalCardCount++;
             });
             gridHtml += '</div>';
 
@@ -501,32 +553,40 @@
             container.appendChild(pageDiv);
         });
 
-        // 非同期で画像ロード
-        globalCardCount = 0;
-        for (let p = 0; p < pages.length; p++) {
-            for (let c = 0; c < pages[p].length; c++) {
-                const card = pages[p][c];
-                const imgId = `card-img-${globalCardCount}`;
-                
-                let fileId = null;
-                if (card.imgUrl && card.imgUrl.includes('drive.google.com')) {
-                    const match = card.imgUrl.match(/id=([^&]+)/);
-                    if (match && match[1]) fileId = match[1];
-                }
+        adjustTextSize();
+        loadMissingImages();
+    }
 
-                if (fileId) {
-                    loadDriveImage(fileId, imgId);
-                } else if (card.imgUrl) {
-                    document.getElementById(imgId).src = card.imgUrl; 
-                } else {
-                    document.getElementById(imgId).src = 'https://via.placeholder.com/200x280?text=No+Image';
-                }
-                globalCardCount++;
+    function adjustTextSize() {
+        document.querySelectorAll('.card-name-container').forEach(container => {
+            const textEl = container.querySelector('.card-name-text');
+            textEl.style.transform = 'none'; 
+            
+            const containerWidth = container.clientWidth;
+            const textWidth = textEl.scrollWidth;
+            
+            if (textWidth > containerWidth && containerWidth > 0) {
+                const scale = (containerWidth / textWidth) * 0.95; 
+                textEl.style.transform = `scale(${scale})`;
+            }
+        });
+    }
+
+    async function loadMissingImages() {
+        const imgElements = document.querySelectorAll('.dynamic-img');
+        for (let i = 0; i < imgElements.length; i++) {
+            const imgEl = imgElements[i];
+            const originalUrl = imgEl.getAttribute('data-url');
+            
+            const cardObj = globalCardData.find(c => c.imgUrl === originalUrl);
+            
+            if (cardObj && !cardObj.resolvedImg && originalUrl) {
+                cardObj.resolvedImg = await fetchImageBase64(originalUrl);
+                imgEl.src = cardObj.resolvedImg;
             }
         }
     }
 
-    // === 一括画像書き出し処理 ===
     async function exportToImage() {
         const areas = document.querySelectorAll('.exportArea');
         if(areas.length === 0) return;
