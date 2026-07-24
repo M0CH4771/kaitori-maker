@@ -4,204 +4,1156 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>買取表ジェネレーター</title>
-    <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
-            --primary-color: #222;
-            --accent-color: #e60012;
-            --bg-color: #f4f6f9;
+            --ink: #080b12;
+            --ink-soft: #111827;
+            --navy: #0b1426;
+            --red: #e60020;
+            --red-deep: #a90018;
+            --gold: #d9ad4a;
+            --gold-light: #ffe7a1;
+            --paper: #f7f4ec;
+            --panel-bg: #eef1f5;
+            --muted: #697386;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
-            background-color: var(--bg-color);
             margin: 0;
             padding: 20px;
-            color: #111;
+            color: #111827;
+            background:
+                radial-gradient(circle at 10% 10%, rgba(217, 173, 74, 0.13), transparent 26%),
+                radial-gradient(circle at 90% 90%, rgba(230, 0, 32, 0.08), transparent 24%),
+                var(--panel-bg);
+            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", Meiryo, sans-serif;
         }
+
         .app-container {
             display: flex;
-            gap: 20px;
-            max-width: 1800px;
-            margin: 0 auto;
             align-items: flex-start;
+            gap: 24px;
+            max-width: 2400px;
+            margin: 0 auto;
         }
-        
-        /* コントロールパネル */
+
+        /* ===== 操作パネル ===== */
         .control-panel {
-            width: 350px;
-            background: #fff;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            max-height: calc(100vh - 40px);
-            overflow-y: auto;
             position: sticky;
             top: 20px;
+            width: 370px;
+            max-height: calc(100vh - 40px);
             flex-shrink: 0;
+            overflow-y: auto;
+            padding: 0 24px 24px;
+            color: #e8edf7;
+            border: 1px solid rgba(255, 255, 255, 0.09);
+            border-radius: 16px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.06), transparent 35%),
+                linear-gradient(180deg, #111827 0%, #070b12 100%);
+            box-shadow: 0 18px 45px rgba(7, 11, 18, 0.24);
         }
-        .control-panel::-webkit-scrollbar { width: 8px; }
-        .control-panel::-webkit-scrollbar-thumb { background-color: #ddd; border-radius: 4px; }
 
-        .control-group { margin-bottom: 20px; }
+        .control-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .control-panel::-webkit-scrollbar-thumb {
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .panel-heading {
+            position: sticky;
+            top: 0;
+            z-index: 3;
+            margin: 0 -24px 22px;
+            padding: 22px 24px 18px;
+            border-bottom: 1px solid rgba(217, 173, 74, 0.3);
+            border-radius: 16px 16px 0 0;
+            background: rgba(9, 13, 22, 0.96);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-heading h2 {
+            margin: 0;
+            color: #fff;
+            font-size: 20px;
+            letter-spacing: 0.04em;
+        }
+
+        .panel-heading p {
+            margin: 6px 0 0;
+            color: #aeb8ca;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .panel-heading strong {
+            color: var(--gold-light);
+        }
+
+        .control-group {
+            margin-bottom: 18px;
+        }
+
         .control-group label {
-            display: block; font-weight: bold; margin-bottom: 8px; color: var(--primary-color); font-size: 0.9em;
+            display: block;
+            margin-bottom: 8px;
+            color: #f8fafc;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
         }
-        input[type="file"], input[type="date"], input[type="text"], select, textarea {
-            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-family: inherit; font-size: 14px;
-        }
-        button {
-            width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
-        }
-        .btn-export { background-color: var(--accent-color); font-size: 18px; padding: 15px; }
-        .btn-export:hover { background-color: #c00010; }
-        .btn-template { background-color: #27ae60; margin-top: 10px; }
-        .btn-template:hover { background-color: #2ecc71; }
 
-        /* プレビューエリア (A4ページ群) */
+        .step {
+            display: inline-grid;
+            width: 21px;
+            height: 21px;
+            margin-right: 7px;
+            place-items: center;
+            color: #10131b;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        input[type="file"],
+        input[type="date"],
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 11px 12px;
+            color: #172033;
+            border: 1px solid #d7dce5;
+            border-radius: 8px;
+            outline: none;
+            background: #fff;
+            font: 14px inherit;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(217, 173, 74, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+        }
+
+        .help {
+            display: block;
+            margin-top: 6px;
+            color: #9ca8ba;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+
+        .panel-divider {
+            height: 1px;
+            margin: 22px 0;
+            border: 0;
+            background: linear-gradient(90deg, transparent, rgba(217, 173, 74, 0.5), transparent);
+        }
+
+        button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 13px;
+            color: #fff;
+            border: 0;
+            border-radius: 9px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 0.03em;
+            transition: transform 0.2s, filter 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.08);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .btn-template {
+            color: #111827;
+            background: linear-gradient(135deg, var(--gold-light), var(--gold));
+            box-shadow: 0 6px 18px rgba(217, 173, 74, 0.2);
+        }
+
+        .btn-export {
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.16), transparent 35%),
+                linear-gradient(135deg, #f20a31, var(--red-deep));
+            box-shadow: 0 9px 24px rgba(230, 0, 32, 0.28);
+            font-size: 17px;
+        }
+
+        .export-note {
+            margin-bottom: 12px;
+            padding: 10px 12px;
+            color: #c3ccda;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.04);
+            font-size: 11px;
+            line-height: 1.55;
+        }
+
+        /* ===== プレビュー ===== */
         .preview-container {
-            flex: 1;
             display: flex;
+            min-width: 0;
+            flex: 1;
             flex-direction: column;
+            align-items: center;
             gap: 40px;
             padding-bottom: 40px;
-            align-items: center;
         }
-        
-        /* A4キャンバス設定 */
+
+        /* ===== 出力紙面 ===== */
         .exportArea {
-            background: #fff;
-            box-sizing: border-box;
-            padding: 35px 45px 30px 45px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             position: relative;
             display: flex;
             flex-direction: column;
+            flex-shrink: 0;
             overflow: hidden;
+            padding: 28px 34px 26px;
+            color: #fff;
+            border: 2px solid #34250d;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(255, 231, 161, 0.13), transparent 23%),
+                radial-gradient(circle at 88% 84%, rgba(230, 0, 32, 0.14), transparent 25%),
+                linear-gradient(145deg, #10192b 0%, #070a10 48%, #0c1220 100%);
+            box-shadow: 0 16px 45px rgba(0,0,0,0.28);
+            isolation: isolate;
         }
-        
+
+        .exportArea::before {
+            position: absolute;
+            z-index: -1;
+            inset: 12px;
+            content: "";
+            pointer-events: none;
+            border: 2px solid rgba(217, 173, 74, 0.72);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 231, 161, 0.18),
+                inset 0 0 36px rgba(217, 173, 74, 0.06);
+        }
+
+        .exportArea::after {
+            position: absolute;
+            z-index: -1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            content: "";
+            background: linear-gradient(
+                90deg,
+                var(--red-deep),
+                var(--red) 22%,
+                var(--gold-light) 50%,
+                var(--red) 78%,
+                var(--red-deep)
+            );
+        }
+
         .exportArea.portrait {
-            width: 1414px; 
+            width: 1414px;
             height: 2000px;
         }
+
         .exportArea.landscape {
-            width: 2000px; 
+            width: 2000px;
             height: 1414px;
         }
-        
-        /* ヘッダー */
+
+        /* ===== ヘッダー ===== */
         .header-area {
-            display: flex; justify-content: space-between; align-items: center; border-bottom: 4px solid var(--primary-color); padding-bottom: 15px; margin-bottom: 20px; flex-shrink: 0;
-        }
-        .logo-container img { max-height: 80px; max-width: 320px; object-fit: contain; }
-        .title-container h1 { margin: 0; font-size: 44px; color: var(--primary-color); text-align: center; letter-spacing: 2px; }
-        
-        /* グリッドレイアウト */
-        .card-grid {
-            flex: 1;
+            position: relative;
             display: grid;
-            gap: 10px;
-            margin-bottom: 15px;
-            min-height: 0; 
-            padding: 5px;
-        }
-        
-        /* カード1枚のスタイル（完全同一サイズ固定） */
-        .card-item {
-            background: #fff; 
-            border: 2px solid var(--primary-color); 
-            border-radius: 8px; 
-            padding: 6px; 
-            text-align: center;
-            display: flex; 
-            flex-direction: column; 
-            justify-content: space-between; 
+            grid-template-columns: 330px 1fr 120px;
+            min-height: 118px;
+            flex-shrink: 0;
             align-items: center;
-            box-shadow: 2px 2px 0px rgba(0,0,0,0.12); 
-            position: relative; 
-            box-sizing: border-box;
+            gap: 22px;
+            margin: 0 10px 18px;
+            padding: 18px 22px;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-bottom: 4px solid var(--gold);
+            border-radius: 6px 6px 14px 14px;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.08), transparent 36%),
+                linear-gradient(90deg, #070b12, #161d2b 52%, #070b12);
+            box-shadow: 0 8px 22px rgba(0,0,0,0.28);
+        }
+
+        .header-area::before {
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 36%;
+            height: 4px;
+            content: "";
+            background: var(--red);
+        }
+
+        .logo-container {
+            display: flex;
+            min-width: 0;
+            height: 80px;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border: 1px solid rgba(217, 173, 74, 0.55);
+            border-radius: 8px;
+            background: #fff;
+            box-shadow:
+                0 5px 16px rgba(0,0,0,0.24),
+                inset 0 0 0 3px rgba(217, 173, 74, 0.11);
+        }
+
+        .logo-container img {
+            display: block;
+            max-width: 100%;
+            max-height: 64px;
+            object-fit: contain;
+        }
+
+        .title-container {
+            min-width: 0;
+            text-align: center;
+        }
+
+        .title-kicker {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 11px;
+            margin-bottom: 4px;
+            color: var(--gold-light);
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 0.24em;
+        }
+
+        .title-kicker::before,
+        .title-kicker::after {
+            width: 45px;
+            height: 1px;
+            content: "";
+            background: linear-gradient(90deg, transparent, var(--gold));
+        }
+
+        .title-kicker::after {
+            background: linear-gradient(90deg, var(--gold), transparent);
+        }
+
+        .title-container h1 {
+            margin: 0;
+            color: #fff;
+            font-size: 48px;
+            font-weight: 950;
+            line-height: 1.08;
+            letter-spacing: 0.045em;
+            text-shadow:
+                0 3px 0 #000,
+                0 0 18px rgba(230, 0, 32, 0.28);
+        }
+
+        .title-container h1 .title-accent {
+            color: #ff2647;
+        }
+
+        .page-emblem {
+            display: flex;
+            width: 90px;
+            height: 90px;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            justify-self: end;
+            color: #111827;
+            border: 3px solid var(--gold-light);
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at 35% 25%, #fff3c6, var(--gold) 62%, #8c641e 100%);
+            box-shadow:
+                0 0 0 4px #131b29,
+                0 0 0 6px rgba(217, 173, 74, 0.68),
+                0 5px 18px rgba(0,0,0,0.35);
+            font-weight: 950;
+            line-height: 1;
+        }
+
+        .page-emblem small {
+            margin-bottom: 2px;
+            font-size: 10px;
+            letter-spacing: 0.14em;
+        }
+
+        .page-emblem strong {
+            font-size: 36px;
+        }
+
+        /* ===== カードグリッド ===== */
+        .card-grid {
+            display: grid;
+            min-height: 0;
+            flex: 1;
+            gap: 10px;
+            margin: 0 10px 15px;
+            padding: 6px;
+        }
+
+        .card-item {
+            position: relative;
+            display: flex;
             width: 100%;
             height: 100%;
-            min-height: 0; 
+            min-height: 0;
             overflow: hidden;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 5px 6px;
+            text-align: center;
+            border: 1px solid #b98a31;
+            border-radius: 7px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.95), rgba(244,239,226,0.98)),
+                var(--paper);
+            box-shadow:
+                0 3px 0 #6d4d18,
+                0 7px 12px rgba(0,0,0,0.28),
+                inset 0 0 0 2px rgba(255,255,255,0.78);
         }
+
+        .card-item::before {
+            position: absolute;
+            z-index: 1;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            content: "";
+            background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+        }
+
         .card-img-container {
-            flex: 1; 
-            min-height: 0; 
-            width: 100%; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            margin-bottom: 4px;
-            background-color: #f8f9fa; 
-            border-radius: 4px; 
+            position: relative;
+            display: flex;
+            width: 100%;
+            min-height: 0;
+            flex: 1;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
+            margin-bottom: 3px;
+            border: 1px solid rgba(17,24,39,0.16);
+            border-radius: 4px;
+            background:
+                linear-gradient(45deg, rgba(217,173,74,0.08) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(217,173,74,0.08) 25%, transparent 25%),
+                #eef0f3;
+            background-position: 0 0, 5px 5px;
+            background-size: 10px 10px;
         }
+
+        .card-img-container::after {
+            position: absolute;
+            top: -30%;
+            left: -60%;
+            width: 36%;
+            height: 160%;
+            content: "";
+            pointer-events: none;
+            transform: rotate(16deg);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.26), transparent);
+        }
+
         .card-item img {
-            max-width: 100%; 
-            max-height: 100%; 
-            object-fit: contain; 
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
             border-radius: 3px;
         }
-        
-        .card-grade-container {
+
+        .card-meta {
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            margin-bottom: 3px;
+        }
+
+        .card-grade {
+            display: inline-block;
+            max-width: 100%;
+            overflow: hidden;
+            padding: 2px 7px;
+            color: #ffe8a8;
+            border: 1px solid rgba(217,173,74,0.62);
+            border-radius: 20px;
+            background: linear-gradient(180deg, #273246, #0c111c);
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1.1;
+            letter-spacing: 0.03em;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .card-name {
+            width: 100%;
+            min-height: 13px;
+            overflow: hidden;
             flex-shrink: 0;
             margin-bottom: 2px;
-        }
-        .card-grade {
-            background-color: #222; color: #fff; font-size: 11px; font-weight: bold; padding: 2px 8px; border-radius: 20px; display: inline-block; letter-spacing: 0.5px; line-height: 1.1;
-        }
-
-        /* 金額コンテナ (自動縮小用) */
-        .card-price-container {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-shrink: 0;
+            color: #323a49;
+            font-size: 9px;
+            font-weight: 800;
+            line-height: 1.15;
+            text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        .card-price-container {
+            position: relative;
+            display: flex;
+            width: 100%;
+            height: 30px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            height: 24px;
+            padding: 2px 3px;
+            border: 1px solid #8e0014;
+            border-radius: 4px;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.16), transparent 38%),
+                linear-gradient(180deg, #f31235, #b8001b);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.3),
+                0 2px 4px rgba(140,0,20,0.26);
+            white-space: nowrap;
         }
+
+        .card-price-container::before,
+        .card-price-container::after {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            content: "";
+            transform: rotate(45deg);
+            background: var(--gold-light);
+        }
+
+        .card-price-container::before {
+            left: 6px;
+        }
+
+        .card-price-container::after {
+            right: 6px;
+        }
+
         .card-price-text {
-            color: var(--accent-color); font-size: 20px; font-weight: 900; letter-spacing: 0px; white-space: nowrap; transform-origin: center center; line-height: 1.1;
+            color: #fff;
+            font-size: 21px;
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: -0.02em;
+            text-shadow: 0 2px 0 rgba(92,0,12,0.75);
+            transform-origin: center;
+            white-space: nowrap;
         }
-        
-        /* 強化バッジ */
+
         .status-badge {
-            position: absolute; 
-            top: 2px; 
-            right: 2px; 
-            background-color: #ff9800; 
-            color: white; 
-            padding: 2px 6px; 
-            border-radius: 6px; 
-            font-size: 10px; 
-            font-weight: bold; 
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2); 
-            z-index: 10; 
-            line-height: 1.1;
+            position: absolute;
+            z-index: 10;
+            top: 5px;
+            right: -19px;
+            width: 78px;
+            padding: 4px 0 3px;
+            color: #16110a;
+            border-top: 1px solid #fff0ac;
+            border-bottom: 1px solid #986716;
+            background: linear-gradient(180deg, #fff2a8, #e0a92d);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.26);
+            font-size: 9px;
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: 0.03em;
+            transform: rotate(37deg);
         }
 
-        /* フッター */
+        /* ===== フッター ===== */
         .footer-area {
-            margin-top: auto; border-top: 4px solid var(--primary-color); padding-top: 15px; display: flex; justify-content: space-between; align-items: flex-end; flex-shrink: 0;
+            display: grid;
+            min-height: 100px;
+            flex-shrink: 0;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            gap: 24px;
+            margin: auto 10px 0;
+            padding: 13px 20px;
+            border: 1px solid rgba(255,255,255,0.11);
+            border-top: 3px solid var(--gold);
+            border-radius: 10px 10px 4px 4px;
+            background:
+                linear-gradient(100deg, rgba(230,0,32,0.11), transparent 36%),
+                rgba(4,7,12,0.92);
         }
-        .disclaimer { font-size: 16px; font-weight: bold; color: #333; line-height: 1.6; }
-        .footer-right {
-            display: flex; flex-direction: column; align-items: flex-end; gap: 5px;
-        }
-        .update-date { font-size: 26px; font-weight: bold; color: var(--primary-color); text-align: right; }
-        .page-number { font-size: 16px; font-weight: bold; color: #666; text-align: right; }
 
-        /* オーバーレイ */
+        .disclaimer {
+            color: #d8deea;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.55;
+        }
+
+        .disclaimer::first-line {
+            color: #fff;
+        }
+
+        .footer-right {
+            display: flex;
+            min-width: 235px;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 4px;
+        }
+
+        .update-label {
+            color: var(--gold-light);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.18em;
+        }
+
+        .update-date {
+            color: #fff;
+            font-size: 26px;
+            font-weight: 950;
+            line-height: 1.1;
+            letter-spacing: 0.04em;
+        }
+
+        .page-number {
+            color: #aeb8c8;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* ===== 空表示・ローディング ===== */
+        .empty-state {
+            display: flex;
+            grid-column: 1 / -1;
+            grid-row: 1 / -1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            text-align: center;
+        }
+
+        .empty-state strong {
+            margin-bottom: 10px;
+            color: var(--gold-light);
+            font-size: 34px;
+            letter-spacing: 0.04em;
+        }
+
+        .empty-state span {
+            color: #bdc6d5;
+            font-size: 18px;
+            line-height: 1.7;
+        }
+
+        /* =========================================================
+           出力デザインテーマ
+           1. luxury（黒金）は上記の標準スタイル
+           ========================================================= */
+
+        /* 2. FIRE RED｜勢いのある赤黒 */
+        .exportArea[data-theme="fire"] {
+            border-color: #71000f;
+            background:
+                radial-gradient(circle at 15% 8%, rgba(255, 87, 34, 0.32), transparent 28%),
+                radial-gradient(circle at 86% 84%, rgba(255, 193, 7, 0.18), transparent 28%),
+                linear-gradient(145deg, #260007 0%, #090909 48%, #1d0004 100%);
+        }
+
+        .exportArea[data-theme="fire"]::before {
+            border-color: rgba(255, 53, 83, 0.9);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 210, 120, 0.26),
+                inset 0 0 42px rgba(230, 0, 32, 0.14);
+        }
+
+        .exportArea[data-theme="fire"]::after {
+            background: linear-gradient(90deg, #8e0014, #ff173d 28%, #ffb300 50%, #ff173d 72%, #8e0014);
+        }
+
+        .exportArea[data-theme="fire"] .header-area {
+            border-bottom-color: #ff173d;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.1), transparent 36%),
+                linear-gradient(90deg, #160005, #5e0010 52%, #160005);
+        }
+
+        .exportArea[data-theme="fire"] .header-area::before {
+            width: 46%;
+            background: #ffb300;
+        }
+
+        .exportArea[data-theme="fire"] .title-kicker,
+        .exportArea[data-theme="fire"] .update-label {
+            color: #ffd36a;
+        }
+
+        .exportArea[data-theme="fire"] .title-kicker::before,
+        .exportArea[data-theme="fire"] .title-kicker::after {
+            background: linear-gradient(90deg, transparent, #ffb300);
+        }
+
+        .exportArea[data-theme="fire"] .title-kicker::after {
+            background: linear-gradient(90deg, #ffb300, transparent);
+        }
+
+        .exportArea[data-theme="fire"] .page-emblem {
+            color: #fff;
+            border-color: #ff8a9d;
+            background: radial-gradient(circle at 35% 25%, #ff7189, #e60020 58%, #71000f);
+            box-shadow:
+                0 0 0 4px #180005,
+                0 0 0 6px rgba(255, 179, 0, 0.8),
+                0 5px 18px rgba(0,0,0,0.42);
+        }
+
+        .exportArea[data-theme="fire"] .card-item {
+            border-color: #bd2338;
+            box-shadow:
+                0 3px 0 #71000f,
+                0 7px 12px rgba(0,0,0,0.32),
+                inset 0 0 0 2px rgba(255,255,255,0.78);
+        }
+
+        .exportArea[data-theme="fire"] .card-item::before {
+            background: linear-gradient(90deg, #a90018, #ff173d, #ffb300, #ff173d, #a90018);
+        }
+
+        .exportArea[data-theme="fire"] .card-price-container {
+            border-color: #79000f;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.18), transparent 38%),
+                linear-gradient(180deg, #ff4a1f, #d5001c);
+        }
+
+        .exportArea[data-theme="fire"] .status-badge {
+            color: #fff;
+            border-color: #ff8ca0;
+            background: linear-gradient(180deg, #ff3d5f, #a90018);
+        }
+
+        .exportArea[data-theme="fire"] .footer-area {
+            border-top-color: #ff173d;
+            background:
+                linear-gradient(100deg, rgba(255,179,0,0.12), transparent 38%),
+                rgba(24,0,5,0.94);
+        }
+
+        /* 3. ROYAL BLUE｜上品なネイビー */
+        .exportArea[data-theme="royal"] {
+            border-color: #102f66;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(78, 149, 255, 0.25), transparent 25%),
+                radial-gradient(circle at 88% 84%, rgba(217, 173, 74, 0.14), transparent 27%),
+                linear-gradient(145deg, #0d2b5d 0%, #06142c 49%, #091e42 100%);
+        }
+
+        .exportArea[data-theme="royal"]::before {
+            border-color: rgba(103, 168, 255, 0.88);
+            box-shadow:
+                inset 0 0 0 1px rgba(255, 231, 161, 0.25),
+                inset 0 0 44px rgba(48, 125, 246, 0.14);
+        }
+
+        .exportArea[data-theme="royal"]::after {
+            background: linear-gradient(90deg, #123d83, #3489ff 28%, #ffe297 50%, #3489ff 72%, #123d83);
+        }
+
+        .exportArea[data-theme="royal"] .header-area {
+            border-bottom-color: #5fa0ff;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.1), transparent 36%),
+                linear-gradient(90deg, #06142c, #123d83 52%, #06142c);
+        }
+
+        .exportArea[data-theme="royal"] .header-area::before {
+            background: #e4b94f;
+        }
+
+        .exportArea[data-theme="royal"] .page-emblem {
+            color: #fff;
+            border-color: #a8ccff;
+            background: radial-gradient(circle at 35% 25%, #76b2ff, #266bc6 58%, #0b2c61);
+            box-shadow:
+                0 0 0 4px #07162f,
+                0 0 0 6px rgba(217, 173, 74, 0.75),
+                0 5px 18px rgba(0,0,0,0.4);
+        }
+
+        .exportArea[data-theme="royal"] .card-item {
+            border-color: #4f7fbf;
+            background: linear-gradient(145deg, #fff, #edf4ff);
+            box-shadow:
+                0 3px 0 #173f73,
+                0 7px 12px rgba(0,0,0,0.28),
+                inset 0 0 0 2px rgba(255,255,255,0.88);
+        }
+
+        .exportArea[data-theme="royal"] .card-item::before {
+            background: linear-gradient(90deg, #1d5eb6, #79b5ff, #e4b94f, #79b5ff, #1d5eb6);
+        }
+
+        .exportArea[data-theme="royal"] .card-grade {
+            color: #dcebff;
+            border-color: #6faaff;
+            background: linear-gradient(180deg, #214e8e, #081b39);
+        }
+
+        .exportArea[data-theme="royal"] .card-price-container {
+            border-color: #0b3470;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.16), transparent 38%),
+                linear-gradient(180deg, #2779dc, #0b3c83);
+        }
+
+        .exportArea[data-theme="royal"] .status-badge {
+            color: #11203a;
+            background: linear-gradient(180deg, #fff0b1, #d5a42e);
+        }
+
+        .exportArea[data-theme="royal"] .footer-area {
+            border-top-color: #5fa0ff;
+            background:
+                linear-gradient(100deg, rgba(217,173,74,0.1), transparent 38%),
+                rgba(5,18,42,0.95);
+        }
+
+        /* 4. CLEAN WHITE｜明るく見やすい白赤 */
+        .exportArea[data-theme="clean"] {
+            color: #151922;
+            border-color: #d9dde6;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(230, 0, 32, 0.06), transparent 26%),
+                radial-gradient(circle at 88% 84%, rgba(17, 24, 39, 0.05), transparent 25%),
+                linear-gradient(145deg, #ffffff 0%, #f3f5f8 100%);
+        }
+
+        .exportArea[data-theme="clean"]::before {
+            border-color: #d7dce5;
+            box-shadow:
+                inset 0 0 0 1px #fff,
+                inset 0 0 34px rgba(17,24,39,0.03);
+        }
+
+        .exportArea[data-theme="clean"]::after {
+            background: linear-gradient(90deg, #830014, #e60020 34%, #ff5c73 50%, #e60020 66%, #830014);
+        }
+
+        .exportArea[data-theme="clean"] .header-area {
+            border-color: #dfe3ea;
+            border-bottom-color: #e60020;
+            background:
+                linear-gradient(120deg, rgba(230,0,32,0.05), transparent 38%),
+                #fff;
+            box-shadow: 0 8px 22px rgba(24,34,52,0.1);
+        }
+
+        .exportArea[data-theme="clean"] .header-area::before {
+            width: 30%;
+            background: #171d29;
+        }
+
+        .exportArea[data-theme="clean"] .title-kicker {
+            color: #c6001c;
+        }
+
+        .exportArea[data-theme="clean"] .title-kicker::before,
+        .exportArea[data-theme="clean"] .title-kicker::after {
+            background: linear-gradient(90deg, transparent, #e60020);
+        }
+
+        .exportArea[data-theme="clean"] .title-kicker::after {
+            background: linear-gradient(90deg, #e60020, transparent);
+        }
+
+        .exportArea[data-theme="clean"] .title-container h1 {
+            color: #151922;
+            text-shadow: none;
+        }
+
+        .exportArea[data-theme="clean"] .page-emblem {
+            color: #fff;
+            border-color: #ff8da0;
+            background: radial-gradient(circle at 35% 25%, #ff5b75, #d9001f 62%, #860013);
+            box-shadow:
+                0 0 0 4px #fff,
+                0 0 0 6px rgba(230,0,32,0.65),
+                0 5px 16px rgba(20,28,43,0.18);
+        }
+
+        .exportArea[data-theme="clean"] .card-item {
+            border-color: #cfd5df;
+            background: #fff;
+            box-shadow:
+                0 3px 0 #b7bdc8,
+                0 7px 12px rgba(25,36,54,0.12),
+                inset 0 0 0 2px #fff;
+        }
+
+        .exportArea[data-theme="clean"] .card-item::before {
+            background: linear-gradient(90deg, #111827, #e60020, #111827);
+        }
+
+        .exportArea[data-theme="clean"] .card-grade {
+            color: #fff;
+            border-color: #111827;
+            background: #171d29;
+        }
+
+        .exportArea[data-theme="clean"] .status-badge {
+            color: #fff;
+            border-color: #ff8ea1;
+            background: linear-gradient(180deg, #ff2e50, #b7001a);
+        }
+
+        .exportArea[data-theme="clean"] .footer-area {
+            border-color: #dfe3ea;
+            border-top-color: #e60020;
+            background: #fff;
+            box-shadow: 0 5px 15px rgba(25,36,54,0.08);
+        }
+
+        .exportArea[data-theme="clean"] .disclaimer,
+        .exportArea[data-theme="clean"] .update-date {
+            color: #202735;
+        }
+
+        .exportArea[data-theme="clean"] .update-label {
+            color: #c6001c;
+        }
+
+        .exportArea[data-theme="clean"] .page-number,
+        .exportArea[data-theme="clean"] .empty-state span {
+            color: #606a7c;
+        }
+
+        .exportArea[data-theme="clean"] .empty-state {
+            color: #202735;
+        }
+
+        .exportArea[data-theme="clean"] .empty-state strong {
+            color: #c6001c;
+        }
+
+        /* 5. CYBER NEON｜紫×シアンのデジタル系 */
+        .exportArea[data-theme="neon"] {
+            border-color: #3d1466;
+            background:
+                radial-gradient(circle at 15% 10%, rgba(0, 229, 255, 0.22), transparent 25%),
+                radial-gradient(circle at 87% 84%, rgba(255, 0, 170, 0.24), transparent 28%),
+                linear-gradient(145deg, #16062b 0%, #070711 50%, #130522 100%);
+        }
+
+        .exportArea[data-theme="neon"]::before {
+            border-color: #00e5ff;
+            box-shadow:
+                inset 0 0 0 1px rgba(255,0,170,0.72),
+                inset 0 0 46px rgba(125, 39, 255, 0.18),
+                0 0 12px rgba(0,229,255,0.35);
+        }
+
+        .exportArea[data-theme="neon"]::after {
+            background: linear-gradient(90deg, #7c2cff, #00e5ff 30%, #fff 50%, #ff00aa 70%, #7c2cff);
+        }
+
+        .exportArea[data-theme="neon"] .header-area {
+            border-color: rgba(0,229,255,0.45);
+            border-bottom-color: #00e5ff;
+            background:
+                linear-gradient(120deg, rgba(0,229,255,0.13), transparent 36%),
+                linear-gradient(90deg, #120321, #321061 52%, #120321);
+            box-shadow:
+                0 8px 22px rgba(0,0,0,0.38),
+                0 0 15px rgba(0,229,255,0.18);
+        }
+
+        .exportArea[data-theme="neon"] .header-area::before {
+            width: 48%;
+            background: #ff00aa;
+        }
+
+        .exportArea[data-theme="neon"] .title-kicker,
+        .exportArea[data-theme="neon"] .update-label {
+            color: #55f2ff;
+            text-shadow: 0 0 9px rgba(0,229,255,0.75);
+        }
+
+        .exportArea[data-theme="neon"] .title-kicker::before,
+        .exportArea[data-theme="neon"] .title-kicker::after {
+            background: linear-gradient(90deg, transparent, #00e5ff);
+        }
+
+        .exportArea[data-theme="neon"] .title-kicker::after {
+            background: linear-gradient(90deg, #00e5ff, transparent);
+        }
+
+        .exportArea[data-theme="neon"] .title-container h1 {
+            text-shadow:
+                0 3px 0 #000,
+                0 0 14px rgba(255,0,170,0.8);
+        }
+
+        .exportArea[data-theme="neon"] .page-emblem {
+            color: #090611;
+            border-color: #aaf9ff;
+            background: radial-gradient(circle at 35% 25%, #fff, #00e5ff 52%, #7c2cff);
+            box-shadow:
+                0 0 0 4px #150524,
+                0 0 0 6px #ff00aa,
+                0 0 20px rgba(0,229,255,0.65);
+        }
+
+        .exportArea[data-theme="neon"] .card-item {
+            border-color: #00cfe9;
+            background: linear-gradient(145deg, #201238, #0b0c17);
+            box-shadow:
+                0 3px 0 #7c2cff,
+                0 7px 12px rgba(0,0,0,0.4),
+                inset 0 0 0 1px rgba(255,0,170,0.48);
+        }
+
+        .exportArea[data-theme="neon"] .card-item::before {
+            background: linear-gradient(90deg, #7c2cff, #00e5ff, #ff00aa);
+        }
+
+        .exportArea[data-theme="neon"] .card-img-container {
+            border-color: rgba(0,229,255,0.42);
+            background:
+                linear-gradient(45deg, rgba(0,229,255,0.08) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,0,170,0.08) 25%, transparent 25%),
+                #121424;
+            background-position: 0 0, 5px 5px;
+            background-size: 10px 10px;
+        }
+
+        .exportArea[data-theme="neon"] .card-name {
+            color: #eefcff;
+        }
+
+        .exportArea[data-theme="neon"] .card-grade {
+            color: #8cf7ff;
+            border-color: #00e5ff;
+            background: linear-gradient(180deg, #321061, #0c0d1a);
+        }
+
+        .exportArea[data-theme="neon"] .card-price-container {
+            border-color: #ff52c5;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.16), transparent 38%),
+                linear-gradient(180deg, #ff00aa, #7b0bb4);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.3),
+                0 0 8px rgba(255,0,170,0.42);
+        }
+
+        .exportArea[data-theme="neon"] .status-badge {
+            color: #061014;
+            border-color: #b3fbff;
+            background: linear-gradient(180deg, #8df8ff, #00bed4);
+        }
+
+        .exportArea[data-theme="neon"] .footer-area {
+            border-color: rgba(255,0,170,0.4);
+            border-top-color: #00e5ff;
+            background:
+                linear-gradient(100deg, rgba(255,0,170,0.14), transparent 38%),
+                rgba(13,4,25,0.95);
+        }
+
         #loadingOverlay {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--primary-color); flex-direction: column;
+            position: fixed;
+            z-index: 9999;
+            inset: 0;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            background: rgba(5, 8, 14, 0.93);
+            font-size: 22px;
+            font-weight: 900;
+            backdrop-filter: blur(8px);
         }
+
         .spinner {
-            border: 4px solid #f3f3f3; border-top: 4px solid var(--accent-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; margin-bottom: 15px;
+            width: 54px;
+            height: 54px;
+            margin-bottom: 18px;
+            border: 5px solid rgba(255,255,255,0.14);
+            border-top-color: var(--gold);
+            border-right-color: var(--red);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 1100px) {
+            .app-container {
+                flex-direction: column;
+            }
+
+            .control-panel {
+                position: static;
+                width: 100%;
+                max-height: none;
+            }
+
+            .preview-container {
+                width: 100%;
+                overflow-x: auto;
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 <body>
@@ -212,266 +1164,361 @@
 </div>
 
 <div class="app-container">
-    <div class="control-panel">
-        <h2 style="margin-top:0; font-size:1.2em; color:var(--primary-color);">⚙️ 設定パネル</h2>
-        
-        <div class="control-group">
-            <label>1. CSVファイルを読み込む</label>
-            <input type="file" id="csvInput" accept=".csv">
+    <aside class="control-panel">
+        <div class="panel-heading">
+            <h2>PREMIUM BUYLIST</h2>
+            <p><strong>買取表ジェネレーター</strong>｜設定内容を右側へ即時反映します</p>
         </div>
 
         <div class="control-group">
-            <label>2. ショップロゴ</label>
+            <label><span class="step">1</span>CSVファイルを読み込む</label>
+            <input type="file" id="csvInput" accept=".csv,text/csv">
+        </div>
+
+        <div class="control-group">
+            <label><span class="step">2</span>ショップロゴ</label>
             <input type="file" id="logoInput" accept="image/*">
-            <small style="color:#777;">※テンプレート保存対象</small>
+            <small class="help">テンプレート保存対象。白背景内へ配置されます。</small>
         </div>
 
         <div class="control-group">
-            <label>3. タイトル</label>
-            <input type="text" id="titleInput" value="PSA10買取表">
-            <small style="color:#777;">※テンプレート保存対象（各ページ「タイトル＋ページ番号」になります）</small>
+            <label><span class="step">3</span>タイトル</label>
+            <input type="text" id="titleInput" value="PSA10 高価買取">
+            <small class="help">タイトルとページ番号は別々に表示されます。</small>
         </div>
 
         <div class="control-group">
-            <label>4. 更新日</label>
+            <label><span class="step">4</span>更新日</label>
             <input type="date" id="dateInput">
         </div>
-        
+
         <div class="control-group">
-            <label>5. 注意書き (フッター)</label>
+            <label><span class="step">5</span>注意書き</label>
             <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
-            <small style="color:#777;">※テンプレート保存対象</small>
+            <small class="help">テンプレート保存対象。</small>
         </div>
-        
+
         <div class="control-group">
-            <label>6. レイアウト設定</label>
-            <select id="layoutSelect">
-                <option value="portrait_10x6">A4縦 (横10列 × 縦6段) - 60枚</option>
-                <option value="landscape_15x4">A4横 (横15列 × 縦4段) - 60枚</option>
+            <label><span class="step">6</span>デザインパターン</label>
+            <select id="themeSelect">
+                <option value="luxury">BLACK GOLD｜高級感・王道</option>
+                <option value="fire">FIRE RED｜勢い・高価買取訴求</option>
+                <option value="royal">ROYAL BLUE｜上品・信頼感</option>
+                <option value="clean">CLEAN WHITE｜明るい・見やすい</option>
+                <option value="neon">CYBER NEON｜派手・限定感</option>
             </select>
-            <small style="color:#777;">※テンプレート保存対象</small>
+            <small class="help">プレビューとPNG出力の両方に反映されます。</small>
         </div>
 
-        <button class="btn-template" onclick="saveTemplate()">💾 現在の設定をテンプレート保存</button>
-
-        <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
-        
-        <div style="font-size: 0.8em; color: #555; margin-bottom: 10px;">
-            ※複数ページある場合は連続でダウンロードされます。
+        <div class="control-group">
+            <label><span class="step">7</span>レイアウト</label>
+            <select id="layoutSelect">
+                <option value="portrait_10x6">A4縦｜横10列 × 縦6段（60枚）</option>
+                <option value="landscape_15x4">A4横｜横15列 × 縦4段（60枚）</option>
+            </select>
+            <small class="help">テンプレート保存対象。</small>
         </div>
 
-        <button class="btn-export" onclick="exportToImage()">📸 一括画像書き出し</button>
-    </div>
+        <button class="btn-template" type="button" onclick="saveTemplate()">現在の設定を保存</button>
 
-    <div class="preview-container" id="pagesContainer">
-        <!-- 初期表示 -->
-        <div class="exportArea portrait">
+        <hr class="panel-divider">
+
+        <div class="export-note">
+            複数ページは順番に連続ダウンロードされます。画像読込完了後に書き出してください。
+        </div>
+
+        <button class="btn-export" type="button" onclick="exportToImage()">一括でPNG書き出し</button>
+    </aside>
+
+    <main class="preview-container" id="pagesContainer">
+        <div class="exportArea portrait" data-theme="luxury">
             <div class="header-area">
                 <div class="logo-container">
-                    <img class="logo-img" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
+                    <img class="logo-img" alt="Shop Logo">
                 </div>
                 <div class="title-container">
-                    <h1 class="title-text">PSA10買取表1</h1>
+                    <div class="title-kicker">PREMIUM BUYLIST</div>
+                    <h1 class="title-text">PSA10 高価買取</h1>
+                </div>
+                <div class="page-emblem">
+                    <small>PAGE</small>
+                    <strong>01</strong>
                 </div>
             </div>
+
             <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
-                <div style="grid-column: 1 / -1; grid-row: 1 / -1; display:flex; align-items:center; justify-content:center; color: #888; font-size: 1.4em; font-weight:bold;">
-                    CSVファイルを読み込むとここにカードが並びます<br>
-                    （タイトルが「タイトル1」「タイトル2」になります）
+                <div class="empty-state">
+                    <strong>PREMIUM BUYLIST</strong>
+                    <span>CSVファイルを読み込むと<br>ここにカードが並びます</span>
                 </div>
             </div>
+
             <div class="footer-area">
                 <div class="disclaimer disclaimer-text">※相場や在庫状況、状態等により価格が変動する場合がございます。<br>買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</div>
                 <div class="footer-right">
+                    <div class="update-label">PRICE UPDATED</div>
                     <div class="update-date date-text">----/--/--</div>
-                    <div class="page-number">1 / 1 ページ</div>
+                    <div class="page-number">1 / 1 PAGE</div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 </div>
 
 <script>
-    let logoDataUrl = 'https://via.placeholder.com/300x80?text=Shop+Logo';
-    let globalCardData = []; 
+    const DEFAULT_LOGO = createSvgDataUrl(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="600" height="160" viewBox="0 0 600 160">
+            <rect width="600" height="160" rx="18" fill="#ffffff"/>
+            <path d="M40 80h74M486 80h74" stroke="#d9ad4a" stroke-width="5"/>
+            <text x="300" y="68" text-anchor="middle" font-family="Arial,sans-serif" font-size="28" font-weight="900" fill="#111827" letter-spacing="6">SHOP</text>
+            <text x="300" y="112" text-anchor="middle" font-family="Arial,sans-serif" font-size="40" font-weight="900" fill="#e60020" letter-spacing="2">LOGO</text>
+        </svg>
+    `);
+
+    const NO_IMAGE = createSvgDataUrl(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="560" viewBox="0 0 400 560">
+            <defs>
+                <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+                    <stop stop-color="#eef1f5"/>
+                    <stop offset="1" stop-color="#d7dce5"/>
+                </linearGradient>
+            </defs>
+            <rect width="400" height="560" rx="24" fill="url(#g)"/>
+            <rect x="42" y="42" width="316" height="476" rx="18" fill="none" stroke="#d9ad4a" stroke-width="6"/>
+            <text x="200" y="270" text-anchor="middle" font-family="Arial,sans-serif" font-size="30" font-weight="900" fill="#697386">NO IMAGE</text>
+            <text x="200" y="310" text-anchor="middle" font-family="Arial,sans-serif" font-size="17" font-weight="700" fill="#9aa3b2">PREMIUM BUYLIST</text>
+        </svg>
+    `);
+
+    const LOADING_IMAGE = createSvgDataUrl(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="400" height="560" viewBox="0 0 400 560">
+            <rect width="400" height="560" rx="24" fill="#eef1f5"/>
+            <circle cx="200" cy="250" r="46" fill="none" stroke="#d9ad4a" stroke-width="9" stroke-dasharray="95 195"/>
+            <text x="200" y="335" text-anchor="middle" font-family="Arial,sans-serif" font-size="24" font-weight="900" fill="#697386">LOADING</text>
+        </svg>
+    `);
+
+    let logoDataUrl = DEFAULT_LOGO;
+    let globalCardData = [];
+
+    function createSvgDataUrl(svg) {
+        return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.trim())}`;
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function pageNumberText(number) {
+        return String(number).padStart(2, "0");
+    }
 
     document.addEventListener("DOMContentLoaded", () => {
         const today = new Date();
         const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
-        document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+        const mm = String(today.getMonth() + 1).padStart(2, "0");
+        const dd = String(today.getDate()).padStart(2, "0");
+        document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
 
-        const savedTitle = localStorage.getItem('kaitori_title');
-        const savedDisclaimer = localStorage.getItem('kaitori_disclaimer');
-        const savedLogo = localStorage.getItem('kaitori_logo');
-        const savedLayout = localStorage.getItem('kaitori_layout');
+        const savedTitle = localStorage.getItem("kaitori_title");
+        const savedDisclaimer = localStorage.getItem("kaitori_disclaimer");
+        const savedLogo = localStorage.getItem("kaitori_logo");
+        const savedLayout = localStorage.getItem("kaitori_layout");
+        const savedTheme = localStorage.getItem("kaitori_theme");
 
-        if (savedTitle) document.getElementById('titleInput').value = savedTitle;
-        if (savedDisclaimer) document.getElementById('disclaimerInput').value = savedDisclaimer;
+        if (savedTitle) document.getElementById("titleInput").value = savedTitle;
+        if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
-        if (savedLayout && (savedLayout === 'portrait_10x6' || savedLayout === 'landscape_15x4')) {
-            document.getElementById('layoutSelect').value = savedLayout;
+        if (["luxury", "fire", "royal", "clean", "neon"].includes(savedTheme)) {
+            document.getElementById("themeSelect").value = savedTheme;
+        }
+        if (savedLayout === "portrait_10x6" || savedLayout === "landscape_15x4") {
+            document.getElementById("layoutSelect").value = savedLayout;
         }
 
         updateAllPages();
     });
 
     function saveTemplate() {
-        localStorage.setItem('kaitori_title', document.getElementById('titleInput').value);
-        localStorage.setItem('kaitori_disclaimer', document.getElementById('disclaimerInput').value);
-        localStorage.setItem('kaitori_logo', logoDataUrl);
-        localStorage.setItem('kaitori_layout', document.getElementById('layoutSelect').value);
-        alert("設定をテンプレートとして保存しました！\n次回から自動で適用されます。");
-    }
-    
-    function formatDate(dateStr) {
-        const dateObj = new Date(dateStr);
-        if(!isNaN(dateObj)) {
-            const y = dateObj.getFullYear();
-            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-            const d = String(dateObj.getDate()).padStart(2, '0');
-            return `${y}/${m}/${d}`;
+        try {
+            localStorage.setItem("kaitori_title", document.getElementById("titleInput").value);
+            localStorage.setItem("kaitori_disclaimer", document.getElementById("disclaimerInput").value);
+            localStorage.setItem("kaitori_logo", logoDataUrl);
+            localStorage.setItem("kaitori_layout", document.getElementById("layoutSelect").value);
+            localStorage.setItem("kaitori_theme", document.getElementById("themeSelect").value);
+            alert("現在の設定をテンプレートとして保存しました。");
+        } catch (error) {
+            alert("ロゴ画像の容量が大きいため保存できませんでした。小さい画像でお試しください。");
         }
+    }
+
+    function formatDate(dateStr) {
+        if (!dateStr) return "----/--/--";
+        const [y, m, d] = dateStr.split("-");
+        if (y && m && d) return `${y}/${m}/${d}`;
         return dateStr;
     }
 
     function updateAllPages() {
-        const baseTitleText = document.getElementById('titleInput').value;
-        const dateText = formatDate(document.getElementById('dateInput').value);
-        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
+        const title = document.getElementById("titleInput").value || "高価買取表";
+        const dateText = formatDate(document.getElementById("dateInput").value);
+        const disclaimerHtml = escapeHtml(document.getElementById("disclaimerInput").value)
+            .replace(/\n/g, "<br>");
 
-        document.querySelectorAll('.exportArea').forEach((pageDiv, index) => {
-            const pageNum = index + 1;
-            const titleEl = pageDiv.querySelector('.title-text');
-            if (titleEl) {
-                titleEl.innerText = `${baseTitleText}${pageNum}`;
-            }
+        document.querySelectorAll(".title-text").forEach(el => {
+            el.textContent = title;
         });
-
-        document.querySelectorAll('.date-text').forEach(el => el.innerText = dateText);
-        document.querySelectorAll('.disclaimer-text').forEach(el => el.innerHTML = disclaimerHtml);
-        document.querySelectorAll('.logo-img').forEach(el => el.src = logoDataUrl);
+        document.querySelectorAll(".date-text").forEach(el => {
+            el.textContent = dateText;
+        });
+        document.querySelectorAll(".disclaimer-text").forEach(el => {
+            el.innerHTML = disclaimerHtml;
+        });
+        document.querySelectorAll(".logo-img").forEach(el => {
+            el.src = logoDataUrl;
+        });
+        applyThemeToPages();
     }
 
-    document.getElementById('titleInput').addEventListener('input', updateAllPages);
-    document.getElementById('disclaimerInput').addEventListener('input', updateAllPages);
-    document.getElementById('dateInput').addEventListener('change', updateAllPages);
-    document.getElementById('layoutSelect').addEventListener('change', () => {
+    function getSelectedTheme() {
+        const theme = document.getElementById("themeSelect").value;
+        return ["luxury", "fire", "royal", "clean", "neon"].includes(theme)
+            ? theme
+            : "luxury";
+    }
+
+    function applyThemeToPages() {
+        const theme = getSelectedTheme();
+        document.querySelectorAll(".exportArea").forEach(page => {
+            page.dataset.theme = theme;
+        });
+    }
+
+    document.getElementById("titleInput").addEventListener("input", updateAllPages);
+    document.getElementById("disclaimerInput").addEventListener("input", updateAllPages);
+    document.getElementById("dateInput").addEventListener("change", updateAllPages);
+    document.getElementById("themeSelect").addEventListener("change", applyThemeToPages);
+
+    document.getElementById("layoutSelect").addEventListener("change", () => {
         if (globalCardData.length > 0) {
-            renderPages(); 
-        } else {
-            const layout = document.getElementById('layoutSelect').value;
-            const previewArea = document.querySelector('.exportArea');
-            const grid = previewArea.querySelector('.card-grid');
-            if (layout === 'landscape_15x4') {
-                previewArea.classList.remove('portrait');
-                previewArea.classList.add('landscape');
-                grid.style.gridTemplateColumns = 'repeat(15, 1fr)';
-                grid.style.gridTemplateRows = 'repeat(4, 1fr)';
-            } else {
-                previewArea.classList.remove('landscape');
-                previewArea.classList.add('portrait');
-                grid.style.gridTemplateColumns = 'repeat(10, 1fr)';
-                grid.style.gridTemplateRows = 'repeat(6, 1fr)';
-            }
+            renderPages();
+            return;
         }
-    });
-    
-    document.getElementById('logoInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                logoDataUrl = e.target.result;
-                updateAllPages();
-            }
-            reader.readAsDataURL(file);
+
+        const layout = document.getElementById("layoutSelect").value;
+        const previewArea = document.querySelector(".exportArea");
+        const grid = previewArea?.querySelector(".card-grid");
+        if (!previewArea || !grid) return;
+
+        if (layout === "landscape_15x4") {
+            previewArea.classList.remove("portrait");
+            previewArea.classList.add("landscape");
+            grid.style.gridTemplateColumns = "repeat(15, 1fr)";
+            grid.style.gridTemplateRows = "repeat(4, 1fr)";
+        } else {
+            previewArea.classList.remove("landscape");
+            previewArea.classList.add("portrait");
+            grid.style.gridTemplateColumns = "repeat(10, 1fr)";
+            grid.style.gridTemplateRows = "repeat(6, 1fr)";
         }
     });
 
-    document.getElementById('csvInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                parseCSV(e.target.result);
-            }
-            reader.readAsText(file);
-        }
+    document.getElementById("logoInput").addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = loadEvent => {
+            logoDataUrl = loadEvent.target.result;
+            updateAllPages();
+        };
+        reader.readAsDataURL(file);
+    });
+
+    document.getElementById("csvInput").addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = loadEvent => parseCSV(loadEvent.target.result);
+        reader.readAsText(file);
     });
 
     function parseCSVLine(text) {
-        let result = [];
+        const result = [];
         let inQuotes = false;
         let value = "";
+
         for (let i = 0; i < text.length; i++) {
-            let char = text[i];
-            if (char === '"' && text[i+1] === '"') {
+            const char = text[i];
+            if (char === '"' && text[i + 1] === '"') {
                 value += '"';
                 i++;
             } else if (char === '"') {
                 inQuotes = !inQuotes;
-            } else if (char === ',' && !inQuotes) {
+            } else if (char === "," && !inQuotes) {
                 result.push(value);
                 value = "";
             } else {
                 value += char;
             }
         }
+
         result.push(value);
         return result;
     }
 
     function parseCSV(text) {
-        const lines = text.split(/\r?\n/);
+        const cleanText = String(text).replace(/^\uFEFF/, "");
+        const lines = cleanText.split(/\r?\n/);
         globalCardData = [];
-        
-        let headerIndex = -1;
-        let headerMap = {};
 
-        const coreKeywords = ['カード名', '強化買取金額', '買取金額', '掲載状況', '掲載グループ', '画像リンク'];
+        let headerIndex = -1;
+        const headerMap = {};
+        const coreKeywords = [
+            "カード名", "商品名", "強化買取金額", "買取金額",
+            "掲載状況", "掲載グループ", "画像リンク", "画像URL"
+        ];
 
         for (let i = 0; i < Math.min(lines.length, 15); i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
-            const parts = parseCSVLine(line).map(p => p.trim());
-            
-            let matchCount = 0;
-            parts.forEach(p => {
-                if (coreKeywords.some(kw => p.includes(kw))) {
-                    matchCount++;
-                }
-            });
+            const parts = parseCSVLine(line).map(part => part.trim());
+            const matchCount = parts.filter(part =>
+                coreKeywords.some(keyword => part.includes(keyword))
+            ).length;
 
             if (matchCount >= 2) {
                 headerIndex = i;
-                parts.forEach((colName, idx) => {
-                    if (colName) headerMap[colName] = idx;
+                parts.forEach((columnName, index) => {
+                    if (columnName) headerMap[columnName] = index;
                 });
                 break;
             }
         }
 
         if (headerIndex === -1) {
-            alert("CSV内に有効なヘッダー項目（カード名、買取金額など）が見つかりませんでした。");
+            alert("CSV内に有効なヘッダー項目（カード名・買取金額など）が見つかりませんでした。");
             return;
         }
 
         function getValueByKeywords(parts, keywords) {
-            for (let kw of keywords) {
-                for (let colName in headerMap) {
-                    if (colName.includes(kw)) {
-                        let idx = headerMap[colName];
-                        if (idx < parts.length) {
-                            return parts[idx].trim();
-                        }
+            for (const keyword of keywords) {
+                for (const columnName in headerMap) {
+                    if (columnName.includes(keyword)) {
+                        const index = headerMap[columnName];
+                        return index < parts.length ? String(parts[index]).trim() : "";
                     }
                 }
             }
-            return '';
+            return "";
         }
 
         for (let i = headerIndex + 1; i < lines.length; i++) {
@@ -479,284 +1526,356 @@
             if (!line) continue;
 
             const parts = parseCSVLine(line);
+            const status = getValueByKeywords(parts, ["掲載状況", "状況", "ステータス", "掲載"]);
+            const group = getValueByKeywords(parts, ["掲載グループ", "グループ", "カテゴリ", "分類"]);
+            const name = getValueByKeywords(parts, ["カード名", "商品名", "タイトル", "品名"]);
+            const type = getValueByKeywords(parts, ["種別", "型番", "グレード", "タイプ", "区分"]);
+            const imgUrl = getValueByKeywords(parts, ["画像リンク", "画像URL", "画像", "Image"]);
+            let price = getValueByKeywords(parts, ["強化買取金額", "買取金額", "買取価格", "金額", "価格"]);
 
-            let status = getValueByKeywords(parts, ['掲載状況', '状況', 'ステータス', '掲載']);
-            let group  = getValueByKeywords(parts, ['掲載グループ', 'グループ', 'カテゴリ', '分類']);
-            let name   = getValueByKeywords(parts, ['カード名', '商品名', 'タイトル', '品名']);
-            let type   = getValueByKeywords(parts, ['種別', '型番', 'グレード', 'タイプ', '区分']);
-            let price  = getValueByKeywords(parts, ['強化買取金額', '買取金額', '金額', '価格', '買取価格']);
-            let imgUrl = getValueByKeywords(parts, ['画像リンク', '画像URL', '画像', 'URL', 'Image']);
+            price = price.replace(/"/g, "").trim();
 
-            price = price.replace(/"/g, ''); 
+            if (status.includes("無効") || status.includes("非掲載")) continue;
+            if (!group || group === "NaN") continue;
+            if (!price || price === "-" || price === "終了" || price === "0" || price === "¥0") continue;
 
-            if (status.includes('無効') || status.includes('非掲載')) continue;
-            if (!group || group === '' || group === 'NaN') continue;
-            if (!price || price === '' || price === '-' || price === '終了' || price === '0' || price === '¥0') continue;
-
-            globalCardData.push({ group, status, name, type, price, imgUrl, resolvedImg: null });
+            globalCardData.push({
+                group,
+                status,
+                name,
+                type,
+                price,
+                imgUrl,
+                resolvedImg: null
+            });
         }
-        
+
         if (globalCardData.length > 0) {
             renderPages();
         } else {
-            const layout = document.getElementById('layoutSelect').value;
-            const isPortrait = layout === 'portrait_10x6';
-            document.getElementById('pagesContainer').innerHTML = `<div class="exportArea ${isPortrait ? 'portrait' : 'landscape'}"><div style="text-align:center; padding:50px; font-weight:bold; font-size:1.4em;">有効なデータが見つかりませんでした</div></div>`;
+            renderNoData();
         }
     }
 
+    function renderNoData() {
+        const layout = document.getElementById("layoutSelect").value;
+        const orientation = layout === "landscape_15x4" ? "landscape" : "portrait";
+        const theme = getSelectedTheme();
+        document.getElementById("pagesContainer").innerHTML = `
+            <div class="exportArea ${orientation}" data-theme="${theme}">
+                <div class="empty-state">
+                    <strong>NO VALID DATA</strong>
+                    <span>有効なデータが見つかりませんでした</span>
+                </div>
+            </div>
+        `;
+    }
+
     async function fetchImageBase64(imgUrl) {
-        if (!imgUrl) return 'https://via.placeholder.com/200x280?text=No+Image';
+        if (!imgUrl) return NO_IMAGE;
 
         let targetUrl = imgUrl;
-        
-        if (imgUrl.includes('drive.google.com')) {
-            const match = imgUrl.match(/id=([^&]+)/);
-            if (match && match[1]) {
-                targetUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
+        if (imgUrl.includes("drive.google.com")) {
+            const idMatch =
+                imgUrl.match(/[?&]id=([^&]+)/) ||
+                imgUrl.match(/\/d\/([^/]+)/);
+            if (idMatch?.[1]) {
+                targetUrl = `https://drive.google.com/thumbnail?id=${idMatch[1]}&sz=w500`;
             }
         }
-        
-        if (!imgUrl.includes('drive.google.com')) {
-            try {
-                const directRes = await fetch(imgUrl, { mode: 'cors' });
-                if (directRes.ok) {
-                    const blob = await directRes.blob();
-                    if (blob.type.includes('image')) {
-                        return await blobToBase64(blob);
-                    }
-                }
-            } catch (e) {}
+
+        try {
+            const directResponse = await fetch(targetUrl, { mode: "cors" });
+            if (directResponse.ok) {
+                const blob = await directResponse.blob();
+                if (blob.type.includes("image")) return await blobToBase64(blob);
+            }
+        } catch (error) {
+            // CORS時は下記プロキシへフォールバック
         }
 
         const encodedUrl = encodeURIComponent(targetUrl);
-        const fastProxies = [
-            `https://wsrv.nl/?url=${encodedUrl}&output=webp&w=300`,
+        const proxyUrls = [
+            `https://wsrv.nl/?url=${encodedUrl}&output=webp&w=500`,
             `https://api.allorigins.win/raw?url=${encodedUrl}`,
             `https://corsproxy.io/?${encodedUrl}`
         ];
 
         try {
-            const blob = await Promise.any(
-                fastProxies.map(url => fetch(url).then(async res => {
-                    if (!res.ok) throw new Error('Fetch failed');
-                    const b = await res.blob();
-                    if (!b.type.includes('image')) throw new Error('Not an image');
-                    return b;
-                }))
-            );
+            const blob = await Promise.any(proxyUrls.map(async proxyUrl => {
+                const response = await fetch(proxyUrl);
+                if (!response.ok) throw new Error("Fetch failed");
+                const imageBlob = await response.blob();
+                if (!imageBlob.type.includes("image")) throw new Error("Not an image");
+                return imageBlob;
+            }));
             return await blobToBase64(blob);
-        } catch (e) {
-            return 'https://via.placeholder.com/200x280?text=Error';
+        } catch (error) {
+            return NO_IMAGE;
         }
     }
 
     function blobToBase64(blob) {
-        return new Promise((resolve) => {
+        return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
             reader.readAsDataURL(blob);
         });
     }
 
-    async function renderPages() {
-        const layout = document.getElementById('layoutSelect').value;
-        let cols, rows, maxPerPage, orientationClass;
-        
-        if (layout === 'landscape_15x4') {
-            cols = 15; rows = 4; maxPerPage = 60; orientationClass = 'landscape';
-        } else {
-            cols = 10; rows = 6; maxPerPage = 60; orientationClass = 'portrait';
-        }
-
-        let groupedObj = {};
+    function buildPages(maxPerPage) {
+        const groupedMap = new Map();
         globalCardData.forEach(card => {
-            let grpKey = card.group;
-            if (!groupedObj[grpKey]) groupedObj[grpKey] = [];
-            groupedObj[grpKey].push(card);
+            if (!groupedMap.has(card.group)) groupedMap.set(card.group, []);
+            groupedMap.get(card.group).push(card);
         });
 
-        let pages = [];
+        const pages = [];
         let currentPage = [];
 
-        for (let grpKey in groupedObj) {
-            let items = groupedObj[grpKey];
-
-            if (currentPage.length > 0 && (currentPage.length + items.length <= maxPerPage) && currentPage.length < 24) {
+        for (const items of groupedMap.values()) {
+            if (
+                currentPage.length > 0 &&
+                currentPage.length < 24 &&
+                currentPage.length + items.length <= maxPerPage
+            ) {
                 currentPage = currentPage.concat(items);
-            } else {
-                if (currentPage.length > 0) {
-                    pages.push(currentPage);
-                    currentPage = [];
-                }
-                
-                for (let i = 0; i < items.length; i += maxPerPage) {
-                    let chunk = items.slice(i, i + maxPerPage);
-                    if (chunk.length === maxPerPage) {
-                        pages.push(chunk);
-                    } else {
-                        currentPage = chunk;
-                    }
+                continue;
+            }
+
+            if (currentPage.length > 0) {
+                pages.push(currentPage);
+                currentPage = [];
+            }
+
+            for (let i = 0; i < items.length; i += maxPerPage) {
+                const chunk = items.slice(i, i + maxPerPage);
+                if (chunk.length === maxPerPage) {
+                    pages.push(chunk);
+                } else {
+                    currentPage = chunk;
                 }
             }
         }
+
         if (currentPage.length > 0) pages.push(currentPage);
+        return pages;
+    }
 
-        const container = document.getElementById('pagesContainer');
-        container.innerHTML = ''; 
+    async function renderPages() {
+        const layout = document.getElementById("layoutSelect").value;
+        const isLandscape = layout === "landscape_15x4";
+        const cols = isLandscape ? 15 : 10;
+        const rows = isLandscape ? 4 : 6;
+        const orientationClass = isLandscape ? "landscape" : "portrait";
+        const selectedTheme = getSelectedTheme();
+        const pages = buildPages(60);
+        const container = document.getElementById("pagesContainer");
 
-        const baseTitleText = document.getElementById('titleInput').value;
-        const dateText = formatDate(document.getElementById('dateInput').value);
-        const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
+        const title = document.getElementById("titleInput").value || "高価買取表";
+        const dateText = formatDate(document.getElementById("dateInput").value);
+        const disclaimerHtml = escapeHtml(document.getElementById("disclaimerInput").value)
+            .replace(/\n/g, "<br>");
+
+        container.innerHTML = "";
 
         pages.forEach((pageCards, pageIndex) => {
-            const pageDiv = document.createElement('div');
+            const pageNumber = pageIndex + 1;
+            const pageDiv = document.createElement("div");
             pageDiv.className = `exportArea ${orientationClass}`;
-            pageDiv.id = `exportArea_${pageIndex + 1}`;
+            pageDiv.dataset.theme = selectedTheme;
+            pageDiv.id = `exportArea_${pageNumber}`;
 
-            // ★タイトルに 1, 2 ... を直直接付与★
-            const pageTitle = `${baseTitleText}${pageIndex + 1}`;
+            const cardsHtml = pageCards.map(card => {
+                const badgeHtml = card.status.includes("強化")
+                    ? '<div class="status-badge">強化買取</div>'
+                    : "";
+                const imageSource = card.resolvedImg || LOADING_IMAGE;
+                const grade = escapeHtml(card.type || "PSA10");
+                const name = escapeHtml(card.name || "");
+                const price = escapeHtml(card.price);
+                const imageUrl = escapeHtml(card.imgUrl);
 
-            const headerHtml = `
-                <div class="header-area">
-                    <div class="logo-container">
-                        <img class="logo-img" src="${logoDataUrl}" alt="Shop Logo" crossorigin="anonymous">
-                    </div>
-                    <div class="title-container">
-                        <h1 class="title-text">${pageTitle}</h1>
-                    </div>
-                </div>
-            `;
-
-            let gridHtml = `<div class="card-grid" style="grid-template-columns: repeat(${cols}, 1fr); grid-template-rows: repeat(${rows}, 1fr);">`;
-            pageCards.forEach(card => {
-                let badgeHtml = card.status === '強化' ? '<div class="status-badge">強化買取</div>' : '';
-                let imgSrc = card.resolvedImg ? card.resolvedImg : 'https://via.placeholder.com/200x280?text=Loading...';
-                
-                gridHtml += `
+                return `
                     <div class="card-item">
                         ${badgeHtml}
                         <div class="card-img-container">
-                            <img src="${imgSrc}" class="dynamic-img" data-url="${card.imgUrl}" alt="Card" crossorigin="anonymous">
+                            <img
+                                src="${imageSource}"
+                                class="dynamic-img"
+                                data-url="${imageUrl}"
+                                alt="${name || "Card"}"
+                                crossorigin="anonymous"
+                            >
                         </div>
-                        <div class="card-grade-container"><span class="card-grade">${card.type}</span></div>
+                        <div class="card-name" title="${name}">${name}</div>
+                        <div class="card-meta">
+                            <span class="card-grade">${grade}</span>
+                        </div>
                         <div class="card-price-container">
-                            <span class="card-price-text">${card.price}</span>
+                            <span class="card-price-text">${price}</span>
                         </div>
                     </div>
                 `;
-            });
-            gridHtml += '</div>';
+            }).join("");
 
-            const footerHtml = `
+            pageDiv.innerHTML = `
+                <div class="header-area">
+                    <div class="logo-container">
+                        <img class="logo-img" src="${logoDataUrl}" alt="Shop Logo">
+                    </div>
+                    <div class="title-container">
+                        <div class="title-kicker">PREMIUM BUYLIST</div>
+                        <h1 class="title-text">${escapeHtml(title)}</h1>
+                    </div>
+                    <div class="page-emblem">
+                        <small>PAGE</small>
+                        <strong>${pageNumberText(pageNumber)}</strong>
+                    </div>
+                </div>
+
+                <div
+                    class="card-grid"
+                    style="grid-template-columns:repeat(${cols},1fr);grid-template-rows:repeat(${rows},1fr);"
+                >
+                    ${cardsHtml}
+                </div>
+
                 <div class="footer-area">
                     <div class="disclaimer disclaimer-text">${disclaimerHtml}</div>
                     <div class="footer-right">
+                        <div class="update-label">PRICE UPDATED</div>
                         <div class="update-date date-text">${dateText}</div>
-                        <div class="page-number">${pageIndex + 1} / ${pages.length} ページ</div>
+                        <div class="page-number">${pageNumber} / ${pages.length} PAGE</div>
                     </div>
                 </div>
             `;
 
-            pageDiv.innerHTML = headerHtml + gridHtml + footerHtml;
             container.appendChild(pageDiv);
         });
 
-        adjustTextSize();
-        loadMissingImagesFast();
+        requestAnimationFrame(() => {
+            adjustTextSize();
+            loadMissingImagesFast();
+        });
     }
 
     function adjustTextSize() {
-        document.querySelectorAll('.card-price-container').forEach(container => {
-            const textEl = container.querySelector('.card-price-text');
-            if (!textEl) return;
-            textEl.style.transform = 'none'; 
-            
-            const containerWidth = container.clientWidth;
-            const containerHeight = container.clientHeight;
-            const textWidth = textEl.scrollWidth;
-            const textHeight = textEl.scrollHeight;
-            
-            if (containerWidth > 0 && containerHeight > 0) {
-                let scaleX = 1;
-                let scaleY = 1;
+        document.querySelectorAll(".card-price-container").forEach(container => {
+            const textElement = container.querySelector(".card-price-text");
+            if (!textElement) return;
 
-                if (textWidth > containerWidth) {
-                    scaleX = containerWidth / textWidth;
-                }
-                if (textHeight > containerHeight) {
-                    scaleY = containerHeight / textHeight;
-                }
+            textElement.style.transform = "none";
 
-                const finalScale = Math.min(scaleX, scaleY) * 0.90;
-                if (finalScale < 1) {
-                    textEl.style.transform = `scale(${finalScale})`;
-                }
+            const availableWidth = Math.max(0, container.clientWidth - 22);
+            const availableHeight = Math.max(0, container.clientHeight - 4);
+            const textWidth = textElement.scrollWidth;
+            const textHeight = textElement.scrollHeight;
+
+            if (!availableWidth || !availableHeight || !textWidth || !textHeight) return;
+
+            const scaleX = Math.min(1, availableWidth / textWidth);
+            const scaleY = Math.min(1, availableHeight / textHeight);
+            const finalScale = Math.min(scaleX, scaleY);
+
+            if (finalScale < 1) {
+                textElement.style.transform = `scale(${finalScale})`;
             }
         });
     }
 
     async function loadMissingImagesFast() {
-        const imgElements = Array.from(document.querySelectorAll('.dynamic-img'));
-        
-        const BATCH_SIZE = 10;
-        for (let i = 0; i < imgElements.length; i += BATCH_SIZE) {
-            const batch = imgElements.slice(i, i + BATCH_SIZE);
-            await Promise.all(batch.map(async (imgEl) => {
-                const originalUrl = imgEl.getAttribute('data-url');
-                const cardObj = globalCardData.find(c => c.imgUrl === originalUrl);
-                
-                if (cardObj) {
-                    if (!cardObj.resolvedImg && originalUrl) {
-                        cardObj.resolvedImg = await fetchImageBase64(originalUrl);
-                    }
-                    if (cardObj.resolvedImg) {
-                        imgEl.src = cardObj.resolvedImg;
-                    }
+        const imageElements = Array.from(document.querySelectorAll(".dynamic-img"));
+        const cardLookup = new Map();
+
+        globalCardData.forEach(card => {
+            if (!cardLookup.has(card.imgUrl)) cardLookup.set(card.imgUrl, card);
+        });
+
+        const batchSize = 10;
+        for (let i = 0; i < imageElements.length; i += batchSize) {
+            const batch = imageElements.slice(i, i + batchSize);
+
+            await Promise.all(batch.map(async imageElement => {
+                const originalUrl = imageElement.getAttribute("data-url");
+                const card = cardLookup.get(originalUrl);
+
+                if (!card) {
+                    imageElement.src = NO_IMAGE;
+                    return;
                 }
+
+                if (!card.resolvedImg) {
+                    card.resolvedImg = await fetchImageBase64(originalUrl);
+                }
+                imageElement.src = card.resolvedImg || NO_IMAGE;
             }));
         }
     }
 
+    async function waitForImages(rootElement) {
+        const images = Array.from(rootElement.querySelectorAll("img"));
+        await Promise.all(images.map(image => {
+            if (image.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                image.onload = resolve;
+                image.onerror = resolve;
+            });
+        }));
+    }
+
     async function exportToImage() {
-        const areas = document.querySelectorAll('.exportArea');
-        if(areas.length === 0) return;
+        const areas = document.querySelectorAll(".exportArea");
+        if (areas.length === 0) return;
+        if (typeof html2canvas !== "function") {
+            alert("画像書き出し機能を読み込めませんでした。通信環境をご確認ください。");
+            return;
+        }
 
-        const overlay = document.getElementById('loadingOverlay');
-        const overlayText = document.getElementById('loadingText');
-        overlay.style.display = 'flex';
+        const overlay = document.getElementById("loadingOverlay");
+        const overlayText = document.getElementById("loadingText");
+        overlay.style.display = "flex";
 
-        for (let i = 0; i < areas.length; i++) {
-            overlayText.innerText = `${i + 1}枚目の画像を生成中... (${i + 1}/${areas.length})`;
-            try {
-                await new Promise(r => setTimeout(r, 500)); 
-                
+        try {
+            for (let i = 0; i < areas.length; i++) {
+                overlayText.textContent = `${i + 1}枚目を生成中...（${i + 1}/${areas.length}）`;
                 const targetArea = areas[i];
-                
+
+                await waitForImages(targetArea);
+                adjustTextSize();
+                await new Promise(resolve => setTimeout(resolve, 250));
+
                 const canvas = await html2canvas(targetArea, {
-                    useCORS: true,       
-                    allowTaint: false,   
+                    useCORS: true,
+                    allowTaint: false,
+                    backgroundColor: null,
                     scale: 2,
                     width: targetArea.offsetWidth,
                     height: targetArea.offsetHeight,
                     scrollX: 0,
-                    scrollY: 0
+                    scrollY: 0,
+                    logging: false
                 });
-                
-                const link = document.createElement('a');
-                link.download = `買取表_${document.getElementById('dateInput').value}_${i+1}枚目.png`;
-                link.href = canvas.toDataURL('image/png');
+
+                const link = document.createElement("a");
+                link.download =
+                    `買取表_${document.getElementById("dateInput").value}_${i + 1}枚目.png`;
+                link.href = canvas.toDataURL("image/png");
                 link.click();
-                
-                await new Promise(r => setTimeout(r, 1000));
-            } catch (err) {
-                alert(`ページ ${i + 1} の生成に失敗しました。\n詳細: ` + err);
+
+                await new Promise(resolve => setTimeout(resolve, 700));
             }
+        } catch (error) {
+            console.error(error);
+            alert(`画像の生成に失敗しました。\n詳細: ${error.message || error}`);
+        } finally {
+            overlay.style.display = "none";
+            overlayText.textContent = "画像を生成中です...";
         }
-        
-        overlay.style.display = 'none';
-        overlayText.innerText = "画像を生成中です...";
     }
+
+    window.addEventListener("resize", adjustTextSize);
 </script>
 </body>
 </html>
