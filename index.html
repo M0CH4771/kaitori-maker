@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（高速画像読み込み版）</title>
+    <title>買取表ジェネレーター</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -106,7 +106,7 @@
             padding: 5px;
         }
         
-        /* カード1枚のスタイル */
+        /* カード1枚のスタイル（完全同一サイズ固定） */
         .card-item {
             background: #fff; 
             border: 2px solid var(--primary-color); 
@@ -229,7 +229,7 @@
         <div class="control-group">
             <label>3. タイトル</label>
             <input type="text" id="titleInput" value="PSA10買取表">
-            <small style="color:#777;">※テンプレート保存対象</small>
+            <small style="color:#777;">※テンプレート保存対象（各ページ「タイトル＋ページ番号」になります）</small>
         </div>
 
         <div class="control-group">
@@ -272,13 +272,13 @@
                     <img class="logo-img" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
                 </div>
                 <div class="title-container">
-                    <h1 class="title-text">PSA10買取表</h1>
+                    <h1 class="title-text">PSA10買取表1</h1>
                 </div>
             </div>
             <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
                 <div style="grid-column: 1 / -1; grid-row: 1 / -1; display:flex; align-items:center; justify-content:center; color: #888; font-size: 1.4em; font-weight:bold;">
                     CSVファイルを読み込むとここにカードが並びます<br>
-                    （高速並列画像ロード対応版）
+                    （タイトルが「タイトル1」「タイトル2」になります）
                 </div>
             </div>
             <div class="footer-area">
@@ -338,11 +338,18 @@
     }
 
     function updateAllPages() {
-        const titleText = document.getElementById('titleInput').value;
+        const baseTitleText = document.getElementById('titleInput').value;
         const dateText = formatDate(document.getElementById('dateInput').value);
         const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
 
-        document.querySelectorAll('.title-text').forEach(el => el.innerText = titleText);
+        document.querySelectorAll('.exportArea').forEach((pageDiv, index) => {
+            const pageNum = index + 1;
+            const titleEl = pageDiv.querySelector('.title-text');
+            if (titleEl) {
+                titleEl.innerText = `${baseTitleText}${pageNum}`;
+            }
+        });
+
         document.querySelectorAll('.date-text').forEach(el => el.innerText = dateText);
         document.querySelectorAll('.disclaimer-text').forEach(el => el.innerHTML = disclaimerHtml);
         document.querySelectorAll('.logo-img').forEach(el => el.src = logoDataUrl);
@@ -483,6 +490,7 @@
             price = price.replace(/"/g, ''); 
 
             if (status.includes('無効') || status.includes('非掲載')) continue;
+            if (!group || group === '' || group === 'NaN') continue;
             if (!price || price === '' || price === '-' || price === '終了' || price === '0' || price === '¥0') continue;
 
             globalCardData.push({ group, status, name, type, price, imgUrl, resolvedImg: null });
@@ -497,13 +505,11 @@
         }
     }
 
-    // ★高速ダイレクト変換 ＆ 並列プロキシフェッチ★
     async function fetchImageBase64(imgUrl) {
         if (!imgUrl) return 'https://via.placeholder.com/200x280?text=No+Image';
 
         let targetUrl = imgUrl;
         
-        // 1. Google Drive URLの最適化（サムネイルプロキシを経由せず直接読み込めるデータURLや高速レスポンス化）
         if (imgUrl.includes('drive.google.com')) {
             const match = imgUrl.match(/id=([^&]+)/);
             if (match && match[1]) {
@@ -511,7 +517,6 @@
             }
         }
         
-        // 2. S3や一般Webサーバーの直接画像URLなら、CorsProxyなしでプロキシスキップ試行
         if (!imgUrl.includes('drive.google.com')) {
             try {
                 const directRes = await fetch(imgUrl, { mode: 'cors' });
@@ -521,20 +526,16 @@
                         return await blobToBase64(blob);
                     }
                 }
-            } catch (e) {
-                // CORSエラーの場合はプロキシにフォールバック
-            }
+            } catch (e) {}
         }
 
-        // 3. 超高速プロキシの優先並列リクエスト（wsrv.nl は世界最速クラスのCDNプロキシ）
         const encodedUrl = encodeURIComponent(targetUrl);
         const fastProxies = [
-            `https://wsrv.nl/?url=${encodedUrl}&output=webp&w=300`, // 画像圧縮して最速返却
+            `https://wsrv.nl/?url=${encodedUrl}&output=webp&w=300`,
             `https://api.allorigins.win/raw?url=${encodedUrl}`,
             `https://corsproxy.io/?${encodedUrl}`
         ];
 
-        // 最初に応答が返ったプロキシを最優先で採用
         try {
             const blob = await Promise.any(
                 fastProxies.map(url => fetch(url).then(async res => {
@@ -570,7 +571,7 @@
 
         let groupedObj = {};
         globalCardData.forEach(card => {
-            let grpKey = card.group ? card.group : '未設定';
+            let grpKey = card.group;
             if (!groupedObj[grpKey]) groupedObj[grpKey] = [];
             groupedObj[grpKey].push(card);
         });
@@ -604,7 +605,7 @@
         const container = document.getElementById('pagesContainer');
         container.innerHTML = ''; 
 
-        const titleText = document.getElementById('titleInput').value;
+        const baseTitleText = document.getElementById('titleInput').value;
         const dateText = formatDate(document.getElementById('dateInput').value);
         const disclaimerHtml = document.getElementById('disclaimerInput').value.replace(/\n/g, '<br>');
 
@@ -613,13 +614,16 @@
             pageDiv.className = `exportArea ${orientationClass}`;
             pageDiv.id = `exportArea_${pageIndex + 1}`;
 
+            // ★タイトルに 1, 2 ... を直直接付与★
+            const pageTitle = `${baseTitleText}${pageIndex + 1}`;
+
             const headerHtml = `
                 <div class="header-area">
                     <div class="logo-container">
                         <img class="logo-img" src="${logoDataUrl}" alt="Shop Logo" crossorigin="anonymous">
                     </div>
                     <div class="title-container">
-                        <h1 class="title-text">${titleText}</h1>
+                        <h1 class="title-text">${pageTitle}</h1>
                     </div>
                 </div>
             `;
@@ -659,8 +663,6 @@
         });
 
         adjustTextSize();
-        
-        // ★並列処理（Promise.all）で全画像を爆速一行読み込み！★
         loadMissingImagesFast();
     }
 
@@ -694,11 +696,9 @@
         });
     }
 
-    // ★爆速並列（並行）画像読み込みエンジン★
     async function loadMissingImagesFast() {
         const imgElements = Array.from(document.querySelectorAll('.dynamic-img'));
         
-        // 10枚ずつバッチ（並列）で一気に取得して爆速表示
         const BATCH_SIZE = 10;
         for (let i = 0; i < imgElements.length; i += BATCH_SIZE) {
             const batch = imgElements.slice(i, i + BATCH_SIZE);
