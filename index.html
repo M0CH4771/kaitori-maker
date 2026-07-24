@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>プレミアム買取表ジェネレーター</title>
+    <title>買取表ジェネレーター</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         :root {
             --ink: #080b12;
@@ -42,6 +43,40 @@
             gap: 28px;
             max-width: 2400px;
             margin: 0 auto;
+        }
+
+        .view-tabs {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            padding: 7px;
+            border: 1px solid rgba(17, 24, 39, 0.1);
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.76);
+            box-shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+            backdrop-filter: blur(10px);
+        }
+
+        .view-tab {
+            padding: 15px 18px;
+            color: #596579;
+            border: 1px solid transparent;
+            background: transparent;
+            box-shadow: none;
+            font-size: 15px;
+        }
+
+        .view-tab.is-active {
+            color: #fff;
+            border-color: rgba(255,255,255,0.14);
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.12), transparent 38%),
+                linear-gradient(135deg, #172033, #070b12);
+            box-shadow: 0 7px 18px rgba(7, 11, 18, 0.2);
+        }
+
+        .view-hidden {
+            display: none !important;
         }
 
         /* ===== 操作パネル ===== */
@@ -200,6 +235,17 @@
             font-size: 17px;
         }
 
+        .btn-zip {
+            padding: 16px;
+            color: #10131b;
+            border: 1px solid #fff1af;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.35), transparent 40%),
+                linear-gradient(135deg, #ffe998, #d8aa3e);
+            box-shadow: 0 9px 24px rgba(217, 173, 74, 0.24);
+            font-size: 17px;
+        }
+
         .export-note {
             margin: 0;
             padding: 10px 12px;
@@ -213,10 +259,53 @@
 
         .panel-actions {
             display: grid;
-            grid-template-columns: 1fr minmax(260px, 340px);
+            grid-template-columns: 1fr minmax(240px, 300px) minmax(240px, 300px);
             align-items: center;
             gap: 14px;
             padding: 14px 24px 22px;
+        }
+
+        .image-status-panel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 14px 24px 0;
+            padding: 12px 15px;
+            color: #cbd5e1;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 9px;
+            background: rgba(255,255,255,0.04);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .image-status-dot {
+            width: 11px;
+            height: 11px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: #718096;
+            box-shadow: 0 0 0 4px rgba(113,128,150,0.13);
+        }
+
+        .image-status-panel[data-state="loading"] .image-status-dot {
+            background: #f3b63f;
+            box-shadow: 0 0 0 4px rgba(243,182,63,0.15);
+            animation: statusPulse 1s ease-in-out infinite;
+        }
+
+        .image-status-panel[data-state="ready"] .image-status-dot {
+            background: #39d98a;
+            box-shadow: 0 0 0 4px rgba(57,217,138,0.14);
+        }
+
+        .image-status-panel[data-state="warning"] .image-status-dot {
+            background: #ff647c;
+            box-shadow: 0 0 0 4px rgba(255,100,124,0.14);
+        }
+
+        @keyframes statusPulse {
+            50% { opacity: 0.38; }
         }
 
         .template-manager {
@@ -500,6 +589,11 @@
             gap: 10px;
             margin: 0 10px 15px;
             padding: 6px;
+        }
+
+        .initial-card-grid {
+            grid-template-columns: repeat(10, 1fr);
+            grid-template-rows: repeat(6, 1fr);
         }
 
         .card-item {
@@ -1587,6 +1681,857 @@
         .exportArea[data-theme="retro"] { background: #ead7b0; }
         .exportArea[data-theme="hologram"] { background: #edf2f8; }
 
+        /* 11〜20. カラーバリエーションテーマ */
+        .exportArea[data-theme="mono"] {
+            --extra-page: #151515; --extra-header: #050505; --extra-accent: #f5f5f5;
+            --extra-accent2: #8c8c8c; --extra-card: #f7f7f7; --extra-card-text: #111;
+            --extra-title: #fff; --extra-price: #252525; --extra-grade: #050505;
+            --extra-footer: #050505; --extra-note: #f4f4f4; --extra-emblem-text: #111;
+        }
+        .exportArea[data-theme="ocean"] {
+            --extra-page: #062b3e; --extra-header: #064d6b; --extra-accent: #48d8f0;
+            --extra-accent2: #96f1ff; --extra-card: #f1fcff; --extra-card-text: #103746;
+            --extra-title: #fff; --extra-price: #087fa8; --extra-grade: #05384f;
+            --extra-footer: #031f2d; --extra-note: #ddf8ff; --extra-emblem-text: #073243;
+        }
+        .exportArea[data-theme="sunset"] {
+            --extra-page: #3a1722; --extra-header: #711f31; --extra-accent: #ff7a3d;
+            --extra-accent2: #ffd66b; --extra-card: #fff8e9; --extra-card-text: #42211b;
+            --extra-title: #fff8e9; --extra-price: #e64b2f; --extra-grade: #5a2030;
+            --extra-footer: #251018; --extra-note: #ffe9cc; --extra-emblem-text: #4b1a15;
+        }
+        .exportArea[data-theme="mint"] {
+            --extra-page: #e8fff7; --extra-header: #126c5b; --extra-accent: #20b992;
+            --extra-accent2: #a8f0d3; --extra-card: #fff; --extra-card-text: #17473d;
+            --extra-title: #fff; --extra-price: #00a67b; --extra-grade: #135548;
+            --extra-footer: #d5f7eb; --extra-note: #18493e; --extra-emblem-text: #12473b;
+        }
+        .exportArea[data-theme="lavender"] {
+            --extra-page: #f4efff; --extra-header: #684493; --extra-accent: #a978df;
+            --extra-accent2: #f0b4ff; --extra-card: #fff; --extra-card-text: #38264e;
+            --extra-title: #fff; --extra-price: #8d4cc5; --extra-grade: #513374;
+            --extra-footer: #e9def7; --extra-note: #3e2a55; --extra-emblem-text: #3f2857;
+        }
+        .exportArea[data-theme="ice"] {
+            --extra-page: #ebf8ff; --extra-header: #145d84; --extra-accent: #53cfff;
+            --extra-accent2: #d5f5ff; --extra-card: #fff; --extra-card-text: #163f55;
+            --extra-title: #fff; --extra-price: #168fca; --extra-grade: #124967;
+            --extra-footer: #dceff8; --extra-note: #183f52; --extra-emblem-text: #16475f;
+        }
+        .exportArea[data-theme="chocolate"] {
+            --extra-page: #28170e; --extra-header: #51301d; --extra-accent: #c58a4c;
+            --extra-accent2: #f0d09b; --extra-card: #fff5df; --extra-card-text: #412719;
+            --extra-title: #fff3d6; --extra-price: #a84f2e; --extra-grade: #4a2a1a;
+            --extra-footer: #1d100a; --extra-note: #f4dfb9; --extra-emblem-text: #422617;
+        }
+        .exportArea[data-theme="japan"] {
+            --extra-page: #f4efe5; --extra-header: #201c19; --extra-accent: #c5162e;
+            --extra-accent2: #e6c47a; --extra-card: #fff; --extra-card-text: #2b2521;
+            --extra-title: #fff; --extra-price: #c5162e; --extra-grade: #201c19;
+            --extra-footer: #ece3d3; --extra-note: #2c2520; --extra-emblem-text: #fff;
+        }
+        .exportArea[data-theme="galaxy"] {
+            --extra-page: #07091c; --extra-header: #171342; --extra-accent: #665cff;
+            --extra-accent2: #4ee7ff; --extra-card: #11162e; --extra-card-text: #eef5ff;
+            --extra-title: #fff; --extra-price: #7d38cf; --extra-grade: #25235b;
+            --extra-footer: #050617; --extra-note: #e8edff; --extra-emblem-text: #07101f;
+        }
+        .exportArea[data-theme="lime"] {
+            --extra-page: #0b1009; --extra-header: #192311; --extra-accent: #9ddd32;
+            --extra-accent2: #e6ff7c; --extra-card: #f4ffdf; --extra-card-text: #253016;
+            --extra-title: #f6ffe5; --extra-price: #679e12; --extra-grade: #263518;
+            --extra-footer: #070b06; --extra-note: #e7f7ce; --extra-emblem-text: #17200d;
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) {
+            border-color: var(--extra-accent);
+            background: var(--extra-page);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        )::before {
+            border-color: var(--extra-accent);
+            box-shadow: inset 0 0 0 1px var(--extra-accent2);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        )::after {
+            background: linear-gradient(
+                90deg,
+                var(--extra-accent),
+                var(--extra-accent2) 50%,
+                var(--extra-accent)
+            );
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .header-area {
+            border-color: var(--extra-accent);
+            border-bottom-color: var(--extra-accent);
+            background: var(--extra-header);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .header-area::before {
+            background: var(--extra-accent2);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .title-container h1 {
+            color: var(--extra-title);
+            text-shadow: 0 3px 0 rgba(0,0,0,0.45);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .page-emblem {
+            color: var(--extra-emblem-text);
+            border-color: var(--extra-accent2);
+            background: var(--extra-accent);
+            box-shadow: 0 0 0 4px var(--extra-header), 0 0 0 6px var(--extra-accent2);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .card-item {
+            border-color: var(--extra-accent);
+            background: var(--extra-card);
+            box-shadow: 0 3px 0 var(--extra-accent), 0 7px 12px rgba(0,0,0,0.22);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .card-item::before {
+            background: var(--extra-accent);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .card-name { color: var(--extra-card-text); }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .card-grade {
+            color: #fff;
+            border-color: var(--extra-accent);
+            background: var(--extra-grade);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .card-price-container {
+            border-color: var(--extra-accent);
+            background: var(--extra-price);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .status-badge {
+            color: var(--extra-emblem-text);
+            border-color: var(--extra-accent);
+            background: var(--extra-accent2);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .footer-area {
+            border-color: var(--extra-accent);
+            border-top-color: var(--extra-accent);
+            background: var(--extra-footer);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .disclaimer,
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .update-date {
+            color: var(--extra-note);
+        }
+
+        .exportArea:is(
+            [data-theme="mono"], [data-theme="ocean"], [data-theme="sunset"],
+            [data-theme="mint"], [data-theme="lavender"], [data-theme="ice"],
+            [data-theme="chocolate"], [data-theme="japan"], [data-theme="galaxy"],
+            [data-theme="lime"]
+        ) .update-label {
+            color: var(--extra-accent2);
+        }
+
+        /* ===== 単品買取告知メーカー ===== */
+        .single-maker {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .single-selection {
+            margin: 14px 24px 0;
+            overflow: hidden;
+            border: 1px solid rgba(217, 173, 74, 0.24);
+            border-radius: 11px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .single-selection-toolbar {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) auto auto auto;
+            align-items: center;
+            gap: 10px;
+            padding: 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .single-selection-toolbar button {
+            width: auto;
+            min-width: 112px;
+            padding: 10px 13px;
+            font-size: 12px;
+        }
+
+        .btn-soft {
+            color: #172033;
+            background: #fff;
+        }
+
+        .btn-muted {
+            color: #d8deea;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(255,255,255,0.07);
+        }
+
+        .single-selection-count {
+            padding: 0 14px 12px;
+            color: #ffe7a1;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .single-card-picker {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 10px;
+            max-height: 480px;
+            overflow-y: auto;
+            padding: 0 14px 14px;
+        }
+
+        .single-picker-item {
+            position: relative;
+            display: grid;
+            grid-template-columns: 46px minmax(0, 1fr);
+            align-items: center;
+            gap: 9px;
+            min-width: 0;
+            padding: 9px;
+            color: #e8edf7;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 9px;
+            background: rgba(255,255,255,0.045);
+            cursor: pointer;
+            transition: border-color 0.18s, background 0.18s, transform 0.18s;
+        }
+
+        .single-picker-item:hover {
+            transform: translateY(-1px);
+            border-color: rgba(217, 173, 74, 0.5);
+            background: rgba(217, 173, 74, 0.08);
+        }
+
+        .single-picker-item.is-selected {
+            border-color: #e5bc5a;
+            background: rgba(217, 173, 74, 0.15);
+            box-shadow: inset 0 0 0 1px rgba(255,231,161,0.2);
+        }
+
+        .single-picker-item input {
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            width: 17px;
+            height: 17px;
+            accent-color: #e60020;
+        }
+
+        .single-picker-thumb {
+            width: 46px;
+            height: 62px;
+            object-fit: contain;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .single-picker-copy {
+            min-width: 0;
+            padding-right: 17px;
+        }
+
+        .single-picker-name {
+            display: -webkit-box;
+            overflow: hidden;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            line-height: 1.35;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .single-picker-meta {
+            overflow: hidden;
+            margin-top: 5px;
+            color: #aeb8ca;
+            font-size: 9px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .single-picker-price {
+            margin-top: 4px;
+            color: #ffe7a1;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .single-empty-picker {
+            grid-column: 1 / -1;
+            padding: 36px 20px;
+            color: #aeb8ca;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .single-preview-container {
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            flex-direction: column;
+            align-items: center;
+            gap: 34px;
+            overflow-x: auto;
+            padding: 28px 20px 48px;
+            border: 1px solid rgba(17,24,39,0.08);
+            border-radius: 16px;
+            background:
+                linear-gradient(45deg, rgba(17,24,39,0.025) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(17,24,39,0.025) 25%, transparent 25%),
+                #e8ebf0;
+            background-position: 0 0, 12px 12px;
+            background-size: 24px 24px;
+        }
+
+        .single-preview-shell {
+            position: relative;
+            flex: 0 0 auto;
+            overflow: visible;
+        }
+
+        .single-preview-shell > .single-ad {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+        }
+
+        .single-preview-empty {
+            width: min(720px, 100%);
+            padding: 70px 28px;
+            color: #697386;
+            border: 2px dashed #c5ccd7;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.68);
+            text-align: center;
+        }
+
+        .single-preview-empty strong {
+            display: block;
+            color: #172033;
+            font-size: 20px;
+        }
+
+        .single-preview-empty span {
+            display: block;
+            margin-top: 8px;
+            font-size: 13px;
+        }
+
+        .single-ad {
+            --ad-bg: #080c14;
+            --ad-surface: #111827;
+            --ad-primary: #e7b94f;
+            --ad-secondary: #f6e5a8;
+            --ad-price: #e60020;
+            --ad-text: #fff;
+            --ad-muted: #d4d9e2;
+            --ad-card: #fff;
+            position: relative;
+            display: grid;
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            flex: 0 0 auto;
+            overflow: hidden;
+            padding: 54px;
+            color: var(--ad-text);
+            border: 8px solid var(--ad-primary);
+            background: var(--ad-bg);
+            box-shadow: 0 18px 50px rgba(0,0,0,0.3);
+            isolation: isolate;
+        }
+
+        .single-ad.single-square {
+            width: 1200px;
+            height: 1200px;
+        }
+
+        .single-ad.single-portrait {
+            width: 1080px;
+            height: 1350px;
+        }
+
+        .single-ad.single-landscape {
+            width: 1500px;
+            height: 1000px;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            column-gap: 48px;
+        }
+
+        .single-ad::before,
+        .single-ad::after {
+            position: absolute;
+            z-index: -1;
+            content: "";
+            pointer-events: none;
+        }
+
+        .single-ad::before {
+            width: 720px;
+            height: 720px;
+            top: -280px;
+            right: -220px;
+            border: 2px solid var(--ad-primary);
+            border-radius: 50%;
+            opacity: 0.22;
+            box-shadow: 0 0 0 80px rgba(255,255,255,0.025), 0 0 0 160px rgba(255,255,255,0.018);
+        }
+
+        .single-ad::after {
+            inset: 0;
+            opacity: 0.16;
+            background-image:
+                linear-gradient(120deg, transparent 0 45%, var(--ad-primary) 45% 46%, transparent 46% 100%);
+            background-size: 86px 86px;
+        }
+
+        .single-ad-header {
+            display: flex;
+            position: relative;
+            z-index: 2;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .single-ad-logo-box {
+            display: flex;
+            width: 300px;
+            height: 92px;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 20px;
+            border: 2px solid var(--ad-primary);
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.15);
+        }
+
+        .single-ad-logo {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .single-ad-date {
+            color: var(--ad-muted);
+            font-size: 21px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+        }
+
+        .single-ad-heading {
+            position: relative;
+            z-index: 2;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .single-ad-eyebrow {
+            display: inline-flex;
+            padding: 8px 24px;
+            color: var(--ad-bg);
+            border-radius: 999px;
+            background: var(--ad-primary);
+            font-size: 22px;
+            font-weight: 1000;
+            letter-spacing: 0.14em;
+        }
+
+        .single-ad-heading h2 {
+            margin: 16px 0 0;
+            color: var(--ad-text);
+            font-size: 56px;
+            font-weight: 1000;
+            letter-spacing: 0.04em;
+            line-height: 1.08;
+            text-shadow: 0 5px 0 rgba(0,0,0,0.28);
+        }
+
+        .single-ad-product {
+            display: grid;
+            position: relative;
+            z-index: 2;
+            grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+            align-items: center;
+            gap: 38px;
+            min-height: 0;
+            margin-top: 24px;
+        }
+
+        .single-ad-image-stage {
+            display: flex;
+            min-width: 0;
+            min-height: 0;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            border: 3px solid var(--ad-primary);
+            border-radius: 28px;
+            background: var(--ad-card);
+            box-shadow: 0 14px 0 rgba(0,0,0,0.2), inset 0 0 0 8px rgba(0,0,0,0.035);
+        }
+
+        .single-ad-product-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 16px 16px rgba(0,0,0,0.2));
+        }
+
+        .single-ad-info {
+            min-width: 0;
+            text-align: center;
+        }
+
+        .single-ad-card-name {
+            display: -webkit-box;
+            overflow: hidden;
+            color: var(--ad-text);
+            font-size: 37px;
+            font-weight: 1000;
+            line-height: 1.22;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+        }
+
+        .single-ad-grade {
+            display: inline-flex;
+            margin-top: 20px;
+            padding: 8px 21px;
+            color: var(--ad-bg);
+            border: 2px solid var(--ad-secondary);
+            border-radius: 999px;
+            background: var(--ad-secondary);
+            font-size: 21px;
+            font-weight: 1000;
+        }
+
+        .single-ad-price-label {
+            margin-top: 30px;
+            color: var(--ad-muted);
+            font-size: 23px;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+        }
+
+        .single-ad-price {
+            display: flex;
+            min-height: 112px;
+            margin-top: 10px;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            color: #fff;
+            border: 4px solid #fff;
+            border-radius: 18px;
+            background: var(--ad-price);
+            box-shadow: 0 10px 0 rgba(0,0,0,0.24);
+            font-size: 60px;
+            font-weight: 1000;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .single-ad-footer {
+            display: grid;
+            position: relative;
+            z-index: 2;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            gap: 28px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 3px solid var(--ad-primary);
+        }
+
+        .single-ad-note {
+            color: var(--ad-muted);
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.5;
+        }
+
+        .single-ad-cta {
+            padding: 13px 21px;
+            color: var(--ad-bg);
+            border-radius: 8px;
+            background: var(--ad-primary);
+            font-size: 20px;
+            font-weight: 1000;
+            white-space: nowrap;
+        }
+
+        .single-landscape .single-ad-header,
+        .single-landscape .single-ad-heading,
+        .single-landscape .single-ad-footer {
+            grid-column: 1 / -1;
+        }
+
+        .single-landscape .single-ad-heading {
+            text-align: left;
+        }
+
+        .single-landscape .single-ad-product {
+            grid-column: 1 / -1;
+            grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+            margin-top: 20px;
+        }
+
+        .single-landscape .single-ad-image-stage {
+            height: 540px;
+        }
+
+        .single-landscape .single-ad-card-name {
+            font-size: 42px;
+        }
+
+        .single-portrait .single-ad-product {
+            grid-template-columns: 1fr;
+            grid-template-rows: minmax(0, 1fr) auto;
+            gap: 20px;
+        }
+
+        .single-portrait .single-ad-image-stage {
+            min-height: 0;
+        }
+
+        .single-portrait .single-ad-card-name {
+            font-size: 34px;
+            -webkit-line-clamp: 2;
+        }
+
+        .single-portrait .single-ad-grade {
+            margin-top: 12px;
+        }
+
+        .single-portrait .single-ad-price-label {
+            margin-top: 16px;
+        }
+
+        .single-portrait .single-ad-footer {
+            margin-top: 22px;
+        }
+
+        /* 単品告知専用 12デザイン */
+        .single-ad[data-design="blackgold"] {
+            --ad-bg: #080c14; --ad-surface: #111827; --ad-primary: #e7b94f;
+            --ad-secondary: #ffe9a4; --ad-price: #d90828; --ad-text: #fff;
+            --ad-muted: #e7dfcf; --ad-card: #fff;
+        }
+
+        .single-ad[data-design="redimpact"] {
+            --ad-bg: #250007; --ad-surface: #5a0011; --ad-primary: #ff183f;
+            --ad-secondary: #ffd9df; --ad-price: #ff183f; --ad-text: #fff;
+            --ad-muted: #ffe4e8; --ad-card: #fff8f8;
+        }
+        .single-ad[data-design="redimpact"]::after {
+            opacity: 0.26;
+            background: repeating-linear-gradient(135deg, transparent 0 34px, #ff183f 34px 44px);
+        }
+
+        .single-ad[data-design="royal"] {
+            --ad-bg: #071d43; --ad-surface: #0a3476; --ad-primary: #61a8ff;
+            --ad-secondary: #d6e9ff; --ad-price: #0d5fc1; --ad-text: #fff;
+            --ad-muted: #dbeaff; --ad-card: #fff;
+        }
+
+        .single-ad[data-design="clean"] {
+            --ad-bg: #f5f7fb; --ad-surface: #fff; --ad-primary: #172033;
+            --ad-secondary: #e4e8ef; --ad-price: #e60020; --ad-text: #172033;
+            --ad-muted: #596579; --ad-card: #fff;
+        }
+        .single-ad[data-design="clean"] {
+            border-width: 3px;
+        }
+        .single-ad[data-design="clean"]::after {
+            opacity: 0.06;
+        }
+        .single-ad[data-design="clean"] .single-ad-heading h2 {
+            text-shadow: none;
+        }
+
+        .single-ad[data-design="cyber"] {
+            --ad-bg: #090316; --ad-surface: #15102b; --ad-primary: #00eaff;
+            --ad-secondary: #ff21ce; --ad-price: #d500b7; --ad-text: #fff;
+            --ad-muted: #c8faff; --ad-card: #fff;
+        }
+        .single-ad[data-design="cyber"]::after {
+            opacity: 0.18;
+            background-image:
+                linear-gradient(rgba(0,234,255,0.65) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,33,206,0.65) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .single-ad[data-design="sakura"] {
+            --ad-bg: #fff0f6; --ad-surface: #fff; --ad-primary: #e26191;
+            --ad-secondary: #7b3852; --ad-price: #e52b68; --ad-text: #613245;
+            --ad-muted: #81586a; --ad-card: #fff;
+        }
+        .single-ad[data-design="sakura"]::after {
+            opacity: 0.2;
+            background:
+                radial-gradient(circle at 20% 20%, #e26191 0 5px, transparent 6px),
+                radial-gradient(circle at 70% 60%, #e26191 0 4px, transparent 5px);
+            background-size: 88px 88px, 110px 110px;
+        }
+
+        .single-ad[data-design="retro"] {
+            --ad-bg: #ead7b0; --ad-surface: #f8edcf; --ad-primary: #784525;
+            --ad-secondary: #f2c96f; --ad-price: #a74128; --ad-text: #3d291d;
+            --ad-muted: #6d513b; --ad-card: #fff9e9;
+        }
+        .single-ad[data-design="retro"]::after {
+            opacity: 0.16;
+            background-image: radial-gradient(#784525 1.5px, transparent 1.5px);
+            background-size: 18px 18px;
+        }
+
+        .single-ad[data-design="pop"] {
+            --ad-bg: #ffd91a; --ad-surface: #fff; --ad-primary: #1423a7;
+            --ad-secondary: #fff; --ad-price: #e60045; --ad-text: #111;
+            --ad-muted: #282828; --ad-card: #fff;
+        }
+        .single-ad[data-design="pop"] {
+            border-width: 12px;
+            border-color: #1423a7;
+        }
+        .single-ad[data-design="pop"] .single-ad-eyebrow,
+        .single-ad[data-design="pop"] .single-ad-cta {
+            color: #fff;
+        }
+
+        .single-ad[data-design="emerald"] {
+            --ad-bg: #06251b; --ad-surface: #0c4030; --ad-primary: #44d39b;
+            --ad-secondary: #d9ffef; --ad-price: #0a9f70; --ad-text: #fff;
+            --ad-muted: #d7f8eb; --ad-card: #f3fff9;
+        }
+
+        .single-ad[data-design="chrome"] {
+            --ad-bg: #e8edf4; --ad-surface: #fff; --ad-primary: #607086;
+            --ad-secondary: #fff; --ad-price: #39495e; --ad-text: #202938;
+            --ad-muted: #526174; --ad-card: #fff;
+        }
+        .single-ad[data-design="chrome"]::after {
+            opacity: 0.5;
+            background: linear-gradient(115deg, transparent 15%, rgba(255,255,255,0.9) 31%, transparent 47%, rgba(148,163,184,0.45) 65%, transparent 80%);
+        }
+
+        .single-ad[data-design="sunset"] {
+            --ad-bg: #3a1722; --ad-surface: #721f35; --ad-primary: #ff934f;
+            --ad-secondary: #ffe47f; --ad-price: #ef4b32; --ad-text: #fff8e9;
+            --ad-muted: #ffe6cb; --ad-card: #fff8e9;
+        }
+
+        .single-ad[data-design="mono"] {
+            --ad-bg: #0a0a0a; --ad-surface: #181818; --ad-primary: #fff;
+            --ad-secondary: #b9b9b9; --ad-price: #242424; --ad-text: #fff;
+            --ad-muted: #dedede; --ad-card: #fff;
+        }
+        .single-ad[data-design="mono"] {
+            border-width: 14px;
+        }
+        .single-ad[data-design="mono"]::after {
+            opacity: 0.08;
+            background: repeating-linear-gradient(90deg, #fff 0 2px, transparent 2px 24px);
+        }
+
         #loadingOverlay {
             position: fixed;
             z-index: 9999;
@@ -1621,6 +2566,10 @@
             .settings-grid {
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
+
+            .single-card-picker {
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+            }
         }
 
         @media (max-width: 1050px) {
@@ -1643,6 +2592,18 @@
             .export-note {
                 grid-column: 1 / -1;
                 grid-row: 1;
+            }
+
+            .single-card-picker {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .single-selection-toolbar {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .single-selection-toolbar input {
+                grid-column: 1 / -1;
             }
         }
 
@@ -1684,6 +2645,35 @@
                 padding-right: 10px;
                 padding-left: 10px;
             }
+
+            .view-tabs {
+                grid-template-columns: 1fr;
+            }
+
+            .single-selection {
+                margin-right: 16px;
+                margin-left: 16px;
+            }
+
+            .single-card-picker {
+                grid-template-columns: 1fr;
+            }
+
+            .single-selection-toolbar {
+                grid-template-columns: 1fr;
+            }
+
+            .single-selection-toolbar input,
+            .single-selection-toolbar button {
+                grid-column: auto;
+                width: 100%;
+            }
+
+            .single-preview-container {
+                align-items: flex-start;
+                padding-right: 10px;
+                padding-left: 10px;
+            }
         }
     </style>
 </head>
@@ -1695,7 +2685,22 @@
 </div>
 
 <div class="app-container">
-    <aside class="control-panel">
+    <nav class="view-tabs" aria-label="作成する画像の種類">
+        <button
+            class="view-tab is-active"
+            id="buylistTabButton"
+            type="button"
+            onclick="switchAppView('buylist')"
+        >買取表を作る</button>
+        <button
+            class="view-tab"
+            id="singleTabButton"
+            type="button"
+            onclick="switchAppView('single')"
+        >単品買取告知画像を作る</button>
+    </nav>
+
+    <aside class="control-panel" id="buylistControl" aria-label="買取表の設定">
         <div class="panel-heading">
             <h2>買取表ジェネレーター</h2>
             <p>設定内容を下のプレビューへ即時反映します</p>
@@ -1744,6 +2749,16 @@
                     <option value="pop">POP YELLOW｜明るい・インパクト</option>
                     <option value="retro">RETRO CLASSIC｜紙・ヴィンテージ</option>
                     <option value="hologram">HOLOGRAM｜シルバー・虹色</option>
+                    <option value="mono">MONOCHROME｜白黒・シンプル</option>
+                    <option value="ocean">OCEAN BLUE｜海・爽やか</option>
+                    <option value="sunset">SUNSET ORANGE｜夕焼け・温かい</option>
+                    <option value="mint">MINT GREEN｜清潔・やさしい</option>
+                    <option value="lavender">LAVENDER｜上品・かわいい</option>
+                    <option value="ice">ICE BLUE｜透明感・クール</option>
+                    <option value="chocolate">CHOCOLATE｜重厚・クラシック</option>
+                    <option value="japan">JAPANESE RED｜和風・紅白</option>
+                    <option value="galaxy">SPACE GALAXY｜宇宙・幻想的</option>
+                    <option value="lime">LIME BLACK｜蛍光・スポーティー</option>
                 </select>
                 <small class="help">プレビューとPNG出力の両方に反映されます。</small>
             </div>
@@ -1765,6 +2780,28 @@
                 </select>
                 <small class="help">プレビューとPNG出力の両方に反映されます。</small>
             </div>
+
+            <div class="control-group">
+                <label><span class="step">9</span>ページ分割</label>
+                <select id="pageSplitSelect">
+                    <option value="fill">60枚まで詰める</option>
+                    <option value="group_pack">掲載グループを優先</option>
+                    <option value="group_page">掲載グループごとに改ページ</option>
+                </select>
+                <small class="help">グループを跨ぐか、改ページするかを選べます。</small>
+            </div>
+
+            <div class="control-group">
+                <label><span class="step">10</span>カードの並び順</label>
+                <select id="sortOrderSelect">
+                    <option value="group_csv">掲載グループ順（CSV順）</option>
+                    <option value="csv_all">CSV全体の順番</option>
+                    <option value="price_desc">買取価格が高い順</option>
+                    <option value="price_asc">買取価格が安い順</option>
+                    <option value="name">カード名順</option>
+                </select>
+                <small class="help">グループ優先時はグループ内の並びに適用されます。</small>
+            </div>
         </div>
 
         <div class="template-manager">
@@ -1785,20 +2822,30 @@
             </div>
         </div>
 
+        <div class="image-status-panel" id="imageStatusPanel" data-state="idle">
+            <span class="image-status-dot"></span>
+            <span id="imageStatusText">CSVを読み込むと画像の状態を確認できます。</span>
+        </div>
+
         <div class="panel-actions">
             <div class="export-note">
                 複数ページは順番に連続ダウンロードされます。画像読込完了後に書き出してください。
             </div>
             <button class="btn-export" type="button" onclick="exportToImage()">一括でPNG書き出し</button>
+            <button class="btn-zip" type="button" onclick="exportToZip()">ZIPで一括保存</button>
         </div>
     </aside>
 
-    <main class="preview-container" id="pagesContainer">
+    <main class="preview-container" id="pagesContainer" aria-label="買取表プレビュー">
         <div class="preview-page">
             <div class="exportArea portrait" data-theme="luxury">
                 <div class="header-area">
                     <div class="logo-container">
-                        <img class="logo-img" alt="Shop Logo">
+                        <img
+                            class="logo-img"
+                            src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
+                            alt="Shop Logo"
+                        >
                     </div>
                     <div class="title-container">
                         <h1 class="title-text">PSA10 高価買取</h1>
@@ -1809,7 +2856,7 @@
                     </div>
                 </div>
 
-                <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
+                <div class="card-grid initial-card-grid">
                     <div class="empty-state">
                         <strong>CSVを読み込んでください</strong>
                         <span>カードデータがここに表示されます</span>
@@ -1827,6 +2874,125 @@
             </div>
         </div>
     </main>
+
+    <section class="single-maker view-hidden" id="singleMakerView">
+        <aside class="control-panel" aria-label="単品買取告知画像の設定">
+            <div class="panel-heading">
+                <h2>単品買取告知画像メーカー</h2>
+                <p>CSVの商品を複数選択すると、<strong>商品ごとに1枚ずつ</strong>告知画像を作成します</p>
+            </div>
+
+            <div class="settings-grid">
+                <div class="control-group">
+                    <label><span class="step">1</span>CSVファイル</label>
+                    <input type="file" id="singleCsvInput" accept=".csv,text/csv">
+                    <small class="help">買取表側で読込済みの場合は、そのまま共通利用できます。</small>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">2</span>ショップロゴ</label>
+                    <input type="file" id="singleLogoInput" accept="image/*">
+                    <small class="help">買取表側のロゴと共通です。</small>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">3</span>画像サイズ</label>
+                    <select id="singleSizeSelect">
+                        <option value="square">正方形｜1200 × 1200</option>
+                        <option value="portrait">縦長｜1080 × 1350</option>
+                        <option value="landscape">横長｜1500 × 1000</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">4</span>告知デザイン</label>
+                    <select id="singleDesignSelect">
+                        <option value="blackgold">BLACK GOLD｜高級・王道</option>
+                        <option value="redimpact">RED IMPACT｜強烈・高価買取</option>
+                        <option value="royal">ROYAL BLUE｜信頼・上品</option>
+                        <option value="clean">CLEAN WHITE｜明るい・シンプル</option>
+                        <option value="cyber">CYBER NEON｜限定・派手</option>
+                        <option value="sakura">SAKURA｜華やか・やさしい</option>
+                        <option value="retro">RETRO POSTER｜ヴィンテージ</option>
+                        <option value="pop">POP YELLOW｜明るい・目立つ</option>
+                        <option value="emerald">EMERALD｜重厚・落ち着き</option>
+                        <option value="chrome">CHROME｜銀・クール</option>
+                        <option value="sunset">SUNSET｜暖色・イベント感</option>
+                        <option value="mono">MONO｜白黒・スタイリッシュ</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">5</span>見出し</label>
+                    <input type="text" id="singleEyebrowInput" value="高価買取">
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">6</span>メインコピー</label>
+                    <input type="text" id="singleHeadlineInput" value="強化買取価格を公開中！">
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">7</span>金額上の文言</label>
+                    <input type="text" id="singlePriceLabelInput" value="買取価格">
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">8</span>右下の文言</label>
+                    <input type="text" id="singleCtaInput" value="お持ち込みお待ちしております">
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">9</span>注意書き</label>
+                    <textarea id="singleNoteInput" rows="3">※相場や在庫状況、状態等により価格が変動する場合がございます。</textarea>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">10</span>種別・グレード</label>
+                    <select id="singleGradeDisplaySelect">
+                        <option value="show">入力がある場合のみ表示</option>
+                        <option value="hide">表示しない</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="single-selection">
+                <div class="single-selection-toolbar">
+                    <input
+                        type="text"
+                        id="singleSearchInput"
+                        placeholder="カード名・種別・掲載グループで検索"
+                    >
+                    <button class="btn-soft" type="button" onclick="selectVisibleSingleCards()">検索結果を選択</button>
+                    <button class="btn-muted" type="button" onclick="clearSingleSelection()">選択解除</button>
+                    <button class="btn-muted" type="button" onclick="invertVisibleSingleCards()">選択を反転</button>
+                </div>
+                <div class="single-selection-count" id="singleSelectionCount">0件選択中</div>
+                <div class="single-card-picker" id="singleCardPicker">
+                    <div class="single-empty-picker">CSVを読み込むと商品を選択できます</div>
+                </div>
+            </div>
+
+            <div class="panel-actions">
+                <div class="export-note">
+                    選択した商品ごとに1枚ずつ生成します。多数選択する場合はZIP保存がおすすめです。
+                </div>
+                <button class="btn-export" type="button" onclick="exportSingleImages()">選択商品をPNG書き出し</button>
+                <button class="btn-zip" type="button" onclick="exportSingleZip()">選択商品をZIP保存</button>
+            </div>
+        </aside>
+
+        <section
+            class="single-preview-container"
+            id="singlePreviewContainer"
+            aria-label="単品買取告知画像プレビュー"
+        >
+            <div class="single-preview-empty">
+                <strong>商品を選択してください</strong>
+                <span>選択した商品ごとに告知画像のプレビューが表示されます</span>
+            </div>
+        </section>
+    </section>
 </div>
 
 <script>
@@ -1863,12 +3029,25 @@
 
     const THEMES = [
         "luxury", "fire", "royal", "clean", "neon",
-        "sakura", "forest", "pop", "retro", "hologram"
+        "sakura", "forest", "pop", "retro", "hologram",
+        "mono", "ocean", "sunset", "mint", "lavender",
+        "ice", "chocolate", "japan", "galaxy", "lime"
     ];
+    const PAGE_SPLIT_MODES = ["fill", "group_pack", "group_page"];
+    const SORT_MODES = ["group_csv", "csv_all", "price_desc", "price_asc", "name"];
+    const SINGLE_DESIGNS = [
+        "blackgold", "redimpact", "royal", "clean", "cyber", "sakura",
+        "retro", "pop", "emerald", "chrome", "sunset", "mono"
+    ];
+    const SINGLE_SIZES = ["square", "portrait", "landscape"];
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
+    const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
 
     let logoDataUrl = DEFAULT_LOGO;
     let globalCardData = [];
+    let imageLoadPromise = Promise.resolve();
+    const imagePromiseCache = new Map();
+    const selectedSingleCardIds = new Set();
 
     function createSvgDataUrl(svg) {
         return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.trim())}`;
@@ -1887,6 +3066,78 @@
         return String(number).padStart(2, "0");
     }
 
+    function collectSingleSettings() {
+        const design = document.getElementById("singleDesignSelect")?.value;
+        const size = document.getElementById("singleSizeSelect")?.value;
+        return {
+            design: SINGLE_DESIGNS.includes(design) ? design : "blackgold",
+            size: SINGLE_SIZES.includes(size) ? size : "square",
+            eyebrow: document.getElementById("singleEyebrowInput")?.value ?? "高価買取",
+            headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取価格を公開中！",
+            priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
+            cta: document.getElementById("singleCtaInput")?.value ?? "お持ち込みお待ちしております",
+            note: document.getElementById("singleNoteInput")?.value ?? "",
+            gradeDisplay:
+                document.getElementById("singleGradeDisplaySelect")?.value === "hide"
+                    ? "hide"
+                    : "show"
+        };
+    }
+
+    function applySingleSettings(settings = {}) {
+        if (SINGLE_DESIGNS.includes(settings.design)) {
+            document.getElementById("singleDesignSelect").value = settings.design;
+        }
+        if (SINGLE_SIZES.includes(settings.size)) {
+            document.getElementById("singleSizeSelect").value = settings.size;
+        }
+        if (typeof settings.eyebrow === "string") {
+            document.getElementById("singleEyebrowInput").value = settings.eyebrow;
+        }
+        if (typeof settings.headline === "string") {
+            document.getElementById("singleHeadlineInput").value = settings.headline;
+        }
+        if (typeof settings.priceLabel === "string") {
+            document.getElementById("singlePriceLabelInput").value = settings.priceLabel;
+        }
+        if (typeof settings.cta === "string") {
+            document.getElementById("singleCtaInput").value = settings.cta;
+        }
+        if (typeof settings.note === "string") {
+            document.getElementById("singleNoteInput").value = settings.note;
+        }
+        document.getElementById("singleGradeDisplaySelect").value =
+            settings.gradeDisplay === "hide" ? "hide" : "show";
+    }
+
+    function saveSingleSettings() {
+        try {
+            localStorage.setItem(
+                SINGLE_SETTINGS_STORAGE_KEY,
+                JSON.stringify(collectSingleSettings())
+            );
+        } catch (error) {
+            // 保存できない環境でも作成機能は継続する
+        }
+    }
+
+    function switchAppView(view) {
+        const isSingle = view === "single";
+        document.getElementById("buylistControl").classList.toggle("view-hidden", isSingle);
+        document.getElementById("pagesContainer").classList.toggle("view-hidden", isSingle);
+        document.getElementById("singleMakerView").classList.toggle("view-hidden", !isSingle);
+        document.getElementById("buylistTabButton").classList.toggle("is-active", !isSingle);
+        document.getElementById("singleTabButton").classList.toggle("is-active", isSingle);
+
+        requestAnimationFrame(() => {
+            if (isSingle) {
+                fitSinglePreviews();
+            } else {
+                fitPreviewPages();
+            }
+        });
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
         const today = new Date();
         const yyyy = today.getFullYear();
@@ -1900,6 +3151,8 @@
         const savedLayout = localStorage.getItem("kaitori_layout");
         const savedTheme = localStorage.getItem("kaitori_theme");
         const savedCardNameDisplay = localStorage.getItem("kaitori_card_name_display");
+        const savedPageSplit = localStorage.getItem("kaitori_page_split");
+        const savedSortOrder = localStorage.getItem("kaitori_sort_order");
 
         if (savedTitle) document.getElementById("titleInput").value = savedTitle;
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
@@ -1913,9 +3166,25 @@
         if (savedCardNameDisplay === "show" || savedCardNameDisplay === "hide") {
             document.getElementById("cardNameDisplaySelect").value = savedCardNameDisplay;
         }
+        if (PAGE_SPLIT_MODES.includes(savedPageSplit)) {
+            document.getElementById("pageSplitSelect").value = savedPageSplit;
+        }
+        if (SORT_MODES.includes(savedSortOrder)) {
+            document.getElementById("sortOrderSelect").value = savedSortOrder;
+        }
+
+        try {
+            applySingleSettings(
+                JSON.parse(localStorage.getItem(SINGLE_SETTINGS_STORAGE_KEY) || "{}")
+            );
+        } catch (error) {
+            applySingleSettings({});
+        }
 
         refreshTemplateSelect();
         updateAllPages();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
         requestAnimationFrame(fitPreviewPages);
     });
 
@@ -1938,6 +3207,9 @@
             layout: document.getElementById("layoutSelect").value,
             theme: getSelectedTheme(),
             cardNameDisplay: getCardNameDisplay(),
+            pageSplit: getPageSplitMode(),
+            sortOrder: getSortOrder(),
+            singleAd: collectSingleSettings(),
             savedAt: new Date().toISOString()
         };
     }
@@ -1949,6 +3221,8 @@
         localStorage.setItem("kaitori_layout", settings.layout);
         localStorage.setItem("kaitori_theme", settings.theme);
         localStorage.setItem("kaitori_card_name_display", settings.cardNameDisplay);
+        localStorage.setItem("kaitori_page_split", settings.pageSplit);
+        localStorage.setItem("kaitori_sort_order", settings.sortOrder);
     }
 
     function refreshTemplateSelect(selectedName = "") {
@@ -2031,11 +3305,20 @@
         }
         document.getElementById("cardNameDisplaySelect").value =
             settings.cardNameDisplay === "hide" ? "hide" : "show";
+        document.getElementById("pageSplitSelect").value =
+            PAGE_SPLIT_MODES.includes(settings.pageSplit) ? settings.pageSplit : "fill";
+        document.getElementById("sortOrderSelect").value =
+            SORT_MODES.includes(settings.sortOrder) ? settings.sortOrder : "group_csv";
+        if (settings.singleAd && typeof settings.singleAd === "object") {
+            applySingleSettings(settings.singleAd);
+            saveSingleSettings();
+        }
         document.getElementById("templateNameInput").value = name;
 
         saveLastUsedSettings(collectCurrentTemplateSettings());
         updateAllPages();
         applySelectedLayout();
+        renderSingleAdPreviews();
         alert(`テンプレート「${name}」を呼び出しました。`);
     }
 
@@ -2078,7 +3361,7 @@
         document.querySelectorAll(".disclaimer-text").forEach(el => {
             el.innerHTML = disclaimerHtml;
         });
-        document.querySelectorAll(".logo-img").forEach(el => {
+        document.querySelectorAll(".logo-img, .single-ad-logo").forEach(el => {
             el.src = logoDataUrl;
         });
         applyThemeToPages();
@@ -2103,6 +3386,16 @@
         return document.getElementById("cardNameDisplaySelect").value === "hide"
             ? "hide"
             : "show";
+    }
+
+    function getPageSplitMode() {
+        const mode = document.getElementById("pageSplitSelect").value;
+        return PAGE_SPLIT_MODES.includes(mode) ? mode : "fill";
+    }
+
+    function getSortOrder() {
+        const order = document.getElementById("sortOrderSelect").value;
+        return SORT_MODES.includes(order) ? order : "group_csv";
     }
 
     function applyCardNameVisibility() {
@@ -2140,10 +3433,46 @@
 
     document.getElementById("titleInput").addEventListener("input", updateAllPages);
     document.getElementById("disclaimerInput").addEventListener("input", updateAllPages);
-    document.getElementById("dateInput").addEventListener("change", updateAllPages);
+    document.getElementById("dateInput").addEventListener("change", () => {
+        updateAllPages();
+        renderSingleAdPreviews();
+    });
     document.getElementById("themeSelect").addEventListener("change", applyThemeToPages);
     document.getElementById("cardNameDisplaySelect")
         .addEventListener("change", applyCardNameVisibility);
+    document.getElementById("pageSplitSelect").addEventListener("change", () => {
+        if (globalCardData.length > 0) renderPages();
+    });
+    document.getElementById("sortOrderSelect").addEventListener("change", () => {
+        if (globalCardData.length > 0) renderPages();
+    });
+
+    document.getElementById("singleSearchInput")
+        .addEventListener("input", renderSingleCardPicker);
+
+    [
+        "singleEyebrowInput",
+        "singleHeadlineInput",
+        "singlePriceLabelInput",
+        "singleCtaInput",
+        "singleNoteInput"
+    ].forEach(id => {
+        document.getElementById(id).addEventListener("input", () => {
+            saveSingleSettings();
+            renderSingleAdPreviews();
+        });
+    });
+
+    [
+        "singleSizeSelect",
+        "singleDesignSelect",
+        "singleGradeDisplaySelect"
+    ].forEach(id => {
+        document.getElementById(id).addEventListener("change", () => {
+            saveSingleSettings();
+            renderSingleAdPreviews();
+        });
+    });
 
     function applySelectedLayout() {
         if (globalCardData.length > 0) {
@@ -2185,7 +3514,29 @@
         reader.readAsDataURL(file);
     });
 
+    document.getElementById("singleLogoInput").addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = loadEvent => {
+            logoDataUrl = loadEvent.target.result;
+            updateAllPages();
+            renderSingleAdPreviews();
+        };
+        reader.readAsDataURL(file);
+    });
+
     document.getElementById("csvInput").addEventListener("change", event => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = loadEvent => parseCSV(loadEvent.target.result);
+        reader.readAsText(file);
+    });
+
+    document.getElementById("singleCsvInput").addEventListener("change", event => {
         const file = event.target.files[0];
         if (!file) return;
 
@@ -2222,6 +3573,11 @@
         const cleanText = String(text).replace(/^\uFEFF/, "");
         const lines = cleanText.split(/\r?\n/);
         globalCardData = [];
+        selectedSingleCardIds.clear();
+        imagePromiseCache.clear();
+        updateImageStatus();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
 
         let headerIndex = -1;
         const headerMap = {};
@@ -2284,16 +3640,22 @@
             if (!price || price === "-" || price === "終了" || price === "0" || price === "¥0") continue;
 
             globalCardData.push({
+                id: globalCardData.length,
+                originalIndex: globalCardData.length,
                 group,
                 status,
                 name,
                 type,
                 price,
                 imgUrl,
-                resolvedImg: null
+                resolvedImg: null,
+                imageState: imgUrl ? "pending" : "missing"
             });
         }
 
+        updateImageStatus();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
         if (globalCardData.length > 0) {
             renderPages();
         } else {
@@ -2317,6 +3679,253 @@
             </div>
         `;
         requestAnimationFrame(fitPreviewPages);
+    }
+
+    function getFilteredSingleCards() {
+        const query = String(document.getElementById("singleSearchInput")?.value || "")
+            .trim()
+            .toLocaleLowerCase("ja");
+        if (!query) return globalCardData;
+
+        return globalCardData.filter(card =>
+            [card.name, card.type, card.group, card.price]
+                .some(value => String(value || "").toLocaleLowerCase("ja").includes(query))
+        );
+    }
+
+    function renderSingleCardPicker() {
+        const picker = document.getElementById("singleCardPicker");
+        const count = document.getElementById("singleSelectionCount");
+        if (!picker || !count) return;
+
+        const cards = getFilteredSingleCards();
+        count.textContent =
+            `${selectedSingleCardIds.size}件選択中` +
+            (globalCardData.length ? `｜全${globalCardData.length}件` : "");
+
+        if (globalCardData.length === 0) {
+            picker.innerHTML =
+                '<div class="single-empty-picker">CSVを読み込むと商品を選択できます</div>';
+            return;
+        }
+
+        if (cards.length === 0) {
+            picker.innerHTML =
+                '<div class="single-empty-picker">検索条件に一致する商品がありません</div>';
+            return;
+        }
+
+        picker.innerHTML = cards.map(card => {
+            const selected = selectedSingleCardIds.has(card.id);
+            const imageSource = card.resolvedImg || LOADING_IMAGE;
+            const name = escapeHtml(card.name || "カード名なし");
+            const type = escapeHtml(card.type || "");
+            const group = escapeHtml(card.group || "");
+            const price = escapeHtml(card.price || "");
+            const imageUrl = escapeHtml(card.imgUrl || "");
+
+            return `
+                <label
+                    class="single-picker-item${selected ? " is-selected" : ""}"
+                    data-visible-card-id="${card.id}"
+                >
+                    <input
+                        type="checkbox"
+                        ${selected ? "checked" : ""}
+                        onchange="toggleSingleCardSelection(${card.id}, this.checked)"
+                    >
+                    <img
+                        class="single-picker-thumb dynamic-img"
+                        src="${imageSource}"
+                        data-url="${imageUrl}"
+                        data-card-id="${card.id}"
+                        alt="${name}"
+                        crossorigin="anonymous"
+                    >
+                    <span class="single-picker-copy">
+                        <span class="single-picker-name">${name}</span>
+                        <span class="single-picker-meta">${group}${type ? `｜${type}` : ""}</span>
+                        <span class="single-picker-price">${price}</span>
+                    </span>
+                </label>
+            `;
+        }).join("");
+
+        if (globalCardData.some(card => !card.resolvedImg && card.imgUrl)) {
+            imageLoadPromise = loadMissingImagesFast();
+        }
+    }
+
+    function toggleSingleCardSelection(cardId, checked) {
+        if (checked) {
+            selectedSingleCardIds.add(Number(cardId));
+        } else {
+            selectedSingleCardIds.delete(Number(cardId));
+        }
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+    }
+
+    function selectVisibleSingleCards() {
+        getFilteredSingleCards().forEach(card => selectedSingleCardIds.add(card.id));
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+    }
+
+    function clearSingleSelection() {
+        selectedSingleCardIds.clear();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+    }
+
+    function invertVisibleSingleCards() {
+        getFilteredSingleCards().forEach(card => {
+            if (selectedSingleCardIds.has(card.id)) {
+                selectedSingleCardIds.delete(card.id);
+            } else {
+                selectedSingleCardIds.add(card.id);
+            }
+        });
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+    }
+
+    function getSelectedSingleCards() {
+        return globalCardData
+            .filter(card => selectedSingleCardIds.has(card.id))
+            .sort((a, b) => a.originalIndex - b.originalIndex);
+    }
+
+    function normalizeSinglePriceDisplay(price) {
+        const text = String(price || "").trim();
+        if (!text) return "";
+        if (/[¥￥円]/.test(text)) return text;
+        const number = parsePriceNumber(text);
+        return number > 0 ? `¥${number.toLocaleString("ja-JP")}` : text;
+    }
+
+    function renderSingleAdPreviews() {
+        const container = document.getElementById("singlePreviewContainer");
+        if (!container) return;
+
+        const cards = getSelectedSingleCards();
+        if (cards.length === 0) {
+            container.innerHTML = `
+                <div class="single-preview-empty">
+                    <strong>商品を選択してください</strong>
+                    <span>選択した商品ごとに告知画像のプレビューが表示されます</span>
+                </div>
+            `;
+            return;
+        }
+
+        const settings = collectSingleSettings();
+        const dateText = formatDate(document.getElementById("dateInput").value);
+        const noteHtml = escapeHtml(settings.note).replace(/\n/g, "<br>");
+
+        container.innerHTML = cards.map((card, index) => {
+            const name = escapeHtml(card.name || "カード名なし");
+            const grade = escapeHtml(card.type || "");
+            const gradeHtml =
+                settings.gradeDisplay === "show" && grade
+                    ? `<div class="single-ad-grade">${grade}</div>`
+                    : "";
+            const imageSource = card.resolvedImg || LOADING_IMAGE;
+            const imageUrl = escapeHtml(card.imgUrl || "");
+            const price = escapeHtml(normalizeSinglePriceDisplay(card.price));
+
+            return `
+                <div class="single-preview-shell">
+                    <article
+                        class="single-ad single-${settings.size}"
+                        data-design="${settings.design}"
+                        data-single-card-id="${card.id}"
+                        id="singleAd_${index + 1}"
+                    >
+                        <header class="single-ad-header">
+                            <div class="single-ad-logo-box">
+                                <img class="single-ad-logo" src="${logoDataUrl}" alt="Shop Logo">
+                            </div>
+                            <div class="single-ad-date">${escapeHtml(dateText)} UPDATED</div>
+                        </header>
+
+                        <div class="single-ad-heading">
+                            <div class="single-ad-eyebrow">${escapeHtml(settings.eyebrow)}</div>
+                            <h2>${escapeHtml(settings.headline)}</h2>
+                        </div>
+
+                        <div class="single-ad-product">
+                            <div class="single-ad-image-stage">
+                                <img
+                                    class="single-ad-product-image dynamic-img"
+                                    src="${imageSource}"
+                                    data-url="${imageUrl}"
+                                    data-card-id="${card.id}"
+                                    alt="${name}"
+                                    crossorigin="anonymous"
+                                >
+                            </div>
+                            <div class="single-ad-info">
+                                <div class="single-ad-card-name">${name}</div>
+                                ${gradeHtml}
+                                <div class="single-ad-price-label">${escapeHtml(settings.priceLabel)}</div>
+                                <div class="single-ad-price"><span>${price}</span></div>
+                            </div>
+                        </div>
+
+                        <footer class="single-ad-footer">
+                            <div class="single-ad-note">${noteHtml}</div>
+                            <div class="single-ad-cta">${escapeHtml(settings.cta)}</div>
+                        </footer>
+                    </article>
+                </div>
+            `;
+        }).join("");
+
+        requestAnimationFrame(() => {
+            adjustSingleAdPriceSizes();
+            fitSinglePreviews();
+            imageLoadPromise = loadMissingImagesFast();
+        });
+    }
+
+    function adjustSingleAdPriceSizes(root = document) {
+        root.querySelectorAll(".single-ad-price").forEach(container => {
+            const text = container.querySelector("span");
+            if (!text) return;
+            text.style.transform = "none";
+            const availableWidth = Math.max(0, container.clientWidth - 36);
+            const textWidth = text.scrollWidth;
+            if (!availableWidth || !textWidth || textWidth <= availableWidth) return;
+            text.style.transformOrigin = "center";
+            text.style.transform = `scale(${availableWidth / textWidth})`;
+        });
+    }
+
+    function fitSinglePreviews() {
+        const container = document.getElementById("singlePreviewContainer");
+        if (!container || container.classList.contains("view-hidden")) return;
+
+        const style = getComputedStyle(container);
+        const availableWidth = Math.max(
+            280,
+            container.clientWidth -
+            parseFloat(style.paddingLeft) -
+            parseFloat(style.paddingRight) -
+            4
+        );
+
+        container.querySelectorAll(".single-preview-shell").forEach(shell => {
+            const ad = shell.querySelector(".single-ad");
+            if (!ad) return;
+            const width = ad.offsetWidth;
+            const height = ad.offsetHeight;
+            if (!width || !height) return;
+            const scale = Math.min(1, availableWidth / width);
+            ad.style.transform = `scale(${scale})`;
+            shell.style.width = `${Math.floor(width * scale)}px`;
+            shell.style.height = `${Math.floor(height * scale)}px`;
+        });
     }
 
     async function fetchImageBase64(imgUrl) {
@@ -2398,7 +4007,46 @@
         });
     }
 
+    function parsePriceNumber(price) {
+        const normalized = String(price ?? "")
+            .replace(/[０-９]/g, digit =>
+                String.fromCharCode(digit.charCodeAt(0) - 0xFEE0)
+            )
+            .replace(/[^\d.-]/g, "");
+        const value = Number(normalized);
+        return Number.isFinite(value) ? value : 0;
+    }
+
+    function sortCards(cards, sortOrder) {
+        const sorted = [...cards];
+
+        if (sortOrder === "price_desc") {
+            sorted.sort((a, b) =>
+                parsePriceNumber(b.price) - parsePriceNumber(a.price) ||
+                a.originalIndex - b.originalIndex
+            );
+        } else if (sortOrder === "price_asc") {
+            sorted.sort((a, b) =>
+                parsePriceNumber(a.price) - parsePriceNumber(b.price) ||
+                a.originalIndex - b.originalIndex
+            );
+        } else if (sortOrder === "name") {
+            sorted.sort((a, b) =>
+                String(a.name).localeCompare(String(b.name), "ja", {
+                    numeric: true,
+                    sensitivity: "base"
+                }) || a.originalIndex - b.originalIndex
+            );
+        } else {
+            sorted.sort((a, b) => a.originalIndex - b.originalIndex);
+        }
+
+        return sorted;
+    }
+
     function buildPages(maxPerPage) {
+        const splitMode = getPageSplitMode();
+        const sortOrder = getSortOrder();
         const groupedMap = new Map();
         globalCardData.forEach(card => {
             if (!groupedMap.has(card.group)) groupedMap.set(card.group, []);
@@ -2406,17 +4054,40 @@
         });
 
         const sortedGroups = Array.from(groupedMap.entries())
-            .sort(([groupA], [groupB]) => compareGroupNames(groupA, groupB));
+            .sort(([groupA], [groupB]) => compareGroupNames(groupA, groupB))
+            .map(([group, cards]) => [group, sortCards(cards, sortOrder)]);
+
+        if (splitMode === "fill") {
+            let orderedCards;
+            if (sortOrder === "group_csv") {
+                orderedCards = sortedGroups.flatMap(([, cards]) => cards);
+            } else if (sortOrder === "csv_all") {
+                orderedCards = sortCards(globalCardData, "csv_all");
+            } else {
+                orderedCards = sortCards(globalCardData, sortOrder);
+            }
+
+            const filledPages = [];
+            for (let i = 0; i < orderedCards.length; i += maxPerPage) {
+                filledPages.push(orderedCards.slice(i, i + maxPerPage));
+            }
+            return filledPages;
+        }
 
         const pages = [];
         let currentPage = [];
 
+        if (splitMode === "group_page") {
+            for (const [, items] of sortedGroups) {
+                for (let i = 0; i < items.length; i += maxPerPage) {
+                    pages.push(items.slice(i, i + maxPerPage));
+                }
+            }
+            return pages;
+        }
+
         for (const [, items] of sortedGroups) {
-            if (
-                currentPage.length > 0 &&
-                currentPage.length < 24 &&
-                currentPage.length + items.length <= maxPerPage
-            ) {
+            if (items.length <= maxPerPage && currentPage.length + items.length <= maxPerPage) {
                 currentPage = currentPage.concat(items);
                 continue;
             }
@@ -2487,6 +4158,7 @@
                                 src="${imageSource}"
                                 class="dynamic-img"
                                 data-url="${imageUrl}"
+                                data-card-id="${card.id}"
                                 alt="${name || "Card"}"
                                 crossorigin="anonymous"
                             >
@@ -2540,7 +4212,7 @@
         requestAnimationFrame(() => {
             adjustTextSize();
             fitPreviewPages();
-            loadMissingImagesFast();
+            imageLoadPromise = loadMissingImagesFast();
         });
     }
 
@@ -2568,13 +4240,46 @@
         });
     }
 
+    function updateImageStatus() {
+        const panel = document.getElementById("imageStatusPanel");
+        const text = document.getElementById("imageStatusText");
+        if (!panel || !text) return;
+
+        const total = globalCardData.length;
+        if (total === 0) {
+            panel.dataset.state = "idle";
+            text.textContent = "CSVを読み込むと画像の状態を確認できます。";
+            return;
+        }
+
+        const counts = globalCardData.reduce((result, card) => {
+            const state = card.imageState || "pending";
+            result[state] = (result[state] || 0) + 1;
+            return result;
+        }, {});
+
+        const loaded = counts.loaded || 0;
+        const loading = (counts.loading || 0) + (counts.pending || 0);
+        const failed = counts.error || 0;
+        const missing = counts.missing || 0;
+
+        if (loading > 0) {
+            panel.dataset.state = "loading";
+        } else if (failed > 0 || missing > 0) {
+            panel.dataset.state = "warning";
+        } else {
+            panel.dataset.state = "ready";
+        }
+
+        text.textContent =
+            `画像：完了 ${loaded}/${total}件` +
+            `｜読込中 ${loading}件｜失敗 ${failed}件｜画像なし ${missing}件`;
+    }
+
     async function loadMissingImagesFast() {
         const imageElements = Array.from(document.querySelectorAll(".dynamic-img"));
-        const cardLookup = new Map();
-
-        globalCardData.forEach(card => {
-            if (!cardLookup.has(card.imgUrl)) cardLookup.set(card.imgUrl, card);
-        });
+        const cardLookup = new Map(globalCardData.map(card => [String(card.id), card]));
+        updateImageStatus();
 
         const batchSize = 10;
         for (let i = 0; i < imageElements.length; i += batchSize) {
@@ -2582,19 +4287,41 @@
 
             await Promise.all(batch.map(async imageElement => {
                 const originalUrl = imageElement.getAttribute("data-url");
-                const card = cardLookup.get(originalUrl);
+                const cardId = imageElement.getAttribute("data-card-id");
+                const card = cardLookup.get(cardId);
 
                 if (!card) {
                     imageElement.src = NO_IMAGE;
                     return;
                 }
 
-                if (!card.resolvedImg) {
-                    card.resolvedImg = await fetchImageBase64(originalUrl);
+                if (!originalUrl) {
+                    card.resolvedImg = NO_IMAGE;
+                    card.imageState = "missing";
+                    imageElement.src = NO_IMAGE;
+                    return;
                 }
-                imageElement.src = card.resolvedImg || NO_IMAGE;
+
+                if (card.resolvedImg) {
+                    imageElement.src = card.resolvedImg;
+                    return;
+                }
+
+                card.imageState = "loading";
+                if (!imagePromiseCache.has(originalUrl)) {
+                    imagePromiseCache.set(originalUrl, fetchImageBase64(originalUrl));
+                }
+
+                const resolvedImage = await imagePromiseCache.get(originalUrl);
+                card.resolvedImg = resolvedImage || NO_IMAGE;
+                card.imageState = card.resolvedImg === NO_IMAGE ? "error" : "loaded";
+                imageElement.src = card.resolvedImg;
             }));
+
+            updateImageStatus();
         }
+
+        updateImageStatus();
     }
 
     async function waitForImages(rootElement) {
@@ -2608,8 +4335,103 @@
         }));
     }
 
+    async function ensureImagesReadyForExport() {
+        const hasUnfinishedImages = globalCardData.some(card =>
+            card.imageState === "pending" || card.imageState === "loading"
+        );
+        if (hasUnfinishedImages) {
+            imageLoadPromise = loadMissingImagesFast();
+        }
+        await imageLoadPromise;
+    }
+
+    async function renderAreaToCanvas(targetArea) {
+        const exportWidth = targetArea.offsetWidth;
+        const exportHeight = targetArea.offsetHeight;
+        const pageBackground = getComputedStyle(targetArea).backgroundColor;
+
+        const exportStage = document.createElement("div");
+        exportStage.setAttribute("aria-hidden", "true");
+        Object.assign(exportStage.style, {
+            position: "fixed",
+            top: "0",
+            left: "0",
+            width: `${exportWidth}px`,
+            height: `${exportHeight}px`,
+            overflow: "hidden",
+            pointerEvents: "none",
+            zIndex: "9998",
+            background: pageBackground
+        });
+
+        const exportClone = targetArea.cloneNode(true);
+        exportClone.removeAttribute("id");
+        Object.assign(exportClone.style, {
+            position: "relative",
+            top: "0",
+            left: "0",
+            width: `${exportWidth}px`,
+            height: `${exportHeight}px`,
+            margin: "0",
+            transform: "none",
+            background: pageBackground
+        });
+
+        exportStage.appendChild(exportClone);
+        document.body.appendChild(exportStage);
+
+        try {
+            await waitForImages(exportClone);
+            adjustTextSize(exportClone);
+            adjustSingleAdPriceSizes(exportClone);
+            await new Promise(resolve => setTimeout(resolve, 250));
+
+            return await html2canvas(exportClone, {
+                useCORS: true,
+                allowTaint: false,
+                backgroundColor: pageBackground,
+                scale: 2,
+                width: exportWidth,
+                height: exportHeight,
+                windowWidth: exportWidth,
+                windowHeight: exportHeight,
+                scrollX: 0,
+                scrollY: 0,
+                logging: false
+            });
+        } finally {
+            exportStage.remove();
+        }
+    }
+
+    function canvasToBlob(canvas) {
+        return new Promise((resolve, reject) => {
+            canvas.toBlob(blob => {
+                if (blob) resolve(blob);
+                else reject(new Error("PNGデータを作成できませんでした。"));
+            }, "image/png");
+        });
+    }
+
+    function downloadBlob(blob, fileName) {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = fileName;
+        link.href = url;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+    }
+
+    function sanitizeFileName(value) {
+        return String(value || "商品")
+            .replace(/[\\/:*?"<>|]/g, "_")
+            .replace(/\s+/g, " ")
+            .trim()
+            .slice(0, 70) || "商品";
+    }
+
     async function exportToImage() {
-        const areas = document.querySelectorAll(".exportArea");
+        const areas = Array.from(document.querySelectorAll(".exportArea"));
         if (areas.length === 0) return;
         if (typeof html2canvas !== "function") {
             alert("画像書き出し機能を読み込めませんでした。通信環境をご確認ください。");
@@ -2621,72 +4443,20 @@
         overlay.style.display = "flex";
 
         try {
+            overlayText.textContent = "画像の読み込み完了を確認しています...";
+            await ensureImagesReadyForExport();
+
             for (let i = 0; i < areas.length; i++) {
                 overlayText.textContent = `${i + 1}枚目を生成中...（${i + 1}/${areas.length}）`;
-                const targetArea = areas[i];
-                const exportWidth = targetArea.offsetWidth;
-                const exportHeight = targetArea.offsetHeight;
-                const pageBackground = getComputedStyle(targetArea).backgroundColor;
-
-                const exportStage = document.createElement("div");
-                exportStage.setAttribute("aria-hidden", "true");
-                Object.assign(exportStage.style, {
-                    position: "fixed",
-                    top: "0",
-                    left: "0",
-                    width: `${exportWidth}px`,
-                    height: `${exportHeight}px`,
-                    overflow: "hidden",
-                    pointerEvents: "none",
-                    zIndex: "9998",
-                    background: pageBackground
-                });
-
-                const exportClone = targetArea.cloneNode(true);
-                exportClone.removeAttribute("id");
-                Object.assign(exportClone.style, {
-                    position: "relative",
-                    top: "0",
-                    left: "0",
-                    width: `${exportWidth}px`,
-                    height: `${exportHeight}px`,
-                    margin: "0",
-                    transform: "none",
-                    background: pageBackground
-                });
-
-                exportStage.appendChild(exportClone);
-                document.body.appendChild(exportStage);
-
-                try {
-                    await waitForImages(exportClone);
-                    adjustTextSize(exportClone);
-                    await new Promise(resolve => setTimeout(resolve, 250));
-
-                    const canvas = await html2canvas(exportClone, {
-                        useCORS: true,
-                        allowTaint: false,
-                        backgroundColor: pageBackground,
-                        scale: 2,
-                        width: exportWidth,
-                        height: exportHeight,
-                        windowWidth: exportWidth,
-                        windowHeight: exportHeight,
-                        scrollX: 0,
-                        scrollY: 0,
-                        logging: false
-                    });
-
-                    const link = document.createElement("a");
-                    link.download =
-                        `買取表_${document.getElementById("dateInput").value}_${i + 1}枚目.png`;
-                    link.href = canvas.toDataURL("image/png");
-                    link.click();
-
-                    await new Promise(resolve => setTimeout(resolve, 700));
-                } finally {
-                    exportStage.remove();
-                }
+                const canvas = await renderAreaToCanvas(areas[i]);
+                const link = document.createElement("a");
+                link.download =
+                    `買取表_${document.getElementById("dateInput").value}_${i + 1}枚目.png`;
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                canvas.width = 1;
+                canvas.height = 1;
+                await new Promise(resolve => setTimeout(resolve, 700));
             }
         } catch (error) {
             console.error(error);
@@ -2697,9 +4467,168 @@
         }
     }
 
+    async function exportToZip() {
+        const areas = Array.from(document.querySelectorAll(".exportArea"));
+        if (areas.length === 0) return;
+        if (typeof html2canvas !== "function" || typeof JSZip !== "function") {
+            alert("ZIP書き出し機能を読み込めませんでした。通信環境をご確認ください。");
+            return;
+        }
+
+        const overlay = document.getElementById("loadingOverlay");
+        const overlayText = document.getElementById("loadingText");
+        const dateValue = document.getElementById("dateInput").value;
+        overlay.style.display = "flex";
+
+        try {
+            overlayText.textContent = "画像の読み込み完了を確認しています...";
+            await ensureImagesReadyForExport();
+
+            const zip = new JSZip();
+            for (let i = 0; i < areas.length; i++) {
+                overlayText.textContent =
+                    `ZIP用画像を生成中...（${i + 1}/${areas.length}）`;
+                const canvas = await renderAreaToCanvas(areas[i]);
+                const blob = await canvasToBlob(canvas);
+                zip.file(`買取表_${dateValue}_${i + 1}枚目.png`, blob);
+                canvas.width = 1;
+                canvas.height = 1;
+            }
+
+            overlayText.textContent = "ZIPファイルを作成中...";
+            const zipBlob = await zip.generateAsync(
+                {
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: 6 }
+                },
+                metadata => {
+                    overlayText.textContent =
+                        `ZIPファイルを作成中... ${Math.round(metadata.percent)}%`;
+                }
+            );
+
+            downloadBlob(zipBlob, `買取表_${dateValue}.zip`);
+        } catch (error) {
+            console.error(error);
+            alert(`ZIPの生成に失敗しました。\n詳細: ${error.message || error}`);
+        } finally {
+            overlay.style.display = "none";
+            overlayText.textContent = "画像を生成中です...";
+        }
+    }
+
+    async function exportSingleImages() {
+        const areas = Array.from(
+            document.querySelectorAll("#singlePreviewContainer .single-ad")
+        );
+        if (areas.length === 0) {
+            alert("書き出す商品を選択してください。");
+            return;
+        }
+        if (typeof html2canvas !== "function") {
+            alert("画像書き出し機能を読み込めませんでした。通信環境をご確認ください。");
+            return;
+        }
+
+        const cards = getSelectedSingleCards();
+        const overlay = document.getElementById("loadingOverlay");
+        const overlayText = document.getElementById("loadingText");
+        const dateValue = document.getElementById("dateInput").value;
+        overlay.style.display = "flex";
+
+        try {
+            overlayText.textContent = "商品画像の読み込み完了を確認しています...";
+            await ensureImagesReadyForExport();
+
+            for (let i = 0; i < areas.length; i++) {
+                overlayText.textContent =
+                    `単品告知画像を生成中...（${i + 1}/${areas.length}）`;
+                const canvas = await renderAreaToCanvas(areas[i]);
+                const blob = await canvasToBlob(canvas);
+                const cardName = sanitizeFileName(cards[i]?.name);
+                downloadBlob(
+                    blob,
+                    `単品買取_${dateValue}_${String(i + 1).padStart(2, "0")}_${cardName}.png`
+                );
+                canvas.width = 1;
+                canvas.height = 1;
+                await new Promise(resolve => setTimeout(resolve, 650));
+            }
+        } catch (error) {
+            console.error(error);
+            alert(`単品告知画像の生成に失敗しました。\n詳細: ${error.message || error}`);
+        } finally {
+            overlay.style.display = "none";
+            overlayText.textContent = "画像を生成中です...";
+        }
+    }
+
+    async function exportSingleZip() {
+        const areas = Array.from(
+            document.querySelectorAll("#singlePreviewContainer .single-ad")
+        );
+        if (areas.length === 0) {
+            alert("ZIPに保存する商品を選択してください。");
+            return;
+        }
+        if (typeof html2canvas !== "function" || typeof JSZip !== "function") {
+            alert("ZIP書き出し機能を読み込めませんでした。通信環境をご確認ください。");
+            return;
+        }
+
+        const cards = getSelectedSingleCards();
+        const overlay = document.getElementById("loadingOverlay");
+        const overlayText = document.getElementById("loadingText");
+        const dateValue = document.getElementById("dateInput").value;
+        overlay.style.display = "flex";
+
+        try {
+            overlayText.textContent = "商品画像の読み込み完了を確認しています...";
+            await ensureImagesReadyForExport();
+
+            const zip = new JSZip();
+            for (let i = 0; i < areas.length; i++) {
+                overlayText.textContent =
+                    `ZIP用の単品告知画像を生成中...（${i + 1}/${areas.length}）`;
+                const canvas = await renderAreaToCanvas(areas[i]);
+                const blob = await canvasToBlob(canvas);
+                const cardName = sanitizeFileName(cards[i]?.name);
+                zip.file(
+                    `単品買取_${String(i + 1).padStart(2, "0")}_${cardName}.png`,
+                    blob
+                );
+                canvas.width = 1;
+                canvas.height = 1;
+            }
+
+            overlayText.textContent = "ZIPファイルを作成中...";
+            const zipBlob = await zip.generateAsync(
+                {
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: 6 }
+                },
+                metadata => {
+                    overlayText.textContent =
+                        `ZIPファイルを作成中... ${Math.round(metadata.percent)}%`;
+                }
+            );
+
+            downloadBlob(zipBlob, `単品買取告知_${dateValue}.zip`);
+        } catch (error) {
+            console.error(error);
+            alert(`単品告知ZIPの生成に失敗しました。\n詳細: ${error.message || error}`);
+        } finally {
+            overlay.style.display = "none";
+            overlayText.textContent = "画像を生成中です...";
+        }
+    }
+
     window.addEventListener("resize", () => {
         adjustTextSize();
         fitPreviewPages();
+        fitSinglePreviews();
     });
 </script>
 </body>
