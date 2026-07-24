@@ -1,0 +1,355 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>買取表ジェネレーター</title>
+    <!-- html2canvasライブラリ（画像化用） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #e74c3c;
+            --bg-color: #f4f6f9;
+        }
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        .app-container {
+            display: flex;
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .control-panel {
+            width: 350px;
+            background: #fff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        .control-group {
+            margin-bottom: 20px;
+        }
+        .control-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-size: 0.9em;
+        }
+        input[type="file"], input[type="date"], input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 10px;
+        }
+        button:hover {
+            background-color: #1a252f;
+        }
+        .btn-export {
+            background-color: var(--accent-color);
+        }
+        .btn-export:hover {
+            background-color: #c0392b;
+        }
+
+        /* プレビューエリア（画像化される部分） */
+        .preview-container {
+            flex: 1;
+            overflow-x: auto;
+        }
+        #exportArea {
+            background: #fff;
+            padding: 40px;
+            border-radius: 0; /* 買取表っぽく四角く */
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 1000px; /* 固定幅でレイアウトを安定させる */
+            margin: 0 auto;
+            position: relative;
+        }
+        .header-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 3px solid var(--primary-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .logo-container img {
+            max-height: 80px;
+            max-width: 250px;
+            object-fit: contain;
+        }
+        .title-container h1 {
+            margin: 0;
+            font-size: 32px;
+            color: var(--primary-color);
+            text-align: center;
+        }
+        .info-container {
+            text-align: right;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .update-date {
+            color: #555;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            text-align: center;
+            vertical-align: middle;
+        }
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        td.card-name {
+            text-align: left;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        td.price {
+            color: var(--accent-color);
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+        .card-img {
+            width: 60px;
+            height: 84px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+            color: white;
+        }
+        .bg-kyoka { background-color: #e67e22; }
+        .bg-keisai { background-color: #3498db; }
+
+        @media print {
+            .control-panel { display: none; }
+            body { background: white; padding: 0; }
+            .preview-container { box-shadow: none; }
+            #exportArea { width: 100%; box-shadow: none; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- 左側：コントロールパネル -->
+    <div class="control-panel">
+        <h2 style="margin-top:0; font-size:1.2em; color:var(--primary-color);">⚙️ 設定パネル</h2>
+        
+        <div class="control-group">
+            <label>1. CSVファイルを読み込む</label>
+            <input type="file" id="csvInput" accept=".csv">
+            <small style="color:#777; display:block; margin-top:5px;">※スプレッドシートからダウンロードしたCSV</small>
+        </div>
+
+        <div class="control-group">
+            <label>2. ショップロゴ設定</label>
+            <input type="file" id="logoInput" accept="image/*">
+        </div>
+
+        <div class="control-group">
+            <label>3. 買取表のタイトル</label>
+            <input type="text" id="titleInput" value="ポケモンカード 高価買取表">
+        </div>
+
+        <div class="control-group">
+            <label>4. 更新日</label>
+            <input type="date" id="dateInput">
+        </div>
+
+        <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
+
+        <button onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
+        <button class="btn-export" onclick="exportToImage()">📸 画像として書き出し</button>
+        <small style="color:#e74c3c; display:block; margin-top:5px; font-size: 0.8em;">※GoogleDrive画像の仕様上、画像書き出しが白紙になる場合は「PDFとして保存」を使用してください。</small>
+    </div>
+
+    <!-- 右側：プレビュー＆エクスポートエリア -->
+    <div class="preview-container">
+        <div id="exportArea">
+            <div class="header-area">
+                <div class="logo-container">
+                    <img id="previewLogo" src="https://via.placeholder.com/250x80?text=Your+Shop+Logo" alt="Shop Logo">
+                </div>
+                <div class="title-container">
+                    <h1 id="previewTitle">ポケモンカード 高価買取表</h1>
+                </div>
+                <div class="info-container">
+                    <div style="color: #e74c3c; margin-bottom: 5px;">※美品状態での買取価格です</div>
+                    <div class="update-date">更新日: <span id="previewDate">----年--月--日</span></div>
+                </div>
+            </div>
+
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th width="80">画像</th>
+                        <th width="80">状態</th>
+                        <th>カード名</th>
+                        <th width="120">型番</th>
+                        <th width="80">種別</th>
+                        <th width="150">買取金額</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="6" style="padding: 40px; color: #888;">CSVファイルを読み込むとここにデータが表示されます</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 今日の日付をセット
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
+    document.getElementById('previewDate').innerText = `${yyyy}年${mm}月${dd}日`;
+
+    // 入力イベントリスナー
+    document.getElementById('titleInput').addEventListener('input', function(e) {
+        document.getElementById('previewTitle').innerText = e.target.value;
+    });
+
+    document.getElementById('dateInput').addEventListener('change', function(e) {
+        const dateObj = new Date(e.target.value);
+        if(!isNaN(dateObj)) {
+            document.getElementById('previewDate').innerText = `${dateObj.getFullYear()}年${String(dateObj.getMonth()+1).padStart(2,'0')}月${String(dateObj.getDate()).padStart(2,'0')}日`;
+        }
+    });
+
+    document.getElementById('logoInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewLogo').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    });
+
+    document.getElementById('csvInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                parseCSV(e.target.result);
+            }
+            reader.readAsText(file);
+        }
+    });
+
+    function parseCSV(text) {
+        const lines = text.split('\n');
+        const tbody = document.getElementById('tableBody');
+        tbody.innerHTML = ''; // クリア
+
+        // ヘッダーをスキップしてデータ行を処理
+        let count = 0;
+        for (let i = 1; i < lines.length; i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            // CSVのパース（簡易版）
+            const parts = line.split(',');
+            if(parts.length < 10) continue;
+
+            const status = parts[1];
+            const name = parts[3];
+            const model = parts[4];
+            const type = parts[5];
+            const imgUrl = parts[parts.length - 1];
+            
+            // 金額部分（カンマが含まれている可能性があるため、6列目〜末尾3列目前までを結合）
+            const price = parts.slice(6, parts.length - 3).join(',');
+
+            // ステータスバッジ
+            const badgeClass = status === '強化' ? 'bg-kyoka' : 'bg-keisai';
+            const badgeHtml = `<span class="status-badge ${badgeClass}">${status}</span>`;
+
+            // 画像（Google Driveのリンク等）
+            // 実際のエクスポート時にCORSエラーを防ぐため、クロスオリジン設定を追加するか、単純なimgタグにする
+            let imgSrc = imgUrl;
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><img src="${imgSrc}" class="card-img" crossorigin="anonymous"></td>
+                <td>${badgeHtml}</td>
+                <td class="card-name">${name}</td>
+                <td>${model}</td>
+                <td>${type}</td>
+                <td class="price">${price}</td>
+            `;
+            tbody.appendChild(tr);
+            count++;
+        }
+        
+        if (count === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="padding: 40px; color: #888;">有効なデータが見つかりませんでした</td></tr>';
+        }
+    }
+
+    // 画像化してダウンロードする機能
+    function exportToImage() {
+        const exportArea = document.getElementById('exportArea');
+        
+        html2canvas(exportArea, {
+            useCORS: true,
+            allowTaint: true,
+            scale: 2 // 高画質化
+        }).then(canvas => {
+            const link = document.createElement('a');
+            link.download = `買取表_${document.getElementById('dateInput').value}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }).catch(err => {
+            alert("画像の生成に失敗しました。PDFとして保存をお試しください。\n詳細: " + err);
+        });
+    }
+</script>
+</body>
+</html>
