@@ -243,6 +243,7 @@
 
         input[type="file"],
         input[type="date"],
+        input[type="number"],
         input[type="text"],
         select,
         textarea {
@@ -267,6 +268,60 @@
         textarea {
             min-height: 78px;
             resize: vertical;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            min-height: 42px;
+            padding: 4px;
+            border: 1px solid #d7dce5;
+            border-radius: 8px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--gold);
+        }
+
+        .title-customizer-group {
+            grid-column: span 2;
+        }
+
+        .title-customizer-grid {
+            display: grid;
+            grid-template-columns: 0.65fr 1.35fr 1.45fr 0.8fr 0.65fr 0.8fr;
+            align-items: end;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid rgba(217,173,74,0.22);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.045);
+        }
+
+        .title-custom-field {
+            min-width: 0;
+        }
+
+        .title-custom-field > label {
+            margin-bottom: 6px;
+            color: #cbd5e1;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .title-size-controls {
+            display: grid;
+            grid-template-columns: minmax(90px, 1fr) 68px;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .title-size-controls input[type="number"] {
+            padding-right: 7px;
+            padding-left: 7px;
+            text-align: center;
         }
 
         .help {
@@ -5505,6 +5560,36 @@
             left: 100%;
         }
 
+        /* 手動タイトル設定：旧スタイルより常に優先 */
+        .exportArea[data-title-custom="true"] .title-container h1 {
+            margin: 0;
+            padding: 0;
+            color: var(--custom-title-color, #ffffff);
+            border: 0;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            font-family: var(
+                --custom-title-font,
+                "Arial Black", "Hiragino Kaku Gothic ProN", sans-serif
+            );
+            font-size: var(--custom-title-size, 76px);
+            font-weight: var(--custom-title-weight, 900);
+            line-height: 1;
+            letter-spacing: 0.025em;
+            -webkit-text-stroke:
+                var(--custom-title-outline-width, 2px)
+                var(--custom-title-outline-color, #111827);
+            paint-order: stroke fill;
+            text-shadow: 0 5px 14px rgba(0,0,0,0.38);
+            transform: none;
+        }
+
+        .exportArea[data-title-custom="true"] .title-container h1::before,
+        .exportArea[data-title-custom="true"] .title-container h1::after {
+            content: none;
+        }
+
         /* 強化買取：カード右上を横切るテーマ連動の斜め帯 */
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
@@ -5681,6 +5766,10 @@
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
 
+            .title-customizer-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
             .single-card-picker {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
@@ -5696,6 +5785,10 @@
             }
 
             .settings-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .title-customizer-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
@@ -5754,6 +5847,14 @@
             .template-manager {
                 margin-right: 16px;
                 margin-left: 16px;
+            }
+
+            .title-customizer-group {
+                grid-column: auto;
+            }
+
+            .title-customizer-grid {
+                grid-template-columns: 1fr;
             }
 
             .template-buttons {
@@ -5960,21 +6061,72 @@
                 <small class="help">タイトルとページ番号は別々に表示されます。</small>
             </div>
 
-            <div class="control-group">
-                <label><span class="step">4</span>タイトルスタイル</label>
-                <select id="titleStyleSelect">
-                    <option value="power">01 CLEAR BOLD｜太字・最も読みやすい</option>
-                    <option value="gold">02 LUXE GOLD｜金文字・上品</option>
-                    <option value="outline">03 IMPACT OUTLINE｜極太縁取り・遠目に強い</option>
-                    <option value="royal">04 ROYAL MINCHO｜高級明朝・格調</option>
-                    <option value="ribbon">05 RED LABEL｜赤帯・強い訴求</option>
-                    <option value="underline">06 EDITORIAL LINE｜雑誌風・洗練</option>
-                    <option value="neon">07 CLEAN NEON｜発光・輪郭は明瞭</option>
-                    <option value="stamp">08 FRAMED TITLE｜額装・高級感</option>
-                    <option value="dual">09 MODERN SHADOW｜立体・読みやすい</option>
-                    <option value="elegant">10 ELEGANT｜明朝・余白重視</option>
-                </select>
-                <small class="help">背景デザインとは別に、タイトル部分だけ変更できます。</small>
+            <div class="control-group title-customizer-group">
+                <label><span class="step">4</span>タイトルの見た目</label>
+                <input type="hidden" id="titleStyleSelect" value="power">
+                <div class="title-customizer-grid">
+                    <div class="title-custom-field">
+                        <label for="titleColorInput">文字色</label>
+                        <input type="color" id="titleColorInput" value="#ffffff">
+                    </div>
+                    <div class="title-custom-field">
+                        <label for="titleFontSelect">フォント</label>
+                        <select id="titleFontSelect">
+                            <option value="gothic">極太ゴシック</option>
+                            <option value="standard">標準ゴシック</option>
+                            <option value="rounded">丸ゴシック</option>
+                            <option value="mincho">明朝体</option>
+                            <option value="condensed">インパクト</option>
+                            <option value="elegant">上品な細身ゴシック</option>
+                        </select>
+                    </div>
+                    <div class="title-custom-field">
+                        <label for="titleSizeRange">文字サイズ</label>
+                        <div class="title-size-controls">
+                            <input
+                                type="range"
+                                id="titleSizeRange"
+                                min="36"
+                                max="110"
+                                step="1"
+                                value="76"
+                            >
+                            <input
+                                type="number"
+                                id="titleSizeInput"
+                                min="36"
+                                max="110"
+                                step="1"
+                                value="76"
+                                aria-label="タイトル文字サイズ"
+                            >
+                        </div>
+                    </div>
+                    <div class="title-custom-field">
+                        <label for="titleWeightSelect">文字の太さ</label>
+                        <select id="titleWeightSelect">
+                            <option value="700">太字</option>
+                            <option value="800">極太</option>
+                            <option value="900" selected>最太</option>
+                        </select>
+                    </div>
+                    <div class="title-custom-field">
+                        <label for="titleOutlineColorInput">縁取り色</label>
+                        <input type="color" id="titleOutlineColorInput" value="#111827">
+                    </div>
+                    <div class="title-custom-field">
+                        <label for="titleOutlineWidthSelect">縁取り</label>
+                        <select id="titleOutlineWidthSelect">
+                            <option value="0">なし</option>
+                            <option value="1">細い</option>
+                            <option value="2" selected>標準</option>
+                            <option value="3">太い</option>
+                            <option value="4">極太</option>
+                            <option value="5">最大</option>
+                        </select>
+                    </div>
+                </div>
+                <small class="help">指定サイズを上限として、長いタイトルだけ自動で縮小します。</small>
             </div>
 
             <div class="control-group">
@@ -6530,6 +6682,28 @@
         "power", "gold", "outline", "royal", "ribbon",
         "underline", "neon", "stamp", "dual", "elegant"
     ];
+    const TITLE_FONT_OPTIONS = {
+        gothic:
+            '"Arial Black","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif',
+        standard:
+            '"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif',
+        rounded:
+            '"Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,sans-serif',
+        mincho:
+            '"Yu Mincho","Hiragino Mincho ProN","Times New Roman",serif',
+        condensed:
+            'Impact,Haettenschweiler,"Arial Narrow Bold","Hiragino Kaku Gothic ProN",sans-serif',
+        elegant:
+            '"Avenir Next","Helvetica Neue","Yu Gothic",sans-serif'
+    };
+    const DEFAULT_TITLE_CUSTOM = {
+        color: "#ffffff",
+        font: "gothic",
+        size: 76,
+        weight: 900,
+        outlineColor: "#111827",
+        outlineWidth: 2
+    };
     const LEGACY_THEME_MAP = {
         luxury: "signal",
         fire: "alert",
@@ -6578,6 +6752,12 @@
         "kaitori_layout",
         "kaitori_theme",
         "kaitori_title_style",
+        "kaitori_title_color",
+        "kaitori_title_font",
+        "kaitori_title_size",
+        "kaitori_title_weight",
+        "kaitori_title_outline_color",
+        "kaitori_title_outline_width",
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
@@ -6995,6 +7175,112 @@
 
     function normalizeTitleStyle(style) {
         return TITLE_STYLES.includes(style) ? style : "power";
+    }
+
+    function normalizeHexColor(value, fallback) {
+        const color = String(value || "").trim().toLowerCase();
+        return /^#[0-9a-f]{6}$/.test(color) ? color : fallback;
+    }
+
+    function clampTitleNumber(value, min, max, fallback) {
+        const number = Number(value);
+        return Number.isFinite(number)
+            ? Math.min(max, Math.max(min, Math.round(number)))
+            : fallback;
+    }
+
+    function normalizeTitleCustomization(settings = {}) {
+        const font = Object.hasOwn(TITLE_FONT_OPTIONS, settings.font)
+            ? settings.font
+            : DEFAULT_TITLE_CUSTOM.font;
+        return {
+            color: normalizeHexColor(
+                settings.color,
+                DEFAULT_TITLE_CUSTOM.color
+            ),
+            font,
+            size: clampTitleNumber(
+                settings.size,
+                36,
+                110,
+                DEFAULT_TITLE_CUSTOM.size
+            ),
+            weight: [700, 800, 900].includes(Number(settings.weight))
+                ? Number(settings.weight)
+                : DEFAULT_TITLE_CUSTOM.weight,
+            outlineColor: normalizeHexColor(
+                settings.outlineColor,
+                DEFAULT_TITLE_CUSTOM.outlineColor
+            ),
+            outlineWidth: clampTitleNumber(
+                settings.outlineWidth,
+                0,
+                5,
+                DEFAULT_TITLE_CUSTOM.outlineWidth
+            )
+        };
+    }
+
+    function collectTitleCustomization() {
+        return normalizeTitleCustomization({
+            color: document.getElementById("titleColorInput")?.value,
+            font: document.getElementById("titleFontSelect")?.value,
+            size: document.getElementById("titleSizeInput")?.value,
+            weight: document.getElementById("titleWeightSelect")?.value,
+            outlineColor: document.getElementById("titleOutlineColorInput")?.value,
+            outlineWidth: document.getElementById("titleOutlineWidthSelect")?.value
+        });
+    }
+
+    function applyTitleCustomizationSettings(settings = {}) {
+        const normalized = normalizeTitleCustomization(settings);
+        document.getElementById("titleColorInput").value = normalized.color;
+        document.getElementById("titleFontSelect").value = normalized.font;
+        document.getElementById("titleSizeRange").value = String(normalized.size);
+        document.getElementById("titleSizeInput").value = String(normalized.size);
+        document.getElementById("titleWeightSelect").value =
+            String(normalized.weight);
+        document.getElementById("titleOutlineColorInput").value =
+            normalized.outlineColor;
+        document.getElementById("titleOutlineWidthSelect").value =
+            String(normalized.outlineWidth);
+    }
+
+    function saveTitleCustomization(settings = collectTitleCustomization()) {
+        setScopedItem("kaitori_title_color", settings.color);
+        setScopedItem("kaitori_title_font", settings.font);
+        setScopedItem("kaitori_title_size", String(settings.size));
+        setScopedItem("kaitori_title_weight", String(settings.weight));
+        setScopedItem("kaitori_title_outline_color", settings.outlineColor);
+        setScopedItem("kaitori_title_outline_width", String(settings.outlineWidth));
+    }
+
+    function getExportAreas(root = document) {
+        if (root instanceof Element && root.matches(".exportArea")) {
+            return [root];
+        }
+        return Array.from(root.querySelectorAll(".exportArea"));
+    }
+
+    function applyTitleCustomization(root = document) {
+        const settings = collectTitleCustomization();
+        const fontStack = TITLE_FONT_OPTIONS[settings.font];
+
+        getExportAreas(root).forEach(page => {
+            page.dataset.titleCustom = "true";
+            page.style.setProperty("--custom-title-color", settings.color);
+            page.style.setProperty("--custom-title-font", fontStack);
+            page.style.setProperty("--custom-title-size", `${settings.size}px`);
+            page.style.setProperty("--custom-title-weight", String(settings.weight));
+            page.style.setProperty(
+                "--custom-title-outline-color",
+                settings.outlineColor
+            );
+            page.style.setProperty(
+                "--custom-title-outline-width",
+                `${settings.outlineWidth}px`
+            );
+        });
     }
 
     function normalizeSingleDesign(design) {
@@ -7551,6 +7837,12 @@
         const savedLayout = getScopedItem("kaitori_layout");
         const savedTheme = getScopedItem("kaitori_theme");
         const savedTitleStyle = getScopedItem("kaitori_title_style");
+        const savedTitleColor = getScopedItem("kaitori_title_color");
+        const savedTitleFont = getScopedItem("kaitori_title_font");
+        const savedTitleSize = getScopedItem("kaitori_title_size");
+        const savedTitleWeight = getScopedItem("kaitori_title_weight");
+        const savedTitleOutlineColor = getScopedItem("kaitori_title_outline_color");
+        const savedTitleOutlineWidth = getScopedItem("kaitori_title_outline_width");
         const savedCardNameDisplay = getScopedItem("kaitori_card_name_display");
         const savedPageSplit = getScopedItem("kaitori_page_split");
         const savedSortOrder = getScopedItem("kaitori_sort_order");
@@ -7561,6 +7853,16 @@
         document.getElementById("themeSelect").value = normalizeTheme(savedTheme);
         document.getElementById("titleStyleSelect").value =
             normalizeTitleStyle(savedTitleStyle);
+        applyTitleCustomizationSettings({
+            color: savedTitleColor || DEFAULT_TITLE_CUSTOM.color,
+            font: savedTitleFont || DEFAULT_TITLE_CUSTOM.font,
+            size: savedTitleSize || DEFAULT_TITLE_CUSTOM.size,
+            weight: savedTitleWeight || DEFAULT_TITLE_CUSTOM.weight,
+            outlineColor:
+                savedTitleOutlineColor || DEFAULT_TITLE_CUSTOM.outlineColor,
+            outlineWidth:
+                savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth
+        });
         if (savedLayout === "portrait_10x6" || savedLayout === "landscape_15x4") {
             document.getElementById("layoutSelect").value = savedLayout;
         }
@@ -7621,6 +7923,7 @@
             layout: document.getElementById("layoutSelect").value,
             theme: getSelectedTheme(),
             titleStyle: getSelectedTitleStyle(),
+            titleCustom: collectTitleCustomization(),
             cardNameDisplay: getCardNameDisplay(),
             pageSplit: getPageSplitMode(),
             sortOrder: getSortOrder(),
@@ -7635,6 +7938,9 @@
         setScopedItem("kaitori_layout", settings.layout);
         setScopedItem("kaitori_theme", settings.theme);
         setScopedItem("kaitori_title_style", settings.titleStyle);
+        saveTitleCustomization(
+            normalizeTitleCustomization(settings.titleCustom || {})
+        );
         setScopedItem("kaitori_card_name_display", settings.cardNameDisplay);
         setScopedItem("kaitori_page_split", settings.pageSplit);
         setScopedItem("kaitori_sort_order", settings.sortOrder);
@@ -7717,6 +8023,9 @@
         document.getElementById("themeSelect").value = normalizeTheme(settings.theme);
         document.getElementById("titleStyleSelect").value =
             normalizeTitleStyle(settings.titleStyle);
+        applyTitleCustomizationSettings(
+            settings.titleCustom || collectTitleCustomization()
+        );
         document.getElementById("cardNameDisplaySelect").value =
             settings.cardNameDisplay === "hide" ? "hide" : "show";
         document.getElementById("pageSplitSelect").value =
@@ -7801,6 +8110,7 @@
         document.querySelectorAll(".exportArea").forEach(page => {
             page.dataset.titleStyle = style;
         });
+        applyTitleCustomization();
         requestAnimationFrame(adjustTitleSizes);
     }
 
@@ -7864,8 +8174,46 @@
         generatePostText();
     });
     document.getElementById("themeSelect").addEventListener("change", applyThemeToPages);
-    document.getElementById("titleStyleSelect")
-        .addEventListener("change", applyTitleStyleToPages);
+    const updateTitleCustomization = () => {
+        const settings = collectTitleCustomization();
+        applyTitleCustomizationSettings(settings);
+        saveTitleCustomization(settings);
+        applyTitleCustomization();
+        requestAnimationFrame(adjustTitleSizes);
+    };
+
+    document.getElementById("titleSizeRange").addEventListener("input", event => {
+        document.getElementById("titleSizeInput").value = event.target.value;
+        updateTitleCustomization();
+    });
+    document.getElementById("titleSizeInput").addEventListener("input", event => {
+        const rawSize = Number(event.target.value);
+        if (!Number.isFinite(rawSize) || rawSize < 36 || rawSize > 110) return;
+        document.getElementById("titleSizeRange").value =
+            String(Math.round(rawSize));
+        updateTitleCustomization();
+    });
+    document.getElementById("titleSizeInput").addEventListener("change", event => {
+        const normalizedSize = clampTitleNumber(
+            event.target.value,
+            36,
+            110,
+            DEFAULT_TITLE_CUSTOM.size
+        );
+        event.target.value = String(normalizedSize);
+        document.getElementById("titleSizeRange").value = String(normalizedSize);
+        updateTitleCustomization();
+    });
+    [
+        "titleColorInput",
+        "titleFontSelect",
+        "titleWeightSelect",
+        "titleOutlineColorInput",
+        "titleOutlineWidthSelect"
+    ].forEach(id => {
+        document.getElementById(id).addEventListener("input", updateTitleCustomization);
+        document.getElementById(id).addEventListener("change", updateTitleCustomization);
+    });
     document.getElementById("cardNameDisplaySelect")
         .addEventListener("change", applyCardNameVisibility);
     document.getElementById("pageSplitSelect").addEventListener("change", () => {
@@ -8348,6 +8696,7 @@
                 </div>
             </div>
         `;
+        applyTitleCustomization(document.getElementById("pagesContainer"));
         requestAnimationFrame(fitPreviewPages);
     }
 
@@ -8905,6 +9254,7 @@
             }`;
             pageDiv.dataset.theme = selectedTheme;
             pageDiv.dataset.titleStyle = selectedTitleStyle;
+            pageDiv.dataset.titleCustom = "true";
             pageDiv.id = `exportArea_${pageNumber}`;
 
             const cardsHtml = pageCards.map(card => {
@@ -8979,6 +9329,7 @@
             container.appendChild(previewShell);
         });
 
+        applyTitleCustomization(container);
         requestAnimationFrame(() => {
             adjustTitleSizes();
             adjustTextSize();
@@ -8992,7 +9343,7 @@
             const title = container.querySelector(".title-text");
             if (!title) return;
 
-            title.style.fontSize = "";
+            title.style.fontSize = `${collectTitleCustomization().size}px`;
             const availableWidth = Math.max(0, container.clientWidth - 8);
             if (!availableWidth) return;
 
