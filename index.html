@@ -240,6 +240,19 @@
             background-size: 24px 24px;
         }
 
+        .preview-page {
+            position: relative;
+            flex: 0 0 auto;
+            overflow: visible;
+        }
+
+        .preview-page > .exportArea {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: top left;
+        }
+
         /* ===== 出力紙面 ===== */
         .exportArea {
             position: relative;
@@ -301,12 +314,11 @@
         /* ===== ヘッダー ===== */
         .header-area {
             position: relative;
-            display: grid;
-            grid-template-columns: 330px 1fr 120px;
+            display: flex;
             min-height: 118px;
             flex-shrink: 0;
             align-items: center;
-            gap: 22px;
+            justify-content: space-between;
             margin: 0 10px 18px;
             padding: 18px 22px;
             border: 1px solid rgba(255,255,255,0.12);
@@ -330,8 +342,10 @@
 
         .logo-container {
             display: flex;
+            width: 330px;
             min-width: 0;
             height: 80px;
+            flex: 0 0 330px;
             align-items: center;
             justify-content: center;
             padding: 8px 16px;
@@ -351,8 +365,13 @@
         }
 
         .title-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: calc(100% - 610px);
             min-width: 0;
             text-align: center;
+            transform: translate(-50%, -50%);
         }
 
         .title-kicker {
@@ -402,7 +421,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            justify-self: end;
+            margin-left: auto;
             color: #111827;
             border: 3px solid var(--gold-light);
             border-radius: 50%;
@@ -1270,33 +1289,35 @@
     </aside>
 
     <main class="preview-container" id="pagesContainer">
-        <div class="exportArea portrait" data-theme="luxury">
-            <div class="header-area">
-                <div class="logo-container">
-                    <img class="logo-img" alt="Shop Logo">
+        <div class="preview-page">
+            <div class="exportArea portrait" data-theme="luxury">
+                <div class="header-area">
+                    <div class="logo-container">
+                        <img class="logo-img" alt="Shop Logo">
+                    </div>
+                    <div class="title-container">
+                        <h1 class="title-text">PSA10 高価買取</h1>
+                    </div>
+                    <div class="page-emblem">
+                        <small>PAGE</small>
+                        <strong>01</strong>
+                    </div>
                 </div>
-                <div class="title-container">
-                    <h1 class="title-text">PSA10 高価買取</h1>
-                </div>
-                <div class="page-emblem">
-                    <small>PAGE</small>
-                    <strong>01</strong>
-                </div>
-            </div>
 
-            <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
-                <div class="empty-state">
-                    <strong>CSVを読み込んでください</strong>
-                    <span>カードデータがここに表示されます</span>
+                <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
+                    <div class="empty-state">
+                        <strong>CSVを読み込んでください</strong>
+                        <span>カードデータがここに表示されます</span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="footer-area">
-                <div class="disclaimer disclaimer-text">※相場や在庫状況、状態等により価格が変動する場合がございます。<br>買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</div>
-                <div class="footer-right">
-                    <div class="update-label">PRICE UPDATED</div>
-                    <div class="update-date date-text">----/--/--</div>
-                    <div class="page-number">1 / 1 PAGE</div>
+                <div class="footer-area">
+                    <div class="disclaimer disclaimer-text">※相場や在庫状況、状態等により価格が変動する場合がございます。<br>買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</div>
+                    <div class="footer-right">
+                        <div class="update-label">PRICE UPDATED</div>
+                        <div class="update-date date-text">----/--/--</div>
+                        <div class="page-number">1 / 1 PAGE</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1379,6 +1400,7 @@
         }
 
         updateAllPages();
+        requestAnimationFrame(fitPreviewPages);
     });
 
     function saveTemplate() {
@@ -1436,6 +1458,32 @@
         });
     }
 
+    function fitPreviewPages() {
+        const container = document.getElementById("pagesContainer");
+        if (!container) return;
+
+        const containerStyle = getComputedStyle(container);
+        const horizontalPadding =
+            parseFloat(containerStyle.paddingLeft) +
+            parseFloat(containerStyle.paddingRight);
+        const availableWidth = Math.max(280, container.clientWidth - horizontalPadding - 4);
+
+        container.querySelectorAll(".preview-page").forEach(shell => {
+            const page = shell.querySelector(".exportArea");
+            if (!page) return;
+
+            const naturalWidth = page.offsetWidth;
+            const naturalHeight = page.offsetHeight;
+            if (!naturalWidth || !naturalHeight) return;
+
+            const scale = Math.min(1, availableWidth / naturalWidth);
+            page.dataset.previewScale = String(scale);
+            page.style.transform = `scale(${scale})`;
+            shell.style.width = `${Math.floor(naturalWidth * scale)}px`;
+            shell.style.height = `${Math.floor(naturalHeight * scale)}px`;
+        });
+    }
+
     document.getElementById("titleInput").addEventListener("input", updateAllPages);
     document.getElementById("disclaimerInput").addEventListener("input", updateAllPages);
     document.getElementById("dateInput").addEventListener("change", updateAllPages);
@@ -1463,6 +1511,8 @@
             grid.style.gridTemplateColumns = "repeat(10, 1fr)";
             grid.style.gridTemplateRows = "repeat(6, 1fr)";
         }
+
+        requestAnimationFrame(fitPreviewPages);
     });
 
     document.getElementById("logoInput").addEventListener("change", event => {
@@ -1598,13 +1648,16 @@
         const orientation = layout === "landscape_15x4" ? "landscape" : "portrait";
         const theme = getSelectedTheme();
         document.getElementById("pagesContainer").innerHTML = `
-            <div class="exportArea ${orientation}" data-theme="${theme}">
-                <div class="empty-state">
-                    <strong>NO VALID DATA</strong>
-                    <span>有効なデータが見つかりませんでした</span>
+            <div class="preview-page">
+                <div class="exportArea ${orientation}" data-theme="${theme}">
+                    <div class="empty-state">
+                        <strong>NO VALID DATA</strong>
+                        <span>有効なデータが見つかりませんでした</span>
+                    </div>
                 </div>
             </div>
         `;
+        requestAnimationFrame(fitPreviewPages);
     }
 
     async function fetchImageBase64(imgUrl) {
@@ -1787,11 +1840,15 @@
                 </div>
             `;
 
-            container.appendChild(pageDiv);
+            const previewShell = document.createElement("div");
+            previewShell.className = "preview-page";
+            previewShell.appendChild(pageDiv);
+            container.appendChild(previewShell);
         });
 
         requestAnimationFrame(() => {
             adjustTextSize();
+            fitPreviewPages();
             loadMissingImagesFast();
         });
     }
@@ -1876,30 +1933,36 @@
             for (let i = 0; i < areas.length; i++) {
                 overlayText.textContent = `${i + 1}枚目を生成中...（${i + 1}/${areas.length}）`;
                 const targetArea = areas[i];
+                const previewTransform = targetArea.style.transform;
 
-                await waitForImages(targetArea);
-                adjustTextSize();
-                await new Promise(resolve => setTimeout(resolve, 250));
+                try {
+                    targetArea.style.transform = "none";
+                    await waitForImages(targetArea);
+                    adjustTextSize();
+                    await new Promise(resolve => setTimeout(resolve, 250));
 
-                const canvas = await html2canvas(targetArea, {
-                    useCORS: true,
-                    allowTaint: false,
-                    backgroundColor: null,
-                    scale: 2,
-                    width: targetArea.offsetWidth,
-                    height: targetArea.offsetHeight,
-                    scrollX: 0,
-                    scrollY: 0,
-                    logging: false
-                });
+                    const canvas = await html2canvas(targetArea, {
+                        useCORS: true,
+                        allowTaint: false,
+                        backgroundColor: null,
+                        scale: 2,
+                        width: targetArea.offsetWidth,
+                        height: targetArea.offsetHeight,
+                        scrollX: 0,
+                        scrollY: 0,
+                        logging: false
+                    });
 
-                const link = document.createElement("a");
-                link.download =
-                    `買取表_${document.getElementById("dateInput").value}_${i + 1}枚目.png`;
-                link.href = canvas.toDataURL("image/png");
-                link.click();
+                    const link = document.createElement("a");
+                    link.download =
+                        `買取表_${document.getElementById("dateInput").value}_${i + 1}枚目.png`;
+                    link.href = canvas.toDataURL("image/png");
+                    link.click();
 
-                await new Promise(resolve => setTimeout(resolve, 700));
+                    await new Promise(resolve => setTimeout(resolve, 700));
+                } finally {
+                    targetArea.style.transform = previewTransform;
+                }
             }
         } catch (error) {
             console.error(error);
@@ -1910,7 +1973,10 @@
         }
     }
 
-    window.addEventListener("resize", adjustTextSize);
+    window.addEventListener("resize", () => {
+        adjustTextSize();
+        fitPreviewPages();
+    });
 </script>
 </body>
 </html>
