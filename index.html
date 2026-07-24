@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（横レイアウト専用・パネルスクロール対応版）</title>
+    <title>買取表ジェネレーター（A4縦横・カスタムレイアウト版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -24,7 +24,7 @@
             gap: 20px;
             max-width: 1800px;
             margin: 0 auto;
-            align-items: flex-start; /* stickyを正常に動作させるため */
+            align-items: flex-start;
         }
         
         /* コントロールパネル */
@@ -34,24 +34,15 @@
             padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            /* ▼ はみ出す場合にスクロールできるようにする修正 ▼ */
             max-height: calc(100vh - 40px);
             overflow-y: auto;
             position: sticky;
             top: 20px;
             flex-shrink: 0;
         }
-        /* スクロールバーのデザインを少し綺麗にする */
-        .control-panel::-webkit-scrollbar {
-            width: 8px;
-        }
-        .control-panel::-webkit-scrollbar-thumb {
-            background-color: #ddd;
-            border-radius: 4px;
-        }
-        .control-panel::-webkit-scrollbar-thumb:hover {
-            background-color: #bbb;
-        }
+        .control-panel::-webkit-scrollbar { width: 8px; }
+        .control-panel::-webkit-scrollbar-thumb { background-color: #ddd; border-radius: 4px; }
+        .control-panel::-webkit-scrollbar-thumb:hover { background-color: #bbb; }
 
         .control-group { margin-bottom: 20px; }
         .control-group label {
@@ -91,7 +82,11 @@
             flex-direction: column;
         }
         
-        /* 横A4用 (今回は横のみ) */
+        /* 縦A4用 */
+        .exportArea.portrait {
+            width: 1414px; height: 2000px;
+        }
+        /* 横A4用 */
         .exportArea.landscape {
             width: 2000px; height: 1414px;
         }
@@ -167,6 +162,7 @@
             .exportArea { 
                 box-shadow: none; padding: 20px; margin: 0 !important; page-break-after: always;
             }
+            .exportArea.portrait { width: 100vw; height: 141.4vw; }
             .exportArea.landscape { width: 100vw; height: 70.7vw; }
             .exportArea:last-child { page-break-after: auto; }
         }
@@ -224,8 +220,8 @@
         <div class="control-group">
             <label>6. レイアウト設定</label>
             <select id="layoutSelect">
-                <!-- 縦のレイアウトを削除 -->
-                <option value="landscape_10x6">A4横 (横10列 × 縦6段) - 60枚</option>
+                <!-- 縦A4の10列x6段版 -->
+                <option value="portrait_10x6">A4縦 (横10列 × 縦6段) - 60枚</option>
                 <option value="landscape_15x4">A4横 (横15列 × 縦4段) - 60枚</option>
             </select>
             <small style="color:#777;">※テンプレート保存対象</small>
@@ -245,7 +241,7 @@
 
     <div class="preview-container" id="pagesContainer">
         <!-- 初期表示 -->
-        <div class="exportArea landscape">
+        <div class="exportArea portrait">
             <div class="header-area">
                 <div class="logo-container">
                     <img class="logo-img" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
@@ -287,8 +283,7 @@
         if (savedTitle) document.getElementById('titleInput').value = savedTitle;
         if (savedDisclaimer) document.getElementById('disclaimerInput').value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
-        // 保存されたレイアウトがもし縦(portrait_6x10)だったら無視して横にする
-        if (savedLayout && savedLayout !== 'portrait_6x10') {
+        if (savedLayout && (savedLayout === 'portrait_10x6' || savedLayout === 'landscape_15x4')) {
             document.getElementById('layoutSelect').value = savedLayout;
         }
 
@@ -331,8 +326,24 @@
     document.getElementById('layoutSelect').addEventListener('change', () => {
         if (globalCardData.length > 0) {
             renderPages(); 
+        } else {
+            const layout = document.getElementById('layoutSelect').value;
+            const previewArea = document.querySelector('.exportArea');
+            const grid = previewArea.querySelector('.card-grid');
+            if (layout === 'landscape_15x4') {
+                previewArea.classList.remove('portrait');
+                previewArea.classList.add('landscape');
+                grid.style.gridTemplateColumns = 'repeat(15, 1fr)';
+                grid.style.gridTemplateRows = 'repeat(4, 1fr)';
+            } else {
+                previewArea.classList.remove('landscape');
+                previewArea.classList.add('portrait');
+                grid.style.gridTemplateColumns = 'repeat(10, 1fr)';
+                grid.style.gridTemplateRows = 'repeat(6, 1fr)';
+            }
         }
     });
+    
     document.getElementById('logoInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -419,7 +430,9 @@
         if(globalCardData.length > 0) {
             renderPages();
         } else {
-            document.getElementById('pagesContainer').innerHTML = '<div class="exportArea landscape"><div style="text-align:center; padding:50px; font-weight:bold; font-size:1.4em;">有効なデータが見つかりませんでした</div></div>';
+            const layout = document.getElementById('layoutSelect').value;
+            const isPortrait = layout === 'portrait_10x6';
+            document.getElementById('pagesContainer').innerHTML = `<div class="exportArea ${isPortrait ? 'portrait' : 'landscape'}"><div style="text-align:center; padding:50px; font-weight:bold; font-size:1.4em;">有効なデータが見つかりませんでした</div></div>`;
         }
     }
 
@@ -461,12 +474,11 @@
         const layout = document.getElementById('layoutSelect').value;
         let cols, rows, maxPerPage, orientationClass;
         
-        // 縦を削除したため、横のみに分岐
         if (layout === 'landscape_15x4') {
             cols = 15; rows = 4; maxPerPage = 60; orientationClass = 'landscape';
         } else {
-            // default (landscape_10x6)
-            cols = 10; rows = 6; maxPerPage = 60; orientationClass = 'landscape';
+            // default: portrait_10x6
+            cols = 10; rows = 6; maxPerPage = 60; orientationClass = 'portrait';
         }
 
         let pages = [];
