@@ -665,10 +665,6 @@
             line-height: 1.55;
         }
 
-        .disclaimer::first-line {
-            color: #fff;
-        }
-
         .footer-right {
             display: flex;
             min-width: 235px;
@@ -1137,6 +1133,411 @@
                 rgba(13,4,25,0.95);
         }
 
+        /* 注意書きは各テーマのフッター背景に合わせて個別指定 */
+        .exportArea[data-theme="luxury"] .disclaimer { color: #e7e0d2; }
+        .exportArea[data-theme="fire"] .disclaimer { color: #ffe8cf; }
+        .exportArea[data-theme="royal"] .disclaimer { color: #e1ecff; }
+        .exportArea[data-theme="clean"] .disclaimer { color: #202735; }
+        .exportArea[data-theme="neon"] .disclaimer { color: #e7fcff; }
+
+        /* 6. SAKURA PINK｜柔らかいピンク */
+        .exportArea[data-theme="sakura"] {
+            color: #422531;
+            border-color: #d98aa8;
+            background:
+                radial-gradient(circle at 12% 10%, rgba(255,174,204,0.28), transparent 26%),
+                radial-gradient(circle at 88% 86%, rgba(255,216,230,0.42), transparent 28%),
+                linear-gradient(145deg, #fffafd, #fbeaf1);
+        }
+
+        .exportArea[data-theme="sakura"]::before {
+            border-color: #e8a6be;
+            box-shadow: inset 0 0 0 1px #fff, inset 0 0 34px rgba(205,73,124,0.06);
+        }
+
+        .exportArea[data-theme="sakura"]::after {
+            background: linear-gradient(90deg, #b94470, #f28db3 35%, #fff0f6 50%, #f28db3 65%, #b94470);
+        }
+
+        .exportArea[data-theme="sakura"] .header-area {
+            border-color: #efd1dc;
+            border-bottom-color: #d65a88;
+            background:
+                linear-gradient(120deg, rgba(255,255,255,0.8), transparent 40%),
+                linear-gradient(90deg, #f7dce7, #fff 52%, #f7dce7);
+            box-shadow: 0 8px 22px rgba(112,46,72,0.12);
+        }
+
+        .exportArea[data-theme="sakura"] .header-area::before { background: #7b3852; }
+        .exportArea[data-theme="sakura"] .title-container h1 {
+            color: #5a263a;
+            text-shadow: 0 2px 0 #fff, 0 0 14px rgba(214,90,136,0.2);
+        }
+
+        .exportArea[data-theme="sakura"] .page-emblem {
+            color: #fff;
+            border-color: #ffd5e5;
+            background: radial-gradient(circle at 35% 25%, #ffb8d1, #d95586 60%, #8a294d);
+            box-shadow: 0 0 0 4px #fff, 0 0 0 6px #e498b5, 0 5px 16px rgba(92,35,57,0.2);
+        }
+
+        .exportArea[data-theme="sakura"] .card-item {
+            border-color: #dfa2b8;
+            background: linear-gradient(145deg, #fff, #fff4f8);
+            box-shadow: 0 3px 0 #bd6c8a, 0 7px 12px rgba(92,35,57,0.13), inset 0 0 0 2px #fff;
+        }
+
+        .exportArea[data-theme="sakura"] .card-item::before {
+            background: linear-gradient(90deg, #c64e7b, #f5a7c4, #c64e7b);
+        }
+
+        .exportArea[data-theme="sakura"] .card-grade {
+            color: #fff4f8;
+            border-color: #d581a1;
+            background: linear-gradient(180deg, #7b3852, #48202f);
+        }
+
+        .exportArea[data-theme="sakura"] .card-price-container {
+            border-color: #a92f5c;
+            background: linear-gradient(180deg, #ef719f, #c63e70);
+        }
+
+        .exportArea[data-theme="sakura"] .status-badge {
+            color: #603047;
+            border-color: #fff;
+            background: linear-gradient(180deg, #fff, #ffc1d8);
+        }
+
+        .exportArea[data-theme="sakura"] .footer-area {
+            border-color: #efd1dc;
+            border-top-color: #d65a88;
+            background: #fff7fa;
+        }
+
+        .exportArea[data-theme="sakura"] .disclaimer,
+        .exportArea[data-theme="sakura"] .update-date { color: #563040; }
+        .exportArea[data-theme="sakura"] .update-label { color: #b63e6b; }
+        .exportArea[data-theme="sakura"] .page-number { color: #8f6475; }
+
+        /* 7. FOREST GREEN｜落ち着いた自然系 */
+        .exportArea[data-theme="forest"] {
+            border-color: #173e2b;
+            background:
+                radial-gradient(circle at 12% 8%, rgba(194,212,137,0.16), transparent 26%),
+                radial-gradient(circle at 88% 85%, rgba(75,139,99,0.22), transparent 28%),
+                linear-gradient(145deg, #173e2b, #071c15 52%, #123424);
+        }
+
+        .exportArea[data-theme="forest"]::before {
+            border-color: #8faf69;
+            box-shadow: inset 0 0 0 1px rgba(239,232,193,0.26), inset 0 0 40px rgba(132,174,96,0.1);
+        }
+
+        .exportArea[data-theme="forest"]::after {
+            background: linear-gradient(90deg, #2d6a48, #9eba68 35%, #f0dc96 50%, #9eba68 65%, #2d6a48);
+        }
+
+        .exportArea[data-theme="forest"] .header-area {
+            border-color: rgba(217,229,184,0.18);
+            border-bottom-color: #a8c875;
+            background: linear-gradient(90deg, #0d291d, #285c3f 52%, #0d291d);
+        }
+
+        .exportArea[data-theme="forest"] .header-area::before { background: #e0bd66; }
+        .exportArea[data-theme="forest"] .title-container h1 { color: #fff9df; }
+        .exportArea[data-theme="forest"] .page-emblem {
+            color: #17321f;
+            border-color: #f4e2a0;
+            background: radial-gradient(circle at 35% 25%, #edf4bf, #a8c875 58%, #4f763c);
+            box-shadow: 0 0 0 4px #143020, 0 0 0 6px #d7bd68, 0 5px 18px rgba(0,0,0,0.35);
+        }
+
+        .exportArea[data-theme="forest"] .card-item {
+            border-color: #819d65;
+            background: linear-gradient(145deg, #fffef4, #edf1df);
+            box-shadow: 0 3px 0 #48623b, 0 7px 12px rgba(0,0,0,0.28), inset 0 0 0 2px #fff;
+        }
+
+        .exportArea[data-theme="forest"] .card-item::before {
+            background: linear-gradient(90deg, #315c3e, #a8c875, #d8b65d);
+        }
+
+        .exportArea[data-theme="forest"] .card-grade {
+            color: #f4f6dd;
+            border-color: #8eaf6a;
+            background: linear-gradient(180deg, #315f43, #10271b);
+        }
+
+        .exportArea[data-theme="forest"] .card-price-container {
+            border-color: #8a3e12;
+            background: linear-gradient(180deg, #e77b2d, #a84015);
+        }
+
+        .exportArea[data-theme="forest"] .status-badge {
+            color: #23371c;
+            background: linear-gradient(180deg, #f3e7a8, #a9c46f);
+        }
+
+        .exportArea[data-theme="forest"] .footer-area {
+            border-top-color: #a8c875;
+            background: rgba(8,31,21,0.95);
+        }
+
+        .exportArea[data-theme="forest"] .disclaimer { color: #eef3dd; }
+        .exportArea[data-theme="forest"] .update-label { color: #dcca83; }
+
+        /* 8. POP YELLOW｜明るく強い量販店風 */
+        .exportArea[data-theme="pop"] {
+            color: #111;
+            border-color: #111;
+            background:
+                radial-gradient(circle, rgba(0,0,0,0.055) 1.4px, transparent 1.6px),
+                #ffd91a;
+            background-size: 16px 16px, 100% 100%;
+        }
+
+        .exportArea[data-theme="pop"]::before {
+            border-color: #111;
+            box-shadow: inset 0 0 0 4px #fff;
+        }
+
+        .exportArea[data-theme="pop"]::after {
+            height: 14px;
+            background: linear-gradient(90deg, #111 0 24%, #fff 24% 27%, #ed143d 27% 73%, #fff 73% 76%, #111 76%);
+        }
+
+        .exportArea[data-theme="pop"] .header-area {
+            border: 4px solid #111;
+            border-bottom-width: 8px;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: 8px 8px 0 #111;
+        }
+
+        .exportArea[data-theme="pop"] .header-area::before { display: none; }
+        .exportArea[data-theme="pop"] .title-container h1 {
+            color: #111;
+            text-shadow: 4px 4px 0 #ffd91a;
+        }
+
+        .exportArea[data-theme="pop"] .page-emblem {
+            color: #fff;
+            border-color: #111;
+            border-radius: 12px;
+            background: #ed143d;
+            box-shadow: 5px 5px 0 #111;
+        }
+
+        .exportArea[data-theme="pop"] .card-item {
+            border: 3px solid #111;
+            border-radius: 2px;
+            background: #fff;
+            box-shadow: 5px 5px 0 #111;
+        }
+
+        .exportArea[data-theme="pop"] .card-item::before { background: #ffd91a; }
+        .exportArea[data-theme="pop"] .card-grade {
+            color: #fff;
+            border-color: #111;
+            background: #111;
+        }
+
+        .exportArea[data-theme="pop"] .card-price-container {
+            border: 3px solid #111;
+            border-radius: 2px;
+            background: #ed143d;
+            box-shadow: none;
+        }
+
+        .exportArea[data-theme="pop"] .status-badge {
+            color: #111;
+            border-color: #111;
+            background: #ffd91a;
+        }
+
+        .exportArea[data-theme="pop"] .footer-area {
+            border: 4px solid #111;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: 6px 6px 0 #111;
+        }
+
+        .exportArea[data-theme="pop"] .disclaimer,
+        .exportArea[data-theme="pop"] .update-date { color: #111; }
+        .exportArea[data-theme="pop"] .update-label { color: #d70d34; }
+        .exportArea[data-theme="pop"] .page-number { color: #333; }
+
+        /* 9. RETRO CLASSIC｜紙・革・活版風 */
+        .exportArea[data-theme="retro"] {
+            color: #3b2a1d;
+            border-color: #5b3c24;
+            background:
+                repeating-linear-gradient(0deg, rgba(75,49,31,0.025) 0 1px, transparent 1px 5px),
+                linear-gradient(145deg, #f2e4c6, #d8bf91);
+        }
+
+        .exportArea[data-theme="retro"]::before {
+            border: 5px double #6f4a2c;
+            box-shadow: inset 0 0 48px rgba(77,47,26,0.16);
+        }
+
+        .exportArea[data-theme="retro"]::after {
+            background: linear-gradient(90deg, #4e3020, #a46a36 30%, #d2a85e 50%, #a46a36 70%, #4e3020);
+        }
+
+        .exportArea[data-theme="retro"] .header-area {
+            border-color: #9c7449;
+            border-bottom-color: #573820;
+            background: linear-gradient(90deg, #d5b47d, #f3e2bd 52%, #d5b47d);
+            box-shadow: 0 8px 0 rgba(86,54,30,0.24);
+        }
+
+        .exportArea[data-theme="retro"] .header-area::before { background: #9d542d; }
+        .exportArea[data-theme="retro"] .title-container h1 {
+            color: #422919;
+            font-family: Georgia, "Times New Roman", "Yu Mincho", serif;
+            text-shadow: 0 2px 0 #fff0cf;
+        }
+
+        .exportArea[data-theme="retro"] .page-emblem {
+            color: #f8eacb;
+            border-color: #d9b46f;
+            background: radial-gradient(circle at 35% 25%, #a76f3c, #653d22 62%, #342014);
+            box-shadow: 0 0 0 4px #e6ca93, 0 0 0 6px #69442a, 0 5px 16px rgba(59,34,19,0.28);
+        }
+
+        .exportArea[data-theme="retro"] .card-item {
+            border-color: #8e6742;
+            border-radius: 3px;
+            background: linear-gradient(145deg, #fff7df, #e9d5ad);
+            box-shadow: 0 3px 0 #65452e, 0 7px 10px rgba(57,35,20,0.22), inset 0 0 0 2px #fff5dc;
+        }
+
+        .exportArea[data-theme="retro"] .card-item::before { background: #774529; }
+        .exportArea[data-theme="retro"] .card-name {
+            color: #3e2a1c;
+            font-family: Georgia, "Yu Mincho", serif;
+        }
+
+        .exportArea[data-theme="retro"] .card-grade {
+            color: #f6e7c6;
+            border-color: #b18a5d;
+            background: #543621;
+        }
+
+        .exportArea[data-theme="retro"] .card-price-container {
+            border-color: #69321f;
+            background: linear-gradient(180deg, #b85f36, #78361f);
+        }
+
+        .exportArea[data-theme="retro"] .status-badge {
+            color: #4a2c1b;
+            background: linear-gradient(180deg, #f4d48f, #c28b47);
+        }
+
+        .exportArea[data-theme="retro"] .footer-area {
+            border-color: #96704a;
+            border-top-color: #573820;
+            background: #f0dfbb;
+        }
+
+        .exportArea[data-theme="retro"] .disclaimer,
+        .exportArea[data-theme="retro"] .update-date { color: #3e291b; }
+        .exportArea[data-theme="retro"] .update-label { color: #81472a; }
+        .exportArea[data-theme="retro"] .page-number { color: #76583d; }
+
+        /* 10. HOLOGRAM｜シルバー×虹色 */
+        .exportArea[data-theme="hologram"] {
+            color: #101728;
+            border-color: #8290a7;
+            background:
+                linear-gradient(125deg, rgba(255,82,182,0.13), transparent 24%, rgba(73,219,255,0.13) 45%, transparent 65%, rgba(154,255,122,0.13)),
+                linear-gradient(145deg, #fafdff, #dce3ed 50%, #f7faff);
+        }
+
+        .exportArea[data-theme="hologram"]::before {
+            border-color: #aab5c5;
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.82), inset 0 0 40px rgba(80,98,128,0.1);
+        }
+
+        .exportArea[data-theme="hologram"]::after {
+            background: linear-gradient(90deg, #ff3b9d, #9b5cff, #36d9ff, #62e58f, #ffe35a, #ff875c, #ff3b9d);
+        }
+
+        .exportArea[data-theme="hologram"] .header-area {
+            border-color: #c5cedb;
+            border-bottom-color: #72829c;
+            background:
+                linear-gradient(115deg, rgba(255,59,157,0.16), transparent 26%, rgba(54,217,255,0.18) 55%, transparent 76%),
+                linear-gradient(90deg, #f8fbff, #dfe6f0 52%, #f8fbff);
+            box-shadow: 0 8px 20px rgba(57,72,98,0.16);
+        }
+
+        .exportArea[data-theme="hologram"] .header-area::before {
+            width: 55%;
+            background: linear-gradient(90deg, #ff3b9d, #36d9ff, #ffe35a);
+        }
+
+        .exportArea[data-theme="hologram"] .title-container h1 {
+            color: #182238;
+            text-shadow: 0 2px 0 #fff, 2px 0 8px rgba(54,217,255,0.24), -2px 0 8px rgba(255,59,157,0.24);
+        }
+
+        .exportArea[data-theme="hologram"] .page-emblem {
+            color: #172037;
+            border-color: #fff;
+            background: conic-gradient(from 30deg, #ff83c1, #9f8aff, #6deaff, #9bf19a, #ffe67b, #ff9d7e, #ff83c1);
+            box-shadow: 0 0 0 4px #dfe5ef, 0 0 0 6px #8b99af, 0 5px 16px rgba(42,56,80,0.22);
+        }
+
+        .exportArea[data-theme="hologram"] .card-item {
+            border-color: #9aa8bc;
+            background:
+                linear-gradient(135deg, rgba(255,74,168,0.06), transparent 35%, rgba(56,222,255,0.08)),
+                #fff;
+            box-shadow: 0 3px 0 #718097, 0 7px 12px rgba(42,56,80,0.17), inset 0 0 0 2px #fff;
+        }
+
+        .exportArea[data-theme="hologram"] .card-item::before {
+            background: linear-gradient(90deg, #ff4fac, #7b7cff, #38deff, #8eea89, #ffe15f);
+        }
+
+        .exportArea[data-theme="hologram"] .card-grade {
+            color: #eefcff;
+            border-color: #8eb8d0;
+            background: linear-gradient(90deg, #5d477e, #286c82);
+        }
+
+        .exportArea[data-theme="hologram"] .card-price-container {
+            border-color: #684b99;
+            background: linear-gradient(90deg, #d93f9c, #735cd8, #258fac);
+        }
+
+        .exportArea[data-theme="hologram"] .status-badge {
+            color: #172037;
+            border-color: #fff;
+            background: linear-gradient(90deg, #ffb1d5, #91efff, #fff095);
+        }
+
+        .exportArea[data-theme="hologram"] .footer-area {
+            border-color: #bcc6d4;
+            border-top-color: #72829c;
+            background:
+                linear-gradient(110deg, rgba(255,59,157,0.09), transparent 36%, rgba(54,217,255,0.11)),
+                #f7f9fc;
+        }
+
+        .exportArea[data-theme="hologram"] .disclaimer,
+        .exportArea[data-theme="hologram"] .update-date { color: #1e293c; }
+        .exportArea[data-theme="hologram"] .update-label { color: #7a3f8f; }
+        .exportArea[data-theme="hologram"] .page-number { color: #647086; }
+
+        /* html2canvasでも背景をページ全体へ確実に描画 */
+        .exportArea {
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+
         #loadingOverlay {
             position: fixed;
             z-index: 9999;
@@ -1252,8 +1653,7 @@
 
             <div class="control-group">
                 <label><span class="step">5</span>注意書き</label>
-                <textarea id="disclaimerInput" rows="4">
-                    ※相場や在庫状況、状態等により価格が変動する場合がございます。
+                <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
                 <small class="help">テンプレート保存対象。</small>
             </div>
@@ -1266,6 +1666,11 @@
                     <option value="royal">ROYAL BLUE｜上品・信頼感</option>
                     <option value="clean">CLEAN WHITE｜明るい・見やすい</option>
                     <option value="neon">CYBER NEON｜派手・限定感</option>
+                    <option value="sakura">SAKURA PINK｜柔らかい・華やか</option>
+                    <option value="forest">FOREST GREEN｜落ち着き・自然</option>
+                    <option value="pop">POP YELLOW｜明るい・インパクト</option>
+                    <option value="retro">RETRO CLASSIC｜紙・ヴィンテージ</option>
+                    <option value="hologram">HOLOGRAM｜シルバー・虹色</option>
                 </select>
                 <small class="help">プレビューとPNG出力の両方に反映されます。</small>
             </div>
@@ -1357,6 +1762,11 @@
         </svg>
     `);
 
+    const THEMES = [
+        "luxury", "fire", "royal", "clean", "neon",
+        "sakura", "forest", "pop", "retro", "hologram"
+    ];
+
     let logoDataUrl = DEFAULT_LOGO;
     let globalCardData = [];
 
@@ -1393,7 +1803,7 @@
         if (savedTitle) document.getElementById("titleInput").value = savedTitle;
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
-        if (["luxury", "fire", "royal", "clean", "neon"].includes(savedTheme)) {
+        if (THEMES.includes(savedTheme)) {
             document.getElementById("themeSelect").value = savedTheme;
         }
         if (savedLayout === "portrait_10x6" || savedLayout === "landscape_15x4") {
@@ -1447,7 +1857,7 @@
 
     function getSelectedTheme() {
         const theme = document.getElementById("themeSelect").value;
-        return ["luxury", "fire", "royal", "clean", "neon"].includes(theme)
+        return THEMES.includes(theme)
             ? theme
             : "luxury";
     }
@@ -1934,10 +2344,17 @@
             for (let i = 0; i < areas.length; i++) {
                 overlayText.textContent = `${i + 1}枚目を生成中...（${i + 1}/${areas.length}）`;
                 const targetArea = areas[i];
+                const previewShell = targetArea.closest(".preview-page");
                 const previewTransform = targetArea.style.transform;
+                const previewShellWidth = previewShell?.style.width || "";
+                const previewShellHeight = previewShell?.style.height || "";
 
                 try {
                     targetArea.style.transform = "none";
+                    if (previewShell) {
+                        previewShell.style.width = `${targetArea.offsetWidth}px`;
+                        previewShell.style.height = `${targetArea.offsetHeight}px`;
+                    }
                     await waitForImages(targetArea);
                     adjustTextSize();
                     await new Promise(resolve => setTimeout(resolve, 250));
@@ -1963,6 +2380,10 @@
                     await new Promise(resolve => setTimeout(resolve, 700));
                 } finally {
                     targetArea.style.transform = previewTransform;
+                    if (previewShell) {
+                        previewShell.style.width = previewShellWidth;
+                        previewShell.style.height = previewShellHeight;
+                    }
                 }
             }
         } catch (error) {
