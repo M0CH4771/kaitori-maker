@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（完全等サイズ＆はみ出し防止版）</title>
+    <title>買取表ジェネレーター（高速画像読み込み版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -53,9 +53,7 @@
         button {
             width: 100%; padding: 12px; color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 10px;
         }
-        .btn-primary { background-color: var(--primary-color); }
-        .btn-primary:hover { background-color: #000; }
-        .btn-export { background-color: var(--accent-color); }
+        .btn-export { background-color: var(--accent-color); font-size: 18px; padding: 15px; }
         .btn-export:hover { background-color: #c00010; }
         .btn-template { background-color: #27ae60; margin-top: 10px; }
         .btn-template:hover { background-color: #2ecc71; }
@@ -108,7 +106,7 @@
             padding: 5px;
         }
         
-        /* カード1枚のスタイル（完全同一サイズ固定） */
+        /* カード1枚のスタイル */
         .card-item {
             background: #fff; 
             border: 2px solid var(--primary-color); 
@@ -196,22 +194,6 @@
         .update-date { font-size: 26px; font-weight: bold; color: var(--primary-color); text-align: right; }
         .page-number { font-size: 16px; font-weight: bold; color: #666; text-align: right; }
 
-        @media print {
-            .control-panel, #loadingOverlay { display: none !important; }
-            body { background: white; padding: 0; margin: 0; }
-            .preview-container { display: block; padding: 0; gap: 0; }
-            .exportArea { 
-                box-shadow: none !important; 
-                padding: 10mm 15px !important; 
-                margin: 0 !important; 
-                width: 100vw !important; 
-                height: 100vh !important; 
-                page-break-after: always;
-                page-break-inside: avoid;
-            }
-            .exportArea:last-child { page-break-after: auto; }
-        }
-        
         /* オーバーレイ */
         #loadingOverlay {
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; color: var(--primary-color); flex-direction: column;
@@ -279,7 +261,6 @@
             ※複数ページある場合は連続でダウンロードされます。
         </div>
 
-        <button class="btn-primary" onclick="printPDF()">🖨️ PDFとして保存（印刷）</button>
         <button class="btn-export" onclick="exportToImage()">📸 一括画像書き出し</button>
     </div>
 
@@ -297,7 +278,7 @@
             <div class="card-grid" style="grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(6, 1fr);">
                 <div style="grid-column: 1 / -1; grid-row: 1 / -1; display:flex; align-items:center; justify-content:center; color: #888; font-size: 1.4em; font-weight:bold;">
                     CSVファイルを読み込むとここにカードが並びます<br>
-                    （10列×6段 縦A4 / 15列×4段 横A4）
+                    （高速並列画像ロード対応版）
                 </div>
             </div>
             <div class="footer-area">
@@ -437,45 +418,77 @@
     }
 
     function parseCSV(text) {
-        // CRLF / LF のどちらの改行コードにも安全に対応
         const lines = text.split(/\r?\n/);
         globalCardData = [];
         
+        let headerIndex = -1;
         let headerMap = {};
-        let isHeaderFound = false;
 
-        for (let i = 0; i < lines.length; i++) {
+        const coreKeywords = ['カード名', '強化買取金額', '買取金額', '掲載状況', '掲載グループ', '画像リンク'];
+
+        for (let i = 0; i < Math.min(lines.length, 15); i++) {
+            const line = lines[i].trim();
+            if (!line) continue;
+
+            const parts = parseCSVLine(line).map(p => p.trim());
+            
+            let matchCount = 0;
+            parts.forEach(p => {
+                if (coreKeywords.some(kw => p.includes(kw))) {
+                    matchCount++;
+                }
+            });
+
+            if (matchCount >= 2) {
+                headerIndex = i;
+                parts.forEach((colName, idx) => {
+                    if (colName) headerMap[colName] = idx;
+                });
+                break;
+            }
+        }
+
+        if (headerIndex === -1) {
+            alert("CSV内に有効なヘッダー項目（カード名、買取金額など）が見つかりませんでした。");
+            return;
+        }
+
+        function getValueByKeywords(parts, keywords) {
+            for (let kw of keywords) {
+                for (let colName in headerMap) {
+                    if (colName.includes(kw)) {
+                        let idx = headerMap[colName];
+                        if (idx < parts.length) {
+                            return parts[idx].trim();
+                        }
+                    }
+                }
+            }
+            return '';
+        }
+
+        for (let i = headerIndex + 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
             const parts = parseCSVLine(line);
 
-            if (!isHeaderFound) {
-                if (parts.includes('カード名') || parts.includes('強化買取金額')) {
-                    parts.forEach((colName, idx) => {
-                        headerMap[colName.trim()] = idx;
-                    });
-                    isHeaderFound = true;
-                }
-                continue;
-            }
-            if (!isHeaderFound) continue;
-
-            let groupId = parts[headerMap['掲載グループ']] !== undefined ? parts[headerMap['掲載グループ']].trim() : '';
-            let status  = parts[headerMap['掲載状況']] !== undefined ? parts[headerMap['掲載状況']].trim() : '';
-            let name    = parts[headerMap['カード名']] !== undefined ? parts[headerMap['カード名']].trim() : '';
-            let type    = parts[headerMap['種別']] !== undefined ? parts[headerMap['種別']].trim() : '';
-            let price   = parts[headerMap['強化買取金額']] !== undefined ? parts[headerMap['強化買取金額']].trim() : '';
-            let imgUrl  = parts[headerMap['画像リンク']] !== undefined ? parts[headerMap['画像リンク']].trim() : '';
+            let status = getValueByKeywords(parts, ['掲載状況', '状況', 'ステータス', '掲載']);
+            let group  = getValueByKeywords(parts, ['掲載グループ', 'グループ', 'カテゴリ', '分類']);
+            let name   = getValueByKeywords(parts, ['カード名', '商品名', 'タイトル', '品名']);
+            let type   = getValueByKeywords(parts, ['種別', '型番', 'グレード', 'タイプ', '区分']);
+            let price  = getValueByKeywords(parts, ['強化買取金額', '買取金額', '金額', '価格', '買取価格']);
+            let imgUrl = getValueByKeywords(parts, ['画像リンク', '画像URL', '画像', 'URL', 'Image']);
 
             price = price.replace(/"/g, ''); 
 
-            if (!price || price === '' || price === '-' || price === '終了') continue;
+            if (status.includes('無効') || status.includes('非掲載')) continue;
+            if (!price || price === '' || price === '-' || price === '終了' || price === '0' || price === '¥0') continue;
 
-            globalCardData.push({ groupId, status, name, type, price, imgUrl, resolvedImg: null });
+            globalCardData.push({ group, status, name, type, price, imgUrl, resolvedImg: null });
         }
         
-        if(globalCardData.length > 0) {
+        if (globalCardData.length > 0) {
             renderPages();
         } else {
             const layout = document.getElementById('layoutSelect').value;
@@ -484,38 +497,65 @@
         }
     }
 
+    // ★高速ダイレクト変換 ＆ 並列プロキシフェッチ★
     async function fetchImageBase64(imgUrl) {
+        if (!imgUrl) return 'https://via.placeholder.com/200x280?text=No+Image';
+
         let targetUrl = imgUrl;
+        
+        // 1. Google Drive URLの最適化（サムネイルプロキシを経由せず直接読み込めるデータURLや高速レスポンス化）
         if (imgUrl.includes('drive.google.com')) {
             const match = imgUrl.match(/id=([^&]+)/);
             if (match && match[1]) {
                 targetUrl = `https://drive.google.com/thumbnail?id=${match[1]}&sz=w400`;
             }
         }
+        
+        // 2. S3や一般Webサーバーの直接画像URLなら、CorsProxyなしでプロキシスキップ試行
+        if (!imgUrl.includes('drive.google.com')) {
+            try {
+                const directRes = await fetch(imgUrl, { mode: 'cors' });
+                if (directRes.ok) {
+                    const blob = await directRes.blob();
+                    if (blob.type.includes('image')) {
+                        return await blobToBase64(blob);
+                    }
+                }
+            } catch (e) {
+                // CORSエラーの場合はプロキシにフォールバック
+            }
+        }
+
+        // 3. 超高速プロキシの優先並列リクエスト（wsrv.nl は世界最速クラスのCDNプロキシ）
         const encodedUrl = encodeURIComponent(targetUrl);
-        const proxies = [
-            `https://wsrv.nl/?url=${encodedUrl}`,
+        const fastProxies = [
+            `https://wsrv.nl/?url=${encodedUrl}&output=webp&w=300`, // 画像圧縮して最速返却
             `https://api.allorigins.win/raw?url=${encodedUrl}`,
-            `https://api.codetabs.com/v1/proxy?quest=${encodedUrl}`,
             `https://corsproxy.io/?${encodedUrl}`
         ];
 
-        for (let proxy of proxies) {
-            try {
-                const response = await fetch(proxy);
-                if (response.ok) {
-                    const blob = await response.blob();
-                    if (blob.type.includes('image')) {
-                        return await new Promise((resolve) => {
-                            const reader = new FileReader();
-                            reader.onloadend = () => resolve(reader.result);
-                            reader.readAsDataURL(blob);
-                        });
-                    }
-                }
-            } catch (e) {}
+        // 最初に応答が返ったプロキシを最優先で採用
+        try {
+            const blob = await Promise.any(
+                fastProxies.map(url => fetch(url).then(async res => {
+                    if (!res.ok) throw new Error('Fetch failed');
+                    const b = await res.blob();
+                    if (!b.type.includes('image')) throw new Error('Not an image');
+                    return b;
+                }))
+            );
+            return await blobToBase64(blob);
+        } catch (e) {
+            return 'https://via.placeholder.com/200x280?text=Error';
         }
-        return 'https://via.placeholder.com/200x280?text=Error';
+    }
+
+    function blobToBase64(blob) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.readAsDataURL(blob);
+        });
     }
 
     async function renderPages() {
@@ -528,27 +568,35 @@
             cols = 10; rows = 6; maxPerPage = 60; orientationClass = 'portrait';
         }
 
+        let groupedObj = {};
+        globalCardData.forEach(card => {
+            let grpKey = card.group ? card.group : '未設定';
+            if (!groupedObj[grpKey]) groupedObj[grpKey] = [];
+            groupedObj[grpKey].push(card);
+        });
+
         let pages = [];
         let currentPage = [];
-        let currentGroupId = null;
 
-        const groupBreakThreshold = maxPerPage * 0.4; 
+        for (let grpKey in groupedObj) {
+            let items = groupedObj[grpKey];
 
-        for (let i = 0; i < globalCardData.length; i++) {
-            const card = globalCardData[i];
-            
-            if (currentGroupId !== null && currentGroupId !== card.groupId) {
-                if (currentPage.length >= groupBreakThreshold) {
+            if (currentPage.length > 0 && (currentPage.length + items.length <= maxPerPage) && currentPage.length < 24) {
+                currentPage = currentPage.concat(items);
+            } else {
+                if (currentPage.length > 0) {
                     pages.push(currentPage);
                     currentPage = [];
                 }
-            }
-            currentGroupId = card.groupId;
-            currentPage.push(card);
-
-            if (currentPage.length >= maxPerPage) {
-                pages.push(currentPage);
-                currentPage = [];
+                
+                for (let i = 0; i < items.length; i += maxPerPage) {
+                    let chunk = items.slice(i, i + maxPerPage);
+                    if (chunk.length === maxPerPage) {
+                        pages.push(chunk);
+                    } else {
+                        currentPage = chunk;
+                    }
+                }
             }
         }
         if (currentPage.length > 0) pages.push(currentPage);
@@ -611,7 +659,9 @@
         });
 
         adjustTextSize();
-        loadMissingImages();
+        
+        // ★並列処理（Promise.all）で全画像を爆速一行読み込み！★
+        loadMissingImagesFast();
     }
 
     function adjustTextSize() {
@@ -644,34 +694,28 @@
         });
     }
 
-    async function loadMissingImages() {
-        const imgElements = document.querySelectorAll('.dynamic-img');
-        for (let i = 0; i < imgElements.length; i++) {
-            const imgEl = imgElements[i];
-            const originalUrl = imgEl.getAttribute('data-url');
-            
-            const cardObj = globalCardData.find(c => c.imgUrl === originalUrl);
-            
-            if (cardObj && !cardObj.resolvedImg && originalUrl) {
-                cardObj.resolvedImg = await fetchImageBase64(originalUrl);
-                imgEl.src = cardObj.resolvedImg;
-            }
-        }
-    }
-
-    function printPDF() {
-        const layout = document.getElementById('layoutSelect').value;
-        const isLandscape = layout === 'landscape_15x4';
+    // ★爆速並列（並行）画像読み込みエンジン★
+    async function loadMissingImagesFast() {
+        const imgElements = Array.from(document.querySelectorAll('.dynamic-img'));
         
-        let styleEl = document.getElementById('printPageStyle');
-        if (!styleEl) {
-            styleEl = document.createElement('style');
-            styleEl.id = 'printPageStyle';
-            document.head.appendChild(styleEl);
+        // 10枚ずつバッチ（並列）で一気に取得して爆速表示
+        const BATCH_SIZE = 10;
+        for (let i = 0; i < imgElements.length; i += BATCH_SIZE) {
+            const batch = imgElements.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(async (imgEl) => {
+                const originalUrl = imgEl.getAttribute('data-url');
+                const cardObj = globalCardData.find(c => c.imgUrl === originalUrl);
+                
+                if (cardObj) {
+                    if (!cardObj.resolvedImg && originalUrl) {
+                        cardObj.resolvedImg = await fetchImageBase64(originalUrl);
+                    }
+                    if (cardObj.resolvedImg) {
+                        imgEl.src = cardObj.resolvedImg;
+                    }
+                }
+            }));
         }
-        styleEl.innerHTML = `@media print { @page { size: A4 ${isLandscape ? 'landscape' : 'portrait'}; margin: 0; } }`;
-        
-        window.print();
     }
 
     async function exportToImage() {
