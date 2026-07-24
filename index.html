@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（A4最適化・テンプレート機能版）</title>
+    <title>買取表ジェネレーター（列ズレ完全対応・A4版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -90,10 +90,10 @@
             flex: 1;
             display: grid;
             grid-template-columns: repeat(6, 1fr); 
-            grid-template-rows: repeat(10, 1fr); /* 縦10段を均等に割る */
+            grid-template-rows: repeat(10, 1fr); 
             gap: 12px;
             margin-bottom: 20px;
-            min-height: 0; /* Flexbox内のGrid縮小を防ぐ */
+            min-height: 0; 
         }
         
         /* カード1枚のスタイル */
@@ -104,6 +104,7 @@
         }
         .card-img-container {
             flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 6px;
+            background-color: #f8f9fa; border-radius: 4px;
         }
         .card-item img {
             max-width: 95%; max-height: 100%; object-fit: contain; border-radius: 4px;
@@ -196,11 +197,14 @@
 
         <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
         
+        <div style="font-size: 0.8em; color: #555; margin-bottom: 10px;">
+            ※複数ページある場合は連続でダウンロードされます。
+        </div>
+
         <button class="btn-primary" onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
         <button class="btn-export" onclick="exportToImage()">📸 一括画像書き出し</button>
     </div>
 
-    <!-- ここにA4ページが追加されていく -->
     <div class="preview-container" id="pagesContainer">
         <div class="exportArea">
             <div class="header-area">
@@ -228,16 +232,13 @@
 <script>
     let logoDataUrl = 'https://via.placeholder.com/300x80?text=Shop+Logo';
 
-    // === 初期化とテンプレートロード ===
     document.addEventListener("DOMContentLoaded", () => {
-        // 日付セット
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, '0');
         const dd = String(today.getDate()).padStart(2, '0');
         document.getElementById('dateInput').value = `${yyyy}-${mm}-${dd}`;
 
-        // テンプレート読み込み
         const savedTitle = localStorage.getItem('kaitori_title');
         const savedDisclaimer = localStorage.getItem('kaitori_disclaimer');
         const savedLogo = localStorage.getItem('kaitori_logo');
@@ -249,7 +250,6 @@
         updateAllPages();
     });
 
-    // === テンプレート保存処理 ===
     function saveTemplate() {
         localStorage.setItem('kaitori_title', document.getElementById('titleInput').value);
         localStorage.setItem('kaitori_disclaimer', document.getElementById('disclaimerInput').value);
@@ -268,7 +268,6 @@
         return dateStr;
     }
 
-    // === 入力監視とリアルタイム更新 ===
     function updateAllPages() {
         const titleText = document.getElementById('titleInput').value;
         const dateText = formatDate(document.getElementById('dateInput').value);
@@ -295,7 +294,6 @@
         }
     });
 
-    // === CSV処理 ===
     document.getElementById('csvInput').addEventListener('change', function(e) {
         const file = e.target.files[0];
         if (file) {
@@ -307,6 +305,7 @@
         }
     });
 
+    // カンマ入りの金額を保護する高機能パーサー
     function parseCSVLine(text) {
         let result = [];
         let inQuotes = false;
@@ -368,33 +367,55 @@
     async function parseCSVAndRender(text) {
         const lines = text.split('\n');
         
-        const MAX_PER_PAGE = 60; // 6列 × 10段 = A4で60枚
+        const MAX_PER_PAGE = 60; // 6列 × 10段 = 60枚
         let pages = [];
         let currentPage = [];
         let currentGroupId = null;
+        
+        // ★ 列ズレ防止！項目名を自動で探索して記録するマップ ★
+        let headerMap = {};
+        let isHeaderFound = false;
 
         for (let i = 0; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
 
             const parts = parseCSVLine(line);
-            if(parts.length < 10) continue; 
 
-            if (parts[0] === '掲載グループ' || parts[3] === 'カード名') continue; 
+            // ヘッダー行を探す（「カード名」が含まれていればヘッダーとみなす）
+            if (!isHeaderFound) {
+                if (parts.includes('カード名') || parts.includes('強化買取金額')) {
+                    parts.forEach((colName, idx) => {
+                        headerMap[colName.trim()] = idx;
+                    });
+                    isHeaderFound = true;
+                }
+                continue;
+            }
+            
+            // ヘッダーが見つかっていないうちはデータをスキップ
+            if (!isHeaderFound) continue;
 
-            let price = parts[6] ? parts[6].trim() : '';
-            if (!price || price === '' || price === '-' || price === '終了') continue;
+            // 自動探索した列番号を使ってデータを抽出（列がズレても絶対に間違えない）
+            let groupId = parts[headerMap['掲載グループ']] !== undefined ? parts[headerMap['掲載グループ']].trim() : '';
+            let status  = parts[headerMap['掲載状況']] !== undefined ? parts[headerMap['掲載状況']].trim() : '';
+            let name    = parts[headerMap['カード名']] !== undefined ? parts[headerMap['カード名']].trim() : '';
+            let type    = parts[headerMap['種別']] !== undefined ? parts[headerMap['種別']].trim() : '';
+            let price   = parts[headerMap['強化買取金額']] !== undefined ? parts[headerMap['強化買取金額']].trim() : '';
+            let imgUrl  = parts[headerMap['画像リンク']] !== undefined ? parts[headerMap['画像リンク']].trim() : '';
 
-            let groupId = parts[0];
-            let status = parts[1]; 
-            let name = parts[3]; 
-            let type = parts[5]; 
-            let imgUrl = parts[parts.length - 1] ? parts[parts.length - 1].trim() : ''; 
+            // 余計なクォーテーションを削除
+            price = price.replace(/"/g, ''); 
+
+            // ★ 金額が空欄、ハイフン、終了の行は完全に弾く ★
+            if (!price || price === '' || price === '-' || price === '終了') {
+                continue;
+            }
 
             // スマートページ分割ロジック
-            // グループが変わり、かつ現在のページに24枚(4段)以上ある場合は、新しいページへ分割
             if (currentGroupId !== null && currentGroupId !== groupId) {
-                if (currentPage.length >= 24) {
+                // グループが変わり、かつ現在のページに十分な枚数(3段=18枚以上)があれば区切る
+                if (currentPage.length >= 18) {
                     pages.push(currentPage);
                     currentPage = [];
                 }
@@ -421,7 +442,7 @@
         container.innerHTML = ''; 
 
         if (pages.length === 0) {
-            container.innerHTML = '<div class="exportArea"><div style="text-align:center; padding:50px;">有効なデータが見つかりませんでした</div></div>';
+            container.innerHTML = '<div class="exportArea"><div style="text-align:center; padding:50px; font-weight:bold; font-size:1.4em;">有効なデータが見つかりませんでした<br><br><small style="font-size:0.7em; color:#888;">※1行目に「カード名」や「強化買取金額」という項目名が含まれているか確認してください</small></div></div>';
             return;
         }
 
@@ -488,7 +509,7 @@
                 const imgId = `card-img-${globalCardCount}`;
                 
                 let fileId = null;
-                if (card.imgUrl.includes('drive.google.com')) {
+                if (card.imgUrl && card.imgUrl.includes('drive.google.com')) {
                     const match = card.imgUrl.match(/id=([^&]+)/);
                     if (match && match[1]) fileId = match[1];
                 }
