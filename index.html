@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター</title>
+    <title>買取表・単品告知画像・ポスト文ジェネレーター</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
@@ -5295,6 +5295,374 @@
             border-left: 0;
         }
 
+        /* =========================================================
+           TYPOGRAPHY & STATUS V5
+           装飾を文字の外へ逃がし、タイトルの輪郭を最優先する
+           ========================================================= */
+
+        .exportArea[data-title-style] .title-container h1 {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            color: #fff;
+            border: 0;
+            border-radius: 0;
+            background: none;
+            box-shadow: none;
+            font-size: 76px;
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: 0.025em;
+            text-rendering: geometricPrecision;
+            -webkit-font-smoothing: antialiased;
+            -webkit-text-stroke: 0 transparent;
+            paint-order: stroke fill;
+            text-shadow: 0 4px 14px rgba(0,0,0,0.5);
+            transform: none;
+            white-space: nowrap;
+        }
+
+        .exportArea[data-title-style] .title-container h1::before,
+        .exportArea[data-title-style] .title-container h1::after {
+            content: none;
+        }
+
+        .exportArea[data-title-style="power"] .title-container h1 {
+            color: #fff;
+            font-family: "Arial Black", "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", Meiryo, sans-serif;
+            font-size: 78px;
+            font-weight: 950;
+            letter-spacing: 0.02em;
+            -webkit-text-stroke: 2px #080b12;
+            text-shadow:
+                0 4px 0 rgba(8,11,18,0.72),
+                0 9px 20px rgba(0,0,0,0.34);
+        }
+
+        .exportArea[data-title-style="gold"] .title-container h1 {
+            color: #f6d979;
+            font-family: Georgia, "Yu Mincho", "Hiragino Mincho ProN", serif;
+            font-size: 77px;
+            font-weight: 900;
+            letter-spacing: 0.045em;
+            -webkit-text-stroke: 3px #2b1b04;
+            text-shadow:
+                0 3px 0 #8d6315,
+                0 7px 16px rgba(0,0,0,0.42);
+        }
+
+        .exportArea[data-title-style="outline"] .title-container h1 {
+            color: #fff;
+            font-family: Impact, "Arial Black", "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", sans-serif;
+            font-size: 78px;
+            font-weight: 950;
+            letter-spacing: 0.018em;
+            -webkit-text-stroke: 5px #111827;
+            text-shadow:
+                4px 4px 0 #d90829,
+                0 9px 17px rgba(0,0,0,0.3);
+        }
+
+        .exportArea[data-title-style="royal"] .title-container h1 {
+            color: #fff5cf;
+            font-family: "Yu Mincho", "Hiragino Mincho ProN",
+                         "Times New Roman", serif;
+            font-size: 74px;
+            font-weight: 850;
+            letter-spacing: 0.075em;
+            -webkit-text-stroke: 2px #261a08;
+            text-shadow:
+                0 3px 0 #8a641d,
+                0 8px 18px rgba(0,0,0,0.38);
+        }
+
+        .exportArea[data-title-style="ribbon"] .title-container h1 {
+            padding: 12px 34px 14px;
+            color: #fff;
+            border: 2px solid rgba(255,255,255,0.78);
+            border-radius: 8px;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.14), transparent 38%),
+                #be0826;
+            box-shadow:
+                0 5px 0 #650011,
+                0 10px 20px rgba(0,0,0,0.3);
+            font-family: "Arial Black", "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", sans-serif;
+            font-size: 64px;
+            font-weight: 950;
+            letter-spacing: 0.045em;
+            -webkit-text-stroke: 1px #5c0010;
+            text-shadow: 0 3px 0 rgba(67,0,10,0.7);
+        }
+
+        .exportArea[data-title-style="underline"] .title-container h1 {
+            padding: 0 10px 13px;
+            color: #fff;
+            font-family: "Helvetica Neue", Arial, "Hiragino Sans", sans-serif;
+            font-size: 72px;
+            font-weight: 900;
+            letter-spacing: 0.055em;
+            -webkit-text-stroke: 2px #10151f;
+            text-shadow: 0 6px 15px rgba(0,0,0,0.38);
+        }
+
+        .exportArea[data-title-style="underline"] .title-container h1::after {
+            position: absolute;
+            right: 5%;
+            bottom: 0;
+            left: 5%;
+            display: block;
+            height: 6px;
+            content: "";
+            border-radius: 999px;
+            background: linear-gradient(90deg, #d90829 0 38%, #f1ca61 38% 100%);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.22);
+        }
+
+        .exportArea[data-title-style="neon"] .title-container h1 {
+            color: #fff;
+            font-family: "Arial Black", "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", sans-serif;
+            font-size: 76px;
+            font-weight: 950;
+            letter-spacing: 0.025em;
+            -webkit-text-stroke: 3px #092a36;
+            text-shadow:
+                0 0 7px #00dff2,
+                0 0 16px rgba(0,223,242,0.72),
+                4px 4px 0 #a8008d,
+                0 9px 18px rgba(0,0,0,0.38);
+        }
+
+        .exportArea[data-title-style="stamp"] .title-container h1 {
+            padding: 11px 30px 13px;
+            color: #fff;
+            border: 3px solid #edc65f;
+            border-radius: 6px;
+            background: #0b111c;
+            box-shadow:
+                inset 0 0 0 2px rgba(255,255,255,0.08),
+                0 6px 0 #6e5015,
+                0 11px 19px rgba(0,0,0,0.32);
+            font-family: "Arial Black", "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", sans-serif;
+            font-size: 64px;
+            font-weight: 950;
+            letter-spacing: 0.055em;
+            -webkit-text-stroke: 1px #03060a;
+            text-shadow: 0 3px 0 rgba(0,0,0,0.72);
+        }
+
+        .exportArea[data-title-style="dual"] .title-container h1 {
+            color: #fff;
+            font-family: "Arial Black", "Hiragino Kaku Gothic ProN",
+                         "Hiragino Sans", sans-serif;
+            font-size: 76px;
+            font-weight: 950;
+            letter-spacing: 0.02em;
+            -webkit-text-stroke: 3px #111827;
+            text-shadow:
+                4px 4px 0 #d90829,
+                7px 7px 0 #b38b35,
+                0 12px 18px rgba(0,0,0,0.28);
+        }
+
+        .exportArea[data-title-style="elegant"] .title-container h1 {
+            padding: 0 26px;
+            color: #fff8e7;
+            font-family: "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
+            font-size: 69px;
+            font-weight: 800;
+            letter-spacing: 0.11em;
+            -webkit-text-stroke: 2px #1c150b;
+            text-shadow:
+                0 3px 0 #84601d,
+                0 8px 17px rgba(0,0,0,0.36);
+        }
+
+        .exportArea[data-title-style="elegant"] .title-container h1::before,
+        .exportArea[data-title-style="elegant"] .title-container h1::after {
+            position: absolute;
+            top: 50%;
+            display: block;
+            width: 34px;
+            height: 2px;
+            content: "";
+            background: #edc65f;
+        }
+
+        .exportArea[data-title-style="elegant"] .title-container h1::before {
+            right: 100%;
+        }
+
+        .exportArea[data-title-style="elegant"] .title-container h1::after {
+            left: 100%;
+        }
+
+        /* 強化買取：テーマ連動の小型ブランドタグ */
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .status-badge {
+            --boost-bg: #111827;
+            --boost-accent: #d7aa43;
+            --boost-text: #ffffff;
+            --boost-accent-text: #17120a;
+            top: 9px;
+            right: auto;
+            left: 9px;
+            display: inline-flex;
+            width: auto;
+            min-width: 0;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 7px 3px 3px;
+            color: var(--boost-text);
+            border: 1px solid var(--boost-accent);
+            border-radius: 999px 7px 7px 999px;
+            background: var(--boost-bg);
+            box-shadow:
+                0 4px 10px rgba(0,0,0,0.24),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: 0;
+            transform: none;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .status-badge span {
+            display: inline-flex;
+            min-width: 26px;
+            height: 18px;
+            align-items: center;
+            justify-content: center;
+            padding: 0 5px;
+            color: var(--boost-accent-text);
+            border-radius: 999px;
+            background: var(--boost-accent);
+            font-size: 8px;
+            letter-spacing: 0.03em;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .status-badge strong {
+            color: var(--boost-text);
+            font-size: 10px;
+            font-weight: 1000;
+            letter-spacing: 0.04em;
+        }
+
+        .exportArea[data-theme="signal"] .status-badge {
+            --boost-bg: #111827; --boost-accent: #e0b54f;
+            --boost-text: #fff9e9; --boost-accent-text: #17120a;
+        }
+        .exportArea[data-theme="trust"] .status-badge {
+            --boost-bg: #ffffff; --boost-accent: #1684d8;
+            --boost-text: #073b6c; --boost-accent-text: #ffffff;
+        }
+        .exportArea[data-theme="market"] .status-badge {
+            --boost-bg: #ffffff; --boost-accent: #e00025;
+            --boost-text: #202938; --boost-accent-text: #ffffff;
+        }
+        .exportArea[data-theme="alert"] .status-badge {
+            --boost-bg: #11151d; --boost-accent: #ffcf4a;
+            --boost-text: #ffffff; --boost-accent-text: #11151d;
+        }
+        .exportArea[data-theme="editorial"] .status-badge {
+            --boost-bg: #2a2320; --boost-accent: #d4b377;
+            --boost-text: #fff8e9; --boost-accent-text: #2a2320;
+        }
+        .exportArea[data-theme="wa"] .status-badge {
+            --boost-bg: #ffffff; --boost-accent: #c4142d;
+            --boost-text: #2b211c; --boost-accent-text: #ffffff;
+            border-radius: 3px;
+        }
+        .exportArea[data-theme="wa"] .status-badge span {
+            border-radius: 2px;
+        }
+        .exportArea[data-theme="cyber"] .status-badge {
+            --boost-bg: #090a1d; --boost-accent: #00e5f4;
+            --boost-text: #ffffff; --boost-accent-text: #050613;
+            border-radius: 0 8px 0 8px;
+            box-shadow: 0 0 13px rgba(0,229,244,0.42);
+        }
+        .exportArea[data-theme="cyber"] .status-badge span {
+            border-radius: 0 5px 0 5px;
+        }
+        .exportArea[data-theme="soft"] .status-badge {
+            --boost-bg: #ffffff; --boost-accent: #d85b88;
+            --boost-text: #71364f; --boost-accent-text: #ffffff;
+        }
+        .exportArea[data-theme="ticket"] .status-badge {
+            --boost-bg: #183249; --boost-accent: #e4ad58;
+            --boost-text: #fff6e2; --boost-accent-text: #183249;
+            border-radius: 3px;
+        }
+        .exportArea[data-theme="scoreboard"] .status-badge {
+            --boost-bg: #17231a; --boost-accent: #a7dd3b;
+            --boost-text: #f2ffdc; --boost-accent-text: #17231a;
+            border-radius: 4px;
+        }
+
+        /* 単品告知の見出しも、同じ視認性ルールで整える */
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-eyebrow {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 20px 9px 13px;
+            color: var(--ad-bg);
+            border: 1px solid var(--ad-secondary);
+            border-radius: 999px;
+            background: var(--ad-primary);
+            box-shadow:
+                0 5px 0 rgba(0,0,0,0.2),
+                0 9px 18px rgba(0,0,0,0.12);
+            font-size: 18px;
+            font-weight: 1000;
+            line-height: 1;
+            letter-spacing: 0.12em;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-eyebrow::before {
+            width: 8px;
+            height: 8px;
+            flex: 0 0 auto;
+            content: "";
+            border: 2px solid currentColor;
+            border-radius: 50%;
+            opacity: 0.72;
+        }
+
         #loadingOverlay {
             position: fixed;
             z-index: 9999;
@@ -5612,16 +5980,16 @@
             <div class="control-group">
                 <label><span class="step">4</span>タイトルスタイル</label>
                 <select id="titleStyleSelect">
-                    <option value="power">01 POWER｜太字・王道</option>
-                    <option value="gold">02 GOLD EMBOSS｜立体金文字</option>
-                    <option value="outline">03 IMPACT OUTLINE｜極太縁取り</option>
-                    <option value="royal">04 ROYAL MINCHO｜高級明朝</option>
-                    <option value="ribbon">05 RED RIBBON｜赤帯タイトル</option>
-                    <option value="underline">06 EDITORIAL LINE｜雑誌風下線</option>
-                    <option value="neon">07 NEON GLOW｜ネオン発光</option>
-                    <option value="stamp">08 DOUBLE FRAME｜二重枠</option>
-                    <option value="dual">09 DUAL SHADOW｜赤金二重影</option>
-                    <option value="elegant">10 ELEGANT｜余白重視・上品</option>
+                    <option value="power">01 CLEAR BOLD｜太字・最も読みやすい</option>
+                    <option value="gold">02 LUXE GOLD｜金文字・上品</option>
+                    <option value="outline">03 IMPACT OUTLINE｜極太縁取り・遠目に強い</option>
+                    <option value="royal">04 ROYAL MINCHO｜高級明朝・格調</option>
+                    <option value="ribbon">05 RED LABEL｜赤帯・強い訴求</option>
+                    <option value="underline">06 EDITORIAL LINE｜雑誌風・洗練</option>
+                    <option value="neon">07 CLEAN NEON｜発光・輪郭は明瞭</option>
+                    <option value="stamp">08 FRAMED TITLE｜額装・高級感</option>
+                    <option value="dual">09 MODERN SHADOW｜立体・読みやすい</option>
+                    <option value="elegant">10 ELEGANT｜明朝・余白重視</option>
                 </select>
                 <small class="help">背景デザインとは別に、タイトル部分だけ変更できます。</small>
             </div>
@@ -8558,7 +8926,11 @@
 
             const cardsHtml = pageCards.map(card => {
                 const badgeHtml = card.status.includes("強化")
-                    ? '<div class="status-badge">強化買取</div>'
+                    ? `
+                        <div class="status-badge" aria-label="強化買取">
+                            <span>強化</span><strong>買取</strong>
+                        </div>
+                    `
                     : "";
                 const imageSource = card.resolvedImg || LOADING_IMAGE;
                 const grade = escapeHtml(card.type || "");
