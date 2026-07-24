@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（カード名なし・金額/画像特化版）</title>
+    <title>買取表ジェネレーター（60枚・金額サイズ自動調整版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -82,11 +82,11 @@
             flex-direction: column;
         }
         
-        /* 縦A4用 (カードを大きく見せるため 5列×8段 = 40枚 に最適化) */
+        /* 縦A4用 */
         .exportArea.portrait {
             width: 1414px; height: 2000px;
         }
-        /* 横A4用 (横8列 × 縦5段 = 40枚 に最適化) */
+        /* 横A4用 */
         .exportArea.landscape {
             width: 2000px; height: 1414px;
         }
@@ -98,39 +98,50 @@
         .logo-container img { max-height: 80px; max-width: 300px; object-fit: contain; }
         .title-container h1 { margin: 0; font-size: 42px; color: var(--primary-color); text-align: center; letter-spacing: 2px; }
         
-        /* グリッドレイアウト */
+        /* グリッドレイアウト (60枚最適化) */
         .card-grid {
             flex: 1;
             display: grid;
-            gap: 16px;
+            gap: 10px;
             margin-bottom: 20px;
             min-height: 0; 
         }
         
-        /* カード1枚のスタイル（カード名を排除して画像と金額に全力を注ぐ） */
+        /* カード1枚のスタイル（カード名なし・60枚に合わせて少しコンパクトに） */
         .card-item {
-            background: #fff; border: 2.5px solid var(--primary-color); border-radius: 10px; padding: 10px 8px; text-align: center;
+            background: #fff; border: 2px solid var(--primary-color); border-radius: 8px; padding: 6px 4px; text-align: center;
             display: flex; flex-direction: column; justify-content: space-between; align-items: center;
-            box-shadow: 3px 3px 0px rgba(0,0,0,0.15); position: relative; min-height: 0; 
+            box-shadow: 2px 2px 0px rgba(0,0,0,0.15); position: relative; min-height: 0; 
         }
         .card-img-container {
-            flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 8px;
-            background-color: #f8f9fa; border-radius: 6px; overflow: hidden;
+            flex: 1; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 6px;
+            background-color: #f8f9fa; border-radius: 4px; overflow: hidden;
         }
         .card-item img {
-            max-width: 98%; max-height: 98%; object-fit: contain; border-radius: 4px;
+            max-width: 95%; max-height: 95%; object-fit: contain; border-radius: 4px;
         }
         
         .card-grade {
-            background-color: #222; color: #fff; font-size: 13px; font-weight: bold; padding: 3px 12px; border-radius: 20px; display: inline-block; margin-bottom: 6px; letter-spacing: 1px;
+            background-color: #222; color: #fff; font-size: 11px; font-weight: bold; padding: 2px 10px; border-radius: 20px; display: inline-block; margin-bottom: 4px; letter-spacing: 1px;
         }
-        .card-price {
-            color: var(--accent-color); font-size: 26px; font-weight: 900; letter-spacing: 0px; margin-bottom: 4px;
+
+        /* 金額コンテナ (改行禁止・自動縮小用) */
+        .card-price-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        .card-price-text {
+            color: var(--accent-color); font-size: 22px; font-weight: 900; letter-spacing: 0px; white-space: nowrap; transform-origin: center center;
         }
         
         /* 強化バッジ */
         .status-badge {
-            position: absolute; top: -10px; right: -10px; background-color: #ff9800; color: white; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;
+            position: absolute; top: -8px; right: -8px; background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 10px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.2); z-index: 10;
         }
 
         /* フッター */
@@ -207,14 +218,12 @@
         </div>
         
         <div class="control-group">
-            <label>6. レイアウト設定（カード名なし・大画面表示）</label>
+            <label>6. レイアウト設定（1ページ60枚）</label>
             <select id="layoutSelect">
-                <!-- 縦型 (5列×8段 = 40枚) -->
-                <option value="portrait_5x8">A4縦 (横5列 × 縦8段) - 40枚</option>
-                <!-- 横型 (8列×5段 = 40枚) -->
-                <option value="landscape_8x5">A4横 (横8列 × 縦5段) - 40枚</option>
-                <!-- 横型 (10列×4段 = 40枚) -->
-                <option value="landscape_10x4">A4横 (横10列 × 縦4段) - 40枚</option>
+                <!-- 縦横それぞれ60枚になるレイアウト -->
+                <option value="portrait_6x10">A4縦 (横6列 × 縦10段) - 60枚</option>
+                <option value="landscape_10x6">A4横 (横10列 × 縦6段) - 60枚</option>
+                <option value="landscape_15x4">A4横 (横15列 × 縦4段) - 60枚</option>
             </select>
             <small style="color:#777;">※テンプレート保存対象</small>
         </div>
@@ -242,10 +251,10 @@
                     <h1 class="title-text">PSA10買取表</h1>
                 </div>
             </div>
-            <div class="card-grid" style="grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(8, 1fr);">
+            <div class="card-grid" style="grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(10, 1fr);">
                 <div style="grid-column: 1 / -1; grid-row: 1 / -1; display:flex; align-items:center; justify-content:center; color: #888; font-size: 1.4em; font-weight:bold;">
                     CSVファイルを読み込むとここにカードが並びます<br>
-                    （カード名なし・画像と金額特化レイアウト）
+                    （カード名なし・金額文字サイズ自動調整・60枚レイアウト）
                 </div>
             </div>
             <div class="footer-area">
@@ -452,12 +461,12 @@
         const layout = document.getElementById('layoutSelect').value;
         let cols, rows, maxPerPage, orientationClass;
         
-        if (layout === 'portrait_5x8') {
-            cols = 5; rows = 8; maxPerPage = 40; orientationClass = 'portrait';
-        } else if (layout === 'landscape_8x5') {
-            cols = 8; rows = 5; maxPerPage = 40; orientationClass = 'landscape';
-        } else if (layout === 'landscape_10x4') {
-            cols = 10; rows = 4; maxPerPage = 40; orientationClass = 'landscape';
+        if (layout === 'portrait_6x10') {
+            cols = 6; rows = 10; maxPerPage = 60; orientationClass = 'portrait';
+        } else if (layout === 'landscape_10x6') {
+            cols = 10; rows = 6; maxPerPage = 60; orientationClass = 'landscape';
+        } else if (layout === 'landscape_15x4') {
+            cols = 15; rows = 4; maxPerPage = 60; orientationClass = 'landscape';
         }
 
         let pages = [];
@@ -514,7 +523,7 @@
                 
                 let imgSrc = card.resolvedImg ? card.resolvedImg : 'https://via.placeholder.com/200x280?text=Loading...';
                 
-                // ★カード名を完全に外し、画像と金額をドーンと大きく表示するレイアウト★
+                // ★カード名を外し、金額部分に「card-price-container」を被せて自動縮小の対象にする★
                 gridHtml += `
                     <div class="card-item">
                         ${badgeHtml}
@@ -522,7 +531,9 @@
                             <img src="${imgSrc}" class="dynamic-img" data-url="${card.imgUrl}" alt="Card" crossorigin="anonymous">
                         </div>
                         <div><span class="card-grade">${card.type}</span></div>
-                        <div class="card-price">${card.price}</div>
+                        <div class="card-price-container">
+                            <span class="card-price-text">${card.price}</span>
+                        </div>
                     </div>
                 `;
             });
@@ -542,7 +553,27 @@
             container.appendChild(pageDiv);
         });
 
+        adjustTextSize();
         loadMissingImages();
+    }
+
+    // ★金額のはみ出しを検知して自動で縮小する関数★
+    function adjustTextSize() {
+        document.querySelectorAll('.card-price-container').forEach(container => {
+            const textEl = container.querySelector('.card-price-text');
+            if (!textEl) return;
+            textEl.style.transform = 'none'; 
+            
+            const containerWidth = container.clientWidth;
+            const textWidth = textEl.scrollWidth;
+            
+            // はみ出している場合、コンテナ幅に合わせてスケールダウン
+            if (textWidth > containerWidth && containerWidth > 0) {
+                // 少し余裕を持たせるために 0.95 を掛ける
+                const scale = (containerWidth / textWidth) * 0.95; 
+                textEl.style.transform = `scale(${scale})`;
+            }
+        });
     }
 
     async function loadMissingImages() {
