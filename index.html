@@ -47,7 +47,7 @@
 
         .view-tabs {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             padding: 7px;
             border: 1px solid rgba(17, 24, 39, 0.1);
@@ -2872,6 +2872,150 @@
             color: #ff7181;
         }
 
+        /* ===== ポスト文メーカー ===== */
+        .post-maker {
+            display: flex;
+            flex-direction: column;
+            gap: 28px;
+        }
+
+        .post-composer-grid {
+            display: grid;
+            grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr);
+            gap: 16px;
+            padding: 20px 24px 8px;
+        }
+
+        .post-editor-card,
+        .post-output-card {
+            min-width: 0;
+            overflow: hidden;
+            border: 1px solid rgba(217, 173, 74, 0.24);
+            border-radius: 11px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .post-card-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 13px 14px 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .post-card-heading strong {
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .post-card-heading span {
+            color: #9ca8ba;
+            font-size: 10px;
+        }
+
+        .post-editor-inner {
+            padding: 14px;
+        }
+
+        .post-mode-row {
+            display: grid;
+            grid-template-columns: minmax(180px, 0.75fr) minmax(220px, 1.25fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .post-mode-row label,
+        .post-body-label {
+            display: block;
+            margin-bottom: 6px;
+            color: #dfe6f2;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        #postTemplateBody {
+            min-height: 330px;
+            color: #f7f9fc;
+            border-color: rgba(255,255,255,0.12);
+            background: rgba(4,8,16,0.62);
+            line-height: 1.65;
+        }
+
+        .post-variable-help {
+            margin-top: 12px;
+            padding: 11px;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 9px;
+            background: rgba(255,255,255,0.035);
+        }
+
+        .post-variable-help strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 10px;
+        }
+
+        .post-variable-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .post-variable-chip {
+            width: auto;
+            margin: 0;
+            padding: 7px 9px;
+            color: #ffe9a9;
+            border: 1px solid rgba(217,173,74,0.32);
+            border-radius: 7px;
+            background: rgba(217,173,74,0.08);
+            box-shadow: none;
+            font-size: 10px;
+            letter-spacing: 0;
+        }
+
+        .post-variable-note {
+            margin: 9px 0 0;
+            color: #99a6b8;
+            font-size: 9px;
+            line-height: 1.55;
+        }
+
+        #postTextOutput {
+            min-height: 466px;
+            border: 0;
+            border-radius: 0;
+            background: rgba(4,8,16,0.62);
+            color: #f7f9fc;
+            line-height: 1.7;
+        }
+
+        .post-output-actions {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 9px;
+            padding: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .post-output-actions button {
+            width: auto;
+            min-width: 135px;
+            margin: 0;
+            padding: 9px 12px;
+            font-size: 11px;
+        }
+
+        .post-source-status {
+            margin-right: auto;
+            color: #aeb8c8;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
         .single-selection {
             margin: 14px 24px 0;
             overflow: hidden;
@@ -3865,6 +4009,1292 @@
             border-left: 0;
         }
 
+        /* =========================================================
+           VISUAL SYSTEM V4
+           商品と価格を最短で読ませながら、テーマごとの格を出す
+           ========================================================= */
+
+        /* ----- 買取表：全テーマ共通の情報階層 ----- */
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) {
+            --v4-bg: #08101b;
+            --v4-header: #101827;
+            --v4-header-text: #ffffff;
+            --v4-card: #ffffff;
+            --v4-ink: #111827;
+            --v4-muted: #4b5565;
+            --v4-image: #f3f5f8;
+            --v4-accent: #d9ad4a;
+            --v4-accent-2: #fff0ad;
+            --v4-border: #c6a45c;
+            --v4-price: #d90829;
+            --v4-price-text: #ffffff;
+            --v4-footer: #101827;
+            --v4-footer-text: #f7f3e8;
+            padding: 30px 36px 28px;
+            color: var(--v4-ink);
+            border: 0;
+            background-color: var(--v4-bg);
+            background-image:
+                radial-gradient(circle at 6% 8%, rgba(255,255,255,0.07), transparent 26%),
+                radial-gradient(circle at 94% 86%, rgba(255,255,255,0.045), transparent 28%);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        )::before {
+            z-index: 0;
+            inset: 12px;
+            border: 2px solid var(--v4-accent);
+            border-radius: 3px;
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.14),
+                inset 0 0 48px rgba(255,255,255,0.035);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        )::after {
+            z-index: 1;
+            height: 10px;
+            background:
+                linear-gradient(
+                    90deg,
+                    var(--v4-accent),
+                    var(--v4-accent-2) 50%,
+                    var(--v4-accent)
+                );
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .header-area {
+            z-index: 2;
+            min-height: 158px;
+            margin: 0 8px 18px;
+            padding: 18px 24px;
+            color: var(--v4-header-text);
+            border: 1px solid var(--v4-border);
+            border-bottom: 5px solid var(--v4-accent);
+            border-radius: 12px;
+            background:
+                linear-gradient(105deg, rgba(255,255,255,0.08), transparent 32%),
+                var(--v4-header);
+            box-shadow:
+                0 12px 30px rgba(0,0,0,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .header-area::before {
+            bottom: -5px;
+            width: 38%;
+            height: 5px;
+            background: var(--v4-accent-2);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .logo-container {
+            width: 350px;
+            height: 122px;
+            flex-basis: 350px;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .logo-container img {
+            max-height: 120px;
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.16));
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .title-container h1 {
+            line-height: 0.98;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .page-emblem {
+            width: 94px;
+            height: 94px;
+            color: var(--v4-header);
+            border: 3px solid var(--v4-accent-2);
+            background: var(--v4-accent);
+            box-shadow:
+                0 0 0 4px var(--v4-header),
+                0 0 0 6px var(--v4-accent),
+                0 8px 18px rgba(0,0,0,0.24);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-grid {
+            z-index: 2;
+            gap: 10px;
+            margin: 0 8px 16px;
+            padding: 4px;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-item {
+            padding: 7px;
+            color: var(--v4-ink);
+            border: 1px solid var(--v4-border);
+            border-radius: 9px;
+            background: var(--v4-card);
+            box-shadow:
+                0 3px 0 var(--v4-border),
+                0 6px 14px rgba(0,0,0,0.14),
+                inset 0 0 0 1px rgba(255,255,255,0.75);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-item::before {
+            height: 5px;
+            background: linear-gradient(90deg, var(--v4-accent), var(--v4-accent-2));
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-img-container {
+            margin-bottom: 5px;
+            border: 1px solid var(--v4-border);
+            border-radius: 7px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.82), rgba(255,255,255,0.18)),
+                var(--v4-image);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-name {
+            display: -webkit-box;
+            min-height: 25px;
+            margin: 0 1px 4px;
+            color: var(--v4-ink);
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1.2;
+            text-overflow: clip;
+            white-space: normal;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-meta {
+            min-height: 18px;
+            margin-bottom: 4px;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-grade {
+            padding: 3px 8px;
+            color: #fff;
+            border: 0;
+            background: var(--v4-ink);
+            font-size: 10px;
+            box-shadow: none;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-price-container {
+            height: 34px;
+            padding: 2px 5px;
+            border: 1px solid var(--v4-price);
+            border-radius: 6px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.16), transparent 45%),
+                var(--v4-price);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.28),
+                0 3px 0 rgba(0,0,0,0.38);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-price-text {
+            color: var(--v4-price-text);
+            font-size: 23px;
+            font-weight: 1000;
+            letter-spacing: -0.025em;
+            text-shadow: 0 2px 0 rgba(0,0,0,0.32);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .status-badge {
+            top: 10px;
+            right: auto;
+            left: 10px;
+            width: auto;
+            padding: 5px 8px;
+            color: #17120a;
+            border: 1px solid #fff1b5;
+            border-radius: 4px;
+            background: linear-gradient(180deg, #fff2a9, #e0ae34);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.22);
+            font-size: 9px;
+            transform: none;
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .footer-area {
+            z-index: 2;
+            min-height: 102px;
+            margin: auto 8px 0;
+            padding: 14px 20px;
+            color: var(--v4-footer-text);
+            border: 1px solid var(--v4-accent);
+            border-top: 4px solid var(--v4-accent);
+            border-radius: 10px;
+            background: var(--v4-footer);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.16);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .disclaimer,
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .update-date {
+            color: var(--v4-footer-text);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .update-label {
+            color: var(--v4-accent-2);
+        }
+
+        .exportArea:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .page-number {
+            color: var(--v4-footer-text);
+            opacity: 0.7;
+        }
+
+        /* ----- 買取表：テーマごとの個性 ----- */
+        .exportArea[data-theme="signal"] {
+            --v4-bg: #070b12; --v4-header: #111827; --v4-card: #fffdf8;
+            --v4-ink: #161c27; --v4-image: #f4f0e7; --v4-accent: #d7aa43;
+            --v4-accent-2: #fff0a8; --v4-border: #c39a45; --v4-price: #d60025;
+            --v4-footer: #0e1521; --v4-footer-text: #f7f1e4;
+            background-image:
+                radial-gradient(circle at 50% -12%, rgba(215,170,67,0.21), transparent 32%),
+                linear-gradient(145deg, #111827 0%, #06080d 72%);
+        }
+        .exportArea[data-theme="signal"] .card-item {
+            box-shadow: 0 3px 0 #8f6b25, 0 8px 18px rgba(0,0,0,0.24);
+        }
+        .exportArea[data-theme="signal"] .page-emblem {
+            background: radial-gradient(circle at 35% 25%, #fff4c6, #d7aa43 64%, #91671c);
+        }
+
+        .exportArea[data-theme="trust"] {
+            --v4-bg: #eaf3fb; --v4-header: #073b6c; --v4-card: #ffffff;
+            --v4-ink: #102b46; --v4-image: #edf6fc; --v4-accent: #1684d8;
+            --v4-accent-2: #bfe7ff; --v4-border: #7cb5dd; --v4-price: #075da8;
+            --v4-footer: #07365f; --v4-footer-text: #f3f9ff;
+            background-image:
+                linear-gradient(135deg, rgba(22,132,216,0.11) 0 12%, transparent 12% 88%, rgba(22,132,216,0.08) 88%),
+                linear-gradient(#f4f9fd, #dcecf8);
+        }
+        .exportArea[data-theme="trust"]::before { border-radius: 20px; }
+        .exportArea[data-theme="trust"] .header-area,
+        .exportArea[data-theme="trust"] .footer-area { border-radius: 18px; }
+        .exportArea[data-theme="trust"] .card-item { border-radius: 14px; }
+        .exportArea[data-theme="trust"] .page-emblem { border-radius: 18px; }
+
+        .exportArea[data-theme="market"] {
+            --v4-bg: #f1f3f6; --v4-header: #ffffff; --v4-header-text: #151a22;
+            --v4-card: #ffffff; --v4-ink: #151a22; --v4-image: #f5f6f8;
+            --v4-accent: #202938; --v4-accent-2: #e60025; --v4-border: #c9d0d8;
+            --v4-price: #e60025; --v4-footer: #ffffff; --v4-footer-text: #252d39;
+            background-image:
+                linear-gradient(rgba(31,41,55,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(31,41,55,0.035) 1px, transparent 1px);
+            background-size: 26px 26px;
+        }
+        .exportArea[data-theme="market"]::before { border-width: 1px; }
+        .exportArea[data-theme="market"] .header-area,
+        .exportArea[data-theme="market"] .footer-area,
+        .exportArea[data-theme="market"] .card-item,
+        .exportArea[data-theme="market"] .card-price-container {
+            border-radius: 2px;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="market"] .page-emblem {
+            color: #fff;
+            border-radius: 3px;
+            background: #202938;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="market"][data-title-style="power"] .title-container h1 {
+            color: #151a22;
+            text-shadow: 0 3px 0 #e60025, 0 7px 0 #d7dde5;
+        }
+        .exportArea[data-theme="market"] .update-label { color: #e60025; }
+        .exportArea[data-theme="market"] .page-number { color: #667085; }
+
+        .exportArea[data-theme="alert"] {
+            --v4-bg: #4c0611; --v4-header: #bd0021; --v4-card: #fffaf7;
+            --v4-ink: #2f1218; --v4-image: #fff1eb; --v4-accent: #ffcf4a;
+            --v4-accent-2: #ffffff; --v4-border: #eb3150; --v4-price: #11151d;
+            --v4-footer: #bd0021; --v4-footer-text: #fff8f2;
+            background-image:
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0 18px, transparent 18px 38px),
+                linear-gradient(145deg, #750819, #31030a);
+        }
+        .exportArea[data-theme="alert"]::after {
+            background: linear-gradient(90deg, #ffcf4a 0 18%, #fff 18% 21%, #ffcf4a 21% 79%, #fff 79% 82%, #ffcf4a 82%);
+        }
+        .exportArea[data-theme="alert"] .header-area {
+            border-radius: 0;
+            box-shadow: 12px 12px 0 rgba(0,0,0,0.25);
+        }
+        .exportArea[data-theme="alert"] .card-item {
+            border-width: 2px;
+            box-shadow: 0 4px 0 #9c001b, 0 7px 12px rgba(0,0,0,0.2);
+        }
+        .exportArea[data-theme="alert"] .status-badge {
+            color: #fff;
+            border-color: #fff;
+            background: #bd0021;
+        }
+
+        .exportArea[data-theme="editorial"] {
+            --v4-bg: #e7decd; --v4-header: #181714; --v4-card: #fffdf8;
+            --v4-ink: #23201c; --v4-image: #f2eee5; --v4-accent: #9a7546;
+            --v4-accent-2: #e8d3a5; --v4-border: #9b896f; --v4-price: #841d2b;
+            --v4-footer: #181714; --v4-footer-text: #f4ecdd;
+            background-image:
+                radial-gradient(rgba(44,37,28,0.07) 0.8px, transparent 0.8px),
+                linear-gradient(#efe7d8, #dfd3be);
+            background-size: 9px 9px, auto;
+        }
+        .exportArea[data-theme="editorial"] .header-area,
+        .exportArea[data-theme="editorial"] .footer-area,
+        .exportArea[data-theme="editorial"] .card-item,
+        .exportArea[data-theme="editorial"] .card-img-container,
+        .exportArea[data-theme="editorial"] .card-price-container {
+            border-radius: 0;
+        }
+        .exportArea[data-theme="editorial"][data-title-style="power"] .title-container h1,
+        .exportArea[data-theme="editorial"] .card-name {
+            font-family: Georgia, "Yu Mincho", "Hiragino Mincho ProN", serif;
+        }
+        .exportArea[data-theme="editorial"] .page-emblem {
+            border-radius: 50% 50% 4px 4px;
+        }
+
+        .exportArea[data-theme="wa"] {
+            --v4-bg: #f4efe5; --v4-header: #171412; --v4-card: #fffefa;
+            --v4-ink: #281f1a; --v4-image: #f3eee4; --v4-accent: #c4142d;
+            --v4-accent-2: #dfc071; --v4-border: #b8a98e; --v4-price: #c4142d;
+            --v4-footer: #171412; --v4-footer-text: #f5eee2;
+            background-image:
+                radial-gradient(circle at 92% 11%, transparent 0 68px, rgba(196,20,45,0.1) 69px 73px, transparent 74px),
+                linear-gradient(90deg, rgba(196,20,45,0.04) 1px, transparent 1px);
+            background-size: auto, 54px 54px;
+        }
+        .exportArea[data-theme="wa"]::before {
+            border-color: #c4142d;
+            box-shadow: inset 0 0 0 4px #f4efe5, inset 0 0 0 5px #dfc071;
+        }
+        .exportArea[data-theme="wa"] .header-area {
+            border-right: 20px solid #c4142d;
+            border-left: 20px solid #c4142d;
+            border-radius: 2px;
+        }
+        .exportArea[data-theme="wa"] .card-item { border-radius: 3px; }
+        .exportArea[data-theme="wa"] .page-emblem {
+            color: #fff;
+            border-radius: 50%;
+            background: #c4142d;
+        }
+
+        .exportArea[data-theme="cyber"] {
+            --v4-bg: #050613; --v4-header: #11152d; --v4-card: #11172a;
+            --v4-ink: #f1fbff; --v4-image: #0b1022; --v4-accent: #00e5f4;
+            --v4-accent-2: #ff2bcf; --v4-border: #00c9db; --v4-price: #e000b8;
+            --v4-footer: #10142a; --v4-footer-text: #effcff;
+            background-image:
+                linear-gradient(rgba(0,229,244,0.07) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,43,207,0.06) 1px, transparent 1px),
+                radial-gradient(circle at 50% 0, rgba(104,50,255,0.22), transparent 38%);
+            background-size: 34px 34px, 34px 34px, auto;
+        }
+        .exportArea[data-theme="cyber"]::before {
+            border-color: #00e5f4;
+            box-shadow: inset 0 0 34px rgba(0,229,244,0.08);
+        }
+        .exportArea[data-theme="cyber"] .header-area,
+        .exportArea[data-theme="cyber"] .card-item,
+        .exportArea[data-theme="cyber"] .card-img-container,
+        .exportArea[data-theme="cyber"] .card-price-container,
+        .exportArea[data-theme="cyber"] .footer-area {
+            border-radius: 0 12px 0 12px;
+        }
+        .exportArea[data-theme="cyber"] .card-name { color: #f1fbff; }
+        .exportArea[data-theme="cyber"] .card-grade {
+            color: #050613;
+            background: #00e5f4;
+        }
+        .exportArea[data-theme="cyber"][data-title-style="power"] .title-container h1 {
+            text-shadow: 3px 0 #ff2bcf, -3px 0 #00e5f4;
+        }
+
+        .exportArea[data-theme="soft"] {
+            --v4-bg: #fff2f7; --v4-header: #71364f; --v4-card: #ffffff;
+            --v4-ink: #4d2b3b; --v4-image: #fff7fa; --v4-accent: #d85b88;
+            --v4-accent-2: #ffd3e2; --v4-border: #e5a4bd; --v4-price: #d92d67;
+            --v4-footer: #71364f; --v4-footer-text: #fff7fb;
+            background-image:
+                radial-gradient(circle at 10% 15%, rgba(216,91,136,0.12), transparent 18%),
+                radial-gradient(circle at 90% 82%, rgba(216,91,136,0.12), transparent 20%),
+                linear-gradient(#fff8fb, #fde9f1);
+        }
+        .exportArea[data-theme="soft"]::before { border-radius: 30px; }
+        .exportArea[data-theme="soft"] .header-area,
+        .exportArea[data-theme="soft"] .footer-area { border-radius: 24px; }
+        .exportArea[data-theme="soft"] .card-item { border-radius: 18px; }
+        .exportArea[data-theme="soft"] .card-img-container { border-radius: 13px; }
+        .exportArea[data-theme="soft"] .card-price-container { border-radius: 999px; }
+        .exportArea[data-theme="soft"] .page-emblem { border-radius: 32% 68% 44% 56%; }
+
+        .exportArea[data-theme="ticket"] {
+            --v4-bg: #e6d1a8; --v4-header: #183249; --v4-card: #fff8e8;
+            --v4-ink: #35271c; --v4-image: #f2e6cc; --v4-accent: #d18a3b;
+            --v4-accent-2: #f7d980; --v4-border: #9c7650; --v4-price: #ad4228;
+            --v4-footer: #183249; --v4-footer-text: #fff4dc;
+            background-image:
+                radial-gradient(circle, rgba(88,62,37,0.1) 1px, transparent 1.5px),
+                linear-gradient(#efdfbe, #ddc596);
+            background-size: 16px 16px, auto;
+        }
+        .exportArea[data-theme="ticket"]::before {
+            border: 5px double #8f6237;
+        }
+        .exportArea[data-theme="ticket"] .header-area,
+        .exportArea[data-theme="ticket"] .footer-area {
+            border-right: 8px double #d18a3b;
+            border-left: 8px double #d18a3b;
+            border-radius: 2px;
+        }
+        .exportArea[data-theme="ticket"] .card-item {
+            border-style: dashed;
+            border-radius: 4px;
+            box-shadow: 0 4px 0 #8f6237;
+        }
+        .exportArea[data-theme="ticket"] .page-emblem {
+            border-radius: 6px;
+            transform: rotate(-2deg);
+        }
+
+        .exportArea[data-theme="scoreboard"] {
+            --v4-bg: #101820; --v4-header: #17231a; --v4-card: #f8ffe9;
+            --v4-ink: #172014; --v4-image: #eef6dd; --v4-accent: #a7dd3b;
+            --v4-accent-2: #f4ff91; --v4-border: #7faf29; --v4-price: #243b16;
+            --v4-footer: #17231a; --v4-footer-text: #f2ffdc;
+            background-image:
+                repeating-linear-gradient(90deg, rgba(167,221,59,0.035) 0 2px, transparent 2px 42px),
+                linear-gradient(#111b1e, #0b1216);
+        }
+        .exportArea[data-theme="scoreboard"] .header-area {
+            border-radius: 4px;
+            background:
+                linear-gradient(90deg, transparent 49.7%, rgba(167,221,59,0.16) 49.7% 50.3%, transparent 50.3%),
+                #17231a;
+        }
+        .exportArea[data-theme="scoreboard"][data-title-style="power"] .title-container h1,
+        .exportArea[data-theme="scoreboard"] .page-emblem,
+        .exportArea[data-theme="scoreboard"] .card-price-text {
+            font-family: Impact, "Arial Black", sans-serif;
+            letter-spacing: 0.025em;
+        }
+        .exportArea[data-theme="scoreboard"] .card-item { border-radius: 4px; }
+        .exportArea[data-theme="scoreboard"] .card-price-container {
+            border-radius: 3px;
+            box-shadow: inset 0 0 0 2px #a7dd3b, 0 3px 0 #090d08;
+        }
+        .exportArea[data-theme="scoreboard"] .page-emblem {
+            color: #f4ff91;
+            border-radius: 4px;
+            background: #243b16;
+        }
+
+        /* 横15列でも名前・価格を潰さない */
+        .exportArea.landscape:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-name {
+            font-size: 9px;
+        }
+
+        .exportArea.landscape:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-price-text {
+            font-size: 21px;
+        }
+
+        /* ----- 単品告知：全テーマ共通の読みやすい骨格 ----- */
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) {
+            --ad-bg: #080c14;
+            --ad-surface: #111827;
+            --ad-primary: #d9ad4a;
+            --ad-secondary: #fff0a8;
+            --ad-price: #d90829;
+            --ad-text: #ffffff;
+            --ad-muted: #e7dfcf;
+            --ad-card: #ffffff;
+            padding: 52px;
+            border: 8px solid var(--ad-primary);
+            border-radius: 30px;
+            background-color: var(--ad-bg);
+            isolation: isolate;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        )::before {
+            top: 20px;
+            right: 20px;
+            bottom: 20px;
+            left: 20px;
+            width: auto;
+            height: auto;
+            border: 2px solid var(--ad-primary);
+            border-radius: 18px;
+            opacity: 1;
+            box-shadow: inset 0 0 38px rgba(255,255,255,0.035);
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        )::after {
+            opacity: 0.08;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-header {
+            min-height: 98px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--ad-primary);
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-date {
+            color: var(--ad-muted);
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-logo-box {
+            width: 340px;
+            height: 98px;
+            padding: 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-logo {
+            max-height: 96px;
+            filter: drop-shadow(0 5px 9px rgba(0,0,0,0.16));
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-heading {
+            margin-top: 22px;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-eyebrow {
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-size: 18px;
+            letter-spacing: 0.14em;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-heading h2 {
+            margin-top: 11px;
+            font-size: 57px;
+            line-height: 1.03;
+            letter-spacing: 0.01em;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-product {
+            gap: 30px;
+            margin-top: 22px;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-image-stage {
+            padding: 28px;
+            border: 3px solid var(--ad-primary);
+            border-radius: 20px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.98), rgba(244,246,249,0.98));
+            box-shadow:
+                0 14px 28px rgba(0,0,0,0.2),
+                inset 0 0 0 7px rgba(0,0,0,0.035);
+            transform: none;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-info {
+            align-self: center;
+            padding: 26px;
+            border: 1px solid var(--ad-primary);
+            border-radius: 18px;
+            background: var(--ad-surface);
+            text-align: left;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-card-name {
+            color: var(--ad-text);
+            font-size: 39px;
+            font-weight: 1000;
+            line-height: 1.18;
+            -webkit-line-clamp: 3;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-grade {
+            margin-top: 15px;
+            padding: 7px 17px;
+            color: var(--ad-bg);
+            border: 0;
+            background: var(--ad-secondary);
+            font-size: 18px;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-price-label {
+            margin-top: 24px;
+            color: var(--ad-secondary);
+            font-size: 19px;
+            letter-spacing: 0.16em;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-price {
+            min-height: 126px;
+            margin-top: 9px;
+            padding: 14px 18px;
+            color: #fff;
+            border: 3px solid rgba(255,255,255,0.92);
+            border-radius: 12px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.14), transparent 46%),
+                var(--ad-price);
+            box-shadow:
+                0 8px 0 rgba(0,0,0,0.38),
+                0 13px 24px rgba(0,0,0,0.18);
+            font-size: 72px;
+            font-weight: 1000;
+            letter-spacing: -0.035em;
+            transform: none;
+            clip-path: none;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-footer {
+            margin-top: 24px;
+            padding: 17px 20px 0;
+            border-top: 2px solid var(--ad-primary);
+            border-radius: 0;
+            background: transparent;
+        }
+
+        .single-ad:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-cta {
+            padding: 13px 20px;
+            color: var(--ad-bg);
+            border-radius: 5px;
+            background: var(--ad-primary);
+            font-size: 19px;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.34);
+        }
+
+        /* ----- 単品告知：10方向を明確に差別化 ----- */
+        .single-ad[data-design="blackgold"] {
+            --ad-bg: #070b12; --ad-surface: #111827; --ad-primary: #d8aa42;
+            --ad-secondary: #fff0a7; --ad-price: #d60025; --ad-text: #ffffff;
+            --ad-muted: #eee6d7;
+            background:
+                radial-gradient(circle at 35% 52%, rgba(216,170,66,0.17), transparent 31%),
+                linear-gradient(145deg, #131c2b, #05070b 72%);
+        }
+        .single-ad[data-design="blackgold"] .single-ad-image-stage {
+            border-width: 5px;
+            box-shadow: 0 16px 34px rgba(0,0,0,0.32), 0 0 0 8px rgba(216,170,66,0.11);
+        }
+        .single-ad[data-design="blackgold"] .single-ad-info {
+            border-top: 7px solid #d8aa42;
+        }
+
+        .single-ad[data-design="redimpact"] {
+            --ad-bg: #3d050d; --ad-surface: #bd0021; --ad-primary: #ffcf4a;
+            --ad-secondary: #fff3bd; --ad-price: #11151d; --ad-text: #ffffff;
+            --ad-muted: #fff1ed;
+            background:
+                repeating-linear-gradient(135deg, rgba(255,255,255,0.045) 0 18px, transparent 18px 40px),
+                linear-gradient(145deg, #750819, #2e0308);
+        }
+        .single-ad[data-design="redimpact"] .single-ad-product {
+            grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        }
+        .single-ad[data-design="redimpact"] .single-ad-info {
+            order: 0;
+            border: 0;
+            border-radius: 0;
+            background: #bd0021;
+            box-shadow: 12px 12px 0 #11151d;
+        }
+        .single-ad[data-design="redimpact"] .single-ad-price {
+            min-height: 148px;
+            justify-content: center;
+            border-color: #ffcf4a;
+            border-radius: 0;
+            font-size: 78px;
+        }
+        .single-ad[data-design="redimpact"] .single-ad-image-stage {
+            border-color: #ffcf4a;
+            border-radius: 0;
+        }
+
+        .single-ad[data-design="royal"] {
+            --ad-bg: #061c3b; --ad-surface: #0a3975; --ad-primary: #78b9ff;
+            --ad-secondary: #d9ecff; --ad-price: #075da8; --ad-text: #ffffff;
+            --ad-muted: #dfedff;
+            background:
+                radial-gradient(circle at 12% 12%, rgba(120,185,255,0.18), transparent 22%),
+                linear-gradient(145deg, #0b3d78, #04152f);
+        }
+        .single-ad[data-design="royal"] .single-ad-product {
+            overflow: hidden;
+            gap: 0;
+            border: 3px solid #78b9ff;
+            border-radius: 24px;
+            background: #0a3975;
+        }
+        .single-ad[data-design="royal"] .single-ad-image-stage {
+            height: 100%;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .single-ad[data-design="royal"] .single-ad-info {
+            align-self: stretch;
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .single-ad[data-design="royal"] .single-ad-footer {
+            padding: 18px 22px;
+            border: 0;
+            border-radius: 12px;
+            background: #0a3975;
+        }
+
+        .single-ad[data-design="clean"] {
+            --ad-bg: #f2f4f7; --ad-surface: #ffffff; --ad-primary: #1f2937;
+            --ad-secondary: #e7ebf0; --ad-price: #e00025; --ad-text: #16202d;
+            --ad-muted: #536174;
+            border-width: 3px;
+            border-radius: 2px;
+            background:
+                linear-gradient(rgba(31,41,55,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(31,41,55,0.035) 1px, transparent 1px),
+                #f4f6f8;
+            background-size: 30px 30px;
+        }
+        .single-ad[data-design="clean"]::before { border-width: 1px; border-radius: 0; }
+        .single-ad[data-design="clean"] .single-ad-heading h2 { text-shadow: none; }
+        .single-ad[data-design="clean"] .single-ad-product {
+            padding: 24px;
+            border: 1px solid #cbd3dc;
+            background: #fff;
+        }
+        .single-ad[data-design="clean"] .single-ad-image-stage {
+            border: 0;
+            border-right: 1px solid #d7dde5;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .single-ad[data-design="clean"] .single-ad-info {
+            border: 0;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: none;
+        }
+        .single-ad[data-design="clean"] .single-ad-price {
+            border: 0;
+            border-radius: 2px;
+            box-shadow: none;
+        }
+        .single-ad[data-design="clean"] .single-ad-cta { color: #fff; box-shadow: none; }
+
+        .single-ad[data-design="cyber"] {
+            --ad-bg: #070615; --ad-surface: #11152d; --ad-primary: #00e5f4;
+            --ad-secondary: #ff32ce; --ad-price: #d900b5; --ad-text: #ffffff;
+            --ad-muted: #e6fcff;
+            border-radius: 0 36px 0 36px;
+            background:
+                linear-gradient(rgba(0,229,244,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,50,206,0.07) 1px, transparent 1px),
+                radial-gradient(circle at 50% 0, rgba(111,57,255,0.25), transparent 42%),
+                #070615;
+            background-size: 38px 38px, 38px 38px, auto, auto;
+        }
+        .single-ad[data-design="cyber"]::before { border-radius: 0 24px 0 24px; }
+        .single-ad[data-design="cyber"] .single-ad-heading h2 {
+            text-shadow: 4px 0 #ff32ce, -4px 0 #00e5f4;
+        }
+        .single-ad[data-design="cyber"] .single-ad-image-stage,
+        .single-ad[data-design="cyber"] .single-ad-info,
+        .single-ad[data-design="cyber"] .single-ad-price {
+            border-radius: 0 18px 0 18px;
+        }
+        .single-ad[data-design="cyber"] .single-ad-info {
+            box-shadow: 0 0 24px rgba(0,229,244,0.18);
+        }
+        .single-ad[data-design="cyber"] .single-ad-price {
+            border-color: #00e5f4;
+            box-shadow: 0 0 28px rgba(255,50,206,0.35), 0 7px 0 #510047;
+        }
+
+        .single-ad[data-design="sakura"] {
+            --ad-bg: #fff1f7; --ad-surface: #ffffff; --ad-primary: #d95d8b;
+            --ad-secondary: #76364f; --ad-price: #dc2c68; --ad-text: #4f2b3b;
+            --ad-muted: #7d5365;
+            border-radius: 54px;
+            background:
+                radial-gradient(circle at 14% 20%, rgba(217,93,139,0.16), transparent 21%),
+                radial-gradient(circle at 88% 78%, rgba(217,93,139,0.14), transparent 24%),
+                linear-gradient(#fff8fb, #fce8f0);
+        }
+        .single-ad[data-design="sakura"]::before { border-radius: 38px; }
+        .single-ad[data-design="sakura"] .single-ad-image-stage {
+            border-radius: 32px;
+            box-shadow: 0 14px 30px rgba(118,54,79,0.16);
+        }
+        .single-ad[data-design="sakura"] .single-ad-info {
+            border-radius: 28px;
+            background: rgba(255,255,255,0.88);
+        }
+        .single-ad[data-design="sakura"] .single-ad-price,
+        .single-ad[data-design="sakura"] .single-ad-cta {
+            border-radius: 999px;
+        }
+        .single-ad[data-design="sakura"] .single-ad-cta { color: #fff; }
+
+        .single-ad[data-design="retro"] {
+            --ad-bg: #e5cf9f; --ad-surface: #f8eccf; --ad-primary: #6f4328;
+            --ad-secondary: #d39e43; --ad-price: #a53f2a; --ad-text: #3b281e;
+            --ad-muted: #664b38;
+            padding: 58px;
+            border: 13px double #6f4328;
+            border-radius: 2px;
+            background:
+                radial-gradient(rgba(66,40,24,0.13) 0.8px, transparent 0.8px),
+                linear-gradient(#efdcb5, #ddc493);
+            background-size: 11px 11px, auto;
+        }
+        .single-ad[data-design="retro"]::before {
+            border: 5px double #6f4328;
+            border-radius: 0;
+        }
+        .single-ad[data-design="retro"] .single-ad-heading h2,
+        .single-ad[data-design="retro"] .single-ad-card-name {
+            font-family: Georgia, "Yu Mincho", "Hiragino Mincho ProN", serif;
+        }
+        .single-ad[data-design="retro"] .single-ad-image-stage,
+        .single-ad[data-design="retro"] .single-ad-info,
+        .single-ad[data-design="retro"] .single-ad-price {
+            border-radius: 0;
+        }
+        .single-ad[data-design="retro"] .single-ad-image-stage {
+            border: 6px double #6f4328;
+            box-shadow: 9px 9px 0 rgba(111,67,40,0.28);
+        }
+        .single-ad[data-design="retro"] .single-ad-info {
+            background: #f8eccf;
+        }
+        .single-ad[data-design="retro"] .single-ad-price {
+            border: 5px double #fff8e8;
+            box-shadow: 7px 7px 0 #6f4328;
+        }
+
+        .single-ad[data-design="pop"] {
+            --ad-bg: #ffe12e; --ad-surface: #ffffff; --ad-primary: #18269b;
+            --ad-secondary: #ff5a83; --ad-price: #e0004c; --ad-text: #111827;
+            --ad-muted: #252a36;
+            border: 12px solid #18269b;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 88% 18%, #ff5a83 0 5%, transparent 5.2%),
+                radial-gradient(circle at 12% 84%, #28c8f4 0 6%, transparent 6.2%),
+                radial-gradient(#18269b 1.5px, transparent 1.5px),
+                #ffe12e;
+            background-size: auto, auto, 24px 24px, auto;
+        }
+        .single-ad[data-design="pop"]::before { border-color: #18269b; }
+        .single-ad[data-design="pop"] .single-ad-heading h2 {
+            color: #111827;
+            text-shadow: 4px 4px 0 #fff;
+        }
+        .single-ad[data-design="pop"] .single-ad-image-stage {
+            border: 7px solid #18269b;
+            box-shadow: 10px 10px 0 #ff5a83;
+        }
+        .single-ad[data-design="pop"] .single-ad-info {
+            border: 5px solid #18269b;
+            background: #fff;
+            box-shadow: 9px 9px 0 #28c8f4;
+        }
+        .single-ad[data-design="pop"] .single-ad-price {
+            border: 6px solid #fff;
+            border-radius: 12px;
+            box-shadow: 7px 7px 0 #18269b;
+        }
+        .single-ad[data-design="pop"] .single-ad-cta { color: #fff; }
+
+        .single-ad[data-design="emerald"] {
+            --ad-bg: #05251b; --ad-surface: #0b3b2d; --ad-primary: #d2b464;
+            --ad-secondary: #f5e5ae; --ad-price: #0a8c64; --ad-text: #ffffff;
+            --ad-muted: #dcf3e8;
+            border-width: 4px;
+            border-radius: 2px;
+            background:
+                radial-gradient(circle at 50% 42%, rgba(210,180,100,0.14), transparent 35%),
+                linear-gradient(145deg, #0a4332, #031a13);
+        }
+        .single-ad[data-design="emerald"]::before {
+            border: 3px double #d2b464;
+            border-radius: 0;
+        }
+        .single-ad[data-design="emerald"] .single-ad-image-stage {
+            border: 8px double #d2b464;
+            border-radius: 0;
+            box-shadow: 0 18px 38px rgba(0,0,0,0.3);
+        }
+        .single-ad[data-design="emerald"] .single-ad-info {
+            border: 1px solid #d2b464;
+            border-radius: 0;
+            background: rgba(5,37,27,0.9);
+        }
+        .single-ad[data-design="emerald"] .single-ad-price {
+            border: 2px solid #f5e5ae;
+            border-radius: 0;
+            box-shadow: inset 0 0 0 4px #05251b, 0 7px 0 #02110c;
+        }
+
+        .single-ad[data-design="mono"] {
+            --ad-bg: #090909; --ad-surface: #ffffff; --ad-primary: #ffffff;
+            --ad-secondary: #d6d6d6; --ad-price: #111111; --ad-text: #111111;
+            --ad-muted: #e2e2e2;
+            padding: 48px;
+            border: 14px solid #fff;
+            border-radius: 0;
+            background:
+                linear-gradient(118deg, rgba(255,255,255,0.08), transparent 34%),
+                #090909;
+        }
+        .single-ad[data-design="mono"]::before { border-radius: 0; }
+        .single-ad[data-design="mono"] .single-ad-header {
+            flex-direction: row;
+            border-bottom-color: #fff;
+        }
+        .single-ad[data-design="mono"] .single-ad-heading {
+            text-align: left;
+        }
+        .single-ad[data-design="mono"] .single-ad-heading h2 {
+            font-size: 64px;
+            text-shadow: none;
+        }
+        .single-ad[data-design="mono"] .single-ad-product {
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            gap: 0;
+            border: 2px solid #fff;
+        }
+        .single-ad[data-design="mono"] .single-ad-image-stage {
+            border: 0;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .single-ad[data-design="mono"] .single-ad-info {
+            align-self: stretch;
+            border: 0;
+            border-left: 8px solid #000;
+            border-radius: 0;
+            background: #fff;
+            box-shadow: none;
+        }
+        .single-ad[data-design="mono"] .single-ad-price {
+            border: 2px solid #000;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .single-ad[data-design="mono"] .single-ad-price-label { color: #222; }
+        .single-ad[data-design="mono"] .single-ad-grade {
+            color: #fff;
+            background: #111;
+        }
+        .single-ad[data-design="mono"] .single-ad-cta {
+            color: #111;
+            border-radius: 0;
+            box-shadow: none;
+        }
+
+        /* 縦長でも上下の情報密度を崩さない */
+        .single-ad.single-portrait:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-product {
+            grid-template-columns: 1fr;
+            grid-template-rows: minmax(0, 1fr) auto;
+            gap: 18px;
+        }
+
+        .single-ad.single-portrait:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-info {
+            width: 100%;
+            padding: 20px 24px;
+        }
+
+        .single-ad.single-portrait:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-card-name {
+            font-size: 34px;
+            -webkit-line-clamp: 2;
+        }
+
+        .single-ad.single-portrait:is(
+            [data-design="blackgold"], [data-design="redimpact"],
+            [data-design="royal"], [data-design="clean"],
+            [data-design="cyber"], [data-design="sakura"],
+            [data-design="retro"], [data-design="pop"],
+            [data-design="emerald"], [data-design="mono"]
+        ) .single-ad-price {
+            min-height: 100px;
+            font-size: 61px;
+        }
+
+        .single-ad.single-portrait[data-design="clean"] .single-ad-image-stage {
+            border-right: 0;
+            border-bottom: 1px solid #d7dde5;
+        }
+
+        .single-ad.single-portrait[data-design="mono"] .single-ad-product {
+            grid-template-columns: 1fr;
+        }
+
+        .single-ad.single-portrait[data-design="mono"] .single-ad-info {
+            border-top: 8px solid #000;
+            border-left: 0;
+        }
+
         #loadingOverlay {
             position: fixed;
             z-index: 9999;
@@ -3950,6 +5380,10 @@
 
             .single-selection-toolbar input {
                 grid-column: 1 / -1;
+            }
+
+            .post-composer-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -4057,6 +5491,26 @@
                 padding-right: 10px;
                 padding-left: 10px;
             }
+
+            .post-composer-grid {
+                grid-template-columns: 1fr;
+                padding-right: 16px;
+                padding-left: 16px;
+            }
+
+            .post-mode-row {
+                grid-template-columns: 1fr;
+            }
+
+            .post-card-heading,
+            .post-output-actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .post-output-actions button {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -4081,6 +5535,12 @@
             type="button"
             onclick="switchAppView('single')"
         >単品買取告知画像を作る</button>
+        <button
+            class="view-tab"
+            id="postTabButton"
+            type="button"
+            onclick="switchAppView('post')"
+        >ポスト文を作る</button>
     </nav>
 
     <section class="store-profile-bar" aria-label="店舗プロフィール">
@@ -4181,16 +5641,16 @@
             <div class="control-group">
                 <label><span class="step">7</span>デザインパターン</label>
                 <select id="themeSelect">
-                    <option value="signal">01 SIGNAL｜黒金・価格を最優先</option>
-                    <option value="trust">02 TRUST｜青白・信頼と見やすさ</option>
-                    <option value="market">03 MARKET｜白・データ重視</option>
-                    <option value="alert">04 ALERT｜赤・強化買取訴求</option>
-                    <option value="editorial">05 EDITORIAL｜雑誌・高級商材</option>
-                    <option value="wa">06 WA MODERN｜和モダン・紅白</option>
-                    <option value="cyber">07 CYBER GRID｜デジタル・限定感</option>
-                    <option value="soft">08 SOFT FRAME｜柔らかい・華やか</option>
-                    <option value="ticket">09 TICKET｜チケット・イベント感</option>
-                    <option value="scoreboard">10 SCOREBOARD｜スポーツ・瞬発力</option>
+                    <option value="signal">01 CROWN BLACK｜黒金・王道の高級感</option>
+                    <option value="trust">02 SAPPHIRE｜青白・信頼と清潔感</option>
+                    <option value="market">03 RETAIL PRO｜白・最も読みやすい</option>
+                    <option value="alert">04 FLASH SALE｜赤黄・強い買取訴求</option>
+                    <option value="editorial">05 GRAND EDITORIAL｜百貨店・上質</option>
+                    <option value="wa">06 JAPAN LUXE｜和モダン・紅金</option>
+                    <option value="cyber">07 NEON ARENA｜ネオン・限定感</option>
+                    <option value="soft">08 ROSE SALON｜華やか・上品</option>
+                    <option value="ticket">09 VINTAGE TICKET｜紙物・イベント感</option>
+                    <option value="scoreboard">10 STADIUM｜スポーツ・即決感</option>
                 </select>
                 <small class="help">色だけでなく、枠・余白・価格・ヘッダー構成も変わります。</small>
             </div>
@@ -4344,16 +5804,16 @@
                 <div class="control-group">
                     <label><span class="step">4</span>告知デザイン</label>
                     <select id="singleDesignSelect">
-                        <option value="blackgold">01 HERO｜商品主役・黒金</option>
-                        <option value="redimpact">02 PRICE FIRST｜価格主役・赤</option>
-                        <option value="royal">03 SPLIT｜左右分割・青</option>
-                        <option value="clean">04 CATALOG｜商品カタログ・白</option>
-                        <option value="cyber">05 CYBER CARD｜ゲームUI・ネオン</option>
-                        <option value="sakura">06 SOFT FRAME｜柔らかい・華やか</option>
-                        <option value="retro">07 WANTED POSTER｜指名手配ポスター</option>
-                        <option value="pop">08 BURST｜弾ける・ポップ</option>
-                        <option value="emerald">09 PRESTIGE｜高級・深緑</option>
-                        <option value="mono">10 EDITORIAL｜モノクロ・雑誌</option>
+                        <option value="blackgold">01 BLACK LABEL｜商品主役・黒金</option>
+                        <option value="redimpact">02 PRICE IMPACT｜価格主役・赤黄</option>
+                        <option value="royal">03 ROYAL SPLIT｜左右分割・青</option>
+                        <option value="clean">04 PREMIUM CATALOG｜白・最も見やすい</option>
+                        <option value="cyber">05 NEON HUD｜ゲームUI・ネオン</option>
+                        <option value="sakura">06 ROSE SALON｜柔らかい・上品</option>
+                        <option value="retro">07 VINTAGE POSTER｜クラシック・紙面</option>
+                        <option value="pop">08 POP IMPACT｜明るい・強い訴求</option>
+                        <option value="emerald">09 EMERALD PRESTIGE｜深緑・高額商材</option>
+                        <option value="mono">10 MONO EDITORIAL｜モノクロ・雑誌</option>
                     </select>
                 </div>
 
@@ -4520,6 +5980,7 @@
                     <div class="sns-output-actions">
                         <span class="sns-char-count" id="snsCharCount">0文字</span>
                         <button class="btn-muted" type="button" onclick="generateSnsText()">再生成</button>
+                        <button class="btn-muted" type="button" onclick="switchAppView('post')">テンプレートで作る</button>
                         <button class="btn-soft" type="button" onclick="copySnsText()">投稿文をコピー</button>
                     </div>
                 </div>
@@ -4544,6 +6005,137 @@
                 <span>選択した商品ごとに告知画像のプレビューが表示されます</span>
             </div>
         </section>
+    </section>
+
+    <section class="post-maker view-hidden" id="postMakerView">
+        <aside class="control-panel" aria-label="ポスト文テンプレートの設定">
+            <div class="panel-heading">
+                <h2>ポスト文テンプレートメーカー</h2>
+                <p>
+                    店舗ごとに投稿文を複数保存できます。単品画面で選択した商品も
+                    <strong>商品名・価格つきで自動差し込み</strong>できます
+                </p>
+            </div>
+
+            <div class="template-manager">
+                <div class="template-field">
+                    <label for="postTemplateNameInput">新しい投稿文テンプレート名</label>
+                    <input
+                        type="text"
+                        id="postTemplateNameInput"
+                        placeholder="例：毎日のBOX買取表"
+                    >
+                </div>
+                <div class="template-field">
+                    <label for="postTemplateSelect">保存済み投稿文テンプレート</label>
+                    <select id="postTemplateSelect">
+                        <option value="">投稿文テンプレートを選択</option>
+                    </select>
+                </div>
+                <div class="template-buttons">
+                    <button
+                        class="btn-template"
+                        type="button"
+                        onclick="savePostNamedTemplate()"
+                    >名前をつけて保存</button>
+                    <button
+                        class="btn-load"
+                        type="button"
+                        onclick="loadPostNamedTemplate()"
+                    >呼び出す</button>
+                    <button
+                        class="btn-delete"
+                        type="button"
+                        onclick="deletePostNamedTemplate()"
+                    >削除</button>
+                </div>
+            </div>
+
+            <div class="post-composer-grid">
+                <div class="post-editor-card">
+                    <div class="post-card-heading">
+                        <strong>投稿文のひな形</strong>
+                        <span>文章も改行も自由に編集できます</span>
+                    </div>
+                    <div class="post-editor-inner">
+                        <div class="post-mode-row">
+                            <div>
+                                <label for="postModeSelect">生成形式</label>
+                                <select id="postModeSelect">
+                                    <option value="buylist">買取表用｜1投稿を作成</option>
+                                    <option value="combined">選択商品を1投稿にまとめる</option>
+                                    <option value="individual">選択商品ごとに1投稿ずつ</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="postPresetSelect">文章のたたき台</label>
+                                <select id="postPresetSelect" onchange="applyPostPreset()">
+                                    <option value="">現在の文章をそのまま使う</option>
+                                    <option value="buylist">買取表告知｜王道</option>
+                                    <option value="urgent">強化買取｜緊急感</option>
+                                    <option value="single">単品告知｜商品主役</option>
+                                    <option value="simple">シンプル｜短文</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <label class="post-body-label" for="postTemplateBody">テンプレート本文</label>
+                        <textarea id="postTemplateBody" rows="16">🔥{タイトル}🔥
+{日付}
+
+{商品一覧}
+
+お持ち込みお待ちしております！
+#トレカ #買取 #高価買取</textarea>
+
+                        <div class="post-variable-help">
+                            <strong>クリックするとカーソル位置へ差し込みます</strong>
+                            <div class="post-variable-list">
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{店舗名}')">{店舗名}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{日付}')">{日付}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{タイトル}')">{タイトル}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{商品一覧}')">{商品一覧}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{選択数}')">{選択数}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{商品名}')">{商品名}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{買取価格}')">{買取価格}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{種別}')">{種別}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{掲載グループ}')">{掲載グループ}</button>
+                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{ページ数}')">{ページ数}</button>
+                            </div>
+                            <p class="post-variable-note">
+                                「選択商品ごとに1投稿ずつ」では、商品名・買取価格・種別・掲載グループが商品ごとに変わります。
+                                商品は「単品買取告知画像を作る」画面で選択してください。
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="post-output-card">
+                    <div class="post-card-heading">
+                        <strong>完成する投稿文</strong>
+                        <span id="postCharCount">0文字</span>
+                    </div>
+                    <textarea
+                        id="postTextOutput"
+                        rows="20"
+                        aria-label="完成したポスト文"
+                    ></textarea>
+                    <div class="post-output-actions">
+                        <span class="post-source-status" id="postSourceStatus">商品未選択</span>
+                        <button class="btn-muted" type="button" onclick="generatePostText()">再生成</button>
+                        <button class="btn-soft" type="button" onclick="copyPostText()">投稿文をコピー</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-actions">
+                <div class="export-note">
+                    投稿文テンプレートは現在の店舗だけに保存され、店舗JSONバックアップにも含まれます。
+                </div>
+                <button class="btn-template" type="button" onclick="savePostNamedTemplate()">現在の投稿文を保存</button>
+                <button class="btn-soft" type="button" onclick="copyPostText()">完成文をコピー</button>
+            </div>
+        </aside>
     </section>
 </div>
 
@@ -4623,6 +6215,8 @@
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
+    const POST_SETTINGS_STORAGE_KEY = "kaitori_post_settings_v1";
+    const POST_TEMPLATE_STORAGE_KEY = "kaitori_post_named_templates_v1";
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
     const STORE_REGISTRY_KEY = "kaitori_store_registry_v1";
     const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
@@ -4639,12 +6233,16 @@
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
+        POST_SETTINGS_STORAGE_KEY,
+        POST_TEMPLATE_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY
     ];
     const JSON_STORE_DATA_KEYS = new Set([
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
+        POST_SETTINGS_STORAGE_KEY,
+        POST_TEMPLATE_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY
     ]);
 
@@ -4801,6 +6399,7 @@
         if (!document.getElementById("titleInput")) return;
         saveLastUsedSettings(collectCurrentTemplateSettings());
         saveSingleSettings();
+        savePostComposerSettings();
         setScopedItem("kaitori_logo", logoDataUrl);
     }
 
@@ -5009,6 +6608,7 @@
     let globalCardData = [];
     let imageLoadPromise = Promise.resolve();
     let currentSnsSegments = [];
+    let currentPostSegments = [];
     let csvDiffResults = {
         hasBaseline: false,
         previousSavedAt: "",
@@ -5232,19 +6832,357 @@
         alert(`単品テンプレート「${name}」を削除しました。`);
     }
 
+    const POST_PRESETS = {
+        buylist: `🔥{タイトル}🔥
+{日付}
+
+{商品一覧}
+
+掲載商品以外も買取受付中です！
+ぜひ店頭へお持ち込みください。
+#トレカ #買取 #高価買取`,
+        urgent: `📢強化買取のお知らせ📢
+
+{商品一覧}
+
+相場変動前の今がチャンス！
+買取価格は予告なく変更となる場合がございます。
+#高価買取 #トレカ`,
+        single: `🔥高価買取情報🔥
+
+{商品名}
+買取価格：{買取価格}
+
+お持ち込みお待ちしております！
+#トレカ #買取 #高価買取`,
+        simple: `{タイトル}
+
+{商品一覧}
+
+{店舗名}で買取受付中です。`
+    };
+
+    function normalizePostMode(mode) {
+        return ["buylist", "combined", "individual"].includes(mode)
+            ? mode
+            : "buylist";
+    }
+
+    function collectPostComposerSettings() {
+        return {
+            mode: normalizePostMode(
+                document.getElementById("postModeSelect")?.value
+            ),
+            body: document.getElementById("postTemplateBody")?.value ?? "",
+            savedAt: new Date().toISOString()
+        };
+    }
+
+    function applyPostComposerSettings(settings = {}) {
+        const modeSelect = document.getElementById("postModeSelect");
+        const bodyInput = document.getElementById("postTemplateBody");
+        if (!modeSelect || !bodyInput) return;
+
+        modeSelect.value = normalizePostMode(settings.mode);
+        if (typeof settings.body === "string") {
+            bodyInput.value = settings.body;
+        }
+    }
+
+    function savePostComposerSettings() {
+        if (!document.getElementById("postTemplateBody")) return;
+        try {
+            setScopedItem(
+                POST_SETTINGS_STORAGE_KEY,
+                JSON.stringify(collectPostComposerSettings())
+            );
+        } catch (error) {
+            // 保存できない環境でも文章作成は継続する
+        }
+    }
+
+    function getPostNamedTemplates() {
+        try {
+            const parsed = JSON.parse(
+                getScopedItem(POST_TEMPLATE_STORAGE_KEY) || "{}"
+            );
+            return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+                ? parsed
+                : {};
+        } catch (error) {
+            return {};
+        }
+    }
+
+    function refreshPostTemplateSelect(selectedName = "") {
+        const select = document.getElementById("postTemplateSelect");
+        if (!select) return;
+
+        const templates = getPostNamedTemplates();
+        const names = Object.keys(templates).sort((a, b) =>
+            a.localeCompare(b, "ja", { numeric: true, sensitivity: "base" })
+        );
+
+        select.innerHTML = '<option value="">投稿文テンプレートを選択</option>';
+        names.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+        });
+
+        if (selectedName && Object.hasOwn(templates, selectedName)) {
+            select.value = selectedName;
+        }
+    }
+
+    function savePostNamedTemplate() {
+        const nameInput = document.getElementById("postTemplateNameInput");
+        const select = document.getElementById("postTemplateSelect");
+        const name = String(nameInput?.value.trim() || select?.value || "")
+            .slice(0, 80);
+
+        if (!name) {
+            alert("投稿文テンプレート名を入力してください。");
+            nameInput?.focus();
+            return;
+        }
+
+        const templates = getPostNamedTemplates();
+        if (
+            Object.hasOwn(templates, name) &&
+            !confirm(`投稿文テンプレート「${name}」を現在の文章で上書きしますか？`)
+        ) {
+            return;
+        }
+
+        templates[name] = collectPostComposerSettings();
+        try {
+            setScopedItem(
+                POST_TEMPLATE_STORAGE_KEY,
+                JSON.stringify(templates)
+            );
+            savePostComposerSettings();
+            refreshPostTemplateSelect(name);
+            nameInput.value = name;
+            alert(`投稿文テンプレート「${name}」を保存しました。`);
+        } catch (error) {
+            alert("投稿文テンプレートを保存できませんでした。");
+        }
+    }
+
+    function loadPostNamedTemplate() {
+        const select = document.getElementById("postTemplateSelect");
+        const name = select?.value || "";
+        if (!name) {
+            alert("呼び出す投稿文テンプレートを選択してください。");
+            return;
+        }
+
+        const settings = getPostNamedTemplates()[name];
+        if (!settings) {
+            alert("選択した投稿文テンプレートが見つかりませんでした。");
+            refreshPostTemplateSelect();
+            return;
+        }
+
+        applyPostComposerSettings(settings);
+        document.getElementById("postTemplateNameInput").value = name;
+        document.getElementById("postPresetSelect").value = "";
+        savePostComposerSettings();
+        generatePostText();
+        alert(`投稿文テンプレート「${name}」を呼び出しました。`);
+    }
+
+    function deletePostNamedTemplate() {
+        const select = document.getElementById("postTemplateSelect");
+        const name = select?.value || "";
+        if (!name) {
+            alert("削除する投稿文テンプレートを選択してください。");
+            return;
+        }
+        if (!confirm(`投稿文テンプレート「${name}」を削除しますか？`)) {
+            return;
+        }
+
+        const templates = getPostNamedTemplates();
+        delete templates[name];
+        setScopedItem(
+            POST_TEMPLATE_STORAGE_KEY,
+            JSON.stringify(templates)
+        );
+        document.getElementById("postTemplateNameInput").value = "";
+        refreshPostTemplateSelect();
+        alert(`投稿文テンプレート「${name}」を削除しました。`);
+    }
+
+    function applyPostPreset() {
+        const presetSelect = document.getElementById("postPresetSelect");
+        const preset = presetSelect?.value || "";
+        if (!preset || !POST_PRESETS[preset]) return;
+
+        document.getElementById("postTemplateBody").value = POST_PRESETS[preset];
+        if (preset === "single") {
+            document.getElementById("postModeSelect").value = "individual";
+        } else if (preset === "buylist") {
+            document.getElementById("postModeSelect").value = "buylist";
+        }
+        savePostComposerSettings();
+        generatePostText();
+        presetSelect.value = "";
+    }
+
+    function insertPostVariable(variable) {
+        const input = document.getElementById("postTemplateBody");
+        if (!input) return;
+
+        const start = input.selectionStart ?? input.value.length;
+        const end = input.selectionEnd ?? start;
+        input.setRangeText(variable, start, end, "end");
+        input.focus();
+        savePostComposerSettings();
+        generatePostText();
+    }
+
+    function getActiveStoreName() {
+        const registry = getStoreRegistry();
+        return registry.stores[activeStoreId]?.name || "店舗";
+    }
+
+    function makePostItemList(cards) {
+        return cards.map(card => {
+            const price = normalizeSinglePriceDisplay(card.price);
+            return [
+                `・${card.name || "商品名なし"}`,
+                price ? `　買取価格：${price}` : ""
+            ].filter(Boolean).join("\n");
+        }).join("\n");
+    }
+
+    function replacePostVariables(template, values) {
+        return Object.entries(values).reduce(
+            (text, [key, value]) =>
+                text.split(`{${key}}`).join(String(value ?? "")),
+            String(template || "")
+        ).trim();
+    }
+
+    function getCommonPostVariables(cards) {
+        return {
+            店舗名: getActiveStoreName(),
+            日付: formatDate(document.getElementById("dateInput")?.value),
+            タイトル:
+                document.getElementById("titleInput")?.value || "高価買取表",
+            商品一覧: makePostItemList(cards),
+            選択数: cards.length,
+            ページ数: document.querySelectorAll(".exportArea").length
+        };
+    }
+
+    function updatePostCharCount() {
+        const count = document.getElementById("postCharCount");
+        const output = document.getElementById("postTextOutput");
+        if (!count || !output) return;
+
+        const segments = currentPostSegments.length
+            ? currentPostSegments
+            : [output.value || ""];
+        const lengths = segments.map(text => [...text].length);
+        const maxLength = Math.max(0, ...lengths);
+        const individual =
+            document.getElementById("postModeSelect")?.value === "individual" &&
+            segments.length > 1;
+
+        count.textContent = individual
+            ? `最大${maxLength}文字 / 投稿｜${segments.length}件`
+            : `${[...(output.value || "")].length}文字`;
+        count.style.color = maxLength > 280 ? "#ff7181" : "#9ee6bd";
+        count.title = maxLength > 280
+            ? "Xの標準的な文字数目安を超えています。"
+            : "";
+    }
+
+    function generatePostText() {
+        const output = document.getElementById("postTextOutput");
+        const sourceStatus = document.getElementById("postSourceStatus");
+        if (!output) return;
+
+        const settings = collectPostComposerSettings();
+        const cards = getSelectedSingleCards();
+        const common = getCommonPostVariables(cards);
+
+        if (settings.mode === "individual") {
+            currentPostSegments = cards.map((card, index) =>
+                replacePostVariables(settings.body, {
+                    ...common,
+                    商品一覧: makePostItemList([card]),
+                    商品名: card.name || "",
+                    買取価格: normalizeSinglePriceDisplay(card.price),
+                    種別: card.type || "",
+                    掲載グループ: card.group || "",
+                    連番: index + 1
+                })
+            );
+            output.value = currentPostSegments.length
+                ? currentPostSegments.join("\n\n────────────\n\n")
+                : "単品画面で商品を選択すると、商品ごとの投稿文が生成されます。";
+        } else {
+            currentPostSegments = [replacePostVariables(settings.body, {
+                ...common,
+                商品名: cards[0]?.name || "",
+                買取価格: normalizeSinglePriceDisplay(cards[0]?.price),
+                種別: cards[0]?.type || "",
+                掲載グループ: cards[0]?.group || ""
+            })];
+            output.value = currentPostSegments[0];
+        }
+
+        if (sourceStatus) {
+            sourceStatus.textContent = cards.length
+                ? `単品画面で${cards.length}件選択中`
+                : "商品未選択｜店舗名・日付・タイトルは反映済み";
+        }
+        updatePostCharCount();
+    }
+
+    async function copyPostText() {
+        const output = document.getElementById("postTextOutput");
+        const text = output?.value?.trim() || "";
+        if (!text) {
+            alert("コピーする投稿文がありません。");
+            return;
+        }
+
+        try {
+            await navigator.clipboard.writeText(text);
+        } catch (error) {
+            output.focus();
+            output.select();
+            document.execCommand("copy");
+            output.setSelectionRange(0, 0);
+        }
+        alert("投稿文をコピーしました。");
+    }
+
     function switchAppView(view) {
         const isSingle = view === "single";
-        document.getElementById("buylistControl").classList.toggle("view-hidden", isSingle);
-        document.getElementById("pagesContainer").classList.toggle("view-hidden", isSingle);
+        const isPost = view === "post";
+        const isBuylist = !isSingle && !isPost;
+        document.getElementById("buylistControl").classList.toggle("view-hidden", !isBuylist);
+        document.getElementById("pagesContainer").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("singleMakerView").classList.toggle("view-hidden", !isSingle);
-        document.getElementById("buylistTabButton").classList.toggle("is-active", !isSingle);
+        document.getElementById("postMakerView").classList.toggle("view-hidden", !isPost);
+        document.getElementById("buylistTabButton").classList.toggle("is-active", isBuylist);
         document.getElementById("singleTabButton").classList.toggle("is-active", isSingle);
+        document.getElementById("postTabButton").classList.toggle("is-active", isPost);
 
         requestAnimationFrame(() => {
             if (isSingle) {
                 fitSinglePreviews();
-            } else {
+            } else if (isBuylist) {
                 fitPreviewPages();
+            } else {
+                generatePostText();
             }
         });
     }
@@ -5293,14 +7231,24 @@
             applySingleSettings({});
         }
 
+        try {
+            applyPostComposerSettings(
+                JSON.parse(getScopedItem(POST_SETTINGS_STORAGE_KEY) || "{}")
+            );
+        } catch (error) {
+            applyPostComposerSettings({});
+        }
+
         renderStoreProfileSelect();
         refreshTemplateSelect();
         refreshSingleTemplateSelect();
+        refreshPostTemplateSelect();
         updateAllPages();
         updateCsvDiffPanel();
         renderSingleCardPicker();
         renderSingleAdPreviews();
         generateSnsText();
+        generatePostText();
         requestAnimationFrame(fitPreviewPages);
     });
 
@@ -5554,11 +7502,15 @@
         });
     }
 
-    document.getElementById("titleInput").addEventListener("input", updateAllPages);
+    document.getElementById("titleInput").addEventListener("input", () => {
+        updateAllPages();
+        generatePostText();
+    });
     document.getElementById("disclaimerInput").addEventListener("input", updateAllPages);
     document.getElementById("dateInput").addEventListener("change", () => {
         updateAllPages();
         renderSingleAdPreviews();
+        generatePostText();
     });
     document.getElementById("themeSelect").addEventListener("change", applyThemeToPages);
     document.getElementById("titleStyleSelect")
@@ -5614,6 +7566,21 @@
     document.getElementById("snsTextOutput").addEventListener("input", () => {
         currentSnsSegments = [document.getElementById("snsTextOutput").value];
         updateSnsCharCount();
+    });
+
+    document.getElementById("postTemplateBody").addEventListener("input", () => {
+        savePostComposerSettings();
+        generatePostText();
+    });
+
+    document.getElementById("postModeSelect").addEventListener("change", () => {
+        savePostComposerSettings();
+        generatePostText();
+    });
+
+    document.getElementById("postTextOutput").addEventListener("input", () => {
+        currentPostSegments = [document.getElementById("postTextOutput").value];
+        updatePostCharCount();
     });
 
     function applySelectedLayout() {
@@ -6258,6 +8225,7 @@
 
         const cards = getSelectedSingleCards();
         generateSnsText();
+        generatePostText();
         if (cards.length === 0) {
             container.innerHTML = `
                 <div class="single-preview-empty">
