@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（V5: 最強画像取得版）</title>
+    <title>買取表ジェネレーター（列ズレ修正版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -373,6 +373,7 @@
         }
     });
 
+    // カンマ入りの金額やダブルクォーテーションを正しく処理するパーサー
     function parseCSVLine(text) {
         let result = [];
         let inQuotes = false;
@@ -395,14 +396,11 @@
         return result;
     }
 
-    // ★最強の画像取得関数★
     async function loadDriveImage(fileId, imgElementId) {
         const imgEl = document.getElementById(imgElementId);
-        // Google Driveのサムネイル専用APIを利用（通常のプレビューURLより安定する）
         const targetUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
         const encodedUrl = encodeURIComponent(targetUrl);
         
-        // 4つの異なる中継サーバーを用意し、繋がったものを使う
         const proxies = [
             `https://wsrv.nl/?url=${encodedUrl}`,
             `https://api.allorigins.win/raw?url=${encodedUrl}`,
@@ -417,7 +415,6 @@
                 const response = await fetch(proxy);
                 if (response.ok) {
                     const blob = await response.blob();
-                    // HTMLエラーページなどではなく、ちゃんと画像として取得できたか確認
                     if (blob.type.includes('image')) {
                         const base64 = await new Promise((resolve) => {
                             const reader = new FileReader();
@@ -433,7 +430,6 @@
             }
         }
         
-        // 全てダメだった場合はエラー画像を表示
         if (!success) {
             imgEl.src = 'https://via.placeholder.com/200x280?text=Error';
         }
@@ -452,6 +448,7 @@
             const parts = parseCSVLine(line);
             if(parts.length < 10) continue;
 
+            // ヘッダー行をスキップ
             if (parts[0] === '掲載グループ' || parts[3] === 'カード名') {
                 continue;
             }
@@ -459,8 +456,17 @@
             const status = parts[1]; 
             const name = parts[3]; 
             const type = parts[5]; 
-            const price = parts[6]; 
-            let imgUrl = parts[9] ? parts[9].trim() : ''; 
+
+            // ★修正ポイント：金額のカンマで列がズレている問題に対応★
+            // 常に一番最後の列を「画像リンク」として扱う
+            let imgUrl = parts[parts.length - 1] ? parts[parts.length - 1].trim() : ''; 
+
+            // 6列目から、後ろ3列（上限、減額幅、URL）を除いた間の文字列をすべて結合して金額にする
+            // 例： "¥2", "280", "000" を結合して "¥2,280,000" にする
+            let price = parts.slice(6, parts.length - 3).join(',');
+            
+            // もしCSVエクスポート時にダブルクォーテーションで囲まれていた場合の保険
+            price = price.replace(/"/g, ''); 
 
             let fileId = null;
             if (imgUrl.includes('drive.google.com')) {
@@ -478,7 +484,6 @@
                 badgeHtml = '<div class="status-badge">強化買取</div>';
             }
 
-            // まずLoadingテキストの画像を表示
             const imgId = `card-img-${count}`;
             item.innerHTML = `
                 ${badgeHtml}
@@ -491,7 +496,6 @@
             `;
             grid.appendChild(item);
 
-            // 非同期で画像を裏側でダウンロードして差し替え
             if (fileId) {
                 loadDriveImage(fileId, imgId);
             } else if (imgUrl) {
