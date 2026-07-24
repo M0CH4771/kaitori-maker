@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター</title>
+    <title>プレミアム買取表ジェネレーター</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         :root {
@@ -213,10 +213,57 @@
 
         .panel-actions {
             display: grid;
-            grid-template-columns: minmax(220px, 280px) 1fr minmax(260px, 340px);
+            grid-template-columns: 1fr minmax(260px, 340px);
             align-items: center;
             gap: 14px;
             padding: 14px 24px 22px;
+        }
+
+        .template-manager {
+            display: grid;
+            grid-template-columns: minmax(180px, 1fr) minmax(220px, 1fr) auto;
+            align-items: end;
+            gap: 14px;
+            margin: 12px 24px 0;
+            padding: 16px;
+            border: 1px solid rgba(217, 173, 74, 0.24);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+        }
+
+        .template-field {
+            min-width: 0;
+        }
+
+        .template-field label {
+            display: block;
+            margin-bottom: 7px;
+            color: #f8fafc;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .template-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .template-buttons button {
+            width: auto;
+            min-width: 105px;
+            padding: 11px 14px;
+            white-space: nowrap;
+        }
+
+        .btn-load {
+            color: #111827;
+            background: #fff;
+        }
+
+        .btn-delete {
+            color: #ffccd4;
+            border: 1px solid rgba(255, 82, 111, 0.42);
+            background: rgba(160, 0, 25, 0.42);
         }
 
         /* ===== プレビュー ===== */
@@ -571,6 +618,10 @@
             white-space: nowrap;
         }
 
+        .exportArea.hide-card-names .card-name {
+            display: none;
+        }
+
         .card-price-container {
             position: relative;
             display: flex;
@@ -590,24 +641,6 @@
                 inset 0 1px 0 rgba(255,255,255,0.3),
                 0 2px 4px rgba(140,0,20,0.26);
             white-space: nowrap;
-        }
-
-        .card-price-container::before,
-        .card-price-container::after {
-            position: absolute;
-            width: 5px;
-            height: 5px;
-            content: "";
-            transform: rotate(45deg);
-            background: var(--gold-light);
-        }
-
-        .card-price-container::before {
-            left: 6px;
-        }
-
-        .card-price-container::after {
-            right: 6px;
         }
 
         .card-price-text {
@@ -1599,6 +1632,14 @@
                 grid-template-columns: 1fr 1fr;
             }
 
+            .template-manager {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .template-buttons {
+                grid-column: 1 / -1;
+            }
+
             .export-note {
                 grid-column: 1 / -1;
                 grid-row: 1;
@@ -1611,10 +1652,26 @@
             }
 
             .settings-grid,
-            .panel-actions {
+            .panel-actions,
+            .template-manager {
                 grid-template-columns: 1fr;
                 padding-right: 16px;
                 padding-left: 16px;
+            }
+
+            .template-manager {
+                margin-right: 16px;
+                margin-left: 16px;
+            }
+
+            .template-buttons {
+                display: grid;
+                grid-column: auto;
+                grid-template-columns: 1fr;
+            }
+
+            .template-buttons button {
+                width: 100%;
             }
 
             .export-note {
@@ -1699,10 +1756,36 @@
                 </select>
                 <small class="help">テンプレート保存対象。</small>
             </div>
+
+            <div class="control-group">
+                <label><span class="step">8</span>カード名</label>
+                <select id="cardNameDisplaySelect">
+                    <option value="show">表示する</option>
+                    <option value="hide">表示しない</option>
+                </select>
+                <small class="help">プレビューとPNG出力の両方に反映されます。</small>
+            </div>
+        </div>
+
+        <div class="template-manager">
+            <div class="template-field">
+                <label for="templateNameInput">新しいテンプレート名</label>
+                <input type="text" id="templateNameInput" placeholder="例：BOX横・黒金">
+            </div>
+            <div class="template-field">
+                <label for="templateSelect">保存済みテンプレート</label>
+                <select id="templateSelect">
+                    <option value="">テンプレートを選択</option>
+                </select>
+            </div>
+            <div class="template-buttons">
+                <button class="btn-template" type="button" onclick="saveNamedTemplate()">名前をつけて保存</button>
+                <button class="btn-load" type="button" onclick="loadNamedTemplate()">呼び出す</button>
+                <button class="btn-delete" type="button" onclick="deleteNamedTemplate()">削除</button>
+            </div>
         </div>
 
         <div class="panel-actions">
-            <button class="btn-template" type="button" onclick="saveTemplate()">現在の設定を保存</button>
             <div class="export-note">
                 複数ページは順番に連続ダウンロードされます。画像読込完了後に書き出してください。
             </div>
@@ -1782,6 +1865,7 @@
         "luxury", "fire", "royal", "clean", "neon",
         "sakura", "forest", "pop", "retro", "hologram"
     ];
+    const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
 
     let logoDataUrl = DEFAULT_LOGO;
     let globalCardData = [];
@@ -1815,6 +1899,7 @@
         const savedLogo = localStorage.getItem("kaitori_logo");
         const savedLayout = localStorage.getItem("kaitori_layout");
         const savedTheme = localStorage.getItem("kaitori_theme");
+        const savedCardNameDisplay = localStorage.getItem("kaitori_card_name_display");
 
         if (savedTitle) document.getElementById("titleInput").value = savedTitle;
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
@@ -1825,22 +1910,150 @@
         if (savedLayout === "portrait_10x6" || savedLayout === "landscape_15x4") {
             document.getElementById("layoutSelect").value = savedLayout;
         }
+        if (savedCardNameDisplay === "show" || savedCardNameDisplay === "hide") {
+            document.getElementById("cardNameDisplaySelect").value = savedCardNameDisplay;
+        }
 
+        refreshTemplateSelect();
         updateAllPages();
         requestAnimationFrame(fitPreviewPages);
     });
 
-    function saveTemplate() {
+    function getNamedTemplates() {
         try {
-            localStorage.setItem("kaitori_title", document.getElementById("titleInput").value);
-            localStorage.setItem("kaitori_disclaimer", document.getElementById("disclaimerInput").value);
-            localStorage.setItem("kaitori_logo", logoDataUrl);
-            localStorage.setItem("kaitori_layout", document.getElementById("layoutSelect").value);
-            localStorage.setItem("kaitori_theme", document.getElementById("themeSelect").value);
-            alert("現在の設定をテンプレートとして保存しました。");
+            const parsed = JSON.parse(localStorage.getItem(TEMPLATE_STORAGE_KEY) || "{}");
+            return parsed && typeof parsed === "object" && !Array.isArray(parsed)
+                ? parsed
+                : {};
         } catch (error) {
-            alert("ロゴ画像の容量が大きいため保存できませんでした。小さい画像でお試しください。");
+            return {};
         }
+    }
+
+    function collectCurrentTemplateSettings() {
+        return {
+            title: document.getElementById("titleInput").value,
+            disclaimer: document.getElementById("disclaimerInput").value,
+            logo: logoDataUrl,
+            layout: document.getElementById("layoutSelect").value,
+            theme: getSelectedTheme(),
+            cardNameDisplay: getCardNameDisplay(),
+            savedAt: new Date().toISOString()
+        };
+    }
+
+    function saveLastUsedSettings(settings) {
+        localStorage.setItem("kaitori_title", settings.title);
+        localStorage.setItem("kaitori_disclaimer", settings.disclaimer);
+        localStorage.setItem("kaitori_logo", settings.logo);
+        localStorage.setItem("kaitori_layout", settings.layout);
+        localStorage.setItem("kaitori_theme", settings.theme);
+        localStorage.setItem("kaitori_card_name_display", settings.cardNameDisplay);
+    }
+
+    function refreshTemplateSelect(selectedName = "") {
+        const select = document.getElementById("templateSelect");
+        const templates = getNamedTemplates();
+        const names = Object.keys(templates).sort((a, b) =>
+            a.localeCompare(b, "ja", { numeric: true, sensitivity: "base" })
+        );
+
+        select.innerHTML = '<option value="">テンプレートを選択</option>';
+        names.forEach(name => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = name;
+            select.appendChild(option);
+        });
+
+        if (selectedName && Object.hasOwn(templates, selectedName)) {
+            select.value = selectedName;
+        }
+    }
+
+    function saveNamedTemplate() {
+        const nameInput = document.getElementById("templateNameInput");
+        const templateSelect = document.getElementById("templateSelect");
+        const name = (nameInput.value.trim() || templateSelect.value).slice(0, 80);
+
+        if (!name) {
+            alert("テンプレート名を入力してください。");
+            nameInput.focus();
+            return;
+        }
+
+        const templates = getNamedTemplates();
+        if (
+            Object.hasOwn(templates, name) &&
+            !confirm(`「${name}」を現在の設定で上書きしますか？`)
+        ) {
+            return;
+        }
+
+        const settings = collectCurrentTemplateSettings();
+        templates[name] = settings;
+
+        try {
+            localStorage.setItem(TEMPLATE_STORAGE_KEY, JSON.stringify(templates));
+            saveLastUsedSettings(settings);
+            refreshTemplateSelect(name);
+            nameInput.value = name;
+            alert(`テンプレート「${name}」を保存しました。`);
+        } catch (error) {
+            alert("保存容量を超えました。大きいロゴ画像を使用している場合は、画像を小さくしてお試しください。");
+        }
+    }
+
+    function loadNamedTemplate() {
+        const name = document.getElementById("templateSelect").value;
+        if (!name) {
+            alert("呼び出すテンプレートを選択してください。");
+            return;
+        }
+
+        const templates = getNamedTemplates();
+        const settings = templates[name];
+        if (!settings) {
+            alert("選択したテンプレートが見つかりませんでした。");
+            refreshTemplateSelect();
+            return;
+        }
+
+        document.getElementById("titleInput").value = settings.title ?? "";
+        document.getElementById("disclaimerInput").value = settings.disclaimer ?? "";
+        logoDataUrl = settings.logo || DEFAULT_LOGO;
+
+        if (settings.layout === "portrait_10x6" || settings.layout === "landscape_15x4") {
+            document.getElementById("layoutSelect").value = settings.layout;
+        }
+        if (THEMES.includes(settings.theme)) {
+            document.getElementById("themeSelect").value = settings.theme;
+        }
+        document.getElementById("cardNameDisplaySelect").value =
+            settings.cardNameDisplay === "hide" ? "hide" : "show";
+        document.getElementById("templateNameInput").value = name;
+
+        saveLastUsedSettings(collectCurrentTemplateSettings());
+        updateAllPages();
+        applySelectedLayout();
+        alert(`テンプレート「${name}」を呼び出しました。`);
+    }
+
+    function deleteNamedTemplate() {
+        const select = document.getElementById("templateSelect");
+        const name = select.value;
+        if (!name) {
+            alert("削除するテンプレートを選択してください。");
+            return;
+        }
+        if (!confirm(`テンプレート「${name}」を削除しますか？`)) return;
+
+        const templates = getNamedTemplates();
+        delete templates[name];
+        localStorage.setItem(TEMPLATE_STORAGE_KEY, JSON.stringify(templates));
+        document.getElementById("templateNameInput").value = "";
+        refreshTemplateSelect();
+        alert(`テンプレート「${name}」を削除しました。`);
     }
 
     function formatDate(dateStr) {
@@ -1869,6 +2082,7 @@
             el.src = logoDataUrl;
         });
         applyThemeToPages();
+        applyCardNameVisibility();
     }
 
     function getSelectedTheme() {
@@ -1882,6 +2096,19 @@
         const theme = getSelectedTheme();
         document.querySelectorAll(".exportArea").forEach(page => {
             page.dataset.theme = theme;
+        });
+    }
+
+    function getCardNameDisplay() {
+        return document.getElementById("cardNameDisplaySelect").value === "hide"
+            ? "hide"
+            : "show";
+    }
+
+    function applyCardNameVisibility() {
+        const hideCardNames = getCardNameDisplay() === "hide";
+        document.querySelectorAll(".exportArea").forEach(page => {
+            page.classList.toggle("hide-card-names", hideCardNames);
         });
     }
 
@@ -1915,8 +2142,10 @@
     document.getElementById("disclaimerInput").addEventListener("input", updateAllPages);
     document.getElementById("dateInput").addEventListener("change", updateAllPages);
     document.getElementById("themeSelect").addEventListener("change", applyThemeToPages);
+    document.getElementById("cardNameDisplaySelect")
+        .addEventListener("change", applyCardNameVisibility);
 
-    document.getElementById("layoutSelect").addEventListener("change", () => {
+    function applySelectedLayout() {
         if (globalCardData.length > 0) {
             renderPages();
             return;
@@ -1940,7 +2169,9 @@
         }
 
         requestAnimationFrame(fitPreviewPages);
-    });
+    }
+
+    document.getElementById("layoutSelect").addEventListener("change", applySelectedLayout);
 
     document.getElementById("logoInput").addEventListener("change", event => {
         const file = event.target.files[0];
@@ -2074,9 +2305,10 @@
         const layout = document.getElementById("layoutSelect").value;
         const orientation = layout === "landscape_15x4" ? "landscape" : "portrait";
         const theme = getSelectedTheme();
+        const cardNameClass = getCardNameDisplay() === "hide" ? " hide-card-names" : "";
         document.getElementById("pagesContainer").innerHTML = `
             <div class="preview-page">
-                <div class="exportArea ${orientation}" data-theme="${theme}">
+                <div class="exportArea ${orientation}${cardNameClass}" data-theme="${theme}">
                     <div class="empty-state">
                         <strong>NO VALID DATA</strong>
                         <span>有効なデータが見つかりませんでした</span>
@@ -2140,6 +2372,32 @@
         });
     }
 
+    function compareGroupNames(groupA, groupB) {
+        const normalizeNumbers = value => String(value)
+            .replace(/[０-９]/g, digit =>
+                String.fromCharCode(digit.charCodeAt(0) - 0xFEE0)
+            );
+
+        const textA = normalizeNumbers(groupA);
+        const textB = normalizeNumbers(groupB);
+        const numberA = textA.match(/\d+(?:\.\d+)?/);
+        const numberB = textB.match(/\d+(?:\.\d+)?/);
+
+        if (numberA && numberB) {
+            const difference = Number(numberA[0]) - Number(numberB[0]);
+            if (difference !== 0) return difference;
+        } else if (numberA) {
+            return -1;
+        } else if (numberB) {
+            return 1;
+        }
+
+        return textA.localeCompare(textB, "ja", {
+            numeric: true,
+            sensitivity: "base"
+        });
+    }
+
     function buildPages(maxPerPage) {
         const groupedMap = new Map();
         globalCardData.forEach(card => {
@@ -2147,10 +2405,13 @@
             groupedMap.get(card.group).push(card);
         });
 
+        const sortedGroups = Array.from(groupedMap.entries())
+            .sort(([groupA], [groupB]) => compareGroupNames(groupA, groupB));
+
         const pages = [];
         let currentPage = [];
 
-        for (const items of groupedMap.values()) {
+        for (const [, items] of sortedGroups) {
             if (
                 currentPage.length > 0 &&
                 currentPage.length < 24 &&
@@ -2199,7 +2460,9 @@
         pages.forEach((pageCards, pageIndex) => {
             const pageNumber = pageIndex + 1;
             const pageDiv = document.createElement("div");
-            pageDiv.className = `exportArea ${orientationClass}`;
+            pageDiv.className = `exportArea ${orientationClass}${
+                getCardNameDisplay() === "hide" ? " hide-card-names" : ""
+            }`;
             pageDiv.dataset.theme = selectedTheme;
             pageDiv.id = `exportArea_${pageNumber}`;
 
@@ -2208,7 +2471,10 @@
                     ? '<div class="status-badge">強化買取</div>'
                     : "";
                 const imageSource = card.resolvedImg || LOADING_IMAGE;
-                const grade = escapeHtml(card.type || "PSA10");
+                const grade = escapeHtml(card.type || "");
+                const gradeHtml = grade
+                    ? `<span class="card-grade">${grade}</span>`
+                    : "";
                 const name = escapeHtml(card.name || "");
                 const price = escapeHtml(card.price);
                 const imageUrl = escapeHtml(card.imgUrl);
@@ -2226,9 +2492,7 @@
                             >
                         </div>
                         <div class="card-name" title="${name}">${name}</div>
-                        <div class="card-meta">
-                            <span class="card-grade">${grade}</span>
-                        </div>
+                        <div class="card-meta">${gradeHtml}</div>
                         <div class="card-price-container">
                             <span class="card-price-text">${price}</span>
                         </div>
@@ -2280,8 +2544,8 @@
         });
     }
 
-    function adjustTextSize() {
-        document.querySelectorAll(".card-price-container").forEach(container => {
+    function adjustTextSize(root = document) {
+        root.querySelectorAll(".card-price-container").forEach(container => {
             const textElement = container.querySelector(".card-price-text");
             if (!textElement) return;
 
@@ -2360,28 +2624,54 @@
             for (let i = 0; i < areas.length; i++) {
                 overlayText.textContent = `${i + 1}枚目を生成中...（${i + 1}/${areas.length}）`;
                 const targetArea = areas[i];
-                const previewShell = targetArea.closest(".preview-page");
-                const previewTransform = targetArea.style.transform;
-                const previewShellWidth = previewShell?.style.width || "";
-                const previewShellHeight = previewShell?.style.height || "";
+                const exportWidth = targetArea.offsetWidth;
+                const exportHeight = targetArea.offsetHeight;
+                const pageBackground = getComputedStyle(targetArea).backgroundColor;
+
+                const exportStage = document.createElement("div");
+                exportStage.setAttribute("aria-hidden", "true");
+                Object.assign(exportStage.style, {
+                    position: "fixed",
+                    top: "0",
+                    left: "0",
+                    width: `${exportWidth}px`,
+                    height: `${exportHeight}px`,
+                    overflow: "hidden",
+                    pointerEvents: "none",
+                    zIndex: "9998",
+                    background: pageBackground
+                });
+
+                const exportClone = targetArea.cloneNode(true);
+                exportClone.removeAttribute("id");
+                Object.assign(exportClone.style, {
+                    position: "relative",
+                    top: "0",
+                    left: "0",
+                    width: `${exportWidth}px`,
+                    height: `${exportHeight}px`,
+                    margin: "0",
+                    transform: "none",
+                    background: pageBackground
+                });
+
+                exportStage.appendChild(exportClone);
+                document.body.appendChild(exportStage);
 
                 try {
-                    targetArea.style.transform = "none";
-                    if (previewShell) {
-                        previewShell.style.width = `${targetArea.offsetWidth}px`;
-                        previewShell.style.height = `${targetArea.offsetHeight}px`;
-                    }
-                    await waitForImages(targetArea);
-                    adjustTextSize();
+                    await waitForImages(exportClone);
+                    adjustTextSize(exportClone);
                     await new Promise(resolve => setTimeout(resolve, 250));
 
-                    const canvas = await html2canvas(targetArea, {
+                    const canvas = await html2canvas(exportClone, {
                         useCORS: true,
                         allowTaint: false,
-                        backgroundColor: getComputedStyle(targetArea).backgroundColor,
+                        backgroundColor: pageBackground,
                         scale: 2,
-                        width: targetArea.offsetWidth,
-                        height: targetArea.offsetHeight,
+                        width: exportWidth,
+                        height: exportHeight,
+                        windowWidth: exportWidth,
+                        windowHeight: exportHeight,
                         scrollX: 0,
                         scrollY: 0,
                         logging: false
@@ -2395,11 +2685,7 @@
 
                     await new Promise(resolve => setTimeout(resolve, 700));
                 } finally {
-                    targetArea.style.transform = previewTransform;
-                    if (previewShell) {
-                        previewShell.style.width = previewShellWidth;
-                        previewShell.style.height = previewShellHeight;
-                    }
+                    exportStage.remove();
                 }
             }
         } catch (error) {
