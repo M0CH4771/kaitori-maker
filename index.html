@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（V3）</title>
+    <title>買取表ジェネレーター（V4）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -282,6 +282,10 @@
         </div>
 
         <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
+        
+        <div style="font-size: 0.8em; color: #555; margin-bottom: 10px;">
+            画像がすべて読み込まれてから「画像として書き出し」を押してください。
+        </div>
 
         <button onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
         <button class="btn-export" onclick="exportToImage()">📸 画像として書き出し</button>
@@ -291,7 +295,7 @@
         <div id="exportArea">
             <div class="header-area">
                 <div class="logo-container">
-                    <img id="previewLogo" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo" crossorigin="anonymous">
+                    <img id="previewLogo" src="https://via.placeholder.com/300x80?text=Shop+Logo" alt="Shop Logo">
                 </div>
                 <div class="title-container">
                     <h1 id="previewTitle">PSA10買取表 1</h1>
@@ -300,8 +304,7 @@
 
             <div id="cardGrid" class="card-grid">
                 <div style="grid-column: 1 / -1; padding: 50px; text-align: center; color: #888; font-size: 1.2em;">
-                    CSVファイルを読み込むとここにカードが並びます<br>
-                    <small style="color:#e60012;">※GoogleDriveの画像は必ず「リンクを知っている全員」に共有設定してください</small>
+                    CSVファイルを読み込むとここにカードが並びます
                 </div>
             </div>
 
@@ -370,7 +373,6 @@
         }
     });
 
-    // カンマ入りの金額やダブルクォーテーションを正しく処理するパーサー
     function parseCSVLine(text) {
         let result = [];
         let inQuotes = false;
@@ -393,7 +395,40 @@
         return result;
     }
 
-    function parseCSV(text) {
+    // GoogleDriveの画像をBase64形式に変換して直接埋め込む非同期関数
+    async function loadDriveImage(fileId, imgElementId) {
+        const imgEl = document.getElementById(imgElementId);
+        const targetUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        
+        // 複数のプロキシを用意して上から順に試す
+        const proxies = [
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+        ];
+
+        for (let proxy of proxies) {
+            try {
+                const response = await fetch(proxy);
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const base64 = await new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.readAsDataURL(blob);
+                    });
+                    imgEl.src = base64; // Base64で画像を直接指定
+                    return; 
+                }
+            } catch (e) {
+                console.warn("Proxy failed: ", proxy);
+            }
+        }
+        
+        // 全て失敗した場合はエラー画像
+        imgEl.src = 'https://via.placeholder.com/200x280?text=Load+Error';
+    }
+
+    async function parseCSV(text) {
         const lines = text.split('\n');
         const grid = document.getElementById('cardGrid');
         grid.innerHTML = ''; 
@@ -404,52 +439,54 @@
             if (!line) continue;
 
             const parts = parseCSVLine(line);
-            
             if(parts.length < 10) continue;
 
-            // ヘッダー行をスキップ
-            if (parts[0] === '掲載グループ' || parts[3] === 'カード名' || parts[3] === 'カード名') {
+            if (parts[0] === '掲載グループ' || parts[3] === 'カード名') {
                 continue;
             }
 
-            const status = parts[1]; // 強化 / 掲載
-            const name = parts[3]; // カード名
-            const type = parts[5]; // PSA10 など
-            const price = parts[6]; // 金額
-            let imgUrl = parts[9] ? parts[9].trim() : ''; // 画像リンク
+            const status = parts[1]; 
+            const name = parts[3]; 
+            const type = parts[5]; 
+            const price = parts[6]; 
+            let imgUrl = parts[9] ? parts[9].trim() : ''; 
 
-            // GoogleDrive画像を強制的に表示・書き出し可能にするプロキシ処理
-            let proxyUrl = imgUrl;
+            let fileId = null;
             if (imgUrl.includes('drive.google.com')) {
                 const match = imgUrl.match(/id=([^&]+)/);
                 if (match && match[1]) {
-                    const fileId = match[1];
-                    // GoogleDriveのサムネイル公式API（一番安定している）
-                    const gDriveThumb = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
-                    // 確実にCORSを回避する強力なプロキシを通す
-                    proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(gDriveThumb)}`;
+                    fileId = match[1];
                 }
             }
 
             const item = document.createElement('div');
             item.className = 'card-item';
             
-            // 強化買取のみバッジを表示
             let badgeHtml = '';
             if(status === '強化') {
                 badgeHtml = '<div class="status-badge">強化買取</div>';
             }
 
+            // 一旦ローディング画像をセットする
+            const imgId = `card-img-${count}`;
             item.innerHTML = `
                 ${badgeHtml}
                 <div class="card-img-container">
-                    <img src="${proxyUrl}" crossorigin="anonymous" alt="画像エラー">
+                    <img id="${imgId}" src="https://via.placeholder.com/200x280?text=Loading..." alt="Loading">
                 </div>
                 <div class="card-name">${name}</div>
                 <div><span class="card-grade">${type}</span></div>
                 <div class="card-price">${price}</div>
             `;
             grid.appendChild(item);
+
+            // 非同期で画像の読み込みを開始
+            if (fileId) {
+                loadDriveImage(fileId, imgId);
+            } else if (imgUrl) {
+                document.getElementById(imgId).src = imgUrl; // Drive以外のURLならそのまま
+            }
+            
             count++;
         }
         
@@ -479,7 +516,7 @@
                 overlay.style.display = 'none';
                 alert("画像の生成に失敗しました。\n詳細: " + err);
             });
-        }, 1500); // 描画待機を少し長めに設定
+        }, 100); 
     }
 </script>
 </body>
