@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター（V4）</title>
+    <title>買取表ジェネレーター（V5: 最強画像取得版）</title>
     <!-- html2canvasライブラリ -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
@@ -284,7 +284,7 @@
         <hr style="border:0; border-top:1px solid #eee; margin: 20px 0;">
         
         <div style="font-size: 0.8em; color: #555; margin-bottom: 10px;">
-            画像がすべて読み込まれてから「画像として書き出し」を押してください。
+            画像がすべて表示されてから「画像として書き出し」を押してください。
         </div>
 
         <button onclick="window.print()">🖨️ PDFとして保存（印刷）</button>
@@ -395,37 +395,48 @@
         return result;
     }
 
-    // GoogleDriveの画像をBase64形式に変換して直接埋め込む非同期関数
+    // ★最強の画像取得関数★
     async function loadDriveImage(fileId, imgElementId) {
         const imgEl = document.getElementById(imgElementId);
-        const targetUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+        // Google Driveのサムネイル専用APIを利用（通常のプレビューURLより安定する）
+        const targetUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w400`;
+        const encodedUrl = encodeURIComponent(targetUrl);
         
-        // 複数のプロキシを用意して上から順に試す
+        // 4つの異なる中継サーバーを用意し、繋がったものを使う
         const proxies = [
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+            `https://wsrv.nl/?url=${encodedUrl}`,
+            `https://api.allorigins.win/raw?url=${encodedUrl}`,
+            `https://api.codetabs.com/v1/proxy?quest=${encodedUrl}`,
+            `https://corsproxy.io/?${encodedUrl}`
         ];
 
+        let success = false;
         for (let proxy of proxies) {
+            if (success) break;
             try {
                 const response = await fetch(proxy);
                 if (response.ok) {
                     const blob = await response.blob();
-                    const base64 = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.readAsDataURL(blob);
-                    });
-                    imgEl.src = base64; // Base64で画像を直接指定
-                    return; 
+                    // HTMLエラーページなどではなく、ちゃんと画像として取得できたか確認
+                    if (blob.type.includes('image')) {
+                        const base64 = await new Promise((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.readAsDataURL(blob);
+                        });
+                        imgEl.src = base64; 
+                        success = true;
+                    }
                 }
             } catch (e) {
-                console.warn("Proxy failed: ", proxy);
+                console.warn("Proxy retry...");
             }
         }
         
-        // 全て失敗した場合はエラー画像
-        imgEl.src = 'https://via.placeholder.com/200x280?text=Load+Error';
+        // 全てダメだった場合はエラー画像を表示
+        if (!success) {
+            imgEl.src = 'https://via.placeholder.com/200x280?text=Error';
+        }
     }
 
     async function parseCSV(text) {
@@ -467,7 +478,7 @@
                 badgeHtml = '<div class="status-badge">強化買取</div>';
             }
 
-            // 一旦ローディング画像をセットする
+            // まずLoadingテキストの画像を表示
             const imgId = `card-img-${count}`;
             item.innerHTML = `
                 ${badgeHtml}
@@ -480,11 +491,11 @@
             `;
             grid.appendChild(item);
 
-            // 非同期で画像の読み込みを開始
+            // 非同期で画像を裏側でダウンロードして差し替え
             if (fileId) {
                 loadDriveImage(fileId, imgId);
             } else if (imgUrl) {
-                document.getElementById(imgId).src = imgUrl; // Drive以外のURLならそのまま
+                document.getElementById(imgId).src = imgUrl; 
             }
             
             count++;
