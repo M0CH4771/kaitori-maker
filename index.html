@@ -5753,6 +5753,24 @@
             opacity: 0.72;
         }
 
+        /* 非表示項目の予約スペースを完全に除去して画像へ戻す */
+        .exportArea.hide-card-names .card-name {
+            display: none !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .exportArea.hide-card-names .card-img-container {
+            margin-bottom: 3px;
+        }
+
+        .exportArea .card-meta:empty {
+            display: none;
+            min-height: 0;
+            margin: 0;
+        }
+
         #loadingOverlay {
             position: fixed;
             z-index: 9999;
@@ -6192,7 +6210,9 @@
                 <label><span class="step">8</span>レイアウト</label>
                 <select id="layoutSelect">
                     <option value="portrait_10x6">A4縦｜横10列 × 縦6段（60枚）</option>
+                    <option value="portrait_7x9">A4縦｜横7列 × 縦9段（60枚）</option>
                     <option value="landscape_15x4">A4横｜横15列 × 縦4段（60枚）</option>
+                    <option value="landscape_9x7">A4横｜横9列 × 縦7段（60枚）</option>
                 </select>
                 <small class="help">テンプレート保存対象。</small>
             </div>
@@ -6709,6 +6729,32 @@
         "signal", "trust", "market", "alert", "editorial",
         "wa", "cyber", "soft", "ticket", "scoreboard"
     ];
+    const LAYOUTS = {
+        portrait_10x6: {
+            orientation: "portrait",
+            cols: 10,
+            rows: 6,
+            maxPerPage: 60
+        },
+        portrait_7x9: {
+            orientation: "portrait",
+            cols: 7,
+            rows: 9,
+            maxPerPage: 60
+        },
+        landscape_15x4: {
+            orientation: "landscape",
+            cols: 15,
+            rows: 4,
+            maxPerPage: 60
+        },
+        landscape_9x7: {
+            orientation: "landscape",
+            cols: 9,
+            rows: 7,
+            maxPerPage: 60
+        }
+    };
     const TITLE_STYLES = [
         "power", "gold", "outline", "royal", "ribbon",
         "underline", "neon", "stamp", "dual", "elegant"
@@ -7204,6 +7250,16 @@
     function normalizeTheme(theme) {
         if (THEMES.includes(theme)) return theme;
         return LEGACY_THEME_MAP[theme] || "signal";
+    }
+
+    function normalizeLayout(layout) {
+        return Object.hasOwn(LAYOUTS, layout) ? layout : "portrait_10x6";
+    }
+
+    function getSelectedLayoutConfig() {
+        return LAYOUTS[
+            normalizeLayout(document.getElementById("layoutSelect")?.value)
+        ];
     }
 
     function normalizeTitleStyle(style) {
@@ -7917,8 +7973,9 @@
                 savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth,
             autoFit: savedTitleAutoFit || DEFAULT_TITLE_CUSTOM.autoFit
         });
-        if (savedLayout === "portrait_10x6" || savedLayout === "landscape_15x4") {
-            document.getElementById("layoutSelect").value = savedLayout;
+        if (Object.hasOwn(LAYOUTS, savedLayout)) {
+            document.getElementById("layoutSelect").value =
+                normalizeLayout(savedLayout);
         }
         if (savedCardNameDisplay === "show" || savedCardNameDisplay === "hide") {
             document.getElementById("cardNameDisplaySelect").value = savedCardNameDisplay;
@@ -8071,8 +8128,9 @@
         document.getElementById("titleInput").value = settings.title ?? "";
         document.getElementById("disclaimerInput").value = settings.disclaimer ?? "";
 
-        if (settings.layout === "portrait_10x6" || settings.layout === "landscape_15x4") {
-            document.getElementById("layoutSelect").value = settings.layout;
+        if (Object.hasOwn(LAYOUTS, settings.layout)) {
+            document.getElementById("layoutSelect").value =
+                normalizeLayout(settings.layout);
         }
         document.getElementById("themeSelect").value = normalizeTheme(settings.theme);
         document.getElementById("titleStyleSelect").value =
@@ -8343,22 +8401,17 @@
             return;
         }
 
-        const layout = document.getElementById("layoutSelect").value;
+        const layoutConfig = getSelectedLayoutConfig();
         const previewArea = document.querySelector(".exportArea");
         const grid = previewArea?.querySelector(".card-grid");
         if (!previewArea || !grid) return;
 
-        if (layout === "landscape_15x4") {
-            previewArea.classList.remove("portrait");
-            previewArea.classList.add("landscape");
-            grid.style.gridTemplateColumns = "repeat(15, 1fr)";
-            grid.style.gridTemplateRows = "repeat(4, 1fr)";
-        } else {
-            previewArea.classList.remove("landscape");
-            previewArea.classList.add("portrait");
-            grid.style.gridTemplateColumns = "repeat(10, 1fr)";
-            grid.style.gridTemplateRows = "repeat(6, 1fr)";
-        }
+        previewArea.classList.remove("portrait", "landscape");
+        previewArea.classList.add(layoutConfig.orientation);
+        grid.style.gridTemplateColumns =
+            `repeat(${layoutConfig.cols}, 1fr)`;
+        grid.style.gridTemplateRows =
+            `repeat(${layoutConfig.rows}, 1fr)`;
 
         requestAnimationFrame(fitPreviewPages);
     }
@@ -8732,8 +8785,8 @@
     }
 
     function renderNoData() {
-        const layout = document.getElementById("layoutSelect").value;
-        const orientation = layout === "landscape_15x4" ? "landscape" : "portrait";
+        const layoutConfig = getSelectedLayoutConfig();
+        const orientation = layoutConfig.orientation;
         const theme = getSelectedTheme();
         const titleStyle = getSelectedTitleStyle();
         const cardNameClass = getCardNameDisplay() === "hide" ? " hide-card-names" : "";
@@ -9284,14 +9337,13 @@
     }
 
     async function renderPages() {
-        const layout = document.getElementById("layoutSelect").value;
-        const isLandscape = layout === "landscape_15x4";
-        const cols = isLandscape ? 15 : 10;
-        const rows = isLandscape ? 4 : 6;
-        const orientationClass = isLandscape ? "landscape" : "portrait";
+        const layoutConfig = getSelectedLayoutConfig();
+        const cols = layoutConfig.cols;
+        const rows = layoutConfig.rows;
+        const orientationClass = layoutConfig.orientation;
         const selectedTheme = getSelectedTheme();
         const selectedTitleStyle = getSelectedTitleStyle();
-        const pages = buildPages(60);
+        const pages = buildPages(layoutConfig.maxPerPage);
         const container = document.getElementById("pagesContainer");
 
         const title = document.getElementById("titleInput").value || "高価買取表";
