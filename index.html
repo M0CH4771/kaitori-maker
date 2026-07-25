@@ -6,6 +6,7 @@
     <title>買取表ジェネレーター</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         :root {
             --ink: #080b12;
@@ -286,12 +287,14 @@
         }
 
         .title-customizer-group {
-            grid-column: span 2;
+            grid-column: 1 / -1;
         }
 
         .title-customizer-grid {
             display: grid;
-            grid-template-columns: 0.65fr 1.35fr 1.45fr 0.8fr 0.65fr 0.8fr;
+            grid-template-columns:
+                0.65fr 1.35fr 1.45fr 0.8fr
+                0.65fr 0.8fr 1.4fr;
             align-items: end;
             gap: 10px;
             padding: 12px;
@@ -322,6 +325,14 @@
             padding-right: 7px;
             padding-left: 7px;
             text-align: center;
+        }
+
+        .title-size-status {
+            display: inline-block;
+            margin-top: 7px;
+            color: #ffe39a;
+            font-size: 11px;
+            font-weight: 900;
         }
 
         .help {
@@ -401,6 +412,17 @@
             font-size: 17px;
         }
 
+        .btn-pdf {
+            padding: 16px;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+            background:
+                linear-gradient(135deg, rgba(255,255,255,0.18), transparent 38%),
+                linear-gradient(135deg, #3157bb, #173579);
+            box-shadow: 0 9px 24px rgba(31, 68, 154, 0.28);
+            font-size: 17px;
+        }
+
         .export-note {
             margin: 0;
             padding: 10px 12px;
@@ -414,7 +436,7 @@
 
         .panel-actions {
             display: grid;
-            grid-template-columns: 1fr minmax(240px, 300px) minmax(240px, 300px);
+            grid-template-columns: 1fr repeat(3, minmax(190px, 260px));
             align-items: center;
             gap: 14px;
             padding: 14px 24px 22px;
@@ -6125,8 +6147,16 @@
                             <option value="5">最大</option>
                         </select>
                     </div>
+                    <div class="title-custom-field">
+                        <label for="titleAutoFitSelect">サイズの優先設定</label>
+                        <select id="titleAutoFitSelect">
+                            <option value="off" selected>指定サイズをそのまま使う</option>
+                            <option value="on">重なり防止で自動縮小</option>
+                        </select>
+                    </div>
                 </div>
-                <small class="help">指定サイズを上限として、長いタイトルだけ自動で縮小します。</small>
+                <span class="title-size-status" id="titleSizeStatus">表示サイズ：76px</span>
+                <small class="help">文字がロゴ等と重なる場合は「重なり防止で自動縮小」を選択してください。</small>
             </div>
 
             <div class="control-group">
@@ -6224,10 +6254,11 @@
 
         <div class="panel-actions">
             <div class="export-note">
-                複数ページは順番に連続ダウンロードされます。画像読込完了後に書き出してください。
+                PNGは連続保存、ZIPとPDFは1ファイルにまとめて保存します。画像読込完了後に書き出してください。
             </div>
             <button class="btn-export" type="button" onclick="exportToImage()">一括でPNG書き出し</button>
             <button class="btn-zip" type="button" onclick="exportToZip()">ZIPで一括保存</button>
+            <button class="btn-pdf" type="button" onclick="exportToPdf()">PDFで一括保存</button>
         </div>
     </aside>
 
@@ -6702,7 +6733,8 @@
         size: 76,
         weight: 900,
         outlineColor: "#111827",
-        outlineWidth: 2
+        outlineWidth: 2,
+        autoFit: "off"
     };
     const LEGACY_THEME_MAP = {
         luxury: "signal",
@@ -6758,6 +6790,7 @@
         "kaitori_title_weight",
         "kaitori_title_outline_color",
         "kaitori_title_outline_width",
+        "kaitori_title_auto_fit",
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
@@ -7217,7 +7250,8 @@
                 0,
                 5,
                 DEFAULT_TITLE_CUSTOM.outlineWidth
-            )
+            ),
+            autoFit: settings.autoFit === "on" ? "on" : "off"
         };
     }
 
@@ -7228,7 +7262,8 @@
             size: document.getElementById("titleSizeInput")?.value,
             weight: document.getElementById("titleWeightSelect")?.value,
             outlineColor: document.getElementById("titleOutlineColorInput")?.value,
-            outlineWidth: document.getElementById("titleOutlineWidthSelect")?.value
+            outlineWidth: document.getElementById("titleOutlineWidthSelect")?.value,
+            autoFit: document.getElementById("titleAutoFitSelect")?.value
         });
     }
 
@@ -7244,6 +7279,8 @@
             normalized.outlineColor;
         document.getElementById("titleOutlineWidthSelect").value =
             String(normalized.outlineWidth);
+        document.getElementById("titleAutoFitSelect").value = normalized.autoFit;
+        updateTitleSizeStatus(normalized.size);
     }
 
     function saveTitleCustomization(settings = collectTitleCustomization()) {
@@ -7253,6 +7290,21 @@
         setScopedItem("kaitori_title_weight", String(settings.weight));
         setScopedItem("kaitori_title_outline_color", settings.outlineColor);
         setScopedItem("kaitori_title_outline_width", String(settings.outlineWidth));
+        setScopedItem("kaitori_title_auto_fit", settings.autoFit);
+    }
+
+    function updateTitleSizeStatus(effectiveSize) {
+        const status = document.getElementById("titleSizeStatus");
+        if (!status) return;
+
+        const settings = collectTitleCustomization();
+        const actualSize = Number.isFinite(Number(effectiveSize))
+            ? Math.round(Number(effectiveSize))
+            : settings.size;
+        status.textContent =
+            settings.autoFit === "on" && actualSize < settings.size
+                ? `指定：${settings.size}px／実際の表示：${actualSize}px（自動縮小）`
+                : `表示サイズ：${settings.size}px`;
     }
 
     function getExportAreas(root = document) {
@@ -7843,6 +7895,7 @@
         const savedTitleWeight = getScopedItem("kaitori_title_weight");
         const savedTitleOutlineColor = getScopedItem("kaitori_title_outline_color");
         const savedTitleOutlineWidth = getScopedItem("kaitori_title_outline_width");
+        const savedTitleAutoFit = getScopedItem("kaitori_title_auto_fit");
         const savedCardNameDisplay = getScopedItem("kaitori_card_name_display");
         const savedPageSplit = getScopedItem("kaitori_page_split");
         const savedSortOrder = getScopedItem("kaitori_sort_order");
@@ -7861,7 +7914,8 @@
             outlineColor:
                 savedTitleOutlineColor || DEFAULT_TITLE_CUSTOM.outlineColor,
             outlineWidth:
-                savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth
+                savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth,
+            autoFit: savedTitleAutoFit || DEFAULT_TITLE_CUSTOM.autoFit
         });
         if (savedLayout === "portrait_10x6" || savedLayout === "landscape_15x4") {
             document.getElementById("layoutSelect").value = savedLayout;
@@ -8209,7 +8263,8 @@
         "titleFontSelect",
         "titleWeightSelect",
         "titleOutlineColorInput",
-        "titleOutlineWidthSelect"
+        "titleOutlineWidthSelect",
+        "titleAutoFitSelect"
     ].forEach(id => {
         document.getElementById(id).addEventListener("input", updateTitleCustomization);
         document.getElementById(id).addEventListener("change", updateTitleCustomization);
@@ -9339,11 +9394,17 @@
     }
 
     function adjustTitleSizes(root = document) {
+        const settings = collectTitleCustomization();
+        let firstEffectiveSize = settings.size;
+        let hasMeasuredTitle = false;
+
         root.querySelectorAll(".title-container").forEach(container => {
             const title = container.querySelector(".title-text");
             if (!title) return;
 
-            title.style.fontSize = `${collectTitleCustomization().size}px`;
+            title.style.fontSize = `${settings.size}px`;
+            if (settings.autoFit !== "on") return;
+
             const availableWidth = Math.max(0, container.clientWidth - 8);
             if (!availableWidth) return;
 
@@ -9359,7 +9420,17 @@
                 );
                 title.style.fontSize = `${nextSize}px`;
             }
+
+            if (!hasMeasuredTitle) {
+                firstEffectiveSize =
+                    parseFloat(getComputedStyle(title).fontSize) || settings.size;
+                hasMeasuredTitle = true;
+            }
         });
+
+        if (root === document) {
+            updateTitleSizeStatus(firstEffectiveSize);
+        }
     }
 
     function adjustTextSize(root = document) {
@@ -9659,6 +9730,74 @@
         } catch (error) {
             console.error(error);
             alert(`ZIPの生成に失敗しました。\n詳細: ${error.message || error}`);
+        } finally {
+            overlay.style.display = "none";
+            overlayText.textContent = "画像を生成中です...";
+        }
+    }
+
+    async function exportToPdf() {
+        const areas = Array.from(document.querySelectorAll(".exportArea"));
+        if (areas.length === 0) return;
+
+        const JsPdf = window.jspdf?.jsPDF;
+        if (typeof html2canvas !== "function" || typeof JsPdf !== "function") {
+            alert("PDF書き出し機能を読み込めませんでした。通信環境をご確認ください。");
+            return;
+        }
+
+        const overlay = document.getElementById("loadingOverlay");
+        const overlayText = document.getElementById("loadingText");
+        const dateValue = document.getElementById("dateInput").value;
+        const orientation = areas[0].classList.contains("landscape")
+            ? "landscape"
+            : "portrait";
+        overlay.style.display = "flex";
+
+        try {
+            overlayText.textContent = "画像の読み込み完了を確認しています...";
+            await ensureImagesReadyForExport();
+
+            const pdf = new JsPdf({
+                orientation,
+                unit: "mm",
+                format: "a4",
+                compress: true
+            });
+
+            for (let i = 0; i < areas.length; i++) {
+                overlayText.textContent =
+                    `PDFを生成中...（${i + 1}/${areas.length}）`;
+                const canvas = await renderAreaToCanvas(areas[i]);
+                const imageData = canvas.toDataURL("image/jpeg", 0.96);
+
+                if (i > 0) {
+                    pdf.addPage("a4", orientation);
+                }
+
+                const pageWidth = pdf.internal.pageSize.getWidth();
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                pdf.addImage(
+                    imageData,
+                    "JPEG",
+                    0,
+                    0,
+                    pageWidth,
+                    pageHeight,
+                    undefined,
+                    "FAST"
+                );
+
+                canvas.width = 1;
+                canvas.height = 1;
+                await new Promise(resolve => setTimeout(resolve, 80));
+            }
+
+            overlayText.textContent = "PDFファイルを保存しています...";
+            pdf.save(`買取表_${dateValue}.pdf`);
+        } catch (error) {
+            console.error(error);
+            alert(`PDFの生成に失敗しました。\n詳細: ${error.message || error}`);
         } finally {
             overlay.style.display = "none";
             overlayText.textContent = "画像を生成中です...";
