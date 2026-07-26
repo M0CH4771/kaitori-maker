@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>買取表ジェネレーター</title>
+    <title>買取表・単品告知画像ジェネレーター</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -3133,8 +3133,7 @@
             gap: 28px;
         }
 
-        .csv-diff-panel,
-        .sns-panel {
+        .csv-diff-panel {
             margin: 14px 24px 0;
             padding: 15px;
             border: 1px solid rgba(217, 173, 74, 0.24);
@@ -3142,8 +3141,7 @@
             background: rgba(255,255,255,0.04);
         }
 
-        .csv-diff-heading,
-        .sns-panel-heading {
+        .csv-diff-heading {
             display: flex;
             align-items: baseline;
             justify-content: space-between;
@@ -3151,14 +3149,12 @@
             margin-bottom: 12px;
         }
 
-        .csv-diff-heading strong,
-        .sns-panel-heading strong {
+        .csv-diff-heading strong {
             color: #fff;
             font-size: 13px;
         }
 
         .csv-diff-heading span,
-        .sns-panel-heading span,
         .csv-diff-meta {
             color: #9ca8ba;
             font-size: 10px;
@@ -3221,210 +3217,6 @@
             margin: 0;
             padding: 9px 12px;
             font-size: 11px;
-        }
-
-        .sns-settings {
-            display: grid;
-            grid-template-columns: minmax(180px, 1.1fr) minmax(150px, 0.8fr) minmax(210px, 1.2fr);
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .sns-field label {
-            display: block;
-            margin-bottom: 6px;
-            color: #dfe6f2;
-            font-size: 10px;
-            font-weight: 900;
-        }
-
-        .sns-output-wrap {
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 9px;
-            background: rgba(4,8,16,0.58);
-        }
-
-        #snsTextOutput {
-            min-height: 190px;
-            border: 0;
-            border-radius: 0;
-            background: transparent;
-            color: #f7f9fc;
-            line-height: 1.65;
-            resize: vertical;
-        }
-
-        .sns-output-actions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 9px;
-            padding: 9px 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .sns-output-actions button {
-            width: auto;
-            min-width: 130px;
-            margin: 0;
-            padding: 9px 12px;
-            font-size: 11px;
-        }
-
-        .sns-char-count {
-            margin-right: auto;
-            color: #9ee6bd;
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .sns-char-count[data-over="true"] {
-            color: #ff7181;
-        }
-
-        /* ===== ポスト文メーカー ===== */
-        .post-maker {
-            display: flex;
-            flex-direction: column;
-            gap: 28px;
-        }
-
-        .post-composer-grid {
-            display: grid;
-            grid-template-columns: minmax(300px, 0.9fr) minmax(420px, 1.1fr);
-            gap: 16px;
-            padding: 20px 24px 8px;
-        }
-
-        .post-editor-card,
-        .post-output-card {
-            min-width: 0;
-            overflow: hidden;
-            border: 1px solid rgba(217, 173, 74, 0.24);
-            border-radius: 11px;
-            background: rgba(255,255,255,0.04);
-        }
-
-        .post-card-heading {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 13px 14px 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .post-card-heading strong {
-            color: #fff;
-            font-size: 13px;
-        }
-
-        .post-card-heading span {
-            color: #9ca8ba;
-            font-size: 10px;
-        }
-
-        .post-editor-inner {
-            padding: 14px;
-        }
-
-        .post-mode-row {
-            display: grid;
-            grid-template-columns: minmax(180px, 0.75fr) minmax(220px, 1.25fr);
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .post-mode-row label,
-        .post-body-label {
-            display: block;
-            margin-bottom: 6px;
-            color: #dfe6f2;
-            font-size: 10px;
-            font-weight: 900;
-        }
-
-        #postTemplateBody {
-            min-height: 330px;
-            color: #f7f9fc;
-            border-color: rgba(255,255,255,0.12);
-            background: rgba(4,8,16,0.62);
-            line-height: 1.65;
-        }
-
-        .post-variable-help {
-            margin-top: 12px;
-            padding: 11px;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 9px;
-            background: rgba(255,255,255,0.035);
-        }
-
-        .post-variable-help strong {
-            display: block;
-            margin-bottom: 8px;
-            color: #fff;
-            font-size: 10px;
-        }
-
-        .post-variable-list {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 7px;
-        }
-
-        .post-variable-chip {
-            width: auto;
-            margin: 0;
-            padding: 7px 9px;
-            color: #ffe9a9;
-            border: 1px solid rgba(217,173,74,0.32);
-            border-radius: 7px;
-            background: rgba(217,173,74,0.08);
-            box-shadow: none;
-            font-size: 10px;
-            letter-spacing: 0;
-        }
-
-        .post-variable-note {
-            margin: 9px 0 0;
-            color: #99a6b8;
-            font-size: 9px;
-            line-height: 1.55;
-        }
-
-        #postTextOutput {
-            min-height: 466px;
-            border: 0;
-            border-radius: 0;
-            background: rgba(4,8,16,0.62);
-            color: #f7f9fc;
-            line-height: 1.7;
-        }
-
-        .post-output-actions {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 9px;
-            padding: 10px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .post-output-actions button {
-            width: auto;
-            min-width: 135px;
-            margin: 0;
-            padding: 9px 12px;
-            font-size: 11px;
-        }
-
-        .post-source-status {
-            margin-right: auto;
-            color: #aeb8c8;
-            font-size: 10px;
-            font-weight: 800;
         }
 
         .single-selection {
@@ -3728,19 +3520,8 @@
             text-align: center;
         }
 
-        .single-ad-eyebrow {
-            display: inline-flex;
-            padding: 8px 24px;
-            color: var(--ad-bg);
-            border-radius: 999px;
-            background: var(--ad-primary);
-            font-size: 22px;
-            font-weight: 1000;
-            letter-spacing: 0.14em;
-        }
-
         .single-ad-heading h2 {
-            margin: 16px 0 0;
+            margin: 0;
             color: var(--ad-text);
             font-size: 56px;
             font-weight: 1000;
@@ -3999,7 +3780,6 @@
             border-width: 12px;
             border-color: #1423a7;
         }
-        .single-ad[data-design="pop"] .single-ad-eyebrow,
         .single-ad[data-design="pop"] .single-ad-cta {
             color: #fff;
         }
@@ -4167,10 +3947,6 @@
         .single-ad[data-design="clean"] .single-ad-heading {
             text-align: left;
         }
-        .single-ad[data-design="clean"] .single-ad-eyebrow {
-            color: #fff;
-            border-radius: 2px;
-        }
         .single-ad[data-design="clean"] .single-ad-product {
             padding: 30px;
             border: 1px solid #cbd3dc;
@@ -4248,7 +4024,6 @@
             border-radius: 999px;
             box-shadow: 0 8px 18px rgba(229,43,104,0.22);
         }
-        .single-ad[data-design="sakura"] .single-ad-eyebrow,
         .single-ad[data-design="sakura"] .single-ad-cta {
             color: #4e2b3b;
         }
@@ -4378,10 +4153,6 @@
         }
         .single-ad[data-design="mono"] .single-ad-heading {
             text-align: left;
-        }
-        .single-ad[data-design="mono"] .single-ad-eyebrow {
-            color: #111;
-            border-radius: 0;
         }
         .single-ad[data-design="mono"] .single-ad-heading h2 {
             font-size: 66px;
@@ -5153,21 +4924,8 @@
             [data-design="cyber"], [data-design="sakura"],
             [data-design="retro"], [data-design="pop"],
             [data-design="emerald"], [data-design="mono"]
-        ) .single-ad-eyebrow {
-            padding: 8px 20px;
-            border-radius: 5px;
-            font-size: 18px;
-            letter-spacing: 0.14em;
-        }
-
-        .single-ad:is(
-            [data-design="blackgold"], [data-design="redimpact"],
-            [data-design="royal"], [data-design="clean"],
-            [data-design="cyber"], [data-design="sakura"],
-            [data-design="retro"], [data-design="pop"],
-            [data-design="emerald"], [data-design="mono"]
         ) .single-ad-heading h2 {
-            margin-top: 11px;
+            margin-top: 0;
             font-size: 57px;
             line-height: 1.03;
             letter-spacing: 0.01em;
@@ -6045,48 +5803,6 @@
             --boost-text: #17231a; --boost-border: #efffa4;
         }
 
-        /* 単品告知の見出しも、同じ視認性ルールで整える */
-        .single-ad:is(
-            [data-design="blackgold"], [data-design="redimpact"],
-            [data-design="royal"], [data-design="clean"],
-            [data-design="cyber"], [data-design="sakura"],
-            [data-design="retro"], [data-design="pop"],
-            [data-design="emerald"], [data-design="mono"]
-        ) .single-ad-eyebrow {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            gap: 9px;
-            padding: 9px 20px 9px 13px;
-            color: var(--ad-bg);
-            border: 1px solid var(--ad-secondary);
-            border-radius: 999px;
-            background: var(--ad-primary);
-            box-shadow:
-                0 5px 0 rgba(0,0,0,0.2),
-                0 9px 18px rgba(0,0,0,0.12);
-            font-size: 18px;
-            font-weight: 1000;
-            line-height: 1;
-            letter-spacing: 0.12em;
-        }
-
-        .single-ad:is(
-            [data-design="blackgold"], [data-design="redimpact"],
-            [data-design="royal"], [data-design="clean"],
-            [data-design="cyber"], [data-design="sakura"],
-            [data-design="retro"], [data-design="pop"],
-            [data-design="emerald"], [data-design="mono"]
-        ) .single-ad-eyebrow::before {
-            width: 8px;
-            height: 8px;
-            flex: 0 0 auto;
-            content: "";
-            border: 2px solid currentColor;
-            border-radius: 50%;
-            opacity: 0.72;
-        }
-
         /*
          * 21–30：配色差ではなく、紙面構造そのものが異なるデザイン。
          * タイトル文字には触れず、共通の手動タイトル設定をそのまま使う。
@@ -6514,8 +6230,7 @@
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
 
-            .csv-diff-actions,
-            .sns-settings {
+            .csv-diff-actions {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
@@ -6525,10 +6240,6 @@
 
             .single-selection-toolbar input {
                 grid-column: 1 / -1;
-            }
-
-            .post-composer-grid {
-                grid-template-columns: 1fr;
             }
 
         }
@@ -6624,27 +6335,22 @@
                 margin-left: 16px;
             }
 
-            .csv-diff-panel,
-            .sns-panel {
+            .csv-diff-panel {
                 margin-right: 16px;
                 margin-left: 16px;
             }
 
-            .csv-diff-actions,
-            .sns-settings {
+            .csv-diff-actions {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .csv-diff-heading,
-            .sns-panel-heading,
-            .csv-diff-footer,
-            .sns-output-actions {
+            .csv-diff-footer {
                 align-items: stretch;
                 flex-direction: column;
             }
 
-            .csv-diff-footer button,
-            .sns-output-actions button {
+            .csv-diff-footer button {
                 width: 100%;
             }
 
@@ -6666,26 +6372,6 @@
                 align-items: flex-start;
                 padding-right: 10px;
                 padding-left: 10px;
-            }
-
-            .post-composer-grid {
-                grid-template-columns: 1fr;
-                padding-right: 16px;
-                padding-left: 16px;
-            }
-
-            .post-mode-row {
-                grid-template-columns: 1fr;
-            }
-
-            .post-card-heading,
-            .post-output-actions {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .post-output-actions button {
-                width: 100%;
             }
 
             .panel-heading-row,
@@ -6747,12 +6433,6 @@
             type="button"
             onclick="switchAppView('single')"
         >単品買取告知画像を作る</button>
-        <button
-            class="view-tab"
-            id="postTabButton"
-            type="button"
-            onclick="switchAppView('post')"
-        >ポスト文を作る</button>
     </nav>
 
     <section class="store-profile-bar" aria-label="店舗プロフィール">
@@ -7176,32 +6856,27 @@
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">5</span>見出し</label>
-                    <input type="text" id="singleEyebrowInput" value="高価買取">
-                </div>
-
-                <div class="control-group">
-                    <label><span class="step">6</span>メインコピー</label>
+                    <label><span class="step">5</span>メインコピー</label>
                     <input type="text" id="singleHeadlineInput" value="強化買取価格を公開中！">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">7</span>金額上の文言</label>
+                    <label><span class="step">6</span>金額上の文言</label>
                     <input type="text" id="singlePriceLabelInput" value="買取価格">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">8</span>右下の文言</label>
+                    <label><span class="step">7</span>右下の文言</label>
                     <input type="text" id="singleCtaInput" value="お持ち込みお待ちしております">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">9</span>注意書き</label>
+                    <label><span class="step">8</span>注意書き</label>
                     <textarea id="singleNoteInput" rows="3">※相場や在庫状況、状態等により価格が変動する場合がございます。</textarea>
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">10</span>種別・グレード</label>
+                    <label><span class="step">9</span>種別・グレード</label>
                     <select id="singleGradeDisplaySelect">
                         <option value="show">入力がある場合のみ表示</option>
                         <option value="hide">表示しない</option>
@@ -7303,47 +6978,6 @@
                 </div>
             </div>
 
-            <div class="sns-panel">
-                <div class="sns-panel-heading">
-                    <strong>SNS / X 投稿文を自動作成</strong>
-                    <span>選択中の商品と価格から生成します</span>
-                </div>
-                <div class="sns-settings">
-                    <div class="sns-field">
-                        <label for="snsIntroInput">冒頭の文言</label>
-                        <input type="text" id="snsIntroInput" value="🔥高価買取情報🔥">
-                    </div>
-                    <div class="sns-field">
-                        <label for="snsModeSelect">生成形式</label>
-                        <select id="snsModeSelect">
-                            <option value="combined">選択商品を1投稿にまとめる</option>
-                            <option value="individual">商品ごとに1投稿ずつ</option>
-                        </select>
-                    </div>
-                    <div class="sns-field">
-                        <label for="snsHashtagsInput">ハッシュタグ</label>
-                        <input
-                            type="text"
-                            id="snsHashtagsInput"
-                            value="#トレカ #買取 #高価買取"
-                        >
-                    </div>
-                </div>
-                <div class="sns-output-wrap">
-                    <textarea
-                        id="snsTextOutput"
-                        rows="10"
-                        aria-label="生成されたSNS投稿文"
-                    ></textarea>
-                    <div class="sns-output-actions">
-                        <span class="sns-char-count" id="snsCharCount">0文字</span>
-                        <button class="btn-muted" type="button" onclick="generateSnsText()">再生成</button>
-                        <button class="btn-muted" type="button" onclick="switchAppView('post')">テンプレートで作る</button>
-                        <button class="btn-soft" type="button" onclick="copySnsText()">投稿文をコピー</button>
-                    </div>
-                </div>
-            </div>
-
             <div class="panel-actions">
                 <div class="export-note">
                     選択した商品ごとに1枚ずつ生成します。多数選択する場合はZIP保存がおすすめです。
@@ -7365,136 +6999,6 @@
         </section>
     </section>
 
-    <section class="post-maker view-hidden" id="postMakerView">
-        <aside class="control-panel" aria-label="ポスト文テンプレートの設定">
-            <div class="panel-heading">
-                <h2>ポスト文テンプレートメーカー</h2>
-                <p>
-                    店舗ごとに投稿文を複数保存できます。単品画面で選択した商品も
-                    <strong>商品名・価格つきで自動差し込み</strong>できます
-                </p>
-            </div>
-
-            <div class="template-manager">
-                <div class="template-field">
-                    <label for="postTemplateNameInput">新しい投稿文テンプレート名</label>
-                    <input
-                        type="text"
-                        id="postTemplateNameInput"
-                        placeholder="例：毎日のBOX買取表"
-                    >
-                </div>
-                <div class="template-field">
-                    <label for="postTemplateSelect">保存済み投稿文テンプレート</label>
-                    <select id="postTemplateSelect">
-                        <option value="">投稿文テンプレートを選択</option>
-                    </select>
-                </div>
-                <div class="template-buttons">
-                    <button
-                        class="btn-template"
-                        type="button"
-                        onclick="savePostNamedTemplate()"
-                    >名前をつけて保存</button>
-                    <button
-                        class="btn-load"
-                        type="button"
-                        onclick="loadPostNamedTemplate()"
-                    >呼び出す</button>
-                    <button
-                        class="btn-delete"
-                        type="button"
-                        onclick="deletePostNamedTemplate()"
-                    >削除</button>
-                </div>
-            </div>
-
-            <div class="post-composer-grid">
-                <div class="post-editor-card">
-                    <div class="post-card-heading">
-                        <strong>投稿文のひな形</strong>
-                        <span>文章も改行も自由に編集できます</span>
-                    </div>
-                    <div class="post-editor-inner">
-                        <div class="post-mode-row">
-                            <div>
-                                <label for="postModeSelect">生成形式</label>
-                                <select id="postModeSelect">
-                                    <option value="buylist">買取表用｜1投稿を作成</option>
-                                    <option value="combined">選択商品を1投稿にまとめる</option>
-                                    <option value="individual">選択商品ごとに1投稿ずつ</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label for="postPresetSelect">文章のたたき台</label>
-                                <select id="postPresetSelect" onchange="applyPostPreset()">
-                                    <option value="">現在の文章をそのまま使う</option>
-                                    <option value="buylist">買取表告知｜王道</option>
-                                    <option value="urgent">強化買取｜緊急感</option>
-                                    <option value="single">単品告知｜商品主役</option>
-                                    <option value="simple">シンプル｜短文</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <label class="post-body-label" for="postTemplateBody">テンプレート本文</label>
-                        <textarea id="postTemplateBody" rows="16">🔥{タイトル}🔥
-{日付}
-
-{商品一覧}
-
-お持ち込みお待ちしております！
-#トレカ #買取 #高価買取</textarea>
-
-                        <div class="post-variable-help">
-                            <strong>クリックするとカーソル位置へ差し込みます</strong>
-                            <div class="post-variable-list">
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{店舗名}')">{店舗名}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{日付}')">{日付}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{タイトル}')">{タイトル}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{商品一覧}')">{商品一覧}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{選択数}')">{選択数}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{商品名}')">{商品名}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{買取価格}')">{買取価格}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{種別}')">{種別}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{掲載グループ}')">{掲載グループ}</button>
-                                <button class="post-variable-chip" type="button" onclick="insertPostVariable('{ページ数}')">{ページ数}</button>
-                            </div>
-                            <p class="post-variable-note">
-                                「選択商品ごとに1投稿ずつ」では、商品名・買取価格・種別・掲載グループが商品ごとに変わります。
-                                商品は「単品買取告知画像を作る」画面で選択してください。
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="post-output-card">
-                    <div class="post-card-heading">
-                        <strong>完成する投稿文</strong>
-                        <span id="postCharCount">0文字</span>
-                    </div>
-                    <textarea
-                        id="postTextOutput"
-                        rows="20"
-                        aria-label="完成したポスト文"
-                    ></textarea>
-                    <div class="post-output-actions">
-                        <span class="post-source-status" id="postSourceStatus">商品未選択</span>
-                        <button class="btn-muted" type="button" onclick="generatePostText()">再生成</button>
-                        <button class="btn-soft" type="button" onclick="copyPostText()">投稿文をコピー</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="panel-actions">
-                <div class="export-note">
-                    投稿文テンプレートは現在の店舗だけに保存され、店舗JSONバックアップにも含まれます。
-                </div>
-                <button class="btn-template" type="button" onclick="savePostNamedTemplate()">現在の投稿文を保存</button>
-                <button class="btn-soft" type="button" onclick="copyPostText()">完成文をコピー</button>
-            </div>
-        </aside>
-    </section>
 </div>
 
 <script>
@@ -7628,8 +7132,6 @@
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
-    const POST_SETTINGS_STORAGE_KEY = "kaitori_post_settings_v1";
-    const POST_TEMPLATE_STORAGE_KEY = "kaitori_post_named_templates_v1";
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
     const WORKING_DRAFT_STORAGE_KEY = "kaitori_working_draft_v1";
     const STORE_REGISTRY_KEY = "kaitori_store_registry_v1";
@@ -7653,8 +7155,6 @@
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
-        POST_SETTINGS_STORAGE_KEY,
-        POST_TEMPLATE_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
     ];
@@ -7662,8 +7162,6 @@
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
-        POST_SETTINGS_STORAGE_KEY,
-        POST_TEMPLATE_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
     ]);
@@ -7821,7 +7319,6 @@
         if (!document.getElementById("titleInput")) return;
         saveWorkingDraftNow();
         saveSingleSettings();
-        savePostComposerSettings();
         setScopedItem("kaitori_logo", logoDataUrl);
     }
 
@@ -8032,8 +7529,6 @@
     let workspaceAutosaveTimer = null;
     let cardEditRenderTimer = null;
     let isRestoringWorkspace = false;
-    let currentSnsSegments = [];
-    let currentPostSegments = [];
     let csvDiffResults = {
         hasBaseline: false,
         previousSavedAt: "",
@@ -8282,17 +7777,10 @@
         return {
             design: normalizeSingleDesign(design),
             size: SINGLE_SIZES.includes(size) ? size : "square",
-            eyebrow: document.getElementById("singleEyebrowInput")?.value ?? "高価買取",
             headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取価格を公開中！",
             priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
             cta: document.getElementById("singleCtaInput")?.value ?? "お持ち込みお待ちしております",
             note: document.getElementById("singleNoteInput")?.value ?? "",
-            snsIntro: document.getElementById("snsIntroInput")?.value ?? "🔥高価買取情報🔥",
-            snsHashtags: document.getElementById("snsHashtagsInput")?.value ?? "#トレカ #買取 #高価買取",
-            snsMode:
-                document.getElementById("snsModeSelect")?.value === "individual"
-                    ? "individual"
-                    : "combined",
             gradeDisplay:
                 document.getElementById("singleGradeDisplaySelect")?.value === "hide"
                     ? "hide"
@@ -8306,9 +7794,6 @@
         if (SINGLE_SIZES.includes(settings.size)) {
             document.getElementById("singleSizeSelect").value = settings.size;
         }
-        if (typeof settings.eyebrow === "string") {
-            document.getElementById("singleEyebrowInput").value = settings.eyebrow;
-        }
         if (typeof settings.headline === "string") {
             document.getElementById("singleHeadlineInput").value = settings.headline;
         }
@@ -8321,14 +7806,6 @@
         if (typeof settings.note === "string") {
             document.getElementById("singleNoteInput").value = settings.note;
         }
-        if (typeof settings.snsIntro === "string") {
-            document.getElementById("snsIntroInput").value = settings.snsIntro;
-        }
-        if (typeof settings.snsHashtags === "string") {
-            document.getElementById("snsHashtagsInput").value = settings.snsHashtags;
-        }
-        document.getElementById("snsModeSelect").value =
-            settings.snsMode === "individual" ? "individual" : "combined";
         document.getElementById("singleGradeDisplaySelect").value =
             settings.gradeDisplay === "hide" ? "hide" : "show";
     }
@@ -8457,358 +7934,20 @@
         alert(`単品テンプレート「${name}」を削除しました。`);
     }
 
-    const POST_PRESETS = {
-        buylist: `🔥{タイトル}🔥
-{日付}
-
-{商品一覧}
-
-掲載商品以外も買取受付中です！
-ぜひ店頭へお持ち込みください。
-#トレカ #買取 #高価買取`,
-        urgent: `📢強化買取のお知らせ📢
-
-{商品一覧}
-
-相場変動前の今がチャンス！
-買取価格は予告なく変更となる場合がございます。
-#高価買取 #トレカ`,
-        single: `🔥高価買取情報🔥
-
-{商品名}
-買取価格：{買取価格}
-
-お持ち込みお待ちしております！
-#トレカ #買取 #高価買取`,
-        simple: `{タイトル}
-
-{商品一覧}
-
-{店舗名}で買取受付中です。`
-    };
-
-    function normalizePostMode(mode) {
-        return ["buylist", "combined", "individual"].includes(mode)
-            ? mode
-            : "buylist";
-    }
-
-    function collectPostComposerSettings() {
-        return {
-            mode: normalizePostMode(
-                document.getElementById("postModeSelect")?.value
-            ),
-            body: document.getElementById("postTemplateBody")?.value ?? "",
-            savedAt: new Date().toISOString()
-        };
-    }
-
-    function applyPostComposerSettings(settings = {}) {
-        const modeSelect = document.getElementById("postModeSelect");
-        const bodyInput = document.getElementById("postTemplateBody");
-        if (!modeSelect || !bodyInput) return;
-
-        modeSelect.value = normalizePostMode(settings.mode);
-        if (typeof settings.body === "string") {
-            bodyInput.value = settings.body;
-        }
-    }
-
-    function savePostComposerSettings() {
-        if (!document.getElementById("postTemplateBody")) return;
-        try {
-            setScopedItem(
-                POST_SETTINGS_STORAGE_KEY,
-                JSON.stringify(collectPostComposerSettings())
-            );
-        } catch (error) {
-            // 保存できない環境でも文章作成は継続する
-        }
-    }
-
-    function getPostNamedTemplates() {
-        try {
-            const parsed = JSON.parse(
-                getScopedItem(POST_TEMPLATE_STORAGE_KEY) || "{}"
-            );
-            return parsed && typeof parsed === "object" && !Array.isArray(parsed)
-                ? parsed
-                : {};
-        } catch (error) {
-            return {};
-        }
-    }
-
-    function refreshPostTemplateSelect(selectedName = "") {
-        const select = document.getElementById("postTemplateSelect");
-        if (!select) return;
-
-        const templates = getPostNamedTemplates();
-        const names = Object.keys(templates).sort((a, b) =>
-            a.localeCompare(b, "ja", { numeric: true, sensitivity: "base" })
-        );
-
-        select.innerHTML = '<option value="">投稿文テンプレートを選択</option>';
-        names.forEach(name => {
-            const option = document.createElement("option");
-            option.value = name;
-            option.textContent = name;
-            select.appendChild(option);
-        });
-
-        if (selectedName && Object.hasOwn(templates, selectedName)) {
-            select.value = selectedName;
-        }
-    }
-
-    function savePostNamedTemplate() {
-        const nameInput = document.getElementById("postTemplateNameInput");
-        const select = document.getElementById("postTemplateSelect");
-        const name = String(nameInput?.value.trim() || select?.value || "")
-            .slice(0, 80);
-
-        if (!name) {
-            alert("投稿文テンプレート名を入力してください。");
-            nameInput?.focus();
-            return;
-        }
-
-        const templates = getPostNamedTemplates();
-        if (
-            Object.hasOwn(templates, name) &&
-            !confirm(`投稿文テンプレート「${name}」を現在の文章で上書きしますか？`)
-        ) {
-            return;
-        }
-
-        templates[name] = collectPostComposerSettings();
-        try {
-            setScopedItem(
-                POST_TEMPLATE_STORAGE_KEY,
-                JSON.stringify(templates)
-            );
-            savePostComposerSettings();
-            refreshPostTemplateSelect(name);
-            nameInput.value = name;
-            alert(`投稿文テンプレート「${name}」を保存しました。`);
-        } catch (error) {
-            alert("投稿文テンプレートを保存できませんでした。");
-        }
-    }
-
-    function loadPostNamedTemplate() {
-        const select = document.getElementById("postTemplateSelect");
-        const name = select?.value || "";
-        if (!name) {
-            alert("呼び出す投稿文テンプレートを選択してください。");
-            return;
-        }
-
-        const settings = getPostNamedTemplates()[name];
-        if (!settings) {
-            alert("選択した投稿文テンプレートが見つかりませんでした。");
-            refreshPostTemplateSelect();
-            return;
-        }
-
-        applyPostComposerSettings(settings);
-        document.getElementById("postTemplateNameInput").value = name;
-        document.getElementById("postPresetSelect").value = "";
-        savePostComposerSettings();
-        generatePostText();
-        alert(`投稿文テンプレート「${name}」を呼び出しました。`);
-    }
-
-    function deletePostNamedTemplate() {
-        const select = document.getElementById("postTemplateSelect");
-        const name = select?.value || "";
-        if (!name) {
-            alert("削除する投稿文テンプレートを選択してください。");
-            return;
-        }
-        if (!confirm(`投稿文テンプレート「${name}」を削除しますか？`)) {
-            return;
-        }
-
-        const templates = getPostNamedTemplates();
-        delete templates[name];
-        setScopedItem(
-            POST_TEMPLATE_STORAGE_KEY,
-            JSON.stringify(templates)
-        );
-        document.getElementById("postTemplateNameInput").value = "";
-        refreshPostTemplateSelect();
-        alert(`投稿文テンプレート「${name}」を削除しました。`);
-    }
-
-    function applyPostPreset() {
-        const presetSelect = document.getElementById("postPresetSelect");
-        const preset = presetSelect?.value || "";
-        if (!preset || !POST_PRESETS[preset]) return;
-
-        document.getElementById("postTemplateBody").value = POST_PRESETS[preset];
-        if (preset === "single") {
-            document.getElementById("postModeSelect").value = "individual";
-        } else if (preset === "buylist") {
-            document.getElementById("postModeSelect").value = "buylist";
-        }
-        savePostComposerSettings();
-        generatePostText();
-        presetSelect.value = "";
-    }
-
-    function insertPostVariable(variable) {
-        const input = document.getElementById("postTemplateBody");
-        if (!input) return;
-
-        const start = input.selectionStart ?? input.value.length;
-        const end = input.selectionEnd ?? start;
-        input.setRangeText(variable, start, end, "end");
-        input.focus();
-        savePostComposerSettings();
-        generatePostText();
-    }
-
-    function getActiveStoreName() {
-        const registry = getStoreRegistry();
-        return registry.stores[activeStoreId]?.name || "店舗";
-    }
-
-    function makePostItemList(cards) {
-        return cards.map(card => {
-            const price = normalizeSinglePriceDisplay(card.price);
-            return [
-                `・${card.name || "商品名なし"}`,
-                price ? `　買取価格：${price}` : ""
-            ].filter(Boolean).join("\n");
-        }).join("\n");
-    }
-
-    function replacePostVariables(template, values) {
-        return Object.entries(values).reduce(
-            (text, [key, value]) =>
-                text.split(`{${key}}`).join(String(value ?? "")),
-            String(template || "")
-        ).trim();
-    }
-
-    function getCommonPostVariables(cards) {
-        return {
-            店舗名: getActiveStoreName(),
-            日付: formatDate(document.getElementById("dateInput")?.value),
-            タイトル:
-                document.getElementById("titleInput")?.value || "高価買取表",
-            商品一覧: makePostItemList(cards),
-            選択数: cards.length,
-            ページ数:
-                document.querySelectorAll("#pagesContainer .exportArea").length
-        };
-    }
-
-    function updatePostCharCount() {
-        const count = document.getElementById("postCharCount");
-        const output = document.getElementById("postTextOutput");
-        if (!count || !output) return;
-
-        const segments = currentPostSegments.length
-            ? currentPostSegments
-            : [output.value || ""];
-        const lengths = segments.map(text => [...text].length);
-        const maxLength = Math.max(0, ...lengths);
-        const individual =
-            document.getElementById("postModeSelect")?.value === "individual" &&
-            segments.length > 1;
-
-        count.textContent = individual
-            ? `最大${maxLength}文字 / 投稿｜${segments.length}件`
-            : `${[...(output.value || "")].length}文字`;
-        count.style.color = maxLength > 280 ? "#ff7181" : "#9ee6bd";
-        count.title = maxLength > 280
-            ? "Xの標準的な文字数目安を超えています。"
-            : "";
-    }
-
-    function generatePostText() {
-        const output = document.getElementById("postTextOutput");
-        const sourceStatus = document.getElementById("postSourceStatus");
-        if (!output) return;
-
-        const settings = collectPostComposerSettings();
-        const cards = getSelectedSingleCards();
-        const common = getCommonPostVariables(cards);
-
-        if (settings.mode === "individual") {
-            currentPostSegments = cards.map((card, index) =>
-                replacePostVariables(settings.body, {
-                    ...common,
-                    商品一覧: makePostItemList([card]),
-                    商品名: card.name || "",
-                    買取価格: normalizeSinglePriceDisplay(card.price),
-                    種別: card.type || "",
-                    掲載グループ: card.group || "",
-                    連番: index + 1
-                })
-            );
-            output.value = currentPostSegments.length
-                ? currentPostSegments.join("\n\n────────────\n\n")
-                : "単品画面で商品を選択すると、商品ごとの投稿文が生成されます。";
-        } else {
-            currentPostSegments = [replacePostVariables(settings.body, {
-                ...common,
-                商品名: cards[0]?.name || "",
-                買取価格: normalizeSinglePriceDisplay(cards[0]?.price),
-                種別: cards[0]?.type || "",
-                掲載グループ: cards[0]?.group || ""
-            })];
-            output.value = currentPostSegments[0];
-        }
-
-        if (sourceStatus) {
-            sourceStatus.textContent = cards.length
-                ? `単品画面で${cards.length}件選択中`
-                : "商品未選択｜店舗名・日付・タイトルは反映済み";
-        }
-        updatePostCharCount();
-    }
-
-    async function copyPostText() {
-        const output = document.getElementById("postTextOutput");
-        const text = output?.value?.trim() || "";
-        if (!text) {
-            alert("コピーする投稿文がありません。");
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(text);
-        } catch (error) {
-            output.focus();
-            output.select();
-            document.execCommand("copy");
-            output.setSelectionRange(0, 0);
-        }
-        alert("投稿文をコピーしました。");
-    }
-
     function switchAppView(view) {
         const isSingle = view === "single";
-        const isPost = view === "post";
-        const isBuylist = !isSingle && !isPost;
+        const isBuylist = !isSingle;
         document.getElementById("buylistControl").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("pagesContainer").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("singleMakerView").classList.toggle("view-hidden", !isSingle);
-        document.getElementById("postMakerView").classList.toggle("view-hidden", !isPost);
         document.getElementById("buylistTabButton").classList.toggle("is-active", isBuylist);
         document.getElementById("singleTabButton").classList.toggle("is-active", isSingle);
-        document.getElementById("postTabButton").classList.toggle("is-active", isPost);
 
         requestAnimationFrame(() => {
             if (isSingle) {
                 fitSinglePreviews();
-            } else if (isBuylist) {
-                fitPreviewPages();
             } else {
-                generatePostText();
+                fitPreviewPages();
             }
         });
     }
@@ -8876,18 +8015,9 @@
             applySingleSettings({});
         }
 
-        try {
-            applyPostComposerSettings(
-                JSON.parse(getScopedItem(POST_SETTINGS_STORAGE_KEY) || "{}")
-            );
-        } catch (error) {
-            applyPostComposerSettings({});
-        }
-
         renderStoreProfileSelect();
         refreshTemplateSelect();
         refreshSingleTemplateSelect();
-        refreshPostTemplateSelect();
         const restoredDraft = restoreWorkingDraft();
         if (restoredDraft) {
             renderPages();
@@ -8898,8 +8028,6 @@
         renderCardEditor();
         renderSingleCardPicker();
         renderSingleAdPreviews();
-        generateSnsText();
-        generatePostText();
         isRestoringWorkspace = false;
         setSaveState(
             "saved",
@@ -9276,7 +8404,6 @@
 
     document.getElementById("titleInput").addEventListener("input", () => {
         updateAllPages();
-        generatePostText();
         scheduleWorkspaceAutosave();
     });
     document.getElementById("disclaimerInput").addEventListener("input", () => {
@@ -9286,7 +8413,6 @@
     document.getElementById("dateInput").addEventListener("change", () => {
         updateAllPages();
         renderSingleAdPreviews();
-        generatePostText();
         scheduleWorkspaceAutosave();
     });
     document.getElementById("themeSelect").addEventListener("change", () => {
@@ -9362,7 +8488,6 @@
         .addEventListener("input", renderSingleCardPicker);
 
     [
-        "singleEyebrowInput",
         "singleHeadlineInput",
         "singlePriceLabelInput",
         "singleCtaInput",
@@ -9383,38 +8508,6 @@
             saveSingleSettings();
             renderSingleAdPreviews();
         });
-    });
-
-    ["snsIntroInput", "snsHashtagsInput"].forEach(id => {
-        document.getElementById(id).addEventListener("input", () => {
-            saveSingleSettings();
-            generateSnsText();
-        });
-    });
-
-    document.getElementById("snsModeSelect").addEventListener("change", () => {
-        saveSingleSettings();
-        generateSnsText();
-    });
-
-    document.getElementById("snsTextOutput").addEventListener("input", () => {
-        currentSnsSegments = [document.getElementById("snsTextOutput").value];
-        updateSnsCharCount();
-    });
-
-    document.getElementById("postTemplateBody").addEventListener("input", () => {
-        savePostComposerSettings();
-        generatePostText();
-    });
-
-    document.getElementById("postModeSelect").addEventListener("change", () => {
-        savePostComposerSettings();
-        generatePostText();
-    });
-
-    document.getElementById("postTextOutput").addEventListener("input", () => {
-        currentPostSegments = [document.getElementById("postTextOutput").value];
-        updatePostCharCount();
     });
 
     function applySelectedLayout() {
@@ -9930,8 +9023,6 @@
             }
             renderSingleCardPicker();
             renderSingleAdPreviews();
-            generateSnsText();
-            generatePostText();
             scheduleWorkspaceAutosave();
         }, 120);
     }
@@ -10140,109 +9231,11 @@
         return number > 0 ? `¥${number.toLocaleString("ja-JP")}` : text;
     }
 
-    function makeCombinedSnsText(cards, settings) {
-        const itemLines = cards.map(card => {
-            const name = card.name || "商品名なし";
-            const price = normalizeSinglePriceDisplay(card.price);
-            return `・${name}\n　買取価格：${price}`;
-        });
-        return [
-            settings.snsIntro.trim(),
-            "",
-            ...itemLines,
-            "",
-            settings.cta.trim(),
-            settings.snsHashtags.trim()
-        ].filter((line, index, lines) => line || (index > 0 && lines[index - 1]))
-            .join("\n")
-            .trim();
-    }
-
-    function makeIndividualSnsTexts(cards, settings) {
-        return cards.map((card, index) => [
-            cards.length > 1 ? `【${index + 1}/${cards.length}】` : "",
-            settings.snsIntro.trim(),
-            "",
-            card.name || "商品名なし",
-            `買取価格：${normalizeSinglePriceDisplay(card.price)}`,
-            "",
-            settings.cta.trim(),
-            settings.snsHashtags.trim()
-        ].filter((line, lineIndex, lines) =>
-            line || (lineIndex > 0 && lines[lineIndex - 1])
-        ).join("\n").trim());
-    }
-
-    function generateSnsText() {
-        const output = document.getElementById("snsTextOutput");
-        if (!output) return;
-
-        const cards = getSelectedSingleCards();
-        const settings = collectSingleSettings();
-        if (cards.length === 0) {
-            currentSnsSegments = [];
-            output.value = "商品を選択すると、ここに投稿文が自動生成されます。";
-            updateSnsCharCount();
-            return;
-        }
-
-        currentSnsSegments = settings.snsMode === "individual"
-            ? makeIndividualSnsTexts(cards, settings)
-            : [makeCombinedSnsText(cards, settings)];
-        output.value = currentSnsSegments.join("\n\n────────────\n\n");
-        updateSnsCharCount();
-    }
-
-    function updateSnsCharCount() {
-        const count = document.getElementById("snsCharCount");
-        const output = document.getElementById("snsTextOutput");
-        if (!count || !output) return;
-
-        const segments = currentSnsSegments.length
-            ? currentSnsSegments
-            : [output.value || ""];
-        const lengths = segments.map(text => [...text].length);
-        const maxLength = Math.max(0, ...lengths);
-        const totalLength = [...(output.value || "")].length;
-        const individual =
-            document.getElementById("snsModeSelect")?.value === "individual" &&
-            segments.length > 1;
-
-        count.textContent = individual
-            ? `最大${maxLength}文字 / 投稿｜${segments.length}件`
-            : `${totalLength}文字`;
-        count.dataset.over = String(maxLength > 280);
-        count.title = maxLength > 280
-            ? "Xの標準的な文字数目安を超えています。文言や商品数を減らしてください。"
-            : "";
-    }
-
-    async function copySnsText() {
-        const output = document.getElementById("snsTextOutput");
-        const text = output?.value?.trim() || "";
-        if (!text || currentSnsSegments.length === 0) {
-            alert("先に商品を選択して投稿文を生成してください。");
-            return;
-        }
-
-        try {
-            await navigator.clipboard.writeText(text);
-        } catch (error) {
-            output.focus();
-            output.select();
-            document.execCommand("copy");
-            output.setSelectionRange(0, 0);
-        }
-        alert("SNS投稿文をコピーしました。");
-    }
-
     function renderSingleAdPreviews() {
         const container = document.getElementById("singlePreviewContainer");
         if (!container) return;
 
         const cards = getSelectedSingleCards();
-        generateSnsText();
-        generatePostText();
         if (cards.length === 0) {
             container.innerHTML = `
                 <div class="single-preview-empty">
@@ -10284,7 +9277,6 @@
                         </header>
 
                         <div class="single-ad-heading">
-                            <div class="single-ad-eyebrow">${escapeHtml(settings.eyebrow)}</div>
                             <h2>${escapeHtml(settings.headline)}</h2>
                         </div>
 
