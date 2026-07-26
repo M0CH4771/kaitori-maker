@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>買取表ジェネレーター</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;900&family=Noto+Sans+JP:wght@700;800;900&family=Noto+Serif+JP:wght@700;900&family=Oswald:wght@700&family=Zen+Kaku+Gothic+New:wght@700;900&display=swap"
+        rel="stylesheet"
+    >
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -33,8 +39,7 @@
                 radial-gradient(circle at 10% 10%, rgba(217, 173, 74, 0.13), transparent 26%),
                 radial-gradient(circle at 90% 90%, rgba(230, 0, 32, 0.08), transparent 24%),
                 var(--panel-bg);
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN",
-                         "Hiragino Sans", Meiryo, sans-serif;
+            font-family: "Noto Sans JP", "Yu Gothic", Meiryo, sans-serif;
         }
 
         .app-container {
@@ -190,6 +195,58 @@
                 rgba(9, 13, 22, 0.96);
         }
 
+        .panel-heading-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .save-state-indicator {
+            display: inline-flex;
+            min-width: 122px;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            padding: 7px 11px;
+            color: #d8e0eb;
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.055);
+            font-size: 10px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .save-state-indicator::before {
+            width: 8px;
+            height: 8px;
+            content: "";
+            border-radius: 50%;
+            background: #718096;
+        }
+
+        .save-state-indicator[data-state="dirty"] {
+            color: #ffe7a1;
+            border-color: rgba(217,173,74,0.48);
+            background: rgba(217,173,74,0.11);
+        }
+
+        .save-state-indicator[data-state="dirty"]::before {
+            background: #f4bd4a;
+            box-shadow: 0 0 0 4px rgba(244,189,74,0.12);
+        }
+
+        .save-state-indicator[data-state="saved"] {
+            color: #bff5d8;
+            border-color: rgba(57,217,138,0.36);
+            background: rgba(57,217,138,0.08);
+        }
+
+        .save-state-indicator[data-state="saved"]::before {
+            background: #39d98a;
+        }
+
         .panel-heading h2 {
             margin: 0;
             color: #fff;
@@ -302,6 +359,81 @@
             padding: 20px 24px 8px;
         }
 
+        .settings-accordion,
+        .card-editor-panel {
+            margin: 12px 24px 0;
+            overflow: hidden;
+            color: #e8edf7;
+            border: 1px solid rgba(217,173,74,0.24);
+            border-radius: 11px;
+            background: rgba(255,255,255,0.035);
+        }
+
+        .settings-accordion > summary,
+        .card-editor-panel > summary {
+            display: flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 16px;
+            color: #fff;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 900;
+            list-style: none;
+        }
+
+        .settings-accordion > summary::-webkit-details-marker,
+        .card-editor-panel > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .settings-accordion > summary::after,
+        .card-editor-panel > summary::after {
+            content: "＋";
+            color: var(--gold-light);
+            font-size: 19px;
+            line-height: 1;
+        }
+
+        .settings-accordion[open] > summary::after,
+        .card-editor-panel[open] > summary::after {
+            content: "−";
+        }
+
+        .settings-accordion[open] > summary,
+        .card-editor-panel[open] > summary {
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .advanced-settings-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            padding-top: 16px;
+            padding-bottom: 18px;
+        }
+
+        .toggle-field {
+            display: flex;
+            min-height: 43px;
+            align-items: center;
+            gap: 10px;
+            padding: 9px 11px;
+            color: #172033;
+            border: 1px solid #d7dce5;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .toggle-field input {
+            width: 18px;
+            height: 18px;
+            margin: 0;
+            accent-color: #d9ad4a;
+        }
+
         .control-group {
             min-width: 0;
             margin: 0;
@@ -379,9 +511,7 @@
 
         .title-customizer-grid {
             display: grid;
-            grid-template-columns:
-                0.65fr 1.35fr 1.45fr 0.8fr
-                0.65fr 0.8fr 1.4fr;
+            grid-template-columns: 0.7fr 1.3fr 1.7fr 0.7fr 0.9fr;
             align-items: end;
             gap: 10px;
             padding: 12px;
@@ -412,14 +542,6 @@
             padding-right: 7px;
             padding-left: 7px;
             text-align: center;
-        }
-
-        .title-size-status {
-            display: inline-block;
-            margin-top: 7px;
-            color: #ffe39a;
-            font-size: 11px;
-            font-weight: 900;
         }
 
         .help {
@@ -541,6 +663,137 @@
             background: rgba(255,255,255,0.04);
             font-size: 12px;
             font-weight: 800;
+        }
+
+        .image-status-panel button {
+            width: auto;
+            min-width: 132px;
+            margin-left: auto;
+            padding: 8px 11px;
+            color: #fff;
+            border: 1px solid rgba(255,100,124,0.38);
+            background: rgba(171,20,45,0.36);
+            box-shadow: none;
+            font-size: 10px;
+        }
+
+        .image-status-panel button[hidden] {
+            display: none;
+        }
+
+        .card-editor-count {
+            margin-left: auto;
+            color: #aeb8ca;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .card-editor-toolbar {
+            display: grid;
+            grid-template-columns: minmax(220px, 1fr) auto;
+            gap: 10px;
+            padding: 12px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .card-editor-toolbar button {
+            width: auto;
+            min-width: 150px;
+            padding: 10px 12px;
+            color: #172033;
+            background: #fff;
+            box-shadow: none;
+            font-size: 11px;
+        }
+
+        .card-editor-help {
+            margin: 0;
+            padding: 10px 14px;
+            color: #9ca8ba;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            font-size: 10px;
+            line-height: 1.55;
+        }
+
+        .card-editor-list {
+            display: flex;
+            max-height: 560px;
+            overflow: auto;
+            flex-direction: column;
+            gap: 7px;
+            padding: 12px 14px 14px;
+        }
+
+        .card-editor-row {
+            display: grid;
+            min-width: 780px;
+            grid-template-columns: 58px minmax(180px, 1.8fr) minmax(90px, .7fr)
+                minmax(100px, .8fr) minmax(110px, .75fr) auto auto auto;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            border: 1px solid rgba(255,255,255,0.09);
+            border-radius: 9px;
+            background: rgba(255,255,255,0.045);
+        }
+
+        .card-editor-row.is-hidden {
+            opacity: 0.5;
+            background: rgba(112,119,132,0.08);
+        }
+
+        .card-editor-thumb {
+            width: 52px;
+            height: 66px;
+            object-fit: contain;
+            border-radius: 5px;
+            background: #fff;
+        }
+
+        .card-editor-row input[type="text"] {
+            min-width: 0;
+            padding: 8px 9px;
+            font-size: 11px;
+        }
+
+        .card-editor-check {
+            display: flex;
+            min-width: 58px;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #cbd5e1;
+            font-size: 9px;
+            font-weight: 900;
+        }
+
+        .card-editor-check input {
+            width: 17px;
+            height: 17px;
+            margin: 0;
+            accent-color: #e60020;
+        }
+
+        .card-editor-order {
+            display: flex;
+            gap: 4px;
+        }
+
+        .card-editor-order button {
+            width: 30px;
+            min-width: 30px;
+            padding: 7px 0;
+            color: #172033;
+            background: #fff;
+            box-shadow: none;
+            font-size: 12px;
+        }
+
+        .card-editor-empty {
+            padding: 30px 16px;
+            color: #9ca8ba;
+            text-align: center;
+            font-size: 12px;
         }
 
         .image-status-dot {
@@ -833,14 +1086,8 @@
             line-height: 1;
         }
 
-        .page-emblem small {
-            margin-bottom: 2px;
-            font-size: 10px;
-            letter-spacing: 0.14em;
-        }
-
         .page-emblem strong {
-            font-size: 36px;
+            font-size: 42px;
         }
 
         /* ===== カードグリッド ===== */
@@ -4578,7 +4825,7 @@
         }
         .exportArea[data-theme="market"][data-title-style="power"] .title-container h1 {
             color: #151a22;
-            text-shadow: 0 3px 0 #e60025, 0 7px 0 #d7dde5;
+            text-shadow: none;
         }
         .exportArea[data-theme="market"] .update-label { color: #e60025; }
         .exportArea[data-theme="market"] .page-number { color: #667085; }
@@ -5683,14 +5930,14 @@
                 "Arial Black", "Hiragino Kaku Gothic ProN", sans-serif
             );
             font-size: var(--custom-title-size, 76px);
-            font-weight: var(--custom-title-weight, 900);
+            font-weight: 900;
             line-height: 1;
             letter-spacing: 0.025em;
             -webkit-text-stroke:
                 var(--custom-title-outline-width, 2px)
                 var(--custom-title-outline-color, #111827);
             paint-order: stroke fill;
-            text-shadow: 0 5px 14px rgba(0,0,0,0.38);
+            text-shadow: none;
             transform: none;
         }
 
@@ -5840,6 +6087,328 @@
             opacity: 0.72;
         }
 
+        /*
+         * 21–30：配色差ではなく、紙面構造そのものが異なるデザイン。
+         * タイトル文字には触れず、共通の手動タイトル設定をそのまま使う。
+         */
+        .exportArea[data-theme="mono"] {
+            --v4-bg: #f7f7f2; --v4-header: #111111; --v4-header-text: #ffffff;
+            --v4-card: #ffffff; --v4-ink: #111111; --v4-image: #eeeeea;
+            --v4-accent: #111111; --v4-accent-2: #ffffff; --v4-border: #111111;
+            --v4-price: #111111; --v4-footer: #111111; --v4-footer-text: #ffffff;
+            border: 7px solid #111;
+            background-image: none;
+        }
+        .exportArea[data-theme="mono"]::before { border: 0; }
+        .exportArea[data-theme="mono"]::after {
+            height: 13px;
+            background: repeating-linear-gradient(90deg, #111 0 42px, #fff 42px 56px);
+        }
+        .exportArea[data-theme="mono"] .header-area,
+        .exportArea[data-theme="mono"] .footer-area,
+        .exportArea[data-theme="mono"] .card-item,
+        .exportArea[data-theme="mono"] .card-img-container,
+        .exportArea[data-theme="mono"] .card-price-container,
+        .exportArea[data-theme="mono"] .page-emblem {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="mono"] .header-area,
+        .exportArea[data-theme="mono"] .footer-area {
+            border: 4px solid #111;
+        }
+        .exportArea[data-theme="mono"] .card-item { border: 3px solid #111; }
+        .exportArea[data-theme="mono"] .card-grid { gap: 7px; }
+        .exportArea[data-theme="mono"] .page-emblem {
+            color: #111;
+            border: 4px solid #fff;
+            background: #fff;
+        }
+        .exportArea[data-theme="mono"] .card-price-container {
+            color: #fff;
+            border: 0;
+            background: #111;
+        }
+
+        .exportArea[data-theme="ocean"] {
+            --v4-bg: #e9fbff; --v4-header: #075a86; --v4-header-text: #ffffff;
+            --v4-card: #ffffff; --v4-ink: #07344c; --v4-image: #effcff;
+            --v4-accent: #00a9c8; --v4-accent-2: #8ae6ef; --v4-border: #52bfd2;
+            --v4-price: #006b9c; --v4-footer: #075a86; --v4-footer-text: #ffffff;
+            background-image:
+                radial-gradient(circle at 12% 4%, rgba(255,255,255,.95) 0 4%, transparent 4.4%),
+                linear-gradient(165deg, #eaffff 0 44%, #d5f7fc 44% 48%, #effdff 48%);
+        }
+        .exportArea[data-theme="ocean"] .header-area {
+            padding-bottom: 25px;
+            border-radius: 28px 28px 44px 44px;
+            clip-path: polygon(0 0,100% 0,100% 80%,84% 100%,16% 100%,0 80%);
+            box-shadow: 0 12px 0 rgba(0,126,167,.24);
+        }
+        .exportArea[data-theme="ocean"] .footer-area,
+        .exportArea[data-theme="ocean"] .card-item {
+            border-radius: 24px;
+            box-shadow: 0 7px 15px rgba(0,92,132,.16);
+        }
+        .exportArea[data-theme="ocean"] .card-img-container { border-radius: 18px; }
+        .exportArea[data-theme="ocean"] .card-price-container,
+        .exportArea[data-theme="ocean"] .page-emblem {
+            border-radius: 999px;
+        }
+
+        .exportArea[data-theme="sunset"] {
+            --v4-bg: #fff2df; --v4-header: #49153e; --v4-header-text: #fff8ea;
+            --v4-card: #fffaf1; --v4-ink: #38182e; --v4-image: #fff0db;
+            --v4-accent: #ff6b35; --v4-accent-2: #ffbf47; --v4-border: #8a2854;
+            --v4-price: #ff4d2e; --v4-footer: #49153e; --v4-footer-text: #fff8ea;
+            background-image: linear-gradient(150deg, #ffbf69 0 16%, #ff6b57 16% 21%, #fff1dd 21%);
+        }
+        .exportArea[data-theme="sunset"] .header-area,
+        .exportArea[data-theme="sunset"] .footer-area {
+            border-radius: 0;
+            clip-path: polygon(2.5% 0,100% 0,97.5% 100%,0 100%);
+            box-shadow: 12px 10px 0 rgba(255,98,55,.22);
+        }
+        .exportArea[data-theme="sunset"] .card-item {
+            border-radius: 0;
+            clip-path: polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);
+            box-shadow: 6px 6px 0 rgba(73,21,62,.18);
+        }
+        .exportArea[data-theme="sunset"] .page-emblem {
+            border-radius: 10px;
+            transform: rotate(45deg);
+        }
+        .exportArea[data-theme="sunset"] .page-emblem > * { transform: rotate(-45deg); }
+        .exportArea[data-theme="sunset"] .card-price-container {
+            border-radius: 0 14px 0 14px;
+        }
+
+        .exportArea[data-theme="mint"] {
+            --v4-bg: #e9fff7; --v4-header: #103f3a; --v4-header-text: #f4fffb;
+            --v4-card: #fafffd; --v4-ink: #143b38; --v4-image: #ecfbf6;
+            --v4-accent: #21b991; --v4-accent-2: #baf4dc; --v4-border: #259b80;
+            --v4-price: #087e67; --v4-footer: #103f3a; --v4-footer-text: #f4fffb;
+            background-image:
+                linear-gradient(rgba(15,118,101,.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(15,118,101,.08) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .exportArea[data-theme="mint"] .header-area,
+        .exportArea[data-theme="mint"] .footer-area {
+            border: 3px dashed #46d4ad;
+            border-radius: 8px;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="mint"] .card-item {
+            border: 2px dashed #259b80;
+            border-radius: 0;
+            clip-path: polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
+            box-shadow: none;
+        }
+        .exportArea[data-theme="mint"] .page-emblem {
+            border-radius: 0;
+            clip-path: polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);
+        }
+        .exportArea[data-theme="mint"] .card-price-container {
+            border: 2px solid #087e67;
+            border-radius: 5px;
+            background: transparent;
+        }
+
+        .exportArea[data-theme="lavender"] {
+            --v4-bg: #faf5ff; --v4-header: #65417c; --v4-header-text: #ffffff;
+            --v4-card: #ffffff; --v4-ink: #402e4c; --v4-image: #f7effc;
+            --v4-accent: #b47ad3; --v4-accent-2: #ead0f7; --v4-border: #d1a7e5;
+            --v4-price: #8f4cb5; --v4-footer: #65417c; --v4-footer-text: #ffffff;
+            background-image:
+                radial-gradient(circle at 9% 12%, rgba(188,132,219,.16) 0 9%, transparent 9.4%),
+                radial-gradient(circle at 90% 88%, rgba(230,185,218,.22) 0 12%, transparent 12.4%);
+        }
+        .exportArea[data-theme="lavender"] .header-area,
+        .exportArea[data-theme="lavender"] .footer-area {
+            border-radius: 38px;
+            box-shadow: 0 12px 28px rgba(91,53,115,.18);
+        }
+        .exportArea[data-theme="lavender"] .card-item {
+            border: 1px solid #d7b6e8;
+            border-radius: 28px;
+            box-shadow: 0 9px 20px rgba(101,65,124,.14);
+        }
+        .exportArea[data-theme="lavender"] .card-img-container { border-radius: 22px; }
+        .exportArea[data-theme="lavender"] .page-emblem,
+        .exportArea[data-theme="lavender"] .card-price-container {
+            border-radius: 999px;
+        }
+
+        .exportArea[data-theme="ice"] {
+            --v4-bg: #eaf8ff; --v4-header: #153d62; --v4-header-text: #ffffff;
+            --v4-card: #f8fdff; --v4-ink: #17354f; --v4-image: #edf9ff;
+            --v4-accent: #69d6ff; --v4-accent-2: #d9f6ff; --v4-border: #55bfe9;
+            --v4-price: #087eb3; --v4-footer: #153d62; --v4-footer-text: #ffffff;
+            background-image:
+                linear-gradient(135deg, transparent 0 45%, rgba(64,177,224,.1) 45% 52%, transparent 52%),
+                linear-gradient(45deg, transparent 0 46%, rgba(255,255,255,.82) 46% 53%, transparent 53%);
+            background-size: 92px 92px;
+        }
+        .exportArea[data-theme="ice"] .header-area {
+            border-radius: 0;
+            clip-path: polygon(2% 0,98% 0,100% 22%,97% 100%,3% 100%,0 22%);
+            box-shadow: 0 0 0 3px #bceeff, 0 10px 24px rgba(27,133,180,.2);
+        }
+        .exportArea[data-theme="ice"] .footer-area,
+        .exportArea[data-theme="ice"] .card-item {
+            border-radius: 0;
+            clip-path: polygon(8px 0,calc(100% - 8px) 0,100% 8px,100% calc(100% - 8px),calc(100% - 8px) 100%,8px 100%,0 calc(100% - 8px),0 8px);
+        }
+        .exportArea[data-theme="ice"] .card-item {
+            box-shadow: inset 0 0 0 2px #d7f4ff, 0 6px 14px rgba(18,122,165,.13);
+        }
+        .exportArea[data-theme="ice"] .page-emblem {
+            border-radius: 0;
+            clip-path: polygon(50% 0,90% 22%,100% 65%,72% 100%,28% 100%,0 65%,10% 22%);
+        }
+
+        .exportArea[data-theme="chocolate"] {
+            --v4-bg: #eadbbf; --v4-header: #3d281d; --v4-header-text: #fff7e8;
+            --v4-card: #fff8e8; --v4-ink: #422d22; --v4-image: #f1e4cb;
+            --v4-accent: #a5683f; --v4-accent-2: #d9ae78; --v4-border: #775038;
+            --v4-price: #7b3729; --v4-footer: #3d281d; --v4-footer-text: #fff7e8;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(74,47,32,.045) 0 1px, transparent 1px 4px),
+                radial-gradient(circle at 20% 15%, rgba(255,255,255,.24) 0 2px, transparent 2.5px);
+            background-size: auto, 21px 21px;
+        }
+        .exportArea[data-theme="chocolate"] .header-area,
+        .exportArea[data-theme="chocolate"] .footer-area {
+            border: 5px double #c99b62;
+            border-radius: 3px;
+            box-shadow: 7px 7px 0 rgba(61,40,29,.16);
+        }
+        .exportArea[data-theme="chocolate"] .card-item {
+            border: 3px double #775038;
+            border-radius: 3px;
+            box-shadow: 4px 4px 0 rgba(61,40,29,.13);
+        }
+        .exportArea[data-theme="chocolate"] .card-name,
+        .exportArea[data-theme="chocolate"] .card-grade,
+        .exportArea[data-theme="chocolate"] .disclaimer,
+        .exportArea[data-theme="chocolate"] .update-date {
+            font-family: "Yu Mincho", "Hiragino Mincho ProN", Georgia, serif;
+        }
+        .exportArea[data-theme="chocolate"] .page-emblem {
+            border: 5px double #fff0cd;
+            border-radius: 50%;
+        }
+        .exportArea[data-theme="chocolate"] .card-price-container {
+            border: 2px dashed #ffd390;
+            border-radius: 2px;
+        }
+
+        .exportArea[data-theme="japan"] {
+            --v4-bg: #f5f0e5; --v4-header: #181614; --v4-header-text: #ffffff;
+            --v4-card: #fffdf7; --v4-ink: #1f1b18; --v4-image: #f5f0e7;
+            --v4-accent: #c7192d; --v4-accent-2: #e4c98d; --v4-border: #29231e;
+            --v4-price: #c7192d; --v4-footer: #181614; --v4-footer-text: #ffffff;
+            background-image:
+                radial-gradient(circle at 85% 16%, rgba(199,25,45,.18) 0 11%, transparent 11.3%),
+                repeating-linear-gradient(90deg, rgba(55,45,35,.03) 0 1px, transparent 1px 6px);
+        }
+        .exportArea[data-theme="japan"] .header-area,
+        .exportArea[data-theme="japan"] .footer-area {
+            border-radius: 0;
+            border-right: 12px solid #c7192d;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="japan"] .card-item {
+            border: 1px solid #bdb5a7;
+            border-left: 7px solid #c7192d;
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="japan"] .page-emblem {
+            border-radius: 0;
+            transform: rotate(45deg);
+        }
+        .exportArea[data-theme="japan"] .page-emblem > * { transform: rotate(-45deg); }
+        .exportArea[data-theme="japan"] .card-price-container {
+            border-radius: 0;
+            box-shadow: inset 7px 0 0 #181614;
+        }
+
+        .exportArea[data-theme="galaxy"] {
+            --v4-bg: #060514; --v4-header: #171033; --v4-header-text: #ffffff;
+            --v4-card: #12102b; --v4-ink: #f8f4ff; --v4-image: #09071b;
+            --v4-accent: #8e5cff; --v4-accent-2: #35e5ff; --v4-border: #7857d8;
+            --v4-price: #ef3cff; --v4-footer: #171033; --v4-footer-text: #ffffff;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,.8) 0 1px, transparent 1.5px),
+                radial-gradient(circle, rgba(74,224,255,.42) 0 1px, transparent 1.6px),
+                radial-gradient(circle at 75% 20%, rgba(118,62,255,.24), transparent 32%);
+            background-size: 47px 47px, 73px 73px, auto;
+            background-position: 0 0, 19px 31px, 0 0;
+        }
+        .exportArea[data-theme="galaxy"] .header-area,
+        .exportArea[data-theme="galaxy"] .footer-area {
+            border: 2px solid #35e5ff;
+            border-radius: 24px;
+            box-shadow: 0 0 24px rgba(53,229,255,.28), inset 0 0 28px rgba(142,92,255,.16);
+        }
+        .exportArea[data-theme="galaxy"] .card-item {
+            border: 2px solid #8e5cff;
+            border-radius: 18px;
+            box-shadow: 0 0 14px rgba(142,92,255,.34);
+        }
+        .exportArea[data-theme="galaxy"] .card-img-container {
+            border-radius: 13px;
+            box-shadow: inset 0 0 15px rgba(53,229,255,.15);
+        }
+        .exportArea[data-theme="galaxy"] .page-emblem,
+        .exportArea[data-theme="galaxy"] .card-price-container {
+            border-radius: 999px;
+            box-shadow: 0 0 16px rgba(239,60,255,.42);
+        }
+
+        .exportArea[data-theme="lime"] {
+            --v4-bg: #07100c; --v4-header: #0b1711; --v4-header-text: #e7ff9b;
+            --v4-card: #0c1912; --v4-ink: #eaffc9; --v4-image: #07110c;
+            --v4-accent: #b8f542; --v4-accent-2: #55d98d; --v4-border: #6ba92e;
+            --v4-price: #b8f542; --v4-footer: #0b1711; --v4-footer-text: #e7ff9b;
+            background-image:
+                repeating-linear-gradient(0deg, rgba(184,245,66,.035) 0 1px, transparent 1px 5px),
+                linear-gradient(rgba(184,245,66,.055) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(184,245,66,.055) 1px, transparent 1px);
+            background-size: auto, 32px 32px, 32px 32px;
+        }
+        .exportArea[data-theme="lime"] .header-area,
+        .exportArea[data-theme="lime"] .footer-area {
+            border: 2px dashed #b8f542;
+            border-radius: 0;
+            box-shadow: inset 0 0 24px rgba(184,245,66,.08);
+        }
+        .exportArea[data-theme="lime"] .card-item {
+            border: 1px solid #7dbb38;
+            border-radius: 0;
+            box-shadow: inset 4px 0 0 #b8f542;
+        }
+        .exportArea[data-theme="lime"] .card-name,
+        .exportArea[data-theme="lime"] .card-grade,
+        .exportArea[data-theme="lime"] .card-price-text,
+        .exportArea[data-theme="lime"] .disclaimer,
+        .exportArea[data-theme="lime"] .update-date,
+        .exportArea[data-theme="lime"] .page-number {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+        }
+        .exportArea[data-theme="lime"] .page-emblem,
+        .exportArea[data-theme="lime"] .card-price-container {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .exportArea[data-theme="lime"] .page-emblem {
+            color: #07100c;
+            border: 0;
+            background: #b8f542;
+        }
+
         /* 非表示項目の予約スペースを完全に除去して画像へ戻す */
         .exportArea.hide-card-names .card-name {
             display: none !important;
@@ -5900,6 +6469,7 @@
             .single-card-picker {
                 grid-template-columns: repeat(4, minmax(0, 1fr));
             }
+
         }
 
         @media (max-width: 1050px) {
@@ -5916,6 +6486,10 @@
             }
 
             .title-customizer-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .advanced-settings-grid {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
@@ -5956,6 +6530,7 @@
             .post-composer-grid {
                 grid-template-columns: 1fr;
             }
+
         }
 
         @media (max-width: 680px) {
@@ -5969,6 +6544,17 @@
                 grid-template-columns: 1fr;
                 padding-right: 16px;
                 padding-left: 16px;
+            }
+
+            .settings-accordion,
+            .card-editor-panel,
+            .image-status-panel {
+                margin-right: 16px;
+                margin-left: 16px;
+            }
+
+            .advanced-settings-grid {
+                grid-template-columns: 1fr;
             }
 
             .template-manager {
@@ -6101,6 +6687,42 @@
             .post-output-actions button {
                 width: 100%;
             }
+
+            .panel-heading-row,
+            .image-status-panel,
+            .card-editor-toolbar {
+                align-items: stretch;
+                grid-template-columns: 1fr;
+                flex-direction: column;
+            }
+
+            .save-state-indicator,
+            .image-status-panel button,
+            .card-editor-toolbar button {
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .card-editor-row {
+                min-width: 0;
+                grid-template-columns: 46px minmax(0, 1fr) auto auto;
+            }
+
+            .card-editor-thumb {
+                width: 42px;
+                height: 58px;
+                grid-row: 1 / span 4;
+            }
+
+            .card-editor-row .editor-type,
+            .card-editor-row .editor-group,
+            .card-editor-row .editor-price {
+                grid-column: 2 / -1;
+            }
+
+            .card-editor-order {
+                grid-column: 2 / -1;
+            }
         }
     </style>
 </head>
@@ -6171,7 +6793,15 @@
 
     <aside class="control-panel" id="buylistControl" aria-label="買取表の設定">
         <div class="panel-heading">
-            <h2>買取表ジェネレーター</h2>
+            <div class="panel-heading-row">
+                <h2>買取表ジェネレーター</h2>
+                <span
+                    class="save-state-indicator"
+                    id="saveStateIndicator"
+                    data-state="saved"
+                    title="作業内容はブラウザへ自動保存されます"
+                >変更なし</span>
+            </div>
             <p>設定内容を下のプレビューへ即時反映します</p>
         </div>
 
@@ -6208,7 +6838,7 @@
             <div class="control-group">
                 <label><span class="step">2</span>ショップロゴ</label>
                 <input type="file" id="logoInput" accept="image/*">
-                <small class="help">テンプレート保存対象。白背景内へ配置されます。</small>
+                <small class="help">店舗共通で保存されます。大きな画像は画質を保ったまま自動軽量化します。</small>
             </div>
 
             <div class="control-group">
@@ -6259,14 +6889,6 @@
                         </div>
                     </div>
                     <div class="title-custom-field">
-                        <label for="titleWeightSelect">文字の太さ</label>
-                        <select id="titleWeightSelect">
-                            <option value="700">太字</option>
-                            <option value="800">極太</option>
-                            <option value="900" selected>最太</option>
-                        </select>
-                    </div>
-                    <div class="title-custom-field">
                         <label for="titleOutlineColorInput">縁取り色</label>
                         <input type="color" id="titleOutlineColorInput" value="#111827">
                     </div>
@@ -6281,16 +6903,8 @@
                             <option value="5">最大</option>
                         </select>
                     </div>
-                    <div class="title-custom-field">
-                        <label for="titleAutoFitSelect">サイズの優先設定</label>
-                        <select id="titleAutoFitSelect">
-                            <option value="off" selected>指定サイズをそのまま使う</option>
-                            <option value="on">重なり防止で自動縮小</option>
-                        </select>
-                    </div>
                 </div>
-                <span class="title-size-status" id="titleSizeStatus">表示サイズ：76px</span>
-                <small class="help">文字がロゴ等と重なる場合は「重なり防止で自動縮小」を選択してください。</small>
+                <small class="help">文字サイズ・色・フォント・縁取りは、全デザインで共通してそのまま反映されます。サイズは上部プレビューで確認できます。</small>
             </div>
 
             <div class="control-group">
@@ -6308,29 +6922,59 @@
             <div class="control-group">
                 <label><span class="step">7</span>デザインパターン</label>
                 <select id="themeSelect">
-                    <option value="signal">01 CROWN BLACK｜黒金・王道の高級感</option>
-                    <option value="trust">02 SAPPHIRE｜青白・信頼と清潔感</option>
-                    <option value="market">03 RETAIL PRO｜白・最も読みやすい</option>
-                    <option value="alert">04 FLASH SALE｜赤黄・強い買取訴求</option>
-                    <option value="editorial">05 GRAND EDITORIAL｜百貨店・上質</option>
-                    <option value="wa">06 JAPAN LUXE｜和モダン・紅金</option>
-                    <option value="cyber">07 NEON ARENA｜ネオン・限定感</option>
-                    <option value="soft">08 ROSE SALON｜華やか・上品</option>
-                    <option value="ticket">09 VINTAGE TICKET｜紙物・イベント感</option>
-                    <option value="scoreboard">10 STADIUM｜スポーツ・即決感</option>
+                    <optgroup label="高級・ラグジュアリー">
+                        <option value="signal">01 CROWN BLACK｜黒金・王道の高級感</option>
+                        <option value="editorial">05 GRAND EDITORIAL｜百貨店・上質</option>
+                        <option value="luxury">11 BLACK DIAMOND｜漆黒・重厚な宝飾店</option>
+                        <option value="royal">13 ROYAL CREST｜紺金・格式ある紋章</option>
+                        <option value="forest">17 FOREST CLUB｜深緑・クラシック</option>
+                        <option value="chocolate">27 CRAFT CHOCOLATE｜クラフト紙・手仕事感</option>
+                    </optgroup>
+                    <optgroup label="シンプル・クリーン">
+                        <option value="trust">02 SAPPHIRE｜青白・信頼と清潔感</option>
+                        <option value="market">03 RETAIL PRO｜白・最も読みやすい</option>
+                        <option value="clean">14 PURE GALLERY｜余白・ミニマル展示</option>
+                        <option value="mono">21 BRUTAL MONO｜白黒・無骨なグリッド</option>
+                        <option value="mint">24 MINT LAB｜研究資料・テクニカル</option>
+                        <option value="ice">26 ICE CRYSTAL｜結晶・シャープ</option>
+                    </optgroup>
+                    <optgroup label="ポップ・セール">
+                        <option value="alert">04 FLASH SALE｜赤黄・強い買取訴求</option>
+                        <option value="soft">08 ROSE SALON｜華やか・上品</option>
+                        <option value="scoreboard">10 STADIUM｜スポーツ・即決感</option>
+                        <option value="fire">12 BLAZE｜炎・スピード感</option>
+                        <option value="pop">18 COMIC POP｜太枠・コミック広告</option>
+                        <option value="sunset">23 SUNSET POSTER｜斜め構図・夕焼け</option>
+                        <option value="lavender">25 LAVENDER SALON｜曲線・上品なサロン</option>
+                    </optgroup>
+                    <optgroup label="和風・ヴィンテージ">
+                        <option value="wa">06 JAPAN LUXE｜和モダン・紅金</option>
+                        <option value="ticket">09 VINTAGE TICKET｜紙物・イベント感</option>
+                        <option value="sakura">16 SAKURA MODERN｜桜・やわらかな和洋折衷</option>
+                        <option value="retro">19 OLD PAPER｜活版・ヴィンテージ紙面</option>
+                        <option value="japan">28 SUMI JAPAN｜墨・朱印・直線美</option>
+                    </optgroup>
+                    <optgroup label="近未来・デジタル">
+                        <option value="cyber">07 NEON ARENA｜ネオン・限定感</option>
+                        <option value="neon">15 ELECTRIC CITY｜ネオン看板・夜景</option>
+                        <option value="hologram">20 PRISM｜虹色・ホログラム</option>
+                        <option value="ocean">22 OCEAN WAVE｜波・流線型</option>
+                        <option value="galaxy">29 GALAXY｜星空・近未来</option>
+                        <option value="lime">30 LIME TERMINAL｜端末画面・ハイテク</option>
+                    </optgroup>
                 </select>
-                <small class="help">色だけでなく、枠・余白・価格・ヘッダー構成も変わります。</small>
+                <small class="help">用途別の5カテゴリに整理しています。色だけでなく、枠・余白・価格・ヘッダー構成も変わります。</small>
             </div>
 
             <div class="control-group">
                 <label><span class="step">8</span>レイアウト</label>
                 <select id="layoutSelect">
-                    <option value="portrait_10x6">A4縦｜横10列 × 縦6段（60枚）</option>
-                    <option value="portrait_7x9">A4縦｜横7列 × 縦9段（60枚）</option>
-                    <option value="landscape_15x4">A4横｜横15列 × 縦4段（60枚）</option>
-                    <option value="landscape_9x7">A4横｜横9列 × 縦7段（60枚）</option>
+                    <option value="portrait_10x6">A4縦｜60枚・画像最大（横10列 × 縦6段）</option>
+                    <option value="landscape_15x4">A4横｜60枚・画像最大（横15列 × 縦4段）</option>
+                    <option value="portrait_6x5">A4縦｜30枚・大判（横6列 × 縦5段）</option>
+                    <option value="landscape_10x3">A4横｜30枚・大判（横10列 × 縦3段）</option>
                 </select>
-                <small class="help">テンプレート保存対象。</small>
+                <small class="help">一般的なカード画像の縦横比と、カード名・種別・価格欄の高さを合わせ、画像が最も大きくなる4構成に絞っています。テンプレート保存対象。</small>
             </div>
 
             <div class="control-group">
@@ -6342,28 +6986,46 @@
                 <small class="help">プレビューとPNG出力の両方に反映されます。</small>
             </div>
 
-            <div class="control-group">
-                <label><span class="step">10</span>ページ分割</label>
-                <select id="pageSplitSelect">
-                    <option value="fill">60枚まで詰める</option>
-                    <option value="group_pack">掲載グループを優先</option>
-                    <option value="group_page">掲載グループごとに改ページ</option>
-                </select>
-                <small class="help">グループを跨ぐか、改ページするかを選べます。</small>
-            </div>
-
-            <div class="control-group">
-                <label><span class="step">11</span>カードの並び順</label>
-                <select id="sortOrderSelect">
-                    <option value="group_csv">掲載グループ順（CSV順）</option>
-                    <option value="csv_all">CSV全体の順番</option>
-                    <option value="price_desc">買取価格が高い順</option>
-                    <option value="price_asc">買取価格が安い順</option>
-                    <option value="name">カード名順</option>
-                </select>
-                <small class="help">グループ優先時はグループ内の並びに適用されます。</small>
-            </div>
         </div>
+
+        <details class="settings-accordion">
+            <summary>
+                <span>詳細設定</span>
+                <span class="card-editor-count">ページ分割・並び順・画像余白</span>
+            </summary>
+            <div class="settings-grid advanced-settings-grid">
+                <div class="control-group">
+                    <label><span class="step">10</span>ページ分割</label>
+                    <select id="pageSplitSelect">
+                        <option value="fill">1ページの上限まで詰める</option>
+                        <option value="group_pack">掲載グループを優先</option>
+                        <option value="group_page">掲載グループごとに改ページ</option>
+                    </select>
+                    <small class="help">グループを跨ぐか、改ページするかを選べます。</small>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">11</span>カードの並び順</label>
+                    <select id="sortOrderSelect">
+                        <option value="group_csv">掲載グループ順（CSV順）</option>
+                        <option value="csv_all">CSV全体の順番</option>
+                        <option value="price_desc">買取価格が高い順</option>
+                        <option value="price_asc">買取価格が安い順</option>
+                        <option value="name">カード名順</option>
+                    </select>
+                    <small class="help">グループ優先時はグループ内の並びに適用されます。</small>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">12</span>画像の余白</label>
+                    <label class="toggle-field" for="imageTrimCheckbox">
+                        <input type="checkbox" id="imageTrimCheckbox" checked>
+                        白・透明余白を自動カット
+                    </label>
+                    <small class="help">商品が小さく見える画像を自動拡大します。白い商品の端が欠ける場合のみOFFにしてください。</small>
+                </div>
+            </div>
+        </details>
 
         <div class="template-manager">
             <div class="template-field">
@@ -6386,7 +7048,34 @@
         <div class="image-status-panel" id="imageStatusPanel" data-state="idle">
             <span class="image-status-dot"></span>
             <span id="imageStatusText">CSVを読み込むと画像の状態を確認できます。</span>
+            <button
+                id="retryFailedImagesButton"
+                type="button"
+                onclick="retryFailedImages()"
+                hidden
+            >失敗画像だけ再読み込み</button>
         </div>
+
+        <details class="card-editor-panel" id="cardEditorPanel">
+            <summary>
+                <span>読み込み後の商品編集</span>
+                <span class="card-editor-count" id="cardEditorCount">CSV未読込</span>
+            </summary>
+            <div class="card-editor-toolbar">
+                <input
+                    type="search"
+                    id="cardEditorSearchInput"
+                    placeholder="カード名・グループ・種別で検索"
+                >
+                <button type="button" onclick="showAllCardsInBuylist()">全商品を表示へ戻す</button>
+            </div>
+            <p class="card-editor-help">
+                カード名・グループ・種別・価格・強化買取・表示／非表示を直接変更できます。上下ボタンは「CSV順」の並びに反映されます。
+            </p>
+            <div class="card-editor-list" id="cardEditorList">
+                <div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>
+            </div>
+        </details>
 
         <div class="panel-actions">
             <div class="export-note">
@@ -6413,7 +7102,6 @@
                         <h1 class="title-text">PSA10 高価買取</h1>
                     </div>
                     <div class="page-emblem">
-                        <small>PAGE</small>
                         <strong>01</strong>
                     </div>
                 </div>
@@ -6430,7 +7118,7 @@
                     <div class="footer-right">
                         <div class="update-label">PRICE UPDATED</div>
                         <div class="update-date date-text">----/--/--</div>
-                        <div class="page-number">1 / 1 PAGE</div>
+                        <div class="page-number">1 / 1</div>
                     </div>
                 </div>
             </div>
@@ -6459,7 +7147,7 @@
                 <div class="control-group">
                     <label><span class="step">2</span>ショップロゴ</label>
                     <input type="file" id="singleLogoInput" accept="image/*">
-                    <small class="help">買取表側のロゴと共通です。</small>
+                    <small class="help">買取表側と共通です。大きな画像は自動軽量化します。</small>
                 </div>
 
                 <div class="control-group">
@@ -6843,7 +7531,11 @@
 
     const THEMES = [
         "signal", "trust", "market", "alert", "editorial",
-        "wa", "cyber", "soft", "ticket", "scoreboard"
+        "wa", "cyber", "soft", "ticket", "scoreboard",
+        "luxury", "fire", "royal", "clean", "neon",
+        "sakura", "forest", "pop", "retro", "hologram",
+        "mono", "ocean", "sunset", "mint", "lavender",
+        "ice", "chocolate", "japan", "galaxy", "lime"
     ];
     const LAYOUTS = {
         portrait_10x6: {
@@ -6852,24 +7544,28 @@
             rows: 6,
             maxPerPage: 60
         },
-        portrait_7x9: {
-            orientation: "portrait",
-            cols: 7,
-            rows: 9,
-            maxPerPage: 60
-        },
         landscape_15x4: {
             orientation: "landscape",
             cols: 15,
             rows: 4,
             maxPerPage: 60
         },
-        landscape_9x7: {
+        portrait_6x5: {
+            orientation: "portrait",
+            cols: 6,
+            rows: 5,
+            maxPerPage: 30
+        },
+        landscape_10x3: {
             orientation: "landscape",
-            cols: 9,
-            rows: 7,
-            maxPerPage: 60
+            cols: 10,
+            rows: 3,
+            maxPerPage: 30
         }
+    };
+    const LEGACY_LAYOUT_MAP = {
+        portrait_7x9: "portrait_10x6",
+        landscape_9x7: "landscape_15x4"
     };
     const TITLE_STYLES = [
         "power", "gold", "outline", "royal", "ribbon",
@@ -6877,26 +7573,24 @@
     ];
     const TITLE_FONT_OPTIONS = {
         gothic:
-            '"Arial Black","Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif',
+            '"Noto Sans JP","Yu Gothic",Meiryo,sans-serif',
         standard:
-            '"Helvetica Neue",Arial,"Hiragino Kaku Gothic ProN","Hiragino Sans",Meiryo,sans-serif',
+            '"Zen Kaku Gothic New","Noto Sans JP","Yu Gothic",Meiryo,sans-serif',
         rounded:
-            '"Hiragino Maru Gothic ProN","Yu Gothic",Meiryo,sans-serif',
+            '"M PLUS Rounded 1c","Noto Sans JP","Yu Gothic",Meiryo,sans-serif',
         mincho:
-            '"Yu Mincho","Hiragino Mincho ProN","Times New Roman",serif',
+            '"Noto Serif JP","Yu Mincho","Hiragino Mincho ProN",serif',
         condensed:
-            'Impact,Haettenschweiler,"Arial Narrow Bold","Hiragino Kaku Gothic ProN",sans-serif',
+            'Oswald,"Noto Sans JP","Arial Narrow",sans-serif',
         elegant:
-            '"Avenir Next","Helvetica Neue","Yu Gothic",sans-serif'
+            '"Zen Kaku Gothic New","Noto Sans JP","Yu Gothic",sans-serif'
     };
     const DEFAULT_TITLE_CUSTOM = {
         color: "#ffffff",
         font: "gothic",
         size: 76,
-        weight: 900,
         outlineColor: "#111827",
-        outlineWidth: 2,
-        autoFit: "off"
+        outlineWidth: 2
     };
     const LEGACY_THEME_MAP = {
         luxury: "signal",
@@ -6937,6 +7631,7 @@
     const POST_SETTINGS_STORAGE_KEY = "kaitori_post_settings_v1";
     const POST_TEMPLATE_STORAGE_KEY = "kaitori_post_named_templates_v1";
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
+    const WORKING_DRAFT_STORAGE_KEY = "kaitori_working_draft_v1";
     const STORE_REGISTRY_KEY = "kaitori_store_registry_v1";
     const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
     const STORE_DATA_KEYS = [
@@ -6949,19 +7644,19 @@
         "kaitori_title_color",
         "kaitori_title_font",
         "kaitori_title_size",
-        "kaitori_title_weight",
         "kaitori_title_outline_color",
         "kaitori_title_outline_width",
-        "kaitori_title_auto_fit",
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
+        "kaitori_image_trim",
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
         POST_SETTINGS_STORAGE_KEY,
         POST_TEMPLATE_STORAGE_KEY,
-        CSV_SNAPSHOT_STORAGE_KEY
+        CSV_SNAPSHOT_STORAGE_KEY,
+        WORKING_DRAFT_STORAGE_KEY
     ];
     const JSON_STORE_DATA_KEYS = new Set([
         TEMPLATE_STORAGE_KEY,
@@ -6969,7 +7664,8 @@
         SINGLE_TEMPLATE_STORAGE_KEY,
         POST_SETTINGS_STORAGE_KEY,
         POST_TEMPLATE_STORAGE_KEY,
-        CSV_SNAPSHOT_STORAGE_KEY
+        CSV_SNAPSHOT_STORAGE_KEY,
+        WORKING_DRAFT_STORAGE_KEY
     ]);
 
     function makeStoreId() {
@@ -7123,7 +7819,7 @@
 
     function persistCurrentStoreState() {
         if (!document.getElementById("titleInput")) return;
-        saveLastUsedSettings(collectCurrentTemplateSettings());
+        saveWorkingDraftNow();
         saveSingleSettings();
         savePostComposerSettings();
         setScopedItem("kaitori_logo", logoDataUrl);
@@ -7333,6 +8029,9 @@
     let logoDataUrl = DEFAULT_LOGO;
     let globalCardData = [];
     let imageLoadPromise = Promise.resolve();
+    let workspaceAutosaveTimer = null;
+    let cardEditRenderTimer = null;
+    let isRestoringWorkspace = false;
     let currentSnsSegments = [];
     let currentPostSegments = [];
     let csvDiffResults = {
@@ -7369,7 +8068,8 @@
     }
 
     function normalizeLayout(layout) {
-        return Object.hasOwn(LAYOUTS, layout) ? layout : "portrait_10x6";
+        if (Object.hasOwn(LAYOUTS, layout)) return layout;
+        return LEGACY_LAYOUT_MAP[layout] || "portrait_10x6";
     }
 
     function getSelectedLayoutConfig() {
@@ -7410,9 +8110,6 @@
                 110,
                 DEFAULT_TITLE_CUSTOM.size
             ),
-            weight: [700, 800, 900].includes(Number(settings.weight))
-                ? Number(settings.weight)
-                : DEFAULT_TITLE_CUSTOM.weight,
             outlineColor: normalizeHexColor(
                 settings.outlineColor,
                 DEFAULT_TITLE_CUSTOM.outlineColor
@@ -7422,8 +8119,7 @@
                 0,
                 5,
                 DEFAULT_TITLE_CUSTOM.outlineWidth
-            ),
-            autoFit: settings.autoFit === "on" ? "on" : "off"
+            )
         };
     }
 
@@ -7432,10 +8128,8 @@
             color: document.getElementById("titleColorInput")?.value,
             font: document.getElementById("titleFontSelect")?.value,
             size: document.getElementById("titleSizeInput")?.value,
-            weight: document.getElementById("titleWeightSelect")?.value,
             outlineColor: document.getElementById("titleOutlineColorInput")?.value,
-            outlineWidth: document.getElementById("titleOutlineWidthSelect")?.value,
-            autoFit: document.getElementById("titleAutoFitSelect")?.value
+            outlineWidth: document.getElementById("titleOutlineWidthSelect")?.value
         });
     }
 
@@ -7445,38 +8139,18 @@
         document.getElementById("titleFontSelect").value = normalized.font;
         document.getElementById("titleSizeRange").value = String(normalized.size);
         document.getElementById("titleSizeInput").value = String(normalized.size);
-        document.getElementById("titleWeightSelect").value =
-            String(normalized.weight);
         document.getElementById("titleOutlineColorInput").value =
             normalized.outlineColor;
         document.getElementById("titleOutlineWidthSelect").value =
             String(normalized.outlineWidth);
-        document.getElementById("titleAutoFitSelect").value = normalized.autoFit;
-        updateTitleSizeStatus(normalized.size);
     }
 
     function saveTitleCustomization(settings = collectTitleCustomization()) {
         setScopedItem("kaitori_title_color", settings.color);
         setScopedItem("kaitori_title_font", settings.font);
         setScopedItem("kaitori_title_size", String(settings.size));
-        setScopedItem("kaitori_title_weight", String(settings.weight));
         setScopedItem("kaitori_title_outline_color", settings.outlineColor);
         setScopedItem("kaitori_title_outline_width", String(settings.outlineWidth));
-        setScopedItem("kaitori_title_auto_fit", settings.autoFit);
-    }
-
-    function updateTitleSizeStatus(effectiveSize) {
-        const status = document.getElementById("titleSizeStatus");
-        if (!status) return;
-
-        const settings = collectTitleCustomization();
-        const actualSize = Number.isFinite(Number(effectiveSize))
-            ? Math.round(Number(effectiveSize))
-            : settings.size;
-        status.textContent =
-            settings.autoFit === "on" && actualSize < settings.size
-                ? `指定：${settings.size}px／実際の表示：${actualSize}px（自動縮小）`
-                : `表示サイズ：${settings.size}px`;
     }
 
     function getExportAreas(root = document) {
@@ -7496,17 +8170,14 @@
         title.style.setProperty("color", settings.color, "important");
         title.style.setProperty("font-family", fontStack, "important");
         title.style.setProperty("font-size", `${size}px`, "important");
-        title.style.setProperty(
-            "font-weight",
-            String(settings.weight),
-            "important"
-        );
+        title.style.setProperty("font-weight", "900", "important");
         title.style.setProperty(
             "-webkit-text-stroke",
             `${settings.outlineWidth}px ${settings.outlineColor}`,
             "important"
         );
         title.style.setProperty("paint-order", "stroke fill", "important");
+        title.style.setProperty("text-shadow", "none", "important");
     }
 
     function applyTitleCustomization(root = document) {
@@ -7518,7 +8189,6 @@
             page.style.setProperty("--custom-title-color", settings.color);
             page.style.setProperty("--custom-title-font", fontStack);
             page.style.setProperty("--custom-title-size", `${settings.size}px`);
-            page.style.setProperty("--custom-title-weight", String(settings.weight));
             page.style.setProperty(
                 "--custom-title-outline-color",
                 settings.outlineColor
@@ -7574,7 +8244,6 @@
             "--custom-title-color",
             "--custom-title-font",
             "--custom-title-size",
-            "--custom-title-weight",
             "--custom-title-outline-color",
             "--custom-title-outline-width"
         ].forEach(propertyName => {
@@ -8145,6 +8814,7 @@
     }
 
     document.addEventListener("DOMContentLoaded", () => {
+        isRestoringWorkspace = true;
         const today = new Date();
         const yyyy = today.getFullYear();
         const mm = String(today.getMonth() + 1).padStart(2, "0");
@@ -8160,13 +8830,12 @@
         const savedTitleColor = getScopedItem("kaitori_title_color");
         const savedTitleFont = getScopedItem("kaitori_title_font");
         const savedTitleSize = getScopedItem("kaitori_title_size");
-        const savedTitleWeight = getScopedItem("kaitori_title_weight");
         const savedTitleOutlineColor = getScopedItem("kaitori_title_outline_color");
         const savedTitleOutlineWidth = getScopedItem("kaitori_title_outline_width");
-        const savedTitleAutoFit = getScopedItem("kaitori_title_auto_fit");
         const savedCardNameDisplay = getScopedItem("kaitori_card_name_display");
         const savedPageSplit = getScopedItem("kaitori_page_split");
         const savedSortOrder = getScopedItem("kaitori_sort_order");
+        const savedImageTrim = getScopedItem("kaitori_image_trim");
 
         if (savedTitle) document.getElementById("titleInput").value = savedTitle;
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
@@ -8178,14 +8847,12 @@
             color: savedTitleColor || DEFAULT_TITLE_CUSTOM.color,
             font: savedTitleFont || DEFAULT_TITLE_CUSTOM.font,
             size: savedTitleSize || DEFAULT_TITLE_CUSTOM.size,
-            weight: savedTitleWeight || DEFAULT_TITLE_CUSTOM.weight,
             outlineColor:
                 savedTitleOutlineColor || DEFAULT_TITLE_CUSTOM.outlineColor,
             outlineWidth:
-                savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth,
-            autoFit: savedTitleAutoFit || DEFAULT_TITLE_CUSTOM.autoFit
+                savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth
         });
-        if (Object.hasOwn(LAYOUTS, savedLayout)) {
+        if (savedLayout) {
             document.getElementById("layoutSelect").value =
                 normalizeLayout(savedLayout);
         }
@@ -8198,6 +8865,8 @@
         if (SORT_MODES.includes(savedSortOrder)) {
             document.getElementById("sortOrderSelect").value = savedSortOrder;
         }
+        document.getElementById("imageTrimCheckbox").checked =
+            savedImageTrim !== "off";
 
         try {
             applySingleSettings(
@@ -8219,12 +8888,23 @@
         refreshTemplateSelect();
         refreshSingleTemplateSelect();
         refreshPostTemplateSelect();
-        updateAllPages();
+        const restoredDraft = restoreWorkingDraft();
+        if (restoredDraft) {
+            renderPages();
+        } else {
+            updateAllPages();
+        }
         updateCsvDiffPanel();
+        renderCardEditor();
         renderSingleCardPicker();
         renderSingleAdPreviews();
         generateSnsText();
         generatePostText();
+        isRestoringWorkspace = false;
+        setSaveState(
+            "saved",
+            restoredDraft ? "前回作業を復元" : "変更なし"
+        );
         requestAnimationFrame(fitPreviewPages);
     });
 
@@ -8250,6 +8930,7 @@
             cardNameDisplay: getCardNameDisplay(),
             pageSplit: getPageSplitMode(),
             sortOrder: getSortOrder(),
+            imageTrim: isImageTrimEnabled(),
             savedAt: new Date().toISOString()
         };
     }
@@ -8267,6 +8948,102 @@
         setScopedItem("kaitori_card_name_display", settings.cardNameDisplay);
         setScopedItem("kaitori_page_split", settings.pageSplit);
         setScopedItem("kaitori_sort_order", settings.sortOrder);
+        setScopedItem(
+            "kaitori_image_trim",
+            settings.imageTrim === false ? "off" : "on"
+        );
+    }
+
+    function setSaveState(state, message) {
+        const indicator = document.getElementById("saveStateIndicator");
+        if (!indicator) return;
+        indicator.dataset.state = state;
+        indicator.textContent = message;
+    }
+
+    function serializeCardForDraft(card) {
+        return {
+            id: Number(card.id),
+            originalIndex: Number(card.originalIndex),
+            group: String(card.group || ""),
+            status: String(card.status || ""),
+            name: String(card.name || ""),
+            type: String(card.type || ""),
+            price: String(card.price || ""),
+            imgUrl: String(card.imgUrl || ""),
+            hidden: Boolean(card.hidden)
+        };
+    }
+
+    function saveWorkingDraftNow(message = "自動保存済み") {
+        if (isRestoringWorkspace) return;
+        try {
+            const settings = collectCurrentTemplateSettings();
+            saveLastUsedSettings(settings);
+            const draft = {
+                version: 1,
+                savedAt: new Date().toISOString(),
+                date: document.getElementById("dateInput")?.value || "",
+                settings,
+                cards: globalCardData.map(serializeCardForDraft),
+                selectedSingleCardIds: Array.from(selectedSingleCardIds)
+            };
+            setScopedItem(WORKING_DRAFT_STORAGE_KEY, JSON.stringify(draft));
+            setSaveState("saved", message);
+        } catch (error) {
+            console.error(error);
+            setSaveState("dirty", "自動保存に失敗");
+        }
+    }
+
+    function scheduleWorkspaceAutosave(message = "自動保存済み") {
+        if (isRestoringWorkspace) return;
+        setSaveState("dirty", "未保存の変更");
+        clearTimeout(workspaceAutosaveTimer);
+        workspaceAutosaveTimer = setTimeout(
+            () => saveWorkingDraftNow(message),
+            350
+        );
+    }
+
+    function restoreWorkingDraft() {
+        try {
+            const draft = JSON.parse(
+                getScopedItem(WORKING_DRAFT_STORAGE_KEY) || "null"
+            );
+            if (!draft || !Array.isArray(draft.cards)) return false;
+
+            if (draft.date) {
+                document.getElementById("dateInput").value = draft.date;
+            }
+
+            globalCardData = draft.cards.map((card, index) => ({
+                id: Number.isFinite(Number(card.id)) ? Number(card.id) : index,
+                originalIndex: Number.isFinite(Number(card.originalIndex))
+                    ? Number(card.originalIndex)
+                    : index,
+                group: String(card.group || ""),
+                status: String(card.status || ""),
+                name: String(card.name || ""),
+                type: String(card.type || ""),
+                price: String(card.price || ""),
+                imgUrl: String(card.imgUrl || ""),
+                hidden: Boolean(card.hidden),
+                resolvedImg: null,
+                imageState: card.imgUrl ? "pending" : "missing"
+            }));
+
+            selectedSingleCardIds.clear();
+            (draft.selectedSingleCardIds || []).forEach(cardId => {
+                if (globalCardData.some(card => card.id === Number(cardId))) {
+                    selectedSingleCardIds.add(Number(cardId));
+                }
+            });
+            return globalCardData.length > 0;
+        } catch (error) {
+            console.warn("作業途中データを復元できませんでした。", error);
+            return false;
+        }
     }
 
     function refreshTemplateSelect(selectedName = "") {
@@ -8316,6 +9093,7 @@
             saveLastUsedSettings(settings);
             refreshTemplateSelect(name);
             nameInput.value = name;
+            saveWorkingDraftNow("テンプレート保存済み");
             alert(`テンプレート「${name}」を保存しました。`);
         } catch (error) {
             alert("保存容量を超えました。大きいロゴ画像を使用している場合は、画像を小さくしてお試しください。");
@@ -8340,7 +9118,7 @@
         document.getElementById("titleInput").value = settings.title ?? "";
         document.getElementById("disclaimerInput").value = settings.disclaimer ?? "";
 
-        if (Object.hasOwn(LAYOUTS, settings.layout)) {
+        if (settings.layout) {
             document.getElementById("layoutSelect").value =
                 normalizeLayout(settings.layout);
         }
@@ -8356,11 +9134,15 @@
             PAGE_SPLIT_MODES.includes(settings.pageSplit) ? settings.pageSplit : "fill";
         document.getElementById("sortOrderSelect").value =
             SORT_MODES.includes(settings.sortOrder) ? settings.sortOrder : "group_csv";
+        document.getElementById("imageTrimCheckbox").checked =
+            settings.imageTrim !== false;
         document.getElementById("templateNameInput").value = name;
 
         saveLastUsedSettings(collectCurrentTemplateSettings());
+        invalidateProcessedImages();
         updateAllPages();
         applySelectedLayout();
+        saveWorkingDraftNow("テンプレート読込済み");
         alert(`テンプレート「${name}」を呼び出しました。`);
     }
 
@@ -8455,6 +9237,10 @@
         return SORT_MODES.includes(order) ? order : "group_csv";
     }
 
+    function isImageTrimEnabled() {
+        return document.getElementById("imageTrimCheckbox")?.checked !== false;
+    }
+
     function applyCardNameVisibility() {
         const hideCardNames = getCardNameDisplay() === "hide";
         document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
@@ -8491,20 +9277,29 @@
     document.getElementById("titleInput").addEventListener("input", () => {
         updateAllPages();
         generatePostText();
+        scheduleWorkspaceAutosave();
     });
-    document.getElementById("disclaimerInput").addEventListener("input", updateAllPages);
+    document.getElementById("disclaimerInput").addEventListener("input", () => {
+        updateAllPages();
+        scheduleWorkspaceAutosave();
+    });
     document.getElementById("dateInput").addEventListener("change", () => {
         updateAllPages();
         renderSingleAdPreviews();
         generatePostText();
+        scheduleWorkspaceAutosave();
     });
-    document.getElementById("themeSelect").addEventListener("change", applyThemeToPages);
+    document.getElementById("themeSelect").addEventListener("change", () => {
+        applyThemeToPages();
+        scheduleWorkspaceAutosave();
+    });
     const updateTitleCustomization = () => {
         const settings = collectTitleCustomization();
         applyTitleCustomizationSettings(settings);
         saveTitleCustomization(settings);
         applyTitleCustomization();
         requestAnimationFrame(adjustTitleSizes);
+        scheduleWorkspaceAutosave();
     };
 
     document.getElementById("titleSizeRange").addEventListener("input", event => {
@@ -8532,22 +9327,36 @@
     [
         "titleColorInput",
         "titleFontSelect",
-        "titleWeightSelect",
         "titleOutlineColorInput",
-        "titleOutlineWidthSelect",
-        "titleAutoFitSelect"
+        "titleOutlineWidthSelect"
     ].forEach(id => {
         document.getElementById(id).addEventListener("input", updateTitleCustomization);
         document.getElementById(id).addEventListener("change", updateTitleCustomization);
     });
     document.getElementById("cardNameDisplaySelect")
-        .addEventListener("change", applyCardNameVisibility);
+        .addEventListener("change", () => {
+            applyCardNameVisibility();
+            scheduleWorkspaceAutosave();
+        });
     document.getElementById("pageSplitSelect").addEventListener("change", () => {
         if (globalCardData.length > 0) renderPages();
+        scheduleWorkspaceAutosave();
     });
     document.getElementById("sortOrderSelect").addEventListener("change", () => {
         if (globalCardData.length > 0) renderPages();
+        scheduleWorkspaceAutosave();
     });
+    document.getElementById("imageTrimCheckbox").addEventListener("change", () => {
+        invalidateProcessedImages();
+        if (globalCardData.length > 0) {
+            renderPages();
+            renderSingleCardPicker();
+            renderSingleAdPreviews();
+        }
+        scheduleWorkspaceAutosave();
+    });
+    document.getElementById("cardEditorSearchInput")
+        .addEventListener("input", renderCardEditor);
 
     document.getElementById("singleSearchInput")
         .addEventListener("input", renderSingleCardPicker);
@@ -8632,33 +9441,19 @@
         requestAnimationFrame(fitPreviewPages);
     }
 
-    document.getElementById("layoutSelect").addEventListener("change", applySelectedLayout);
-
-    document.getElementById("logoInput").addEventListener("change", event => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = loadEvent => {
-            logoDataUrl = loadEvent.target.result;
-            setScopedItem("kaitori_logo", logoDataUrl);
-            updateAllPages();
-        };
-        reader.readAsDataURL(file);
+    document.getElementById("layoutSelect").addEventListener("change", () => {
+        applySelectedLayout();
+        scheduleWorkspaceAutosave();
     });
 
-    document.getElementById("singleLogoInput").addEventListener("change", event => {
-        const file = event.target.files[0];
-        if (!file) return;
+    document.getElementById("logoInput").addEventListener("change", async event => {
+        await handleLogoUpload(event.target.files[0]);
+        event.target.value = "";
+    });
 
-        const reader = new FileReader();
-        reader.onload = loadEvent => {
-            logoDataUrl = loadEvent.target.result;
-            setScopedItem("kaitori_logo", logoDataUrl);
-            updateAllPages();
-            renderSingleAdPreviews();
-        };
-        reader.readAsDataURL(file);
+    document.getElementById("singleLogoInput").addEventListener("change", async event => {
+        await handleLogoUpload(event.target.files[0]);
+        event.target.value = "";
     });
 
     document.getElementById("csvInput").addEventListener("change", event => {
@@ -8984,6 +9779,7 @@
                 type,
                 price,
                 imgUrl,
+                hidden: false,
                 resolvedImg: null,
                 imageState: imgUrl ? "pending" : "missing"
             });
@@ -8991,6 +9787,7 @@
 
         computeCsvDiff(globalCardData);
         updateImageStatus();
+        renderCardEditor();
         renderSingleCardPicker();
         renderSingleAdPreviews();
         if (globalCardData.length > 0) {
@@ -8998,6 +9795,198 @@
         } else {
             renderNoData();
         }
+        scheduleWorkspaceAutosave();
+    }
+
+    function getCardById(cardId) {
+        return globalCardData.find(card => card.id === Number(cardId));
+    }
+
+    function renderCardEditor() {
+        const list = document.getElementById("cardEditorList");
+        const count = document.getElementById("cardEditorCount");
+        if (!list || !count) return;
+
+        const visibleCount = globalCardData.filter(card => !card.hidden).length;
+        count.textContent = globalCardData.length
+            ? `表示 ${visibleCount} / 全${globalCardData.length}件`
+            : "CSV未読込";
+
+        if (globalCardData.length === 0) {
+            list.innerHTML =
+                '<div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>';
+            return;
+        }
+
+        const query = String(
+            document.getElementById("cardEditorSearchInput")?.value || ""
+        ).trim().toLocaleLowerCase("ja");
+        const cards = [...globalCardData]
+            .sort((a, b) => a.originalIndex - b.originalIndex)
+            .filter(card => {
+                if (!query) return true;
+                return [card.name, card.group, card.type, card.price]
+                    .some(value =>
+                        String(value || "")
+                            .toLocaleLowerCase("ja")
+                            .includes(query)
+                    );
+            });
+
+        if (cards.length === 0) {
+            list.innerHTML =
+                '<div class="card-editor-empty">検索条件に一致する商品がありません</div>';
+            return;
+        }
+
+        list.innerHTML = cards.map(card => {
+            const id = Number(card.id);
+            const imageSource = card.resolvedImg || LOADING_IMAGE;
+            const imageUrl = escapeHtml(card.imgUrl || "");
+            const name = escapeHtml(card.name || "");
+            const group = escapeHtml(card.group || "");
+            const type = escapeHtml(card.type || "");
+            const price = escapeHtml(card.price || "");
+            const strengthened = String(card.status || "").includes("強化");
+            return `
+                <div class="card-editor-row${card.hidden ? " is-hidden" : ""}">
+                    <img
+                        class="card-editor-thumb dynamic-img"
+                        src="${imageSource}"
+                        data-url="${imageUrl}"
+                        data-card-id="${id}"
+                        alt=""
+                        crossorigin="anonymous"
+                    >
+                    <input
+                        class="editor-name"
+                        type="text"
+                        value="${name}"
+                        aria-label="カード名"
+                        onchange="updateCardField(${id}, 'name', this.value)"
+                    >
+                    <input
+                        class="editor-group"
+                        type="text"
+                        value="${group}"
+                        aria-label="掲載グループ"
+                        onchange="updateCardField(${id}, 'group', this.value)"
+                    >
+                    <input
+                        class="editor-type"
+                        type="text"
+                        value="${type}"
+                        aria-label="種別"
+                        onchange="updateCardField(${id}, 'type', this.value)"
+                    >
+                    <input
+                        class="editor-price"
+                        type="text"
+                        value="${price}"
+                        aria-label="買取価格"
+                        onchange="updateCardField(${id}, 'price', this.value)"
+                    >
+                    <label class="card-editor-check">
+                        <input
+                            type="checkbox"
+                            ${strengthened ? "checked" : ""}
+                            onchange="toggleCardStrengthened(${id}, this.checked)"
+                        >
+                        強化買取
+                    </label>
+                    <label class="card-editor-check">
+                        <input
+                            type="checkbox"
+                            ${card.hidden ? "" : "checked"}
+                            onchange="toggleCardVisibility(${id}, this.checked)"
+                        >
+                        表示
+                    </label>
+                    <div class="card-editor-order">
+                        <button
+                            type="button"
+                            title="同じ掲載グループ内で上へ"
+                            onclick="moveCardWithinGroup(${id}, -1)"
+                        >↑</button>
+                        <button
+                            type="button"
+                            title="同じ掲載グループ内で下へ"
+                            onclick="moveCardWithinGroup(${id}, 1)"
+                        >↓</button>
+                    </div>
+                </div>
+            `;
+        }).join("");
+    }
+
+    function refreshOutputsAfterCardEdit(renderEditorToo = false) {
+        clearTimeout(cardEditRenderTimer);
+        cardEditRenderTimer = setTimeout(() => {
+            if (renderEditorToo) renderCardEditor();
+            if (globalCardData.some(card => !card.hidden)) {
+                renderPages();
+            } else {
+                renderNoData();
+            }
+            renderSingleCardPicker();
+            renderSingleAdPreviews();
+            generateSnsText();
+            generatePostText();
+            scheduleWorkspaceAutosave();
+        }, 120);
+    }
+
+    function updateCardField(cardId, field, value) {
+        const card = getCardById(cardId);
+        if (!card || !["name", "group", "type", "price"].includes(field)) return;
+        card[field] = String(value || "").trim();
+        refreshOutputsAfterCardEdit(false);
+    }
+
+    function toggleCardStrengthened(cardId, strengthened) {
+        const card = getCardById(cardId);
+        if (!card) return;
+        const withoutStrengthened = String(card.status || "")
+            .replace(/強化買取/g, "")
+            .replace(/強化/g, "")
+            .trim();
+        card.status = strengthened
+            ? [withoutStrengthened, "強化"].filter(Boolean).join(" ")
+            : withoutStrengthened;
+        refreshOutputsAfterCardEdit(true);
+    }
+
+    function toggleCardVisibility(cardId, visible) {
+        const card = getCardById(cardId);
+        if (!card) return;
+        card.hidden = !visible;
+        refreshOutputsAfterCardEdit(true);
+    }
+
+    function moveCardWithinGroup(cardId, direction) {
+        const card = getCardById(cardId);
+        if (!card) return;
+        const groupCards = globalCardData
+            .filter(item => item.group === card.group)
+            .sort((a, b) => a.originalIndex - b.originalIndex);
+        const index = groupCards.findIndex(item => item.id === card.id);
+        const swapIndex = index + Number(direction);
+        if (index < 0 || swapIndex < 0 || swapIndex >= groupCards.length) return;
+
+        const other = groupCards[swapIndex];
+        const currentOrder = card.originalIndex;
+        card.originalIndex = other.originalIndex;
+        other.originalIndex = currentOrder;
+        renderCardEditor();
+        refreshOutputsAfterCardEdit(false);
+    }
+
+    function showAllCardsInBuylist() {
+        globalCardData.forEach(card => {
+            card.hidden = false;
+        });
+        renderCardEditor();
+        refreshOutputsAfterCardEdit(false);
     }
 
     function renderNoData() {
@@ -9107,18 +10096,21 @@
         }
         renderSingleCardPicker();
         renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
     }
 
     function selectVisibleSingleCards() {
         getFilteredSingleCards().forEach(card => selectedSingleCardIds.add(card.id));
         renderSingleCardPicker();
         renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
     }
 
     function clearSingleSelection() {
         selectedSingleCardIds.clear();
         renderSingleCardPicker();
         renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
     }
 
     function invertVisibleSingleCards() {
@@ -9131,6 +10123,7 @@
         });
         renderSingleCardPicker();
         renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
     }
 
     function getSelectedSingleCards() {
@@ -9369,6 +10362,225 @@
         });
     }
 
+    function readFileAsDataUrl(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = event => resolve(event.target.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function loadImageElement(source) {
+        return new Promise((resolve, reject) => {
+            const image = new Image();
+            image.onload = () => resolve(image);
+            image.onerror = reject;
+            image.src = source;
+        });
+    }
+
+    async function optimizeLogoFile(file) {
+        if (!file || !String(file.type || "").startsWith("image/")) {
+            throw new Error("画像ファイルを選択してください。");
+        }
+
+        const source = await readFileAsDataUrl(file);
+        if (
+            file.type === "image/svg+xml" &&
+            file.size <= 700 * 1024
+        ) {
+            return source;
+        }
+
+        const image = await loadImageElement(source);
+        const maxWidth = 1200;
+        const maxHeight = 420;
+        const scale = Math.min(
+            1,
+            maxWidth / Math.max(1, image.naturalWidth),
+            maxHeight / Math.max(1, image.naturalHeight)
+        );
+        const width = Math.max(1, Math.round(image.naturalWidth * scale));
+        const height = Math.max(1, Math.round(image.naturalHeight * scale));
+
+        if (
+            scale === 1 &&
+            file.size <= 650 * 1024
+        ) {
+            return source;
+        }
+
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d", { alpha: true });
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = "high";
+        context.clearRect(0, 0, width, height);
+        context.drawImage(image, 0, 0, width, height);
+
+        const webp = canvas.toDataURL("image/webp", 0.9);
+        canvas.width = 1;
+        canvas.height = 1;
+        return webp;
+    }
+
+    async function handleLogoUpload(file) {
+        if (!file) return;
+        try {
+            setSaveState("dirty", "ロゴを最適化中");
+            logoDataUrl = await optimizeLogoFile(file);
+            setScopedItem("kaitori_logo", logoDataUrl);
+            updateAllPages();
+            renderSingleAdPreviews();
+            scheduleWorkspaceAutosave();
+        } catch (error) {
+            console.error(error);
+            alert(`ロゴを読み込めませんでした。\n${error.message || error}`);
+        }
+    }
+
+    async function trimImageWhitespace(dataUrl) {
+        if (
+            !dataUrl ||
+            dataUrl === NO_IMAGE ||
+            !String(dataUrl).startsWith("data:image/")
+        ) {
+            return dataUrl;
+        }
+
+        try {
+            const image = await loadImageElement(dataUrl);
+            const width = image.naturalWidth;
+            const height = image.naturalHeight;
+            if (!width || !height) return dataUrl;
+
+            const sourceCanvas = document.createElement("canvas");
+            sourceCanvas.width = width;
+            sourceCanvas.height = height;
+            const context = sourceCanvas.getContext("2d", {
+                alpha: true,
+                willReadFrequently: true
+            });
+            context.drawImage(image, 0, 0);
+            const pixels = context.getImageData(0, 0, width, height).data;
+
+            const cornerIndices = [
+                0,
+                (width - 1) * 4,
+                (height - 1) * width * 4,
+                ((height * width) - 1) * 4
+            ];
+            const corners = cornerIndices.map(index => ({
+                r: pixels[index],
+                g: pixels[index + 1],
+                b: pixels[index + 2],
+                a: pixels[index + 3]
+            }));
+            const transparentBackground = corners.every(pixel => pixel.a < 24);
+            const whiteBackground = corners.every(pixel =>
+                pixel.a < 24 ||
+                (
+                    pixel.r >= 242 &&
+                    pixel.g >= 242 &&
+                    pixel.b >= 242 &&
+                    Math.max(pixel.r, pixel.g, pixel.b) -
+                        Math.min(pixel.r, pixel.g, pixel.b) <= 12
+                )
+            );
+            if (!transparentBackground && !whiteBackground) return dataUrl;
+
+            let minX = width;
+            let minY = height;
+            let maxX = -1;
+            let maxY = -1;
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const index = (y * width + x) * 4;
+                    const alpha = pixels[index + 3];
+                    const isTransparent = alpha < 18;
+                    const isWhite = whiteBackground &&
+                        pixels[index] >= 244 &&
+                        pixels[index + 1] >= 244 &&
+                        pixels[index + 2] >= 244;
+                    if (isTransparent || isWhite) continue;
+                    minX = Math.min(minX, x);
+                    minY = Math.min(minY, y);
+                    maxX = Math.max(maxX, x);
+                    maxY = Math.max(maxY, y);
+                }
+            }
+
+            if (maxX < minX || maxY < minY) return dataUrl;
+            const padding = Math.max(
+                4,
+                Math.round(Math.min(width, height) * 0.025)
+            );
+            minX = Math.max(0, minX - padding);
+            minY = Math.max(0, minY - padding);
+            maxX = Math.min(width - 1, maxX + padding);
+            maxY = Math.min(height - 1, maxY + padding);
+            const cropWidth = maxX - minX + 1;
+            const cropHeight = maxY - minY + 1;
+
+            if (
+                cropWidth >= width * 0.97 &&
+                cropHeight >= height * 0.97
+            ) {
+                return dataUrl;
+            }
+
+            const output = document.createElement("canvas");
+            output.width = cropWidth;
+            output.height = cropHeight;
+            output.getContext("2d", { alpha: true }).drawImage(
+                sourceCanvas,
+                minX,
+                minY,
+                cropWidth,
+                cropHeight,
+                0,
+                0,
+                cropWidth,
+                cropHeight
+            );
+            const result = output.toDataURL("image/png");
+            sourceCanvas.width = 1;
+            sourceCanvas.height = 1;
+            output.width = 1;
+            output.height = 1;
+            return result;
+        } catch (error) {
+            console.warn("画像余白の自動カットを省略しました。", error);
+            return dataUrl;
+        }
+    }
+
+    async function fetchPreparedImage(imgUrl) {
+        const rawImage = await fetchImageBase64(imgUrl);
+        if (!isImageTrimEnabled() || rawImage === NO_IMAGE) return rawImage;
+        return await trimImageWhitespace(rawImage);
+    }
+
+    function imageCacheKey(imgUrl) {
+        return `${isImageTrimEnabled() ? "trim" : "raw"}::${imgUrl}`;
+    }
+
+    function invalidateProcessedImages() {
+        imagePromiseCache.clear();
+        globalCardData.forEach(card => {
+            if (!card.imgUrl) {
+                card.resolvedImg = NO_IMAGE;
+                card.imageState = "missing";
+                return;
+            }
+            card.resolvedImg = null;
+            card.imageState = "pending";
+        });
+        updateImageStatus();
+    }
+
     async function fetchImageBase64(imgUrl) {
         if (!imgUrl) return NO_IMAGE;
 
@@ -9488,8 +10700,9 @@
     function buildPages(maxPerPage) {
         const splitMode = getPageSplitMode();
         const sortOrder = getSortOrder();
+        const visibleCards = globalCardData.filter(card => !card.hidden);
         const groupedMap = new Map();
-        globalCardData.forEach(card => {
+        visibleCards.forEach(card => {
             if (!groupedMap.has(card.group)) groupedMap.set(card.group, []);
             groupedMap.get(card.group).push(card);
         });
@@ -9503,9 +10716,9 @@
             if (sortOrder === "group_csv") {
                 orderedCards = sortedGroups.flatMap(([, cards]) => cards);
             } else if (sortOrder === "csv_all") {
-                orderedCards = sortCards(globalCardData, "csv_all");
+                orderedCards = sortCards(visibleCards, "csv_all");
             } else {
-                orderedCards = sortCards(globalCardData, sortOrder);
+                orderedCards = sortCards(visibleCards, sortOrder);
             }
 
             const filledPages = [];
@@ -9567,6 +10780,11 @@
         const disclaimerHtml = escapeHtml(document.getElementById("disclaimerInput").value)
             .replace(/\n/g, "<br>");
 
+        if (pages.length === 0) {
+            renderNoData();
+            return;
+        }
+
         container.innerHTML = "";
 
         pages.forEach((pageCards, pageIndex) => {
@@ -9624,7 +10842,6 @@
                         <h1 class="title-text">${escapeHtml(title)}</h1>
                     </div>
                     <div class="page-emblem">
-                        <small>PAGE</small>
                         <strong>${pageNumberText(pageNumber)}</strong>
                     </div>
                 </div>
@@ -9641,7 +10858,7 @@
                     <div class="footer-right">
                         <div class="update-label">PRICE UPDATED</div>
                         <div class="update-date date-text">${dateText}</div>
-                        <div class="page-number">${pageNumber} / ${pages.length} PAGE</div>
+                        <div class="page-number">${pageNumber} / ${pages.length}</div>
                     </div>
                 </div>
             `;
@@ -9663,46 +10880,11 @@
 
     function adjustTitleSizes(root = document) {
         const settings = collectTitleCustomization();
-        let firstEffectiveSize = settings.size;
-        let hasMeasuredTitle = false;
-
         root.querySelectorAll(".title-container").forEach(container => {
             const title = container.querySelector(".title-text");
             if (!title) return;
-
             applyTitleElementStyle(title, settings);
-            if (settings.autoFit !== "on") return;
-
-            const availableWidth = Math.max(0, container.clientWidth - 8);
-            if (!availableWidth) return;
-
-            for (let attempt = 0; attempt < 3; attempt++) {
-                const titleWidth = title.scrollWidth;
-                if (!titleWidth || titleWidth <= availableWidth) break;
-
-                const currentSize = parseFloat(getComputedStyle(title).fontSize);
-                if (!currentSize) break;
-                const nextSize = Math.max(
-                    28,
-                    currentSize * (availableWidth / titleWidth) * 0.98
-                );
-                title.style.setProperty(
-                    "font-size",
-                    `${nextSize}px`,
-                    "important"
-                );
-            }
-
-            if (!hasMeasuredTitle) {
-                firstEffectiveSize =
-                    parseFloat(getComputedStyle(title).fontSize) || settings.size;
-                hasMeasuredTitle = true;
-            }
         });
-
-        if (root === document) {
-            updateTitleSizeStatus(firstEffectiveSize);
-        }
     }
 
     function adjustTextSize(root = document) {
@@ -9738,6 +10920,8 @@
         if (total === 0) {
             panel.dataset.state = "idle";
             text.textContent = "CSVを読み込むと画像の状態を確認できます。";
+            const retryButton = document.getElementById("retryFailedImagesButton");
+            if (retryButton) retryButton.hidden = true;
             return;
         }
 
@@ -9751,6 +10935,7 @@
         const loading = (counts.loading || 0) + (counts.pending || 0);
         const failed = counts.error || 0;
         const missing = counts.missing || 0;
+        const retryButton = document.getElementById("retryFailedImagesButton");
 
         if (loading > 0) {
             panel.dataset.state = "loading";
@@ -9763,6 +10948,7 @@
         text.textContent =
             `画像：完了 ${loaded}/${total}件` +
             `｜読込中 ${loading}件｜失敗 ${failed}件｜画像なし ${missing}件`;
+        if (retryButton) retryButton.hidden = failed === 0;
     }
 
     async function loadMissingImagesFast() {
@@ -9797,11 +10983,15 @@
                 }
 
                 card.imageState = "loading";
-                if (!imagePromiseCache.has(originalUrl)) {
-                    imagePromiseCache.set(originalUrl, fetchImageBase64(originalUrl));
+                const cacheKey = imageCacheKey(originalUrl);
+                if (!imagePromiseCache.has(cacheKey)) {
+                    imagePromiseCache.set(
+                        cacheKey,
+                        fetchPreparedImage(originalUrl)
+                    );
                 }
 
-                const resolvedImage = await imagePromiseCache.get(originalUrl);
+                const resolvedImage = await imagePromiseCache.get(cacheKey);
                 card.resolvedImg = resolvedImage || NO_IMAGE;
                 card.imageState = card.resolvedImg === NO_IMAGE ? "error" : "loaded";
                 imageElement.src = card.resolvedImg;
@@ -9811,6 +11001,25 @@
         }
 
         updateImageStatus();
+    }
+
+    function retryFailedImages() {
+        const failedCards = globalCardData.filter(
+            card => card.imageState === "error"
+        );
+        if (failedCards.length === 0) return;
+
+        failedCards.forEach(card => {
+            imagePromiseCache.delete(`trim::${card.imgUrl}`);
+            imagePromiseCache.delete(`raw::${card.imgUrl}`);
+            card.resolvedImg = null;
+            card.imageState = "pending";
+        });
+        updateImageStatus();
+        renderPages();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
     }
 
     async function waitForImages(rootElement) {
@@ -9834,10 +11043,24 @@
         await imageLoadPromise;
     }
 
+    function getPageBackgroundSnapshot(element) {
+        const style = getComputedStyle(element);
+        return {
+            backgroundColor: style.backgroundColor,
+            backgroundImage: style.backgroundImage,
+            backgroundPosition: style.backgroundPosition,
+            backgroundSize: style.backgroundSize,
+            backgroundRepeat: style.backgroundRepeat,
+            backgroundOrigin: style.backgroundOrigin,
+            backgroundClip: style.backgroundClip
+        };
+    }
+
     async function renderAreaToCanvas(targetArea) {
         const exportWidth = targetArea.offsetWidth;
         const exportHeight = targetArea.offsetHeight;
-        const pageBackground = getComputedStyle(targetArea).backgroundColor;
+        const backgroundSnapshot = getPageBackgroundSnapshot(targetArea);
+        const pageBackground = backgroundSnapshot.backgroundColor;
 
         const exportStage = document.createElement("div");
         exportStage.setAttribute("aria-hidden", "true");
@@ -9850,7 +11073,7 @@
             overflow: "hidden",
             pointerEvents: "none",
             zIndex: "9998",
-            background: pageBackground
+            backgroundColor: pageBackground
         });
 
         const exportClone = targetArea.cloneNode(true);
@@ -9863,13 +11086,16 @@
             height: `${exportHeight}px`,
             margin: "0",
             transform: "none",
-            background: pageBackground
+            ...backgroundSnapshot
         });
 
         exportStage.appendChild(exportClone);
         document.body.appendChild(exportStage);
 
         try {
+            if (document.fonts?.ready) {
+                await document.fonts.ready;
+            }
             await waitForImages(exportClone);
             adjustTitleSizes(exportClone);
             adjustTextSize(exportClone);
@@ -10195,6 +11421,18 @@
         fitPreviewPages();
         fitSinglePreviews();
         syncQuickHeaderPreview();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") {
+            clearTimeout(workspaceAutosaveTimer);
+            saveWorkingDraftNow();
+        }
+    });
+
+    window.addEventListener("beforeunload", () => {
+        clearTimeout(workspaceAutosaveTimer);
+        saveWorkingDraftNow();
     });
 </script>
 </body>
