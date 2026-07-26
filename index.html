@@ -6671,7 +6671,7 @@
         <details class="settings-accordion">
             <summary>
                 <span>詳細設定</span>
-                <span class="card-editor-count">ページ分割・並び順・画像余白</span>
+                <span class="card-editor-count">ページ分割・並び順</span>
             </summary>
             <div class="settings-grid advanced-settings-grid">
                 <div class="control-group">
@@ -6696,14 +6696,6 @@
                     <small class="help">グループ優先時はグループ内の並びに適用されます。</small>
                 </div>
 
-                <div class="control-group">
-                    <label><span class="step">12</span>画像の余白</label>
-                    <label class="toggle-field" for="imageTrimCheckbox">
-                        <input type="checkbox" id="imageTrimCheckbox" checked>
-                        白・透明余白を自動カット
-                    </label>
-                    <small class="help">商品が小さく見える画像を自動拡大します。白い商品の端が欠ける場合のみOFFにしてください。</small>
-                </div>
             </div>
         </details>
 
@@ -7151,7 +7143,6 @@
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
-        "kaitori_image_trim",
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
@@ -7974,7 +7965,6 @@
         const savedCardNameDisplay = getScopedItem("kaitori_card_name_display");
         const savedPageSplit = getScopedItem("kaitori_page_split");
         const savedSortOrder = getScopedItem("kaitori_sort_order");
-        const savedImageTrim = getScopedItem("kaitori_image_trim");
 
         if (savedTitle) document.getElementById("titleInput").value = savedTitle;
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
@@ -8004,9 +7994,6 @@
         if (SORT_MODES.includes(savedSortOrder)) {
             document.getElementById("sortOrderSelect").value = savedSortOrder;
         }
-        document.getElementById("imageTrimCheckbox").checked =
-            savedImageTrim !== "off";
-
         try {
             applySingleSettings(
                 JSON.parse(getScopedItem(SINGLE_SETTINGS_STORAGE_KEY) || "{}")
@@ -8058,7 +8045,6 @@
             cardNameDisplay: getCardNameDisplay(),
             pageSplit: getPageSplitMode(),
             sortOrder: getSortOrder(),
-            imageTrim: isImageTrimEnabled(),
             savedAt: new Date().toISOString()
         };
     }
@@ -8076,10 +8062,6 @@
         setScopedItem("kaitori_card_name_display", settings.cardNameDisplay);
         setScopedItem("kaitori_page_split", settings.pageSplit);
         setScopedItem("kaitori_sort_order", settings.sortOrder);
-        setScopedItem(
-            "kaitori_image_trim",
-            settings.imageTrim === false ? "off" : "on"
-        );
     }
 
     function setSaveState(state, message) {
@@ -8262,12 +8244,9 @@
             PAGE_SPLIT_MODES.includes(settings.pageSplit) ? settings.pageSplit : "fill";
         document.getElementById("sortOrderSelect").value =
             SORT_MODES.includes(settings.sortOrder) ? settings.sortOrder : "group_csv";
-        document.getElementById("imageTrimCheckbox").checked =
-            settings.imageTrim !== false;
         document.getElementById("templateNameInput").value = name;
 
         saveLastUsedSettings(collectCurrentTemplateSettings());
-        invalidateProcessedImages();
         updateAllPages();
         applySelectedLayout();
         saveWorkingDraftNow("テンプレート読込済み");
@@ -8363,10 +8342,6 @@
     function getSortOrder() {
         const order = document.getElementById("sortOrderSelect").value;
         return SORT_MODES.includes(order) ? order : "group_csv";
-    }
-
-    function isImageTrimEnabled() {
-        return document.getElementById("imageTrimCheckbox")?.checked !== false;
     }
 
     function applyCardNameVisibility() {
@@ -8470,15 +8445,6 @@
     });
     document.getElementById("sortOrderSelect").addEventListener("change", () => {
         if (globalCardData.length > 0) renderPages();
-        scheduleWorkspaceAutosave();
-    });
-    document.getElementById("imageTrimCheckbox").addEventListener("change", () => {
-        invalidateProcessedImages();
-        if (globalCardData.length > 0) {
-            renderPages();
-            renderSingleCardPicker();
-            renderSingleAdPreviews();
-        }
         scheduleWorkspaceAutosave();
     });
     document.getElementById("cardEditorSearchInput")
@@ -9433,146 +9399,6 @@
         }
     }
 
-    async function trimImageWhitespace(dataUrl) {
-        if (
-            !dataUrl ||
-            dataUrl === NO_IMAGE ||
-            !String(dataUrl).startsWith("data:image/")
-        ) {
-            return dataUrl;
-        }
-
-        try {
-            const image = await loadImageElement(dataUrl);
-            const width = image.naturalWidth;
-            const height = image.naturalHeight;
-            if (!width || !height) return dataUrl;
-
-            const sourceCanvas = document.createElement("canvas");
-            sourceCanvas.width = width;
-            sourceCanvas.height = height;
-            const context = sourceCanvas.getContext("2d", {
-                alpha: true,
-                willReadFrequently: true
-            });
-            context.drawImage(image, 0, 0);
-            const pixels = context.getImageData(0, 0, width, height).data;
-
-            const cornerIndices = [
-                0,
-                (width - 1) * 4,
-                (height - 1) * width * 4,
-                ((height * width) - 1) * 4
-            ];
-            const corners = cornerIndices.map(index => ({
-                r: pixels[index],
-                g: pixels[index + 1],
-                b: pixels[index + 2],
-                a: pixels[index + 3]
-            }));
-            const transparentBackground = corners.every(pixel => pixel.a < 24);
-            const whiteBackground = corners.every(pixel =>
-                pixel.a < 24 ||
-                (
-                    pixel.r >= 242 &&
-                    pixel.g >= 242 &&
-                    pixel.b >= 242 &&
-                    Math.max(pixel.r, pixel.g, pixel.b) -
-                        Math.min(pixel.r, pixel.g, pixel.b) <= 12
-                )
-            );
-            if (!transparentBackground && !whiteBackground) return dataUrl;
-
-            let minX = width;
-            let minY = height;
-            let maxX = -1;
-            let maxY = -1;
-            for (let y = 0; y < height; y++) {
-                for (let x = 0; x < width; x++) {
-                    const index = (y * width + x) * 4;
-                    const alpha = pixels[index + 3];
-                    const isTransparent = alpha < 18;
-                    const isWhite = whiteBackground &&
-                        pixels[index] >= 244 &&
-                        pixels[index + 1] >= 244 &&
-                        pixels[index + 2] >= 244;
-                    if (isTransparent || isWhite) continue;
-                    minX = Math.min(minX, x);
-                    minY = Math.min(minY, y);
-                    maxX = Math.max(maxX, x);
-                    maxY = Math.max(maxY, y);
-                }
-            }
-
-            if (maxX < minX || maxY < minY) return dataUrl;
-            const padding = Math.max(
-                4,
-                Math.round(Math.min(width, height) * 0.025)
-            );
-            minX = Math.max(0, minX - padding);
-            minY = Math.max(0, minY - padding);
-            maxX = Math.min(width - 1, maxX + padding);
-            maxY = Math.min(height - 1, maxY + padding);
-            const cropWidth = maxX - minX + 1;
-            const cropHeight = maxY - minY + 1;
-
-            if (
-                cropWidth >= width * 0.97 &&
-                cropHeight >= height * 0.97
-            ) {
-                return dataUrl;
-            }
-
-            const output = document.createElement("canvas");
-            output.width = cropWidth;
-            output.height = cropHeight;
-            output.getContext("2d", { alpha: true }).drawImage(
-                sourceCanvas,
-                minX,
-                minY,
-                cropWidth,
-                cropHeight,
-                0,
-                0,
-                cropWidth,
-                cropHeight
-            );
-            const result = output.toDataURL("image/png");
-            sourceCanvas.width = 1;
-            sourceCanvas.height = 1;
-            output.width = 1;
-            output.height = 1;
-            return result;
-        } catch (error) {
-            console.warn("画像余白の自動カットを省略しました。", error);
-            return dataUrl;
-        }
-    }
-
-    async function fetchPreparedImage(imgUrl) {
-        const rawImage = await fetchImageBase64(imgUrl);
-        if (!isImageTrimEnabled() || rawImage === NO_IMAGE) return rawImage;
-        return await trimImageWhitespace(rawImage);
-    }
-
-    function imageCacheKey(imgUrl) {
-        return `${isImageTrimEnabled() ? "trim" : "raw"}::${imgUrl}`;
-    }
-
-    function invalidateProcessedImages() {
-        imagePromiseCache.clear();
-        globalCardData.forEach(card => {
-            if (!card.imgUrl) {
-                card.resolvedImg = NO_IMAGE;
-                card.imageState = "missing";
-                return;
-            }
-            card.resolvedImg = null;
-            card.imageState = "pending";
-        });
-        updateImageStatus();
-    }
-
     async function fetchImageBase64(imgUrl) {
         if (!imgUrl) return NO_IMAGE;
 
@@ -9975,15 +9801,14 @@
                 }
 
                 card.imageState = "loading";
-                const cacheKey = imageCacheKey(originalUrl);
-                if (!imagePromiseCache.has(cacheKey)) {
+                if (!imagePromiseCache.has(originalUrl)) {
                     imagePromiseCache.set(
-                        cacheKey,
-                        fetchPreparedImage(originalUrl)
+                        originalUrl,
+                        fetchImageBase64(originalUrl)
                     );
                 }
 
-                const resolvedImage = await imagePromiseCache.get(cacheKey);
+                const resolvedImage = await imagePromiseCache.get(originalUrl);
                 card.resolvedImg = resolvedImage || NO_IMAGE;
                 card.imageState = card.resolvedImg === NO_IMAGE ? "error" : "loaded";
                 imageElement.src = card.resolvedImg;
@@ -10002,8 +9827,7 @@
         if (failedCards.length === 0) return;
 
         failedCards.forEach(card => {
-            imagePromiseCache.delete(`trim::${card.imgUrl}`);
-            imagePromiseCache.delete(`raw::${card.imgUrl}`);
+            imagePromiseCache.delete(card.imgUrl);
             card.resolvedImg = null;
             card.imageState = "pending";
         });
