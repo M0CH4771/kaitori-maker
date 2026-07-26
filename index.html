@@ -6125,6 +6125,177 @@
             background: #b8f542;
         }
 
+        /* =========================================================
+           PRICE CONTRAST V6
+           全デザインで価格面と文字のコントラストを個別保証する
+           ========================================================= */
+        .exportArea[data-theme="signal"] {
+            --price-surface: #c70024; --price-ink: #ffffff; --price-border: #780016;
+        }
+        .exportArea[data-theme="trust"] {
+            --price-surface: #075a9f; --price-ink: #ffffff; --price-border: #043b6b;
+        }
+        .exportArea[data-theme="market"] {
+            --price-surface: #cf0023; --price-ink: #ffffff; --price-border: #8f0018;
+        }
+        .exportArea[data-theme="alert"] {
+            --price-surface: #11151d; --price-ink: #ffffff; --price-border: #ffcf4a;
+        }
+        .exportArea[data-theme="editorial"] {
+            --price-surface: #7a1b28; --price-ink: #ffffff; --price-border: #e8d3a5;
+        }
+        .exportArea[data-theme="wa"] {
+            --price-surface: #b51229; --price-ink: #ffffff; --price-border: #dfc071;
+        }
+        .exportArea[data-theme="cyber"] {
+            --price-surface: #9a007f; --price-ink: #ffffff; --price-border: #00e5f4;
+        }
+        .exportArea[data-theme="soft"] {
+            --price-surface: #b62255; --price-ink: #ffffff; --price-border: #ffd3e2;
+        }
+        .exportArea[data-theme="ticket"] {
+            --price-surface: #96351f; --price-ink: #ffffff; --price-border: #f7d980;
+        }
+        .exportArea[data-theme="scoreboard"] {
+            --price-surface: #243b16; --price-ink: #f4ff91; --price-border: #a7dd3b;
+        }
+        .exportArea[data-theme="luxury"] {
+            --price-surface: #a9102b; --price-ink: #ffffff; --price-border: #d9ad4a;
+        }
+        .exportArea[data-theme="fire"] {
+            --price-surface: #bd001d; --price-ink: #ffffff; --price-border: #ffb300;
+        }
+        .exportArea[data-theme="royal"] {
+            --price-surface: #0b3c83; --price-ink: #ffffff; --price-border: #e4b94f;
+        }
+        .exportArea[data-theme="clean"] {
+            --price-surface: #c90022; --price-ink: #ffffff; --price-border: #111827;
+        }
+        .exportArea[data-theme="neon"] {
+            --price-surface: #8f006c; --price-ink: #ffffff; --price-border: #00e5ff;
+        }
+        .exportArea[data-theme="sakura"] {
+            --price-surface: #a92d5c; --price-ink: #ffffff; --price-border: #ffd5e5;
+        }
+        .exportArea[data-theme="forest"] {
+            --price-surface: #20593b; --price-ink: #ffffff; --price-border: #e0bd66;
+        }
+        .exportArea[data-theme="pop"] {
+            --price-surface: #18269b; --price-ink: #ffffff; --price-border: #ff5a83;
+        }
+        .exportArea[data-theme="retro"] {
+            --price-surface: #71391f; --price-ink: #fff8e7; --price-border: #d39e43;
+        }
+        .exportArea[data-theme="hologram"] {
+            --price-surface: #4b2d7f; --price-ink: #ffffff; --price-border: #63e5ef;
+        }
+        .exportArea[data-theme="mono"] {
+            --price-surface: #111111; --price-ink: #ffffff; --price-border: #111111;
+        }
+        .exportArea[data-theme="ocean"] {
+            --price-surface: #00658f; --price-ink: #ffffff; --price-border: #8ae6ef;
+        }
+        .exportArea[data-theme="sunset"] {
+            --price-surface: #ff6b35; --price-ink: #291226; --price-border: #8a2854;
+            --price-shadow: 0 1px 0 rgba(255,255,255,0.58);
+        }
+        .exportArea[data-theme="mint"] {
+            --price-surface: #c9f7e7; --price-ink: #0b493c; --price-border: #087e67;
+            --price-shadow: 0 1px 0 rgba(255,255,255,0.72);
+        }
+        .exportArea[data-theme="lavender"] {
+            --price-surface: #ead0f7; --price-ink: #3e2450; --price-border: #8f4cb5;
+            --price-shadow: 0 1px 0 rgba(255,255,255,0.72);
+        }
+        .exportArea[data-theme="ice"] {
+            --price-surface: #d9f6ff; --price-ink: #0b4867; --price-border: #087eb3;
+            --price-shadow: 0 1px 0 rgba(255,255,255,0.76);
+        }
+        .exportArea[data-theme="chocolate"] {
+            --price-surface: #6f3023; --price-ink: #fff7e8; --price-border: #d9ae78;
+        }
+        .exportArea[data-theme="japan"] {
+            --price-surface: #b91629; --price-ink: #ffffff; --price-border: #181614;
+        }
+        .exportArea[data-theme="galaxy"] {
+            --price-surface: #ef55f5; --price-ink: #17031c; --price-border: #35e5ff;
+            --price-shadow: 0 1px 0 rgba(255,255,255,0.56);
+        }
+        .exportArea[data-theme="lime"] {
+            --price-surface: #b8f542; --price-ink: #07100c; --price-border: #55d98d;
+            --price-shadow: 0 1px 0 rgba(255,255,255,0.52);
+        }
+
+        .exportArea[data-theme] .card-price-container {
+            border-color: var(--price-border);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.14), transparent 48%),
+                var(--price-surface);
+        }
+
+        .exportArea[data-theme] .card-price-text {
+            color: var(--price-ink);
+            -webkit-text-stroke: 0 transparent;
+            text-shadow: var(--price-shadow, 0 2px 0 rgba(0,0,0,0.36));
+        }
+
+        .single-ad[data-design="blackgold"] {
+            --single-price-surface: #b9122d; --single-price-ink: #ffffff;
+            --single-price-label: #fff0a7; --single-price-border: #fff0a7;
+        }
+        .single-ad[data-design="redimpact"] {
+            --single-price-surface: #11151d; --single-price-ink: #ffffff;
+            --single-price-label: #fff3bd; --single-price-border: #ffcf4a;
+        }
+        .single-ad[data-design="royal"] {
+            --single-price-surface: #075a9f; --single-price-ink: #ffffff;
+            --single-price-label: #d9ecff; --single-price-border: #78b9ff;
+        }
+        .single-ad[data-design="clean"] {
+            --single-price-surface: #c90022; --single-price-ink: #ffffff;
+            --single-price-label: #566476; --single-price-border: #c90022;
+        }
+        .single-ad[data-design="cyber"] {
+            --single-price-surface: #930077; --single-price-ink: #ffffff;
+            --single-price-label: #8ff7ff; --single-price-border: #00e5f4;
+        }
+        .single-ad[data-design="sakura"] {
+            --single-price-surface: #ffd3e2; --single-price-ink: #5a2039;
+            --single-price-label: #76364f; --single-price-border: #d95d8b;
+            --single-price-shadow: 0 1px 0 rgba(255,255,255,0.76);
+        }
+        .single-ad[data-design="retro"] {
+            --single-price-surface: #7a3b25; --single-price-ink: #fff8e7;
+            --single-price-label: #6f4328; --single-price-border: #fff0cd;
+        }
+        .single-ad[data-design="pop"] {
+            --single-price-surface: #ff5a83; --single-price-ink: #111827;
+            --single-price-label: #18269b; --single-price-border: #18269b;
+            --single-price-shadow: 0 1px 0 rgba(255,255,255,0.62);
+        }
+        .single-ad[data-design="emerald"] {
+            --single-price-surface: #087e5d; --single-price-ink: #ffffff;
+            --single-price-label: #f5e5ae; --single-price-border: #f5e5ae;
+        }
+        .single-ad[data-design="mono"] {
+            --single-price-surface: #111111; --single-price-ink: #ffffff;
+            --single-price-label: #222222; --single-price-border: #000000;
+        }
+
+        .single-ad[data-design] .single-ad-price-label {
+            color: var(--single-price-label);
+        }
+
+        .single-ad[data-design] .single-ad-price {
+            color: var(--single-price-ink);
+            border-color: var(--single-price-border);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.13), transparent 48%),
+                var(--single-price-surface);
+            -webkit-text-stroke: 0 transparent;
+            text-shadow: var(--single-price-shadow, 0 3px 0 rgba(0,0,0,0.32));
+        }
+
         /* 非表示項目の予約スペースを完全に除去して画像へ戻す */
         .exportArea.hide-card-names .card-name {
             display: none !important;
@@ -6410,6 +6581,127 @@
                 grid-column: 2 / -1;
             }
         }
+        /* ===== 2026 UI/UX refresh: quiet workspace, loud output ===== */
+        body { padding: 14px; background: #f4f6f8; }
+        .app-container { gap: 16px; max-width: 1920px; }
+        .view-tabs {
+            position: sticky; z-index: 50; top: 8px; max-width: 620px; margin: 0 auto;
+            border-color: #dce1e8; background: rgba(255,255,255,.94);
+            box-shadow: 0 5px 18px rgba(15,23,42,.08);
+        }
+        .view-tab { min-height: 48px; border-radius: 9px; font-size: 14px; }
+        .store-profile-bar {
+            color: #334155; border-color: #dce1e8; background: #fff;
+            box-shadow: 0 4px 15px rgba(15,23,42,.05);
+        }
+        .store-profile-title strong, .store-profile-field label { color: #182230; }
+        .store-profile-title span { color: #6b7280; }
+        .store-profile-bar button, .store-import-label {
+            color: #334155; border-color: #d6dce5; background: #f8fafc;
+        }
+        .store-profile-bar .store-add-button {
+            color: #fff; border-color: #172033; background: #172033;
+        }
+        .control-panel {
+            color: #1f2937; border-color: #dce1e8; background: #fff;
+            box-shadow: 0 8px 28px rgba(15,23,42,.07);
+        }
+        .panel-heading {
+            padding: 18px 22px; border-bottom-color: #e4e8ee; background: #fff;
+        }
+        .panel-heading h2, .panel-heading strong { color: #111827; }
+        .panel-heading p { color: #667085; }
+        .save-state-indicator {
+            color: #344054; border-color: #d0d5dd; background: #f9fafb;
+        }
+        .settings-grid { background: #f8fafc; }
+        .control-group {
+            border-color: #e3e7ed; background: #fff; box-shadow: none;
+        }
+        .control-group > label, .title-custom-field label, .template-field label {
+            color: #1f2937;
+        }
+        .help { color: #667085; }
+        input, select, textarea {
+            color: #111827; border-color: #cfd6df; background: #fff;
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.14); outline: none;
+        }
+        .workflow-summary {
+            display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px;
+            padding: 14px 22px; border-bottom: 1px solid #e4e8ee; background: #f8fafc;
+        }
+        .workflow-stat {
+            min-width: 0; padding: 12px 14px; border: 1px solid #e1e6ed;
+            border-radius: 10px; background: #fff;
+        }
+        .workflow-stat span {
+            display: block; color: #667085; font-size: 10px; font-weight: 800;
+        }
+        .workflow-stat strong {
+            display: block; overflow: hidden; margin-top: 4px; color: #101828;
+            font-size: 17px; text-overflow: ellipsis; white-space: nowrap;
+        }
+        .single-ad-products {
+            display: grid; position: relative; z-index: 2;
+            grid-template-columns: repeat(var(--multi-cols, 2), minmax(0, 1fr));
+            gap: 24px; min-height: 0; margin-top: 24px;
+        }
+        .single-ad.is-multi {
+            grid-template-rows: auto auto minmax(0,1fr) auto; padding: 44px;
+        }
+        .single-ad.is-multi.single-landscape > * { grid-column: 1 / -1; }
+        .single-ad.is-multi.single-landscape {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto auto minmax(0,1fr) auto;
+        }
+        .single-ad.is-multi .single-ad-heading { margin-top: 20px; }
+        .single-ad.is-multi .single-ad-heading h2 { font-size: 44px; }
+        .single-ad-product-card {
+            display: grid; min-width: 0; min-height: 0; grid-template-rows: minmax(0,1fr) auto;
+            overflow: hidden; padding: 16px; border: 3px solid var(--ad-primary);
+            border-radius: 20px; background: rgba(255,255,255,.96);
+            box-shadow: 0 10px 0 rgba(0,0,0,.16);
+        }
+        .single-ad-product-card .single-ad-image-stage {
+            min-height: 0; padding: 8px; border: 0; border-radius: 12px; box-shadow: none;
+        }
+        .single-ad-product-card .single-ad-info { padding-top: 10px; }
+        .single-ad-product-card .single-ad-card-name {
+            color: #172033; font-size: 22px; line-height: 1.18; -webkit-line-clamp: 2;
+        }
+        .single-ad-product-card .single-ad-grade {
+            margin-top: 7px; padding: 4px 10px; font-size: 13px;
+        }
+        .single-ad-product-card .single-ad-price-label {
+            margin-top: 8px; color: #596579; font-size: 13px;
+        }
+        .single-ad-product-card .single-ad-price {
+            min-height: 62px; margin-top: 5px; padding: 7px 10px;
+            border-width: 3px; border-radius: 10px; font-size: 34px;
+        }
+        .single-ad.is-multi[data-count="7"] .single-ad-product-card,
+        .single-ad.is-multi[data-count="8"] .single-ad-product-card,
+        .single-ad.is-multi[data-count="9"] .single-ad-product-card,
+        .single-ad.is-multi[data-count="10"] .single-ad-product-card { padding: 11px; }
+        .single-ad.is-multi[data-count="7"] .single-ad-card-name,
+        .single-ad.is-multi[data-count="8"] .single-ad-card-name,
+        .single-ad.is-multi[data-count="9"] .single-ad-card-name,
+        .single-ad.is-multi[data-count="10"] .single-ad-card-name { font-size: 18px; }
+        .single-ad.is-multi[data-count="7"] .single-ad-price,
+        .single-ad.is-multi[data-count="8"] .single-ad-price,
+        .single-ad.is-multi[data-count="9"] .single-ad-price,
+        .single-ad.is-multi[data-count="10"] .single-ad-price {
+            min-height: 48px; font-size: 26px;
+        }
+        .single-ad.is-multi[data-count="7"] .single-ad-products,
+        .single-ad.is-multi[data-count="8"] .single-ad-products,
+        .single-ad.is-multi[data-count="9"] .single-ad-products,
+        .single-ad.is-multi[data-count="10"] .single-ad-products { gap: 14px; }
+        @media (max-width: 900px) {
+            .workflow-summary { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        }
     </style>
 </head>
 <body>
@@ -6483,6 +6775,13 @@
                 >変更なし</span>
             </div>
             <p>設定内容を下のプレビューへ即時反映します</p>
+        </div>
+
+        <div class="workflow-summary" aria-live="polite">
+            <div class="workflow-stat"><span>読み込み商品</span><strong id="buylistLoadedCount">0件</strong></div>
+            <div class="workflow-stat"><span>掲載商品</span><strong id="buylistVisibleCount">0件</strong></div>
+            <div class="workflow-stat"><span>出力予定</span><strong id="buylistPageCount">0枚</strong></div>
+            <div class="workflow-stat"><span>画像エラー</span><strong id="buylistImageIssueCount">0件</strong></div>
         </div>
 
         <section class="quick-header-preview" aria-label="固定ヘッダープレビュー">
@@ -6801,7 +7100,14 @@
         <aside class="control-panel" aria-label="単品買取告知画像の設定">
             <div class="panel-heading">
                 <h2>単品買取告知画像メーカー</h2>
-                <p>CSVの商品を複数選択すると、<strong>商品ごとに1枚ずつ</strong>告知画像を作成します</p>
+                <p>1枚あたり<strong>1〜10商品</strong>を、画像サイズに合わせて自動配置します</p>
+            </div>
+
+            <div class="workflow-summary" aria-live="polite">
+                <div class="workflow-stat"><span>読み込み商品</span><strong id="singleLoadedCount">0件</strong></div>
+                <div class="workflow-stat"><span>選択商品</span><strong id="singleSelectedSummary">0件</strong></div>
+                <div class="workflow-stat"><span>1枚の商品数</span><strong id="singlePerPageSummary">1商品</strong></div>
+                <div class="workflow-stat"><span>出力予定</span><strong id="singleOutputCount">0枚</strong></div>
             </div>
 
             <div class="settings-grid">
@@ -6848,27 +7154,44 @@
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">5</span>メインコピー</label>
+                    <label><span class="step">5</span>1枚に載せる商品数</label>
+                    <select id="singleItemsPerImageSelect">
+                        <option value="1">1商品｜従来のGODレイアウト</option>
+                        <option value="2">2商品</option>
+                        <option value="3">3商品</option>
+                        <option value="4">4商品</option>
+                        <option value="5">5商品</option>
+                        <option value="6">6商品</option>
+                        <option value="7">7商品</option>
+                        <option value="8">8商品</option>
+                        <option value="9">9商品</option>
+                        <option value="10">10商品</option>
+                    </select>
+                    <small class="help">選択した商品をこの件数ごとに分け、余白と文字サイズを自動調整します。</small>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">6</span>メインコピー</label>
                     <input type="text" id="singleHeadlineInput" value="強化買取価格を公開中！">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">6</span>金額上の文言</label>
+                    <label><span class="step">7</span>金額上の文言</label>
                     <input type="text" id="singlePriceLabelInput" value="買取価格">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">7</span>右下の文言</label>
+                    <label><span class="step">8</span>右下の文言</label>
                     <input type="text" id="singleCtaInput" value="お持ち込みお待ちしております">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">8</span>注意書き</label>
+                    <label><span class="step">9</span>注意書き</label>
                     <textarea id="singleNoteInput" rows="3">※相場や在庫状況、状態等により価格が変動する場合がございます。</textarea>
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">9</span>種別・グレード</label>
+                    <label><span class="step">10</span>種別・グレード</label>
                     <select id="singleGradeDisplaySelect">
                         <option value="show">入力がある場合のみ表示</option>
                         <option value="hide">表示しない</option>
@@ -6972,7 +7295,7 @@
 
             <div class="panel-actions">
                 <div class="export-note">
-                    選択した商品ごとに1枚ずつ生成します。多数選択する場合はZIP保存がおすすめです。
+                    選択商品を設定件数ごとにまとめて生成します。多数選択する場合はZIP保存がおすすめです。
                 </div>
                 <button class="btn-export" type="button" onclick="exportSingleImages()">選択商品をPNG書き出し</button>
                 <button class="btn-zip" type="button" onclick="exportSingleZip()">選択商品をZIP保存</button>
@@ -7765,9 +8088,14 @@
     function collectSingleSettings() {
         const design = document.getElementById("singleDesignSelect")?.value;
         const size = document.getElementById("singleSizeSelect")?.value;
+        const itemsPerImage = Math.min(
+            10,
+            Math.max(1, Number(document.getElementById("singleItemsPerImageSelect")?.value) || 1)
+        );
         return {
             design: normalizeSingleDesign(design),
             size: SINGLE_SIZES.includes(size) ? size : "square",
+            itemsPerImage,
             headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取価格を公開中！",
             priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
             cta: document.getElementById("singleCtaInput")?.value ?? "お持ち込みお待ちしております",
@@ -7785,6 +8113,8 @@
         if (SINGLE_SIZES.includes(settings.size)) {
             document.getElementById("singleSizeSelect").value = settings.size;
         }
+        document.getElementById("singleItemsPerImageSelect").value =
+            String(Math.min(10, Math.max(1, Number(settings.itemsPerImage) || 1)));
         if (typeof settings.headline === "string") {
             document.getElementById("singleHeadlineInput").value = settings.headline;
         }
@@ -8468,7 +8798,8 @@
     [
         "singleSizeSelect",
         "singleDesignSelect",
-        "singleGradeDisplaySelect"
+        "singleGradeDisplaySelect",
+        "singleItemsPerImageSelect"
     ].forEach(id => {
         document.getElementById(id).addEventListener("change", () => {
             saveSingleSettings();
@@ -9197,11 +9528,72 @@
         return number > 0 ? `¥${number.toLocaleString("ja-JP")}` : text;
     }
 
+    function updateWorkflowSummary() {
+        const visible = globalCardData.filter(card => !card.hidden).length;
+        const layout = getSelectedLayoutConfig();
+        const pages = globalCardData.length ? buildPages(layout.maxPerPage).length : 0;
+        const imageIssues = globalCardData.filter(card =>
+            card.imageState === "error" || card.imageState === "missing"
+        ).length;
+        const selected = getSelectedSingleCards().length;
+        const perImage = Math.min(
+            10,
+            Math.max(1, Number(document.getElementById("singleItemsPerImageSelect")?.value) || 1)
+        );
+        const values = {
+            buylistLoadedCount: `${globalCardData.length}件`,
+            buylistVisibleCount: `${visible}件`,
+            buylistPageCount: `${pages}枚`,
+            buylistImageIssueCount: `${imageIssues}件`,
+            singleLoadedCount: `${globalCardData.length}件`,
+            singleSelectedSummary: `${selected}件`,
+            singlePerPageSummary: `${perImage}商品`,
+            singleOutputCount: `${selected ? Math.ceil(selected / perImage) : 0}枚`
+        };
+        Object.entries(values).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.textContent = value;
+        });
+    }
+
+    function singleProductMarkup(card, settings) {
+        const name = escapeHtml(card.name || "カード名なし");
+        const grade = escapeHtml(card.type || "");
+        const gradeHtml =
+            settings.gradeDisplay === "show" && grade
+                ? `<div class="single-ad-grade">${grade}</div>`
+                : "";
+        const imageSource = card.resolvedImg || LOADING_IMAGE;
+        const imageUrl = escapeHtml(card.imgUrl || "");
+        const price = escapeHtml(normalizeSinglePriceDisplay(card.price));
+        return `
+            <div class="single-ad-product-card">
+                <div class="single-ad-image-stage">
+                    <img
+                        class="single-ad-product-image dynamic-img"
+                        src="${imageSource}"
+                        data-url="${imageUrl}"
+                        data-card-id="${card.id}"
+                        alt="${name}"
+                        crossorigin="anonymous"
+                    >
+                </div>
+                <div class="single-ad-info">
+                    <div class="single-ad-card-name">${name}</div>
+                    ${gradeHtml}
+                    <div class="single-ad-price-label">${escapeHtml(settings.priceLabel)}</div>
+                    <div class="single-ad-price"><span>${price}</span></div>
+                </div>
+            </div>
+        `;
+    }
+
     function renderSingleAdPreviews() {
         const container = document.getElementById("singlePreviewContainer");
         if (!container) return;
 
         const cards = getSelectedSingleCards();
+        updateWorkflowSummary();
         if (cards.length === 0) {
             container.innerHTML = `
                 <div class="single-preview-empty">
@@ -9215,24 +9607,51 @@
         const settings = collectSingleSettings();
         const dateText = formatDate(document.getElementById("dateInput").value);
         const noteHtml = escapeHtml(settings.note).replace(/\n/g, "<br>");
+        const groups = [];
+        for (let i = 0; i < cards.length; i += settings.itemsPerImage) {
+            groups.push(cards.slice(i, i + settings.itemsPerImage));
+        }
 
-        container.innerHTML = cards.map((card, index) => {
+        container.innerHTML = groups.map((group, index) => {
+            const card = group[0];
+            const isMulti = settings.itemsPerImage > 1;
             const name = escapeHtml(card.name || "カード名なし");
             const grade = escapeHtml(card.type || "");
-            const gradeHtml =
-                settings.gradeDisplay === "show" && grade
-                    ? `<div class="single-ad-grade">${grade}</div>`
-                    : "";
+            const gradeHtml = settings.gradeDisplay === "show" && grade
+                ? `<div class="single-ad-grade">${grade}</div>` : "";
             const imageSource = card.resolvedImg || LOADING_IMAGE;
             const imageUrl = escapeHtml(card.imgUrl || "");
             const price = escapeHtml(normalizeSinglePriceDisplay(card.price));
+            const columns = settings.size === "landscape"
+                ? Math.min(5, Math.ceil(group.length / 2))
+                : settings.size === "portrait"
+                    ? Math.min(3, Math.ceil(Math.sqrt(group.length * 0.78)))
+                    : Math.min(4, Math.ceil(Math.sqrt(group.length)));
+            const productBody = isMulti
+                ? `<div class="single-ad-products" style="--multi-cols:${columns}">
+                    ${group.map(item => singleProductMarkup(item, settings)).join("")}
+                   </div>`
+                : `<div class="single-ad-product">
+                    <div class="single-ad-image-stage">
+                        <img class="single-ad-product-image dynamic-img"
+                            src="${imageSource}" data-url="${imageUrl}"
+                            data-card-id="${card.id}" alt="${name}" crossorigin="anonymous">
+                    </div>
+                    <div class="single-ad-info">
+                        <div class="single-ad-card-name">${name}</div>
+                        ${gradeHtml}
+                        <div class="single-ad-price-label">${escapeHtml(settings.priceLabel)}</div>
+                        <div class="single-ad-price"><span>${price}</span></div>
+                    </div>
+                   </div>`;
 
             return `
                 <div class="single-preview-shell">
                     <article
-                        class="single-ad single-${settings.size}"
+                        class="single-ad single-${settings.size}${isMulti ? " is-multi" : ""}"
                         data-design="${settings.design}"
-                        data-single-card-id="${card.id}"
+                        data-single-card-id="${group.map(item => item.id).join(",")}"
+                        data-count="${group.length}"
                         id="singleAd_${index + 1}"
                     >
                         <header class="single-ad-header">
@@ -9246,24 +9665,7 @@
                             <h2>${escapeHtml(settings.headline)}</h2>
                         </div>
 
-                        <div class="single-ad-product">
-                            <div class="single-ad-image-stage">
-                                <img
-                                    class="single-ad-product-image dynamic-img"
-                                    src="${imageSource}"
-                                    data-url="${imageUrl}"
-                                    data-card-id="${card.id}"
-                                    alt="${name}"
-                                    crossorigin="anonymous"
-                                >
-                            </div>
-                            <div class="single-ad-info">
-                                <div class="single-ad-card-name">${name}</div>
-                                ${gradeHtml}
-                                <div class="single-ad-price-label">${escapeHtml(settings.priceLabel)}</div>
-                                <div class="single-ad-price"><span>${price}</span></div>
-                            </div>
-                        </div>
+                        ${productBody}
 
                         <footer class="single-ad-footer">
                             <div class="single-ad-note">${noteHtml}</div>
@@ -9740,6 +10142,7 @@
             text.textContent = "CSVを読み込むと画像の状態を確認できます。";
             const retryButton = document.getElementById("retryFailedImagesButton");
             if (retryButton) retryButton.hidden = true;
+            updateWorkflowSummary();
             return;
         }
 
@@ -9767,6 +10170,7 @@
             `画像：完了 ${loaded}/${total}件` +
             `｜読込中 ${loading}件｜失敗 ${failed}件｜画像なし ${missing}件`;
         if (retryButton) retryButton.hidden = failed === 0;
+        updateWorkflowSummary();
     }
 
     async function loadMissingImagesFast() {
@@ -10137,7 +10541,6 @@
             return;
         }
 
-        const cards = getSelectedSingleCards();
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
         const dateValue = document.getElementById("dateInput").value;
@@ -10152,7 +10555,8 @@
                     `単品告知画像を生成中...（${i + 1}/${areas.length}）`;
                 const canvas = await renderAreaToCanvas(areas[i]);
                 const blob = await canvasToBlob(canvas);
-                const cardName = sanitizeFileName(cards[i]?.name);
+                const firstId = String(areas[i].dataset.singleCardId || "").split(",")[0];
+                const cardName = sanitizeFileName(getCardById(firstId)?.name);
                 downloadBlob(
                     blob,
                     `単品買取_${dateValue}_${String(i + 1).padStart(2, "0")}_${cardName}.png`
@@ -10183,7 +10587,6 @@
             return;
         }
 
-        const cards = getSelectedSingleCards();
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
         const dateValue = document.getElementById("dateInput").value;
@@ -10199,7 +10602,8 @@
                     `ZIP用の単品告知画像を生成中...（${i + 1}/${areas.length}）`;
                 const canvas = await renderAreaToCanvas(areas[i]);
                 const blob = await canvasToBlob(canvas);
-                const cardName = sanitizeFileName(cards[i]?.name);
+                const firstId = String(areas[i].dataset.singleCardId || "").split(",")[0];
+                const cardName = sanitizeFileName(getCardById(firstId)?.name);
                 zip.file(
                     `単品買取_${String(i + 1).padStart(2, "0")}_${cardName}.png`,
                     blob
