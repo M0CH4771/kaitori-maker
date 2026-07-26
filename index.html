@@ -169,7 +169,7 @@
         .control-panel {
             position: relative;
             width: 100%;
-            overflow: hidden;
+            overflow: visible;
             padding: 0;
             color: #e8edf7;
             border: 1px solid rgba(255, 255, 255, 0.09);
@@ -206,6 +206,93 @@
 
         .panel-heading strong {
             color: var(--gold-light);
+        }
+
+        .quick-header-preview {
+            position: sticky;
+            z-index: 120;
+            top: 10px;
+            margin: 14px 24px 0;
+            padding: 10px;
+            border: 1px solid rgba(217,173,74,0.46);
+            border-radius: 13px;
+            background: rgba(7, 11, 18, 0.96);
+            box-shadow:
+                0 12px 30px rgba(0,0,0,0.34),
+                inset 0 0 0 1px rgba(255,255,255,0.04);
+            backdrop-filter: blur(12px);
+        }
+
+        .quick-header-preview-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 8px;
+        }
+
+        .quick-header-preview-label {
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+            min-width: 0;
+        }
+
+        .quick-header-preview-label strong {
+            color: #fff;
+            font-size: 12px;
+            font-weight: 950;
+        }
+
+        .quick-header-preview-label span {
+            overflow: hidden;
+            color: #aeb8ca;
+            font-size: 10px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .quick-header-preview-button {
+            width: auto;
+            min-height: 30px;
+            margin: 0;
+            padding: 6px 12px;
+            color: #111827;
+            border: 1px solid #ffe59a;
+            border-radius: 7px;
+            background: linear-gradient(135deg, #ffe89b, #d9ad4a);
+            box-shadow: none;
+            font-size: 10px;
+            white-space: nowrap;
+        }
+
+        .quick-header-preview-viewport {
+            position: relative;
+            width: 100%;
+            min-height: 86px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 9px;
+            background:
+                linear-gradient(45deg, rgba(255,255,255,0.035) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,0.035) 25%, transparent 25%),
+                #111827;
+            background-position: 0 0, 8px 8px;
+            background-size: 16px 16px;
+        }
+
+        .quick-header-preview-stage {
+            position: absolute !important;
+            top: 6px !important;
+            min-height: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            transform-origin: top left !important;
+            pointer-events: none;
+        }
+
+        .quick-header-preview-stage .header-area {
+            margin-bottom: 0;
         }
 
         .settings-grid {
@@ -5897,6 +5984,17 @@
                 grid-template-columns: 1fr;
             }
 
+            .quick-header-preview {
+                top: 4px;
+                margin-right: 10px;
+                margin-left: 10px;
+                padding: 8px;
+            }
+
+            .quick-header-preview-label span {
+                display: none;
+            }
+
             .template-buttons {
                 display: grid;
                 grid-column: auto;
@@ -6076,6 +6174,24 @@
             <h2>買取表ジェネレーター</h2>
             <p>設定内容を下のプレビューへ即時反映します</p>
         </div>
+
+        <section class="quick-header-preview" aria-label="固定ヘッダープレビュー">
+            <div class="quick-header-preview-toolbar">
+                <div class="quick-header-preview-label">
+                    <strong>デザイン確認</strong>
+                    <span>タイトル・ロゴ・配色を操作しながら確認できます</span>
+                </div>
+                <button
+                    class="quick-header-preview-button"
+                    type="button"
+                    onclick="scrollToFullPreview()"
+                >全体プレビューを見る</button>
+            </div>
+            <div
+                class="quick-header-preview-viewport"
+                id="quickHeaderPreviewViewport"
+            ></div>
+        </section>
 
         <div class="settings-grid">
             <div class="control-group">
@@ -7364,10 +7480,33 @@
     }
 
     function getExportAreas(root = document) {
+        if (root === document) {
+            return Array.from(
+                document.querySelectorAll("#pagesContainer .exportArea")
+            );
+        }
         if (root instanceof Element && root.matches(".exportArea")) {
             return [root];
         }
         return Array.from(root.querySelectorAll(".exportArea"));
+    }
+
+    function applyTitleElementStyle(title, settings, size = settings.size) {
+        const fontStack = TITLE_FONT_OPTIONS[settings.font];
+        title.style.setProperty("color", settings.color, "important");
+        title.style.setProperty("font-family", fontStack, "important");
+        title.style.setProperty("font-size", `${size}px`, "important");
+        title.style.setProperty(
+            "font-weight",
+            String(settings.weight),
+            "important"
+        );
+        title.style.setProperty(
+            "-webkit-text-stroke",
+            `${settings.outlineWidth}px ${settings.outlineColor}`,
+            "important"
+        );
+        title.style.setProperty("paint-order", "stroke fill", "important");
     }
 
     function applyTitleCustomization(root = document) {
@@ -7388,6 +7527,78 @@
                 "--custom-title-outline-width",
                 `${settings.outlineWidth}px`
             );
+            page.querySelectorAll(".title-text").forEach(title => {
+                applyTitleElementStyle(title, settings);
+            });
+        });
+
+        if (
+            root === document ||
+            root === document.getElementById("pagesContainer")
+        ) {
+            syncQuickHeaderPreview();
+        }
+    }
+
+    function scrollToFullPreview() {
+        document.getElementById("pagesContainer")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    function syncQuickHeaderPreview() {
+        const viewport = document.getElementById("quickHeaderPreviewViewport");
+        const sourcePage = document.querySelector(
+            "#pagesContainer .exportArea"
+        );
+        const sourceHeader = sourcePage?.querySelector(".header-area");
+        if (!viewport || !sourcePage || !sourceHeader) return;
+
+        const orientation = sourcePage.classList.contains("landscape")
+            ? "landscape"
+            : "portrait";
+        const naturalWidth = orientation === "landscape" ? 2000 : 1414;
+        const stage = document.createElement("div");
+        stage.className =
+            `exportArea ${orientation} quick-header-preview-stage`;
+        stage.dataset.theme = sourcePage.dataset.theme || getSelectedTheme();
+        stage.dataset.titleStyle =
+            sourcePage.dataset.titleStyle || getSelectedTitleStyle();
+        stage.dataset.titleCustom = "true";
+        stage.style.width = `${naturalWidth}px`;
+        stage.style.height = "220px";
+        stage.style.padding = "28px 34px 0";
+
+        [
+            "--custom-title-color",
+            "--custom-title-font",
+            "--custom-title-size",
+            "--custom-title-weight",
+            "--custom-title-outline-color",
+            "--custom-title-outline-width"
+        ].forEach(propertyName => {
+            const value = sourcePage.style.getPropertyValue(propertyName);
+            if (value) stage.style.setProperty(propertyName, value);
+        });
+
+        const headerClone = sourceHeader.cloneNode(true);
+        stage.appendChild(headerClone);
+        viewport.replaceChildren(stage);
+
+        requestAnimationFrame(() => {
+            const availableWidth = Math.max(0, viewport.clientWidth - 12);
+            if (!availableWidth) return;
+
+            const scale = Math.min(1, availableWidth / naturalWidth);
+            const displayedWidth = naturalWidth * scale;
+            const naturalHeight =
+                28 + (headerClone.offsetHeight || 148) + 10;
+            stage.style.left =
+                `${Math.max(6, (viewport.clientWidth - displayedWidth) / 2)}px`;
+            stage.style.transform = `scale(${scale})`;
+            viewport.style.height =
+                `${Math.ceil(naturalHeight * scale + 12)}px`;
         });
     }
 
@@ -7820,7 +8031,8 @@
                 document.getElementById("titleInput")?.value || "高価買取表",
             商品一覧: makePostItemList(cards),
             選択数: cards.length,
-            ページ数: document.querySelectorAll(".exportArea").length
+            ページ数:
+                document.querySelectorAll("#pagesContainer .exportArea").length
         };
     }
 
@@ -8206,9 +8418,10 @@
 
     function applyThemeToPages() {
         const theme = getSelectedTheme();
-        document.querySelectorAll(".exportArea").forEach(page => {
+        document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.dataset.theme = theme;
         });
+        syncQuickHeaderPreview();
     }
 
     function getSelectedTitleStyle() {
@@ -8219,7 +8432,7 @@
 
     function applyTitleStyleToPages() {
         const style = getSelectedTitleStyle();
-        document.querySelectorAll(".exportArea").forEach(page => {
+        document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.dataset.titleStyle = style;
         });
         applyTitleCustomization();
@@ -8244,7 +8457,7 @@
 
     function applyCardNameVisibility() {
         const hideCardNames = getCardNameDisplay() === "hide";
-        document.querySelectorAll(".exportArea").forEach(page => {
+        document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.classList.toggle("hide-card-names", hideCardNames);
         });
     }
@@ -8402,7 +8615,9 @@
         }
 
         const layoutConfig = getSelectedLayoutConfig();
-        const previewArea = document.querySelector(".exportArea");
+        const previewArea = document.querySelector(
+            "#pagesContainer .exportArea"
+        );
         const grid = previewArea?.querySelector(".card-grid");
         if (!previewArea || !grid) return;
 
@@ -8413,6 +8628,7 @@
         grid.style.gridTemplateRows =
             `repeat(${layoutConfig.rows}, 1fr)`;
 
+        syncQuickHeaderPreview();
         requestAnimationFrame(fitPreviewPages);
     }
 
@@ -9454,7 +9670,7 @@
             const title = container.querySelector(".title-text");
             if (!title) return;
 
-            title.style.fontSize = `${settings.size}px`;
+            applyTitleElementStyle(title, settings);
             if (settings.autoFit !== "on") return;
 
             const availableWidth = Math.max(0, container.clientWidth - 8);
@@ -9470,7 +9686,11 @@
                     28,
                     currentSize * (availableWidth / titleWidth) * 0.98
                 );
-                title.style.fontSize = `${nextSize}px`;
+                title.style.setProperty(
+                    "font-size",
+                    `${nextSize}px`,
+                    "important"
+                );
             }
 
             if (!hasMeasuredTitle) {
@@ -9701,7 +9921,9 @@
     }
 
     async function exportToImage() {
-        const areas = Array.from(document.querySelectorAll(".exportArea"));
+        const areas = Array.from(
+            document.querySelectorAll("#pagesContainer .exportArea")
+        );
         if (areas.length === 0) return;
         if (typeof html2canvas !== "function") {
             alert("画像書き出し機能を読み込めませんでした。通信環境をご確認ください。");
@@ -9738,7 +9960,9 @@
     }
 
     async function exportToZip() {
-        const areas = Array.from(document.querySelectorAll(".exportArea"));
+        const areas = Array.from(
+            document.querySelectorAll("#pagesContainer .exportArea")
+        );
         if (areas.length === 0) return;
         if (typeof html2canvas !== "function" || typeof JSZip !== "function") {
             alert("ZIP書き出し機能を読み込めませんでした。通信環境をご確認ください。");
@@ -9789,7 +10013,9 @@
     }
 
     async function exportToPdf() {
-        const areas = Array.from(document.querySelectorAll(".exportArea"));
+        const areas = Array.from(
+            document.querySelectorAll("#pagesContainer .exportArea")
+        );
         if (areas.length === 0) return;
 
         const JsPdf = window.jspdf?.jsPDF;
@@ -9968,6 +10194,7 @@
         adjustTextSize();
         fitPreviewPages();
         fitSinglePreviews();
+        syncQuickHeaderPreview();
     });
 </script>
 </body>
