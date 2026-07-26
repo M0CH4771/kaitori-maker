@@ -6581,126 +6581,489 @@
                 grid-column: 2 / -1;
             }
         }
-        /* ===== 2026 UI/UX refresh: quiet workspace, loud output ===== */
-        body { padding: 14px; background: #f4f6f8; }
-        .app-container { gap: 16px; max-width: 1920px; }
+        /* ===== 2026 UI/UX refresh: calm dark workspace, vivid output ===== */
+        body {
+            padding: 14px;
+            color: #e8edf7;
+            background:
+                radial-gradient(circle at 12% 0, rgba(217,173,74,.08), transparent 25%),
+                radial-gradient(circle at 88% 100%, rgba(58,83,125,.12), transparent 28%),
+                #070b12;
+            color-scheme: dark;
+        }
+
+        .app-container {
+            gap: 16px;
+            max-width: 1920px;
+        }
+
         .view-tabs {
-            position: sticky; z-index: 50; top: 8px; max-width: 620px; margin: 0 auto;
-            border-color: #dce1e8; background: rgba(255,255,255,.94);
-            box-shadow: 0 5px 18px rgba(15,23,42,.08);
+            position: sticky;
+            z-index: 50;
+            top: 8px;
+            max-width: 620px;
+            margin: 0 auto;
+            border-color: rgba(255,255,255,.11);
+            background: rgba(11,17,28,.94);
+            box-shadow: 0 10px 28px rgba(0,0,0,.28);
         }
-        .view-tab { min-height: 48px; border-radius: 9px; font-size: 14px; }
+
+        .view-tab {
+            min-height: 48px;
+            color: #9eabba;
+            border-radius: 9px;
+            font-size: 14px;
+        }
+
+        .view-tab.is-active {
+            color: #fff;
+            border-color: rgba(217,173,74,.52);
+            background:
+                linear-gradient(135deg, rgba(217,173,74,.15), transparent 48%),
+                #172033;
+            box-shadow: inset 0 -2px 0 #d9ad4a, 0 7px 18px rgba(0,0,0,.28);
+        }
+
         .store-profile-bar {
-            color: #334155; border-color: #dce1e8; background: #fff;
-            box-shadow: 0 4px 15px rgba(15,23,42,.05);
+            color: #e8edf7;
+            border-color: rgba(255,255,255,.1);
+            background:
+                linear-gradient(100deg, rgba(217,173,74,.09), transparent 34%),
+                #0d1420;
+            box-shadow: 0 10px 28px rgba(0,0,0,.22);
         }
-        .store-profile-title strong, .store-profile-field label { color: #182230; }
-        .store-profile-title span { color: #6b7280; }
-        .store-profile-bar button, .store-import-label {
-            color: #334155; border-color: #d6dce5; background: #f8fafc;
+
+        .store-profile-title strong,
+        .store-profile-field label {
+            color: #f8fafc;
         }
+
+        .store-profile-title span {
+            color: #8f9cad;
+        }
+
+        .store-profile-bar button,
+        .store-import-label {
+            color: #e8edf7;
+            border-color: rgba(255,255,255,.14);
+            background: #151f2e;
+        }
+
         .store-profile-bar .store-add-button {
-            color: #fff; border-color: #172033; background: #172033;
+            color: #111827;
+            border-color: #ffe69a;
+            background: linear-gradient(135deg, #ffe89b, #d9ad4a);
         }
+
         .control-panel {
-            color: #1f2937; border-color: #dce1e8; background: #fff;
-            box-shadow: 0 8px 28px rgba(15,23,42,.07);
+            color: #e8edf7;
+            border-color: rgba(255,255,255,.1);
+            background:
+                linear-gradient(145deg, rgba(255,255,255,.035), transparent 34%),
+                #0b111c;
+            box-shadow: 0 18px 42px rgba(0,0,0,.3);
         }
+
         .panel-heading {
-            padding: 18px 22px; border-bottom-color: #e4e8ee; background: #fff;
+            padding: 18px 22px;
+            border-bottom-color: rgba(217,173,74,.28);
+            background:
+                linear-gradient(90deg, rgba(217,173,74,.09), transparent 32%),
+                #090f19;
         }
-        .panel-heading h2, .panel-heading strong { color: #111827; }
-        .panel-heading p { color: #667085; }
+
+        .panel-heading h2,
+        .panel-heading strong {
+            color: #fff;
+        }
+
+        .panel-heading p {
+            color: #9eabba;
+        }
+
         .save-state-indicator {
-            color: #344054; border-color: #d0d5dd; background: #f9fafb;
+            color: #d5deea;
+            border-color: rgba(255,255,255,.12);
+            background: rgba(255,255,255,.055);
         }
-        .settings-grid { background: #f8fafc; }
+
+        .settings-grid {
+            background: transparent;
+        }
+
         .control-group {
-            border-color: #e3e7ed; background: #fff; box-shadow: none;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,.075);
+            border-radius: 10px;
+            background: rgba(255,255,255,.028);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
         }
-        .control-group > label, .title-custom-field label, .template-field label {
-            color: #1f2937;
+
+        .control-group > label,
+        .title-custom-field label,
+        .template-field label {
+            color: #eef2f7;
         }
-        .help { color: #667085; }
-        input, select, textarea {
-            color: #111827; border-color: #cfd6df; background: #fff;
+
+        .help {
+            color: #8f9cad;
         }
-        input:focus, select:focus, textarea:focus {
-            border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.14); outline: none;
+
+        input[type="file"],
+        input[type="date"],
+        input[type="number"],
+        input[type="text"],
+        select,
+        textarea {
+            color: #f8fafc;
+            border-color: #314055;
+            background: #090f19;
         }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: #657287;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #d9ad4a;
+            box-shadow: 0 0 0 3px rgba(217,173,74,.18);
+            outline: none;
+        }
+
+        .toggle-field {
+            color: #e8edf7;
+            border-color: #314055;
+            background: #090f19;
+        }
+
         .workflow-summary {
-            display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 10px;
-            padding: 14px 22px; border-bottom: 1px solid #e4e8ee; background: #f8fafc;
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 10px;
+            padding: 14px 22px;
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            background: #0a101a;
         }
+
         .workflow-stat {
-            min-width: 0; padding: 12px 14px; border: 1px solid #e1e6ed;
-            border-radius: 10px; background: #fff;
+            min-width: 0;
+            padding: 12px 14px;
+            border: 1px solid #263448;
+            border-radius: 10px;
+            background: #111a28;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
         }
+
         .workflow-stat span {
-            display: block; color: #667085; font-size: 10px; font-weight: 800;
+            display: block;
+            color: #8f9cad;
+            font-size: 10px;
+            font-weight: 800;
         }
+
         .workflow-stat strong {
-            display: block; overflow: hidden; margin-top: 4px; color: #101828;
-            font-size: 17px; text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            overflow: hidden;
+            margin-top: 4px;
+            color: #fff0b8;
+            font-size: 17px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .single-ad-products {
-            display: grid; position: relative; z-index: 2;
-            grid-template-columns: repeat(var(--multi-cols, 2), minmax(0, 1fr));
-            gap: 24px; min-height: 0; margin-top: 24px;
+
+        .preview-container,
+        .single-preview-container {
+            border-color: rgba(255,255,255,.08);
+            background:
+                linear-gradient(45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+                linear-gradient(-45deg, rgba(255,255,255,.025) 25%, transparent 25%),
+                #0d1420;
+            background-position: 0 0, 12px 12px;
+            background-size: 24px 24px;
         }
+
+        .single-preview-empty {
+            color: #8f9cad;
+            border-color: #34445a;
+            background: rgba(255,255,255,.025);
+        }
+
+        .single-preview-empty strong {
+            color: #e8edf7;
+        }
+
+        /*
+         * 複数商品は、商品数と画像比率ごとにJSで列数・行数を決定する。
+         * flexで最終行を中央寄せにするため、3/5/7/9商品でも片寄らない。
+         * 1商品用の .single-ad-product には一切適用しない。
+         */
         .single-ad.is-multi {
-            grid-template-rows: auto auto minmax(0,1fr) auto; padding: 44px;
-        }
-        .single-ad.is-multi.single-landscape > * { grid-column: 1 / -1; }
-        .single-ad.is-multi.single-landscape {
+            --multi-grade-ink: var(--ad-bg);
             grid-template-columns: 1fr;
             grid-template-rows: auto auto minmax(0,1fr) auto;
+            column-gap: 0;
+            padding: 38px;
         }
-        .single-ad.is-multi .single-ad-heading { margin-top: 20px; }
-        .single-ad.is-multi .single-ad-heading h2 { font-size: 44px; }
+
+        .single-ad.is-multi[data-design="clean"],
+        .single-ad.is-multi[data-design="cyber"],
+        .single-ad.is-multi[data-design="pop"],
+        .single-ad.is-multi[data-design="retro"] {
+            --multi-grade-ink: #172033;
+        }
+
+        .single-ad.is-multi[data-design="sakura"] {
+            --multi-grade-ink: #fff;
+        }
+
+        .single-ad.is-multi > * {
+            grid-column: 1 / -1;
+        }
+
+        .single-ad.is-multi .single-ad-header {
+            min-height: 76px;
+            padding-bottom: 10px;
+        }
+
+        .single-ad.is-multi .single-ad-logo-box {
+            width: 270px;
+            height: 74px;
+        }
+
+        .single-ad.is-multi .single-ad-logo {
+            max-height: 72px;
+        }
+
+        .single-ad.is-multi .single-ad-date {
+            font-size: 17px;
+        }
+
+        .single-ad.is-multi .single-ad-heading {
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        .single-ad.is-multi .single-ad-heading h2 {
+            font-size: 42px;
+            line-height: 1.04;
+        }
+
+        .single-ad-products {
+            display: flex;
+            position: relative;
+            z-index: 2;
+            min-width: 0;
+            min-height: 0;
+            height: 100%;
+            flex-wrap: wrap;
+            align-content: stretch;
+            justify-content: center;
+            gap: var(--multi-gap, 18px);
+            margin-top: 14px;
+        }
+
         .single-ad-product-card {
-            display: grid; min-width: 0; min-height: 0; grid-template-rows: minmax(0,1fr) auto;
-            overflow: hidden; padding: 16px; border: 3px solid var(--ad-primary);
-            border-radius: 20px; background: rgba(255,255,255,.96);
-            box-shadow: 0 10px 0 rgba(0,0,0,.16);
+            display: grid;
+            width: var(--multi-card-width, calc(50% - 9px));
+            height: var(--multi-card-height, 100%);
+            min-width: 0;
+            min-height: 0;
+            flex: 0 0 var(--multi-card-width, calc(50% - 9px));
+            grid-template-rows: minmax(0,1fr) auto;
+            overflow: hidden;
+            padding: 12px;
+            border: 3px solid var(--ad-primary);
+            border-radius: 16px;
+            background: var(--ad-card);
+            box-shadow: 0 8px 0 rgba(0,0,0,.16);
         }
-        .single-ad-product-card .single-ad-image-stage {
-            min-height: 0; padding: 8px; border: 0; border-radius: 12px; box-shadow: none;
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-image-stage {
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            min-height: 0;
+            padding: 5px;
+            border: 0;
+            border-radius: 10px;
+            background: transparent;
+            box-shadow: none;
+            transform: none;
         }
-        .single-ad-product-card .single-ad-info { padding-top: 10px; }
-        .single-ad-product-card .single-ad-card-name {
-            color: #172033; font-size: 22px; line-height: 1.18; -webkit-line-clamp: 2;
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-info {
+            align-self: auto;
+            order: 0;
+            min-width: 0;
+            padding: 8px 0 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            text-align: center;
+            box-shadow: none;
+            transform: none;
         }
-        .single-ad-product-card .single-ad-grade {
-            margin-top: 7px; padding: 4px 10px; font-size: 13px;
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-card-name {
+            color: #172033;
+            font-size: 21px;
+            line-height: 1.18;
+            -webkit-line-clamp: 2;
         }
-        .single-ad-product-card .single-ad-price-label {
-            margin-top: 8px; color: #596579; font-size: 13px;
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-grade {
+            margin-top: 6px;
+            padding: 3px 9px;
+            color: var(--multi-grade-ink);
+            border: 0;
+            background: var(--ad-secondary);
+            font-size: 12px;
         }
-        .single-ad-product-card .single-ad-price {
-            min-height: 62px; margin-top: 5px; padding: 7px 10px;
-            border-width: 3px; border-radius: 10px; font-size: 34px;
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-price-label {
+            margin-top: 6px;
+            color: #596579;
+            font-size: 12px;
+            letter-spacing: .08em;
         }
-        .single-ad.is-multi[data-count="7"] .single-ad-product-card,
-        .single-ad.is-multi[data-count="8"] .single-ad-product-card,
-        .single-ad.is-multi[data-count="9"] .single-ad-product-card,
-        .single-ad.is-multi[data-count="10"] .single-ad-product-card { padding: 11px; }
-        .single-ad.is-multi[data-count="7"] .single-ad-card-name,
-        .single-ad.is-multi[data-count="8"] .single-ad-card-name,
-        .single-ad.is-multi[data-count="9"] .single-ad-card-name,
-        .single-ad.is-multi[data-count="10"] .single-ad-card-name { font-size: 18px; }
-        .single-ad.is-multi[data-count="7"] .single-ad-price,
-        .single-ad.is-multi[data-count="8"] .single-ad-price,
-        .single-ad.is-multi[data-count="9"] .single-ad-price,
-        .single-ad.is-multi[data-count="10"] .single-ad-price {
-            min-height: 48px; font-size: 26px;
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-price {
+            min-height: 58px;
+            margin-top: 4px;
+            padding: 6px 8px;
+            border-width: 3px;
+            border-radius: 9px;
+            box-shadow: 0 5px 0 rgba(0,0,0,.22);
+            font-size: 31px;
+            letter-spacing: -.025em;
+            transform: none;
         }
-        .single-ad.is-multi[data-count="7"] .single-ad-products,
-        .single-ad.is-multi[data-count="8"] .single-ad-products,
-        .single-ad.is-multi[data-count="9"] .single-ad-products,
-        .single-ad.is-multi[data-count="10"] .single-ad-products { gap: 14px; }
+
+        .single-ad.is-multi .single-ad-footer {
+            margin-top: 14px;
+            padding: 11px 0 0;
+            border-top: 2px solid var(--ad-primary);
+            border-radius: 0;
+            background: transparent;
+        }
+
+        .single-ad.is-multi .single-ad-note {
+            font-size: 14px;
+            line-height: 1.35;
+        }
+
+        .single-ad.is-multi .single-ad-cta {
+            padding: 9px 14px;
+            font-size: 16px;
+        }
+
+        .single-ad.is-multi[data-density="compact"] {
+            padding: 34px;
+        }
+
+        .single-ad.is-multi[data-density="compact"] .single-ad-heading h2 {
+            font-size: 38px;
+        }
+
+        .single-ad.is-multi[data-density="compact"] .single-ad-product-card {
+            padding: 10px;
+        }
+
+        .single-ad.is-multi[data-density="compact"] .single-ad-product-card .single-ad-card-name {
+            font-size: 18px;
+        }
+
+        .single-ad.is-multi[data-density="compact"] .single-ad-product-card .single-ad-price {
+            min-height: 50px;
+            font-size: 27px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] {
+            padding: 30px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-header {
+            min-height: 66px;
+            padding-bottom: 8px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-logo-box {
+            width: 235px;
+            height: 64px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-logo {
+            max-height: 62px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-date {
+            font-size: 14px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-heading {
+            margin-top: 10px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-heading h2 {
+            font-size: 34px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-product-card {
+            padding: 8px;
+            border-width: 2px;
+            border-radius: 12px;
+            box-shadow: 0 6px 0 rgba(0,0,0,.14);
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-info {
+            padding-top: 5px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-card-name {
+            font-size: 16px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-grade {
+            margin-top: 4px;
+            padding: 2px 7px;
+            font-size: 10px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-price-label {
+            margin-top: 4px;
+            font-size: 10px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-price {
+            min-height: 44px;
+            margin-top: 3px;
+            padding: 4px 6px;
+            border-width: 2px;
+            border-radius: 7px;
+            font-size: 24px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-footer {
+            margin-top: 10px;
+            padding-top: 8px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-note {
+            font-size: 12px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-cta {
+            padding: 7px 11px;
+            font-size: 14px;
+        }
+
         @media (max-width: 900px) {
-            .workflow-summary { grid-template-columns: repeat(2, minmax(0,1fr)); }
+            .workflow-summary {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
         }
     </style>
 </head>
@@ -7156,7 +7519,7 @@
                 <div class="control-group">
                     <label><span class="step">5</span>1枚に載せる商品数</label>
                     <select id="singleItemsPerImageSelect">
-                        <option value="1">1商品｜従来のGODレイアウト</option>
+                        <option value="1">1商品</option>
                         <option value="2">2商品</option>
                         <option value="3">3商品</option>
                         <option value="4">4商品</option>
@@ -7167,7 +7530,7 @@
                         <option value="9">9商品</option>
                         <option value="10">10商品</option>
                     </select>
-                    <small class="help">選択した商品をこの件数ごとに分け、余白と文字サイズを自動調整します。</small>
+                    <small class="help">選択順にこの件数でページ分割します。最後が1商品のページは従来のレイアウトで表示します。</small>
                 </div>
 
                 <div class="control-group">
@@ -9588,6 +9951,43 @@
         `;
     }
 
+    function getSingleMultiLayout(size, count) {
+        const safeCount = Math.min(10, Math.max(2, Number(count) || 2));
+        const layoutMap = {
+            square: {
+                2: [2, 1], 3: [3, 1], 4: [2, 2], 5: [3, 2],
+                6: [3, 2], 7: [4, 2], 8: [4, 2], 9: [5, 2], 10: [5, 2]
+            },
+            portrait: {
+                2: [2, 1], 3: [3, 1], 4: [2, 2], 5: [3, 2],
+                6: [3, 2], 7: [4, 2], 8: [4, 2], 9: [5, 2], 10: [5, 2]
+            },
+            landscape: {
+                2: [2, 1], 3: [3, 1], 4: [4, 1], 5: [5, 1],
+                6: [3, 2], 7: [4, 2], 8: [4, 2], 9: [5, 2], 10: [5, 2]
+            }
+        };
+        const normalizedSize = SINGLE_SIZES.includes(size) ? size : "square";
+        const [columns, rows] = layoutMap[normalizedSize][safeCount];
+        const density = safeCount >= 9
+            ? "dense"
+            : safeCount >= 7 || (normalizedSize === "landscape" && safeCount >= 4)
+                ? "compact"
+                : "comfortable";
+        const gap = density === "dense" ? 12 : density === "compact" ? 14 : 18;
+        const totalColumnGap = Math.max(0, columns - 1) * gap;
+        const totalRowGap = Math.max(0, rows - 1) * gap;
+
+        return {
+            columns,
+            rows,
+            density,
+            gap,
+            cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})`,
+            cardHeight: `calc((100% - ${totalRowGap}px) / ${rows})`
+        };
+    }
+
     function renderSingleAdPreviews() {
         const container = document.getElementById("singlePreviewContainer");
         if (!container) return;
@@ -9614,7 +10014,7 @@
 
         container.innerHTML = groups.map((group, index) => {
             const card = group[0];
-            const isMulti = settings.itemsPerImage > 1;
+            const isMulti = group.length > 1;
             const name = escapeHtml(card.name || "カード名なし");
             const grade = escapeHtml(card.type || "");
             const gradeHtml = settings.gradeDisplay === "show" && grade
@@ -9622,13 +10022,18 @@
             const imageSource = card.resolvedImg || LOADING_IMAGE;
             const imageUrl = escapeHtml(card.imgUrl || "");
             const price = escapeHtml(normalizeSinglePriceDisplay(card.price));
-            const columns = settings.size === "landscape"
-                ? Math.min(5, Math.ceil(group.length / 2))
-                : settings.size === "portrait"
-                    ? Math.min(3, Math.ceil(Math.sqrt(group.length * 0.78)))
-                    : Math.min(4, Math.ceil(Math.sqrt(group.length)));
+            const multiLayout = isMulti
+                ? getSingleMultiLayout(settings.size, group.length)
+                : null;
             const productBody = isMulti
-                ? `<div class="single-ad-products" style="--multi-cols:${columns}">
+                ? `<div
+                        class="single-ad-products"
+                        style="
+                            --multi-gap:${multiLayout.gap}px;
+                            --multi-card-width:${multiLayout.cardWidth};
+                            --multi-card-height:${multiLayout.cardHeight};
+                        "
+                    >
                     ${group.map(item => singleProductMarkup(item, settings)).join("")}
                    </div>`
                 : `<div class="single-ad-product">
@@ -9652,6 +10057,7 @@
                         data-design="${settings.design}"
                         data-single-card-id="${group.map(item => item.id).join(",")}"
                         data-count="${group.length}"
+                        data-density="${multiLayout?.density || "single"}"
                         id="singleAd_${index + 1}"
                     >
                         <header class="single-ad-header">
