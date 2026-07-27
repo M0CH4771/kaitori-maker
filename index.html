@@ -525,10 +525,21 @@
         }
 
         .title-custom-field > label {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
             margin-bottom: 6px;
             color: #cbd5e1;
             font-size: 10px;
             font-weight: 900;
+        }
+
+        .title-size-output {
+            min-width: 42px;
+            color: #f7d87c;
+            text-align: right;
+            font-variant-numeric: tabular-nums;
         }
 
         .title-size-controls {
@@ -3620,7 +3631,7 @@
             display: grid;
             position: relative;
             z-index: 2;
-            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-columns: minmax(0, 1fr);
             align-items: end;
             gap: 28px;
             margin-top: 30px;
@@ -3633,16 +3644,6 @@
             font-size: 17px;
             font-weight: 800;
             line-height: 1.5;
-        }
-
-        .single-ad-cta {
-            padding: 13px 21px;
-            color: var(--ad-bg);
-            border-radius: 8px;
-            background: var(--ad-primary);
-            font-size: 20px;
-            font-weight: 1000;
-            white-space: nowrap;
         }
 
         .single-landscape .single-ad-header,
@@ -3779,9 +3780,6 @@
         .single-ad[data-design="pop"] {
             border-width: 12px;
             border-color: #1423a7;
-        }
-        .single-ad[data-design="pop"] .single-ad-cta {
-            color: #fff;
         }
 
         .single-ad[data-design="emerald"] {
@@ -4023,9 +4021,6 @@
         .single-ad[data-design="sakura"] .single-ad-price {
             border-radius: 999px;
             box-shadow: 0 8px 18px rgba(229,43,104,0.22);
-        }
-        .single-ad[data-design="sakura"] .single-ad-cta {
-            color: #4e2b3b;
         }
         .single-ad[data-design="sakura"] .single-ad-footer {
             padding: 18px 24px;
@@ -5058,21 +5053,6 @@
             background: transparent;
         }
 
-        .single-ad:is(
-            [data-design="blackgold"], [data-design="redimpact"],
-            [data-design="royal"], [data-design="clean"],
-            [data-design="cyber"], [data-design="sakura"],
-            [data-design="retro"], [data-design="pop"],
-            [data-design="emerald"], [data-design="mono"]
-        ) .single-ad-cta {
-            padding: 13px 20px;
-            color: var(--ad-bg);
-            border-radius: 5px;
-            background: var(--ad-primary);
-            font-size: 19px;
-            box-shadow: 0 5px 0 rgba(0,0,0,0.34);
-        }
-
         /* ----- 単品告知：10方向を明確に差別化 ----- */
         .single-ad[data-design="blackgold"] {
             --ad-bg: #070b12; --ad-surface: #111827; --ad-primary: #d8aa42;
@@ -5190,7 +5170,6 @@
             border-radius: 2px;
             box-shadow: none;
         }
-        .single-ad[data-design="clean"] .single-ad-cta { color: #fff; box-shadow: none; }
 
         .single-ad[data-design="cyber"] {
             --ad-bg: #070615; --ad-surface: #11152d; --ad-primary: #00e5f4;
@@ -5240,11 +5219,9 @@
             border-radius: 28px;
             background: rgba(255,255,255,0.88);
         }
-        .single-ad[data-design="sakura"] .single-ad-price,
-        .single-ad[data-design="sakura"] .single-ad-cta {
+        .single-ad[data-design="sakura"] .single-ad-price {
             border-radius: 999px;
         }
-        .single-ad[data-design="sakura"] .single-ad-cta { color: #fff; }
 
         .single-ad[data-design="retro"] {
             --ad-bg: #e5cf9f; --ad-surface: #f8eccf; --ad-primary: #6f4328;
@@ -5315,7 +5292,6 @@
             border-radius: 12px;
             box-shadow: 7px 7px 0 #18269b;
         }
-        .single-ad[data-design="pop"] .single-ad-cta { color: #fff; }
 
         .single-ad[data-design="emerald"] {
             --ad-bg: #05251b; --ad-surface: #0b3b2d; --ad-primary: #d2b464;
@@ -5397,11 +5373,6 @@
         .single-ad[data-design="mono"] .single-ad-grade {
             color: #fff;
             background: #111;
-        }
-        .single-ad[data-design="mono"] .single-ad-cta {
-            color: #111;
-            border-radius: 0;
-            box-shadow: none;
         }
 
         /* 縦長でも上下の情報密度を崩さない */
@@ -6796,20 +6767,58 @@
         }
 
         /*
-         * 複数商品は、商品数と画像比率ごとにJSで列数・行数を決定する。
-         * flexで最終行を中央寄せにするため、3/5/7/9商品でも片寄らない。
-         * 1商品用の .single-ad-product には一切適用しない。
+         * 複数商品は行ごとに分割し、各行を同じ高さの領域へ収める。
+         * 画像の横幅だけでなく高さも制限することで、縦長画像が
+         * 注意書きへ重なるのを防ぐ。1商品用レイアウトには適用しない。
          */
         .single-ad.is-multi {
             --multi-grade-ink: var(--ad-bg);
+            --multi-info-bg: rgba(255,255,255,.94);
+            --multi-info-ink: #172033;
+            --multi-info-muted: #596579;
+            --multi-info-border: var(--ad-primary);
             grid-template-columns: 1fr;
             grid-template-rows: auto auto minmax(0,1fr) auto;
             column-gap: 0;
             padding: 38px;
         }
 
+        .single-ad.is-multi[data-design="blackgold"] {
+            --multi-info-bg: rgba(19,16,10,.94);
+            --multi-info-ink: #fffdf0;
+            --multi-info-muted: #f7e5a2;
+            --multi-info-border: #d8aa42;
+        }
+
+        .single-ad.is-multi[data-design="redimpact"] {
+            --multi-info-bg: rgba(18,20,27,.95);
+            --multi-info-ink: #fff;
+            --multi-info-muted: #ffe3a8;
+            --multi-info-border: #ffcf4a;
+        }
+
+        .single-ad.is-multi[data-design="royal"] {
+            --multi-info-bg: rgba(6,44,94,.95);
+            --multi-info-ink: #fff;
+            --multi-info-muted: #d9ecff;
+            --multi-info-border: #78b9ff;
+        }
+
+        .single-ad.is-multi[data-design="cyber"] {
+            --multi-info-bg: rgba(9,12,32,.95);
+            --multi-info-ink: #fff;
+            --multi-info-muted: #bdefff;
+            --multi-info-border: #00e5f4;
+        }
+
+        .single-ad.is-multi[data-design="emerald"] {
+            --multi-info-bg: rgba(5,37,27,.95);
+            --multi-info-ink: #fff;
+            --multi-info-muted: #f5e5ae;
+            --multi-info-border: #d2b464;
+        }
+
         .single-ad.is-multi[data-design="clean"],
-        .single-ad.is-multi[data-design="cyber"],
         .single-ad.is-multi[data-design="pop"],
         .single-ad.is-multi[data-design="retro"] {
             --multi-grade-ink: #172033;
@@ -6817,6 +6826,31 @@
 
         .single-ad.is-multi[data-design="sakura"] {
             --multi-grade-ink: #fff;
+            --multi-info-bg: rgba(255,255,255,.92);
+            --multi-info-ink: #4f2b3b;
+            --multi-info-muted: #76364f;
+            --multi-info-border: #d95d8b;
+        }
+
+        .single-ad.is-multi[data-design="retro"] {
+            --multi-info-bg: rgba(248,236,207,.94);
+            --multi-info-ink: #412819;
+            --multi-info-muted: #6f4328;
+            --multi-info-border: #6f4328;
+        }
+
+        .single-ad.is-multi[data-design="pop"] {
+            --multi-info-bg: rgba(255,255,255,.94);
+            --multi-info-ink: #111827;
+            --multi-info-muted: #18269b;
+            --multi-info-border: #18269b;
+        }
+
+        .single-ad.is-multi[data-design="mono"] {
+            --multi-info-bg: rgba(255,255,255,.95);
+            --multi-info-ink: #111;
+            --multi-info-muted: #333;
+            --multi-info-border: #111;
         }
 
         .single-ad.is-multi > * {
@@ -6847,76 +6881,102 @@
         }
 
         .single-ad.is-multi .single-ad-heading h2 {
+            display: -webkit-box;
+            overflow: hidden;
             font-size: 42px;
             line-height: 1.04;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
         }
 
         .single-ad-products {
-            display: flex;
+            display: grid;
             position: relative;
             z-index: 2;
+            width: 100%;
             min-width: 0;
             min-height: 0;
-            height: 100%;
-            flex-wrap: wrap;
-            align-content: center;
-            align-items: flex-start;
+            align-self: stretch;
+            grid-template-rows: repeat(var(--multi-rows, 1), minmax(0, 1fr));
+            gap: var(--multi-row-gap, 18px);
+            margin-top: 14px;
+            padding: 2px 3px 7px;
+        }
+
+        .single-ad-products-row {
+            display: flex;
+            width: 100%;
+            min-width: 0;
+            min-height: 0;
+            align-items: stretch;
             justify-content: center;
             gap: var(--multi-gap, 18px);
-            margin-top: 14px;
         }
 
         .single-ad-product-card {
             display: grid;
             width: var(--multi-card-width, calc(50% - 9px));
-            height: auto;
+            height: 100%;
             min-width: 0;
             min-height: 0;
             flex: 0 0 var(--multi-card-width, calc(50% - 9px));
-            grid-template-rows: auto auto;
+            grid-template-rows: minmax(0, 1fr) auto;
             overflow: visible;
-            padding: 4px;
-            border: 0;
-            background: transparent;
-            box-shadow: none;
+            padding: 2px 3px 5px;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .single-ad-product-card::before,
+        .single-ad-product-card::after {
+            display: none !important;
+            content: none !important;
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-image-stage {
             width: 100%;
-            height: auto;
+            height: 100%;
             min-width: 0;
             min-height: 0;
-            align-items: flex-end;
-            padding: 0 3px 2px;
-            border: 0;
-            background: transparent;
-            box-shadow: none;
-            transform: none;
+            align-items: center;
+            overflow: visible;
+            padding: 0 3px 2px !important;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-product-image {
-            width: 100%;
+            width: auto;
             height: auto;
-            max-height: none;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
             filter: drop-shadow(0 10px 10px rgba(0,0,0,.24));
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-info {
-            align-self: auto;
-            order: 0;
+            align-self: end !important;
+            order: 0 !important;
             min-width: 0;
+            height: auto !important;
             margin-top: 7px;
             padding: 8px 8px 9px;
-            border: 2px solid var(--ad-primary);
+            color: var(--multi-info-ink);
+            border: 2px solid var(--multi-info-border) !important;
             border-radius: 12px;
-            background: var(--ad-card);
-            text-align: center;
-            box-shadow: 0 5px 0 rgba(0,0,0,.18);
-            transform: none;
+            background: var(--multi-info-bg) !important;
+            text-align: center !important;
+            box-shadow: 0 5px 0 rgba(0,0,0,.18) !important;
+            transform: none !important;
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-card-name {
-            color: #172033;
+            color: var(--multi-info-ink) !important;
             font-size: 21px;
             line-height: 1.18;
             -webkit-line-clamp: 2;
@@ -6929,11 +6989,15 @@
             border: 0;
             background: var(--ad-secondary);
             font-size: 12px;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-price-label {
             margin-top: 6px;
-            color: #596579;
+            color: var(--multi-info-muted) !important;
             font-size: 12px;
             letter-spacing: .08em;
         }
@@ -6959,13 +7023,12 @@
         }
 
         .single-ad.is-multi .single-ad-note {
+            display: -webkit-box;
+            overflow: hidden;
             font-size: 14px;
             line-height: 1.35;
-        }
-
-        .single-ad.is-multi .single-ad-cta {
-            padding: 9px 14px;
-            font-size: 16px;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
         }
 
         .single-ad.is-multi[data-density="compact"] {
@@ -7067,11 +7130,42 @@
 
         .single-ad.is-multi[data-density="dense"] .single-ad-note {
             font-size: 12px;
+            -webkit-line-clamp: 2;
         }
 
-        .single-ad.is-multi[data-density="dense"] .single-ad-cta {
-            padding: 7px 11px;
-            font-size: 14px;
+        /*
+         * 単品告知の共通調整
+         * ロゴは全デザインで中央へ固定し、日付だけを右側へ配置する。
+         * 見出しサイズは商品数ごとの適正値を基準に、設定した倍率を反映する。
+         */
+        .single-ad {
+            --single-headline-size: 57px;
+        }
+
+        .single-ad .single-ad-heading h2 {
+            font-size: var(--single-headline-size) !important;
+        }
+
+        .single-ad .single-ad-header {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            align-items: center;
+        }
+
+        .single-ad .single-ad-logo-box {
+            grid-column: 2;
+            justify-self: center;
+            margin-inline: 0;
+        }
+
+        .single-ad .single-ad-date {
+            grid-column: 3;
+            justify-self: end;
+            white-space: nowrap;
+        }
+
+        .single-ad .single-ad-footer {
+            grid-template-columns: minmax(0, 1fr);
         }
 
         @media (max-width: 900px) {
@@ -7550,6 +7644,36 @@
                 <div class="control-group">
                     <label><span class="step">6</span>見出し</label>
                     <input type="text" id="singleHeadlineInput" value="強化買取中">
+                    <div class="title-custom-field">
+                        <label for="singleHeadlineSizeRange">
+                            <span>文字サイズ</span>
+                            <output
+                                class="title-size-output"
+                                id="singleHeadlineSizeOutput"
+                                for="singleHeadlineSizeRange singleHeadlineSizeInput"
+                            >100%</output>
+                        </label>
+                        <div class="title-size-controls">
+                            <input
+                                type="range"
+                                id="singleHeadlineSizeRange"
+                                min="60"
+                                max="160"
+                                step="1"
+                                value="100"
+                            >
+                            <input
+                                type="number"
+                                id="singleHeadlineSizeInput"
+                                min="60"
+                                max="160"
+                                step="1"
+                                value="100"
+                                aria-label="見出し文字サイズ（パーセント）"
+                            >
+                        </div>
+                    </div>
+                    <small class="help">現在のレイアウトに合う文字サイズを100%として調整します。</small>
                 </div>
 
                 <div class="control-group">
@@ -7558,17 +7682,12 @@
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">8</span>案内文</label>
-                    <input type="text" id="singleCtaInput" value="お持ち込みお待ちしております">
-                </div>
-
-                <div class="control-group">
-                    <label><span class="step">9</span>注意書き</label>
+                    <label><span class="step">8</span>注意書き</label>
                     <textarea id="singleNoteInput" rows="3">※相場や在庫状況、状態等により価格が変動する場合がございます。</textarea>
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">10</span>種別・グレード</label>
+                    <label><span class="step">9</span>種別・グレード</label>
                     <select id="singleGradeDisplaySelect">
                         <option value="show">入力がある場合のみ表示</option>
                         <option value="hide">表示しない</option>
@@ -7821,6 +7940,7 @@
         sunset: "redimpact"
     };
     const SINGLE_SIZES = ["square", "portrait", "landscape"];
+    const DEFAULT_SINGLE_HEADLINE_SCALE = 100;
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
@@ -8469,13 +8589,19 @@
             10,
             Math.max(1, Number(document.getElementById("singleItemsPerImageSelect")?.value) || 1)
         );
+        const headlineScale = clampTitleNumber(
+            document.getElementById("singleHeadlineSizeInput")?.value,
+            60,
+            160,
+            DEFAULT_SINGLE_HEADLINE_SCALE
+        );
         return {
             design: normalizeSingleDesign(design),
             size: SINGLE_SIZES.includes(size) ? size : "square",
             itemsPerImage,
             headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取中",
+            headlineScale,
             priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
-            cta: document.getElementById("singleCtaInput")?.value ?? "お持ち込みお待ちしております",
             note: document.getElementById("singleNoteInput")?.value ?? "",
             gradeDisplay:
                 document.getElementById("singleGradeDisplaySelect")?.value === "hide"
@@ -8495,11 +8621,20 @@
         if (typeof settings.headline === "string") {
             document.getElementById("singleHeadlineInput").value = settings.headline;
         }
+        const headlineScale = clampTitleNumber(
+            settings.headlineScale,
+            60,
+            160,
+            DEFAULT_SINGLE_HEADLINE_SCALE
+        );
+        document.getElementById("singleHeadlineSizeRange").value =
+            String(headlineScale);
+        document.getElementById("singleHeadlineSizeInput").value =
+            String(headlineScale);
+        document.getElementById("singleHeadlineSizeOutput").textContent =
+            `${headlineScale}%`;
         if (typeof settings.priceLabel === "string") {
             document.getElementById("singlePriceLabelInput").value = settings.priceLabel;
-        }
-        if (typeof settings.cta === "string") {
-            document.getElementById("singleCtaInput").value = settings.cta;
         }
         if (typeof settings.note === "string") {
             document.getElementById("singleNoteInput").value = settings.note;
@@ -9163,7 +9298,6 @@
     [
         "singleHeadlineInput",
         "singlePriceLabelInput",
-        "singleCtaInput",
         "singleNoteInput"
     ].forEach(id => {
         document.getElementById(id).addEventListener("input", () => {
@@ -9171,6 +9305,46 @@
             renderSingleAdPreviews();
         });
     });
+
+    const updateSingleHeadlineScale = value => {
+        const headlineScale = clampTitleNumber(
+            value,
+            60,
+            160,
+            DEFAULT_SINGLE_HEADLINE_SCALE
+        );
+        document.getElementById("singleHeadlineSizeRange").value =
+            String(headlineScale);
+        document.getElementById("singleHeadlineSizeInput").value =
+            String(headlineScale);
+        document.getElementById("singleHeadlineSizeOutput").textContent =
+            `${headlineScale}%`;
+        saveSingleSettings();
+        const settings = collectSingleSettings();
+        const preview = document.getElementById("singlePreviewContainer");
+        applySingleHeadlineSizes(preview, settings);
+        requestAnimationFrame(() => {
+            updateSingleAdLayoutStatus(preview);
+            fitSinglePreviews();
+        });
+    };
+
+    document.getElementById("singleHeadlineSizeRange")
+        .addEventListener("input", event => {
+            updateSingleHeadlineScale(event.target.value);
+        });
+
+    document.getElementById("singleHeadlineSizeInput")
+        .addEventListener("input", event => {
+            const value = Number(event.target.value);
+            if (!Number.isFinite(value) || value < 60 || value > 160) return;
+            updateSingleHeadlineScale(value);
+        });
+
+    document.getElementById("singleHeadlineSizeInput")
+        .addEventListener("change", event => {
+            updateSingleHeadlineScale(event.target.value);
+        });
 
     [
         "singleSizeSelect",
@@ -9990,16 +10164,91 @@
                 : "comfortable";
         const gap = density === "dense" ? 12 : density === "compact" ? 14 : 18;
         const totalColumnGap = Math.max(0, columns - 1) * gap;
-        const totalRowGap = Math.max(0, rows - 1) * gap;
 
         return {
             columns,
             rows,
             density,
             gap,
-            cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})`,
-            cardHeight: `calc((100% - ${totalRowGap}px) / ${rows})`
+            rowGap: gap,
+            cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})`
         };
+    }
+
+    function renderSingleProductRows(cards, settings, layout) {
+        const rows = [];
+        for (let index = 0; index < cards.length; index += layout.columns) {
+            rows.push(cards.slice(index, index + layout.columns));
+        }
+        return rows.map((row, rowIndex) => `
+            <div
+                class="single-ad-products-row"
+                data-row="${rowIndex + 1}"
+                data-items="${row.length}"
+            >
+                ${row.map(item => singleProductMarkup(item, settings)).join("")}
+            </div>
+        `).join("");
+    }
+
+    function getSingleHeadlineSize(settings, isMulti, density) {
+        let baseSize = settings.design === "mono" ? 64 : 57;
+        if (isMulti) {
+            baseSize = density === "dense"
+                ? 34
+                : density === "compact"
+                    ? 38
+                    : 42;
+        }
+        const scale = clampTitleNumber(
+            settings.headlineScale,
+            60,
+            160,
+            DEFAULT_SINGLE_HEADLINE_SCALE
+        );
+        return Math.round(baseSize * scale) / 100;
+    }
+
+    function getSingleAdAreas(root = document) {
+        if (!root) return [];
+        if (root instanceof Element && root.matches(".single-ad")) {
+            return [root];
+        }
+        return Array.from(root.querySelectorAll(".single-ad"));
+    }
+
+    function applySingleHeadlineSizes(
+        root = document,
+        settings = collectSingleSettings()
+    ) {
+        getSingleAdAreas(root).forEach(area => {
+            const areaSettings = {
+                ...settings,
+                design: normalizeSingleDesign(
+                    area.dataset.design || settings.design
+                )
+            };
+            const headlineSize = getSingleHeadlineSize(
+                areaSettings,
+                area.classList.contains("is-multi"),
+                area.dataset.density
+            );
+            const headline = area.querySelector(".single-ad-heading h2");
+
+            area.style.setProperty(
+                "--single-headline-size",
+                `${headlineSize}px`
+            );
+            area.dataset.headlineScale = String(areaSettings.headlineScale);
+            area.dataset.headlineSize = String(headlineSize);
+            if (headline) {
+                headline.style.setProperty(
+                    "font-size",
+                    `${headlineSize}px`,
+                    "important"
+                );
+            }
+        });
     }
 
     function renderSingleAdPreviews() {
@@ -10039,16 +10288,22 @@
             const multiLayout = isMulti
                 ? getSingleMultiLayout(settings.size, group.length)
                 : null;
+            const headlineSize = getSingleHeadlineSize(
+                settings,
+                isMulti,
+                multiLayout?.density
+            );
             const productBody = isMulti
                 ? `<div
                         class="single-ad-products"
                         style="
                             --multi-gap:${multiLayout.gap}px;
+                            --multi-row-gap:${multiLayout.rowGap}px;
+                            --multi-rows:${multiLayout.rows};
                             --multi-card-width:${multiLayout.cardWidth};
-                            --multi-card-height:${multiLayout.cardHeight};
                         "
                     >
-                    ${group.map(item => singleProductMarkup(item, settings)).join("")}
+                    ${renderSingleProductRows(group, settings, multiLayout)}
                    </div>`
                 : `<div class="single-ad-product">
                     <div class="single-ad-image-stage">
@@ -10071,7 +10326,12 @@
                         data-design="${settings.design}"
                         data-single-card-id="${group.map(item => item.id).join(",")}"
                         data-count="${group.length}"
+                        data-columns="${multiLayout?.columns || 1}"
+                        data-rows="${multiLayout?.rows || 1}"
                         data-density="${multiLayout?.density || "single"}"
+                        data-headline-scale="${settings.headlineScale}"
+                        data-headline-size="${headlineSize}"
+                        style="--single-headline-size:${headlineSize}px"
                         id="singleAd_${index + 1}"
                     >
                         <header class="single-ad-header">
@@ -10089,17 +10349,82 @@
 
                         <footer class="single-ad-footer">
                             <div class="single-ad-note">${noteHtml}</div>
-                            <div class="single-ad-cta">${escapeHtml(settings.cta)}</div>
                         </footer>
                     </article>
                 </div>
             `;
         }).join("");
 
+        applySingleHeadlineSizes(container, settings);
         requestAnimationFrame(() => {
             adjustSingleAdPriceSizes();
             fitSinglePreviews();
-            imageLoadPromise = loadMissingImagesFast();
+            updateSingleAdLayoutStatus(container);
+            imageLoadPromise = loadMissingImagesFast().finally(() => {
+                requestAnimationFrame(() => {
+                    adjustSingleAdPriceSizes(container);
+                    updateSingleAdLayoutStatus(container);
+                });
+            });
+        });
+    }
+
+    function getSingleAdLayoutIssues(area) {
+        if (!area?.classList?.contains("single-ad")) return [];
+        if (!area.classList.contains("is-multi")) return [];
+        const tolerance = 2;
+        const issues = [];
+        const overflowed = element =>
+            element &&
+            (
+                element.scrollHeight > element.clientHeight + tolerance ||
+                element.scrollWidth > element.clientWidth + tolerance
+            );
+
+        if (overflowed(area)) issues.push("画像全体");
+
+        const products = area.querySelector(".single-ad-products");
+        if (overflowed(products)) issues.push("商品一覧");
+
+        area.querySelectorAll(".single-ad-products-row").forEach((row, index) => {
+            if (overflowed(row)) issues.push(`商品行${index + 1}`);
+        });
+        area.querySelectorAll(".single-ad-product-card").forEach((card, index) => {
+            if (overflowed(card)) issues.push(`商品${index + 1}`);
+        });
+
+        const regions = [
+            ["ヘッダー", area.querySelector(".single-ad-header")],
+            ["見出し", area.querySelector(".single-ad-heading")],
+            ["商品一覧", products],
+            ["注意書き", area.querySelector(".single-ad-footer")]
+        ].filter(([, element]) => element);
+        for (let index = 0; index < regions.length - 1; index += 1) {
+            const [currentName, current] = regions[index];
+            const [nextName, next] = regions[index + 1];
+            const currentRect = current.getBoundingClientRect();
+            const nextRect = next.getBoundingClientRect();
+            if (currentRect.bottom > nextRect.top + tolerance) {
+                issues.push(`${currentName}と${nextName}の重なり`);
+            }
+        }
+
+        const footer = area.querySelector(".single-ad-footer");
+        if (products && footer) {
+            const productsRect = products.getBoundingClientRect();
+            const footerRect = footer.getBoundingClientRect();
+            if (productsRect.bottom > footerRect.top + tolerance) {
+                issues.push("商品一覧と注意書きの重なり");
+            }
+        }
+        return [...new Set(issues)];
+    }
+
+    function updateSingleAdLayoutStatus(root = document) {
+        root.querySelectorAll(".single-ad").forEach(area => {
+            const issues = getSingleAdLayoutIssues(area);
+            area.dataset.layoutStatus = issues.length ? "error" : "ok";
+            area.dataset.layoutIssues = issues.join(",");
         });
     }
 
@@ -10737,10 +11062,18 @@
                 await document.fonts.ready;
             }
             await waitForImages(exportClone);
+            applySingleHeadlineSizes(exportClone);
             adjustTitleSizes(exportClone);
             adjustTextSize(exportClone);
             adjustSingleAdPriceSizes(exportClone);
             await new Promise(resolve => setTimeout(resolve, 250));
+            updateSingleAdLayoutStatus(exportStage);
+            const layoutIssues = getSingleAdLayoutIssues(exportClone);
+            if (layoutIssues.length) {
+                throw new Error(
+                    `レイアウトが画像内に収まりませんでした（${layoutIssues.join("、")}）。`
+                );
+            }
 
             return await html2canvas(exportClone, {
                 useCORS: true,
