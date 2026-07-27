@@ -6859,8 +6859,7 @@
             min-height: 0;
             height: 100%;
             flex-wrap: wrap;
-            align-content: center;
-            align-items: flex-start;
+            align-content: stretch;
             justify-content: center;
             gap: var(--multi-gap, 18px);
             margin-top: 14px;
@@ -6869,49 +6868,42 @@
         .single-ad-product-card {
             display: grid;
             width: var(--multi-card-width, calc(50% - 9px));
-            height: auto;
+            height: var(--multi-card-height, 100%);
             min-width: 0;
             min-height: 0;
             flex: 0 0 var(--multi-card-width, calc(50% - 9px));
-            grid-template-rows: auto auto;
-            overflow: visible;
-            padding: 4px;
-            border: 0;
-            background: transparent;
-            box-shadow: none;
+            grid-template-rows: minmax(0,1fr) auto;
+            overflow: hidden;
+            padding: 12px;
+            border: 3px solid var(--ad-primary);
+            border-radius: 16px;
+            background: var(--ad-card);
+            box-shadow: 0 8px 0 rgba(0,0,0,.16);
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-image-stage {
             width: 100%;
-            height: auto;
+            height: 100%;
             min-width: 0;
             min-height: 0;
-            align-items: flex-end;
-            padding: 0 3px 2px;
+            padding: 5px;
             border: 0;
+            border-radius: 10px;
             background: transparent;
             box-shadow: none;
             transform: none;
-        }
-
-        .single-ad.is-multi .single-ad-product-card .single-ad-product-image {
-            width: 100%;
-            height: auto;
-            max-height: none;
-            filter: drop-shadow(0 10px 10px rgba(0,0,0,.24));
         }
 
         .single-ad.is-multi .single-ad-product-card .single-ad-info {
             align-self: auto;
             order: 0;
             min-width: 0;
-            margin-top: 7px;
-            padding: 8px 8px 9px;
-            border: 2px solid var(--ad-primary);
-            border-radius: 12px;
-            background: var(--ad-card);
+            padding: 8px 0 0;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
             text-align: center;
-            box-shadow: 0 5px 0 rgba(0,0,0,.18);
+            box-shadow: none;
             transform: none;
         }
 
@@ -6977,12 +6969,7 @@
         }
 
         .single-ad.is-multi[data-density="compact"] .single-ad-product-card {
-            padding: 3px;
-        }
-
-        .single-ad.is-multi[data-density="compact"] .single-ad-product-card .single-ad-info {
-            margin-top: 6px;
-            padding: 7px;
+            padding: 10px;
         }
 
         .single-ad.is-multi[data-density="compact"] .single-ad-product-card .single-ad-card-name {
@@ -7025,15 +7012,14 @@
         }
 
         .single-ad.is-multi[data-density="dense"] .single-ad-product-card {
-            padding: 2px;
+            padding: 8px;
+            border-width: 2px;
+            border-radius: 12px;
+            box-shadow: 0 6px 0 rgba(0,0,0,.14);
         }
 
         .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-info {
-            margin-top: 5px;
-            padding: 5px 5px 6px;
-            border-width: 2px;
-            border-radius: 9px;
-            box-shadow: 0 4px 0 rgba(0,0,0,.16);
+            padding-top: 5px;
         }
 
         .single-ad.is-multi[data-density="dense"] .single-ad-product-card .single-ad-card-name {
@@ -7095,19 +7081,19 @@
             id="buylistTabButton"
             type="button"
             onclick="switchAppView('buylist')"
-        >買取表</button>
+        >買取表を作る</button>
         <button
             class="view-tab"
             id="singleTabButton"
             type="button"
             onclick="switchAppView('single')"
-        >単品告知画像</button>
+        >単品買取告知画像を作る</button>
     </nav>
 
     <section class="store-profile-bar" aria-label="店舗プロフィール">
         <div class="store-profile-title">
             <strong>店舗プロフィール</strong>
-            <span>ロゴやテンプレートを店舗ごとに保存できます</span>
+            <span>ロゴ・設定・テンプレートを店舗別に管理</span>
         </div>
         <div class="store-profile-field">
             <label for="storeProfileSelect">使用する店舗</label>
@@ -7123,9 +7109,9 @@
             onclick="createStoreProfile()"
         >店舗を追加</button>
         <button type="button" onclick="renameStoreProfile()">店舗名を変更</button>
-        <button type="button" onclick="exportStoreBackup()">店舗設定を書き出す</button>
+        <button type="button" onclick="exportStoreBackup()">店舗JSONを書き出し</button>
         <label class="store-import-label">
-            店舗設定を読み込む
+            店舗JSONを読み込み
             <input
                 type="file"
                 id="storeBackupInput"
@@ -7149,23 +7135,23 @@
                     id="saveStateIndicator"
                     data-state="saved"
                     title="作業内容はブラウザへ自動保存されます"
-                >保存済み</span>
+                >変更なし</span>
             </div>
-            <p>設定内容はプレビューに自動で反映されます</p>
+            <p>設定内容を下のプレビューへ即時反映します</p>
         </div>
 
         <div class="workflow-summary" aria-live="polite">
-            <div class="workflow-stat"><span>CSV商品数</span><strong id="buylistLoadedCount">0件</strong></div>
-            <div class="workflow-stat"><span>掲載対象</span><strong id="buylistVisibleCount">0件</strong></div>
-            <div class="workflow-stat"><span>出力枚数</span><strong id="buylistPageCount">0枚</strong></div>
+            <div class="workflow-stat"><span>読み込み商品</span><strong id="buylistLoadedCount">0件</strong></div>
+            <div class="workflow-stat"><span>掲載商品</span><strong id="buylistVisibleCount">0件</strong></div>
+            <div class="workflow-stat"><span>出力予定</span><strong id="buylistPageCount">0枚</strong></div>
             <div class="workflow-stat"><span>画像エラー</span><strong id="buylistImageIssueCount">0件</strong></div>
         </div>
 
-        <section class="quick-header-preview" aria-label="ヘッダープレビュー">
+        <section class="quick-header-preview" aria-label="固定ヘッダープレビュー">
             <div class="quick-header-preview-toolbar">
                 <div class="quick-header-preview-label">
-                    <strong>ヘッダープレビュー</strong>
-                    <span>タイトル・ロゴ・配色を確認できます</span>
+                    <strong>デザイン確認</strong>
+                    <span>タイトル・ロゴ・配色を操作しながら確認できます</span>
                 </div>
                 <button
                     class="quick-header-preview-button"
@@ -7187,14 +7173,14 @@
                     class="btn-csv-sample"
                     type="button"
                     onclick="downloadSampleCsv()"
-                >CSVテンプレートをダウンロード</button>
-                <small class="help">「掲載グループ」「カード名」「買取金額」が必要です。「種別」と「画像リンク」は空欄でも使用できます。</small>
+                >CSVひな形をダウンロード</button>
+                <small class="help">必須：掲載グループ・カード名・買取金額。種別と画像リンクは空欄でも使用できます。</small>
             </div>
 
             <div class="control-group">
                 <label><span class="step">2</span>ショップロゴ</label>
                 <input type="file" id="logoInput" accept="image/*">
-                <small class="help">選択中の店舗に保存されます。容量が大きい画像は自動で調整されます。</small>
+                <small class="help">店舗共通で保存されます。大きな画像は画質を保ったまま自動軽量化します。</small>
             </div>
 
             <div class="control-group">
@@ -7204,7 +7190,7 @@
             </div>
 
             <div class="control-group title-customizer-group">
-                <label><span class="step">4</span>タイトル設定</label>
+                <label><span class="step">4</span>タイトルの見た目</label>
                 <input type="hidden" id="titleStyleSelect" value="power">
                 <div class="title-customizer-grid">
                     <div class="title-custom-field">
@@ -7214,12 +7200,12 @@
                     <div class="title-custom-field">
                         <label for="titleFontSelect">フォント</label>
                         <select id="titleFontSelect">
-                            <option value="gothic">太字ゴシック</option>
+                            <option value="gothic">極太ゴシック</option>
                             <option value="standard">標準ゴシック</option>
                             <option value="rounded">丸ゴシック</option>
                             <option value="mincho">明朝体</option>
-                            <option value="condensed">幅狭ゴシック</option>
-                            <option value="elegant">細字ゴシック</option>
+                            <option value="condensed">インパクト</option>
+                            <option value="elegant">上品な細身ゴシック</option>
                         </select>
                     </div>
                     <div class="title-custom-field">
@@ -7255,12 +7241,12 @@
                             <option value="1">細い</option>
                             <option value="2" selected>標準</option>
                             <option value="3">太い</option>
-                            <option value="4">かなり太い</option>
-                            <option value="5">最も太い</option>
+                            <option value="4">極太</option>
+                            <option value="5">最大</option>
                         </select>
                     </div>
                 </div>
-                <small class="help">ここで設定した文字サイズ・色・フォント・縁取りは、すべてのデザインに適用されます。</small>
+                <small class="help">文字サイズ・色・フォント・縁取りは、全デザインで共通してそのまま反映されます。サイズは上部プレビューで確認できます。</small>
             </div>
 
             <div class="control-group">
@@ -7272,65 +7258,65 @@
                 <label><span class="step">6</span>注意書き</label>
                 <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
-                <small class="help">この内容はテンプレートに保存されます。</small>
+                <small class="help">テンプレート保存対象。</small>
             </div>
 
             <div class="control-group">
                 <label><span class="step">7</span>デザインパターン</label>
                 <select id="themeSelect">
-                    <optgroup label="ダーク・クラシック">
-                        <option value="signal">01 黒×金｜クラシック</option>
-                        <option value="editorial">05 白×黒｜エディトリアル</option>
-                        <option value="luxury">11 黒×金｜ダーク</option>
-                        <option value="royal">13 紺×金｜クラシック</option>
-                        <option value="forest">17 深緑×金｜クラシック</option>
-                        <option value="chocolate">27 茶×生成り｜クラフト</option>
+                    <optgroup label="高級・ラグジュアリー">
+                        <option value="signal">01 CROWN BLACK｜黒金・王道の高級感</option>
+                        <option value="editorial">05 GRAND EDITORIAL｜百貨店・上質</option>
+                        <option value="luxury">11 BLACK DIAMOND｜漆黒・重厚な宝飾店</option>
+                        <option value="royal">13 ROYAL CREST｜紺金・格式ある紋章</option>
+                        <option value="forest">17 FOREST CLUB｜深緑・クラシック</option>
+                        <option value="chocolate">27 CRAFT CHOCOLATE｜クラフト紙・手仕事感</option>
                     </optgroup>
-                    <optgroup label="シンプル">
-                        <option value="trust">02 青×白｜ベーシック</option>
-                        <option value="market">03 白×赤｜スタンダード</option>
-                        <option value="clean">14 白×グレー｜ミニマル</option>
-                        <option value="mono">21 白×黒｜グリッド</option>
-                        <option value="mint">24 ミント×白｜テクニカル</option>
-                        <option value="ice">26 水色×白｜シャープ</option>
+                    <optgroup label="シンプル・クリーン">
+                        <option value="trust">02 SAPPHIRE｜青白・信頼と清潔感</option>
+                        <option value="market">03 RETAIL PRO｜白・最も読みやすい</option>
+                        <option value="clean">14 PURE GALLERY｜余白・ミニマル展示</option>
+                        <option value="mono">21 BRUTAL MONO｜白黒・無骨なグリッド</option>
+                        <option value="mint">24 MINT LAB｜研究資料・テクニカル</option>
+                        <option value="ice">26 ICE CRYSTAL｜結晶・シャープ</option>
                     </optgroup>
-                    <optgroup label="ポップ">
-                        <option value="alert">04 赤×黄｜セール</option>
-                        <option value="soft">08 ピンク×白｜ソフト</option>
-                        <option value="scoreboard">10 黒×黄｜スポーツ</option>
-                        <option value="fire">12 赤×黒｜フレイム</option>
-                        <option value="pop">18 黄×赤｜コミック</option>
-                        <option value="sunset">23 オレンジ×紫｜ポスター</option>
-                        <option value="lavender">25 紫×白｜ソフト</option>
+                    <optgroup label="ポップ・セール">
+                        <option value="alert">04 FLASH SALE｜赤黄・強い買取訴求</option>
+                        <option value="soft">08 ROSE SALON｜華やか・上品</option>
+                        <option value="scoreboard">10 STADIUM｜スポーツ・即決感</option>
+                        <option value="fire">12 BLAZE｜炎・スピード感</option>
+                        <option value="pop">18 COMIC POP｜太枠・コミック広告</option>
+                        <option value="sunset">23 SUNSET POSTER｜斜め構図・夕焼け</option>
+                        <option value="lavender">25 LAVENDER SALON｜曲線・上品なサロン</option>
                     </optgroup>
                     <optgroup label="和風・ヴィンテージ">
-                        <option value="wa">06 赤×白｜和風</option>
-                        <option value="ticket">09 ベージュ×赤｜チケット</option>
-                        <option value="sakura">16 ピンク×白｜和風</option>
-                        <option value="retro">19 茶×生成り｜レトロ</option>
-                        <option value="japan">28 白×黒×朱｜和風</option>
+                        <option value="wa">06 JAPAN LUXE｜和モダン・紅金</option>
+                        <option value="ticket">09 VINTAGE TICKET｜紙物・イベント感</option>
+                        <option value="sakura">16 SAKURA MODERN｜桜・やわらかな和洋折衷</option>
+                        <option value="retro">19 OLD PAPER｜活版・ヴィンテージ紙面</option>
+                        <option value="japan">28 SUMI JAPAN｜墨・朱印・直線美</option>
                     </optgroup>
-                    <optgroup label="デジタル">
-                        <option value="cyber">07 紫×シアン｜デジタル</option>
-                        <option value="neon">15 黒×ネオン｜シティ</option>
-                        <option value="hologram">20 シルバー×虹色｜ホログラム</option>
-                        <option value="ocean">22 青×水色｜ウェーブ</option>
-                        <option value="galaxy">29 紺×紫｜ギャラクシー</option>
-                        <option value="lime">30 黒×黄緑｜ターミナル</option>
+                    <optgroup label="近未来・デジタル">
+                        <option value="cyber">07 NEON ARENA｜ネオン・限定感</option>
+                        <option value="neon">15 ELECTRIC CITY｜ネオン看板・夜景</option>
+                        <option value="hologram">20 PRISM｜虹色・ホログラム</option>
+                        <option value="ocean">22 OCEAN WAVE｜波・流線型</option>
+                        <option value="galaxy">29 GALAXY｜星空・近未来</option>
+                        <option value="lime">30 LIME TERMINAL｜端末画面・ハイテク</option>
                     </optgroup>
                 </select>
-                <small class="help">デザインを変更すると、配色・枠・余白・価格表示・ヘッダーが切り替わります。</small>
+                <small class="help">用途別の5カテゴリに整理しています。色だけでなく、枠・余白・価格・ヘッダー構成も変わります。</small>
             </div>
 
             <div class="control-group">
                 <label><span class="step">8</span>レイアウト</label>
                 <select id="layoutSelect">
-                    <option value="portrait_10x6">A4縦｜60商品（10列 × 6行）</option>
-                    <option value="landscape_15x4">A4横｜60商品（15列 × 4行）</option>
-                    <option value="portrait_6x5">A4縦｜30商品（6列 × 5行）</option>
-                    <option value="landscape_10x3">A4横｜30商品（10列 × 3行）</option>
+                    <option value="portrait_10x6">A4縦｜60枚・画像最大（横10列 × 縦6段）</option>
+                    <option value="landscape_15x4">A4横｜60枚・画像最大（横15列 × 縦4段）</option>
+                    <option value="portrait_6x5">A4縦｜30枚・大判（横6列 × 縦5段）</option>
+                    <option value="landscape_10x3">A4横｜30枚・大判（横10列 × 縦3段）</option>
                 </select>
-                <small class="help">用紙の向きと、1ページに表示する商品数を選択します。この内容はテンプレートに保存されます。</small>
+                <small class="help">一般的なカード画像の縦横比と、カード名・種別・価格欄の高さを合わせ、画像が最も大きくなる4構成に絞っています。テンプレート保存対象。</small>
             </div>
 
             <div class="control-group">
@@ -7353,11 +7339,11 @@
                 <div class="control-group">
                     <label><span class="step">10</span>ページ分割</label>
                     <select id="pageSplitSelect">
-                        <option value="fill">商品数を優先して配置</option>
-                        <option value="group_pack">掲載グループを保って配置</option>
+                        <option value="fill">1ページの上限まで詰める</option>
+                        <option value="group_pack">掲載グループを優先</option>
                         <option value="group_page">掲載グループごとに改ページ</option>
                     </select>
-                    <small class="help">掲載グループをページ分割に反映する方法を選択します。</small>
+                    <small class="help">グループを跨ぐか、改ページするかを選べます。</small>
                 </div>
 
                 <div class="control-group">
@@ -7377,8 +7363,8 @@
 
         <div class="template-manager">
             <div class="template-field">
-                <label for="templateNameInput">テンプレート名</label>
-                <input type="text" id="templateNameInput" placeholder="例：BOX用・A4横">
+                <label for="templateNameInput">新しいテンプレート名</label>
+                <input type="text" id="templateNameInput" placeholder="例：BOX横・黒金">
             </div>
             <div class="template-field">
                 <label for="templateSelect">保存済みテンプレート</label>
@@ -7388,25 +7374,25 @@
             </div>
             <div class="template-buttons">
                 <button class="btn-template" type="button" onclick="saveNamedTemplate()">名前をつけて保存</button>
-                <button class="btn-load" type="button" onclick="loadNamedTemplate()">適用</button>
+                <button class="btn-load" type="button" onclick="loadNamedTemplate()">呼び出す</button>
                 <button class="btn-delete" type="button" onclick="deleteNamedTemplate()">削除</button>
             </div>
         </div>
 
         <div class="image-status-panel" id="imageStatusPanel" data-state="idle">
             <span class="image-status-dot"></span>
-            <span id="imageStatusText">CSV読み込み後に、画像の読み込み状況を表示します。</span>
+            <span id="imageStatusText">CSVを読み込むと画像の状態を確認できます。</span>
             <button
                 id="retryFailedImagesButton"
                 type="button"
                 onclick="retryFailedImages()"
                 hidden
-            >エラー画像を再読み込み</button>
+            >失敗画像だけ再読み込み</button>
         </div>
 
         <details class="card-editor-panel" id="cardEditorPanel">
             <summary>
-                <span>商品データを編集</span>
+                <span>読み込み後の商品編集</span>
                 <span class="card-editor-count" id="cardEditorCount">CSV未読込</span>
             </summary>
             <div class="card-editor-toolbar">
@@ -7415,10 +7401,10 @@
                     id="cardEditorSearchInput"
                     placeholder="カード名・グループ・種別で検索"
                 >
-                <button type="button" onclick="showAllCardsInBuylist()">全商品を表示</button>
+                <button type="button" onclick="showAllCardsInBuylist()">全商品を表示へ戻す</button>
             </div>
             <p class="card-editor-help">
-                カード名・掲載グループ・種別・価格・強化買取・表示状態を編集できます。上下ボタンでCSV内の順番を変更できます。
+                カード名・グループ・種別・価格・強化買取・表示／非表示を直接変更できます。上下ボタンは「CSV順」の並びに反映されます。
             </p>
             <div class="card-editor-list" id="cardEditorList">
                 <div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>
@@ -7427,11 +7413,11 @@
 
         <div class="panel-actions">
             <div class="export-note">
-                画像の読み込み完了後に保存してください。PNGはページごと、ZIPとPDFは1ファイルで保存されます。
+                PNGは連続保存、ZIPとPDFは1ファイルにまとめて保存します。画像読込完了後に書き出してください。
             </div>
-            <button class="btn-export" type="button" onclick="exportToImage()">PNGを個別に保存</button>
-            <button class="btn-zip" type="button" onclick="exportToZip()">ZIPでまとめて保存</button>
-            <button class="btn-pdf" type="button" onclick="exportToPdf()">PDFで保存</button>
+            <button class="btn-export" type="button" onclick="exportToImage()">一括でPNG書き出し</button>
+            <button class="btn-zip" type="button" onclick="exportToZip()">ZIPで一括保存</button>
+            <button class="btn-pdf" type="button" onclick="exportToPdf()">PDFで一括保存</button>
         </div>
     </aside>
 
@@ -7443,7 +7429,7 @@
                         <img
                             class="logo-img"
                             src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-                            alt="ショップロゴ"
+                            alt="Shop Logo"
                         >
                     </div>
                     <div class="title-container">
@@ -7457,7 +7443,7 @@
                 <div class="card-grid initial-card-grid">
                     <div class="empty-state">
                         <strong>CSVを読み込んでください</strong>
-                        <span>読み込んだ商品がプレビューに表示されます</span>
+                        <span>カードデータがここに表示されます</span>
                     </div>
                 </div>
 
@@ -7474,35 +7460,35 @@
     </main>
 
     <section class="single-maker view-hidden" id="singleMakerView">
-        <aside class="control-panel" aria-label="単品告知画像の設定">
+        <aside class="control-panel" aria-label="単品買取告知画像の設定">
             <div class="panel-heading">
-                <h2>単品告知画像ジェネレーター</h2>
-                <p>1枚に<strong>1〜10商品</strong>を配置できます</p>
+                <h2>単品買取告知画像メーカー</h2>
+                <p>1枚あたり<strong>1〜10商品</strong>を、画像サイズに合わせて自動配置します</p>
             </div>
 
             <div class="workflow-summary" aria-live="polite">
-                <div class="workflow-stat"><span>CSV商品数</span><strong id="singleLoadedCount">0件</strong></div>
+                <div class="workflow-stat"><span>読み込み商品</span><strong id="singleLoadedCount">0件</strong></div>
                 <div class="workflow-stat"><span>選択商品</span><strong id="singleSelectedSummary">0件</strong></div>
-                <div class="workflow-stat"><span>1枚あたり</span><strong id="singlePerPageSummary">1商品</strong></div>
-                <div class="workflow-stat"><span>出力枚数</span><strong id="singleOutputCount">0枚</strong></div>
+                <div class="workflow-stat"><span>1枚の商品数</span><strong id="singlePerPageSummary">1商品</strong></div>
+                <div class="workflow-stat"><span>出力予定</span><strong id="singleOutputCount">0枚</strong></div>
             </div>
 
             <div class="settings-grid">
                 <div class="control-group">
-                    <label><span class="step">1</span>CSVファイルを読み込む</label>
+                    <label><span class="step">1</span>CSVファイル</label>
                     <input type="file" id="singleCsvInput" accept=".csv,text/csv">
                     <button
                         class="btn-csv-sample"
                         type="button"
                         onclick="downloadSampleCsv()"
-                    >CSVテンプレートをダウンロード</button>
-                    <small class="help">買取表で読み込み済みのCSVは、そのまま使用できます。テンプレートには項目名のみ入っています。</small>
+                    >CSVひな形をダウンロード</button>
+                    <small class="help">買取表側で読込済みの場合は共通利用できます。ひな形は項目名だけ入っています。</small>
                 </div>
 
                 <div class="control-group">
                     <label><span class="step">2</span>ショップロゴ</label>
                     <input type="file" id="singleLogoInput" accept="image/*">
-                    <small class="help">買取表と共通のロゴを使用します。容量が大きい画像は自動で調整されます。</small>
+                    <small class="help">買取表側と共通です。大きな画像は自動軽量化します。</small>
                 </div>
 
                 <div class="control-group">
@@ -7517,23 +7503,23 @@
                 <div class="control-group">
                     <label><span class="step">4</span>告知デザイン</label>
                     <select id="singleDesignSelect">
-                        <option value="blackgold">01 黒×金｜スタンダード</option>
-                        <option value="redimpact">02 赤×黄｜価格強調</option>
-                        <option value="royal">03 青×白｜左右分割</option>
-                        <option value="clean">04 白×グレー｜シンプル</option>
-                        <option value="cyber">05 黒×ネオン｜デジタル</option>
-                        <option value="sakura">06 ピンク×白｜ソフト</option>
-                        <option value="retro">07 ベージュ×茶｜レトロ</option>
-                        <option value="pop">08 黄×赤｜ポップ</option>
-                        <option value="emerald">09 深緑×金｜クラシック</option>
-                        <option value="mono">10 白×黒｜エディトリアル</option>
+                        <option value="blackgold">01 BLACK LABEL｜商品主役・黒金</option>
+                        <option value="redimpact">02 PRICE IMPACT｜価格主役・赤黄</option>
+                        <option value="royal">03 ROYAL SPLIT｜左右分割・青</option>
+                        <option value="clean">04 PREMIUM CATALOG｜白・最も見やすい</option>
+                        <option value="cyber">05 NEON HUD｜ゲームUI・ネオン</option>
+                        <option value="sakura">06 ROSE SALON｜柔らかい・上品</option>
+                        <option value="retro">07 VINTAGE POSTER｜クラシック・紙面</option>
+                        <option value="pop">08 POP IMPACT｜明るい・強い訴求</option>
+                        <option value="emerald">09 EMERALD PRESTIGE｜深緑・高額商材</option>
+                        <option value="mono">10 MONO EDITORIAL｜モノクロ・雑誌</option>
                     </select>
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">5</span>1枚あたりの商品数</label>
+                    <label><span class="step">5</span>1枚に載せる商品数</label>
                     <select id="singleItemsPerImageSelect">
-                        <option value="1">1商品</option>
+                        <option value="1">1商品｜従来のGODレイアウト</option>
                         <option value="2">2商品</option>
                         <option value="3">3商品</option>
                         <option value="4">4商品</option>
@@ -7544,21 +7530,21 @@
                         <option value="9">9商品</option>
                         <option value="10">10商品</option>
                     </select>
-                    <small class="help">選択した順に、設定した商品数ごとに画像を作成します。1商品の画像は単品向けレイアウトで表示されます。</small>
+                    <small class="help">選択順にこの件数でページ分割します。最後が1商品のページは従来のGODレイアウトで表示します。</small>
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">6</span>見出し</label>
-                    <input type="text" id="singleHeadlineInput" value="強化買取中">
+                    <label><span class="step">6</span>メインコピー</label>
+                    <input type="text" id="singleHeadlineInput" value="強化買取価格を公開中！">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">7</span>価格ラベル</label>
+                    <label><span class="step">7</span>金額上の文言</label>
                     <input type="text" id="singlePriceLabelInput" value="買取価格">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">8</span>案内文</label>
+                    <label><span class="step">8</span>右下の文言</label>
                     <input type="text" id="singleCtaInput" value="お持ち込みお待ちしております">
                 </div>
 
@@ -7578,7 +7564,7 @@
 
             <div class="template-manager">
                 <div class="template-field">
-                    <label for="singleTemplateNameInput">テンプレート名</label>
+                    <label for="singleTemplateNameInput">新しい単品テンプレート名</label>
                     <input
                         type="text"
                         id="singleTemplateNameInput"
@@ -7586,9 +7572,9 @@
                     >
                 </div>
                 <div class="template-field">
-                    <label for="singleTemplateSelect">保存済みテンプレート</label>
+                    <label for="singleTemplateSelect">保存済み単品テンプレート</label>
                     <select id="singleTemplateSelect">
-                        <option value="">テンプレートを選択</option>
+                        <option value="">単品テンプレートを選択</option>
                     </select>
                 </div>
                 <div class="template-buttons">
@@ -7601,7 +7587,7 @@
                         class="btn-load"
                         type="button"
                         onclick="loadSingleNamedTemplate()"
-                    >適用</button>
+                    >呼び出す</button>
                     <button
                         class="btn-delete"
                         type="button"
@@ -7612,8 +7598,8 @@
 
             <div class="csv-diff-panel" id="csvDiffPanel">
                 <div class="csv-diff-heading">
-                    <strong>前回のCSVと比較して商品を選択</strong>
-                    <span id="csvDiffStatus">はじめてCSVを読み込むと、比較用データとして保存します</span>
+                    <strong>前回CSVとの差分から自動選択</strong>
+                    <span id="csvDiffStatus">初回CSVを読み込むと比較元として保存します</span>
                 </div>
                 <div class="csv-diff-actions">
                     <button
@@ -7649,7 +7635,7 @@
                         class="btn-muted"
                         type="button"
                         onclick="resetCsvDiffBaseline()"
-                    >今回のCSVを比較用に保存</button>
+                    >今回のCSVを比較元にする</button>
                 </div>
             </div>
 
@@ -7660,8 +7646,8 @@
                         id="singleSearchInput"
                         placeholder="カード名・種別・掲載グループで検索"
                     >
-                    <button class="btn-soft" type="button" onclick="selectVisibleSingleCards()">表示中の商品を選択</button>
-                    <button class="btn-muted" type="button" onclick="clearSingleSelection()">すべて選択解除</button>
+                    <button class="btn-soft" type="button" onclick="selectVisibleSingleCards()">検索結果を選択</button>
+                    <button class="btn-muted" type="button" onclick="clearSingleSelection()">選択解除</button>
                     <button class="btn-muted" type="button" onclick="invertVisibleSingleCards()">選択を反転</button>
                 </div>
                 <div class="single-selection-count" id="singleSelectionCount">0件選択中</div>
@@ -7672,21 +7658,21 @@
 
             <div class="panel-actions">
                 <div class="export-note">
-                    PNGは画像ごとに保存されます。複数の画像を1ファイルにまとめる場合はZIPを選択してください。
+                    選択商品を設定件数ごとにまとめて生成します。多数選択する場合はZIP保存がおすすめです。
                 </div>
-                <button class="btn-export" type="button" onclick="exportSingleImages()">PNGを個別に保存</button>
-                <button class="btn-zip" type="button" onclick="exportSingleZip()">ZIPでまとめて保存</button>
+                <button class="btn-export" type="button" onclick="exportSingleImages()">選択商品をPNG書き出し</button>
+                <button class="btn-zip" type="button" onclick="exportSingleZip()">選択商品をZIP保存</button>
             </div>
         </aside>
 
         <section
             class="single-preview-container"
             id="singlePreviewContainer"
-            aria-label="単品告知画像プレビュー"
+            aria-label="単品買取告知画像プレビュー"
         >
             <div class="single-preview-empty">
                 <strong>商品を選択してください</strong>
-                <span>選択した商品のプレビューが表示されます</span>
+                <span>選択した商品ごとに告知画像のプレビューが表示されます</span>
             </div>
         </section>
     </section>
@@ -8203,12 +8189,12 @@
                 localStorage.setItem(ACTIVE_STORE_KEY, storeId);
                 window.location.reload();
             } catch (error) {
-                alert(`店舗設定を読み込めませんでした。\n${error.message || error}`);
+                alert(`店舗JSONを読み込めませんでした。\n${error.message || error}`);
                 input.value = "";
             }
         };
         reader.onerror = () => {
-            alert("店舗設定を読み込めませんでした。");
+            alert("店舗JSONを読み込めませんでした。");
             input.value = "";
         };
         reader.readAsText(file);
@@ -8473,7 +8459,7 @@
             design: normalizeSingleDesign(design),
             size: SINGLE_SIZES.includes(size) ? size : "square",
             itemsPerImage,
-            headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取中",
+            headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取価格を公開中！",
             priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
             cta: document.getElementById("singleCtaInput")?.value ?? "お持ち込みお待ちしております",
             note: document.getElementById("singleNoteInput")?.value ?? "",
@@ -8539,7 +8525,7 @@
             a.localeCompare(b, "ja", { numeric: true, sensitivity: "base" })
         );
 
-        select.innerHTML = '<option value="">テンプレートを選択</option>';
+        select.innerHTML = '<option value="">単品テンプレートを選択</option>';
         names.forEach(name => {
             const option = document.createElement("option");
             option.value = name;
@@ -8558,7 +8544,7 @@
         const name = (nameInput.value.trim() || templateSelect.value).slice(0, 80);
 
         if (!name) {
-            alert("テンプレート名を入力してください。");
+            alert("単品テンプレート名を入力してください。");
             nameInput.focus();
             return;
         }
@@ -8566,7 +8552,7 @@
         const templates = getSingleNamedTemplates();
         if (
             Object.hasOwn(templates, name) &&
-            !confirm(`テンプレート「${name}」を現在の設定で上書きしますか？`)
+            !confirm(`単品テンプレート「${name}」を現在の設定で上書きしますか？`)
         ) {
             return;
         }
@@ -8584,7 +8570,7 @@
             saveSingleSettings();
             refreshSingleTemplateSelect(name);
             nameInput.value = name;
-            alert(`テンプレート「${name}」を保存しました。`);
+            alert(`単品テンプレート「${name}」を保存しました。`);
         } catch (error) {
             alert("保存容量を超えました。ロゴ画像を小さくしてからお試しください。");
         }
@@ -8593,14 +8579,14 @@
     function loadSingleNamedTemplate() {
         const name = document.getElementById("singleTemplateSelect").value;
         if (!name) {
-            alert("適用するテンプレートを選択してください。");
+            alert("呼び出す単品テンプレートを選択してください。");
             return;
         }
 
         const templates = getSingleNamedTemplates();
         const settings = templates[name];
         if (!settings) {
-            alert("選択したテンプレートが見つかりませんでした。");
+            alert("選択した単品テンプレートが見つかりませんでした。");
             refreshSingleTemplateSelect();
             return;
         }
@@ -8609,17 +8595,17 @@
         saveSingleSettings();
         document.getElementById("singleTemplateNameInput").value = name;
         renderSingleAdPreviews();
-        alert(`テンプレート「${name}」を適用しました。`);
+        alert(`単品テンプレート「${name}」を呼び出しました。`);
     }
 
     function deleteSingleNamedTemplate() {
         const select = document.getElementById("singleTemplateSelect");
         const name = select.value;
         if (!name) {
-            alert("削除するテンプレートを選択してください。");
+            alert("削除する単品テンプレートを選択してください。");
             return;
         }
-        if (!confirm(`テンプレート「${name}」を削除しますか？`)) return;
+        if (!confirm(`単品テンプレート「${name}」を削除しますか？`)) return;
 
         const templates = getSingleNamedTemplates();
         delete templates[name];
@@ -8629,7 +8615,7 @@
         );
         document.getElementById("singleTemplateNameInput").value = "";
         refreshSingleTemplateSelect();
-        alert(`テンプレート「${name}」を削除しました。`);
+        alert(`単品テンプレート「${name}」を削除しました。`);
     }
 
     function switchAppView(view) {
@@ -8725,7 +8711,7 @@
         isRestoringWorkspace = false;
         setSaveState(
             "saved",
-            restoredDraft ? "前回の作業を復元しました" : "保存済み"
+            restoredDraft ? "前回作業を復元" : "変更なし"
         );
         requestAnimationFrame(fitPreviewPages);
     });
@@ -8920,7 +8906,7 @@
     function loadNamedTemplate() {
         const name = document.getElementById("templateSelect").value;
         if (!name) {
-            alert("適用するテンプレートを選択してください。");
+            alert("呼び出すテンプレートを選択してください。");
             return;
         }
 
@@ -8956,8 +8942,8 @@
         saveLastUsedSettings(collectCurrentTemplateSettings());
         updateAllPages();
         applySelectedLayout();
-        saveWorkingDraftNow("テンプレート適用済み");
-        alert(`テンプレート「${name}」を適用しました。`);
+        saveWorkingDraftNow("テンプレート読込済み");
+        alert(`テンプレート「${name}」を呼び出しました。`);
     }
 
     function deleteNamedTemplate() {
@@ -9254,7 +9240,7 @@
         const blob = new Blob([csvText], {
             type: "text/csv;charset=utf-8"
         });
-        downloadBlob(blob, "買取表_CSVテンプレート.csv");
+        downloadBlob(blob, "買取表_CSVひな形.csv");
     }
 
     function parseCSVLine(text) {
@@ -9350,8 +9336,8 @@
             };
             updateCsvDiffPanel(
                 saved
-                    ? "今回のCSVを比較用データとして保存しました。次回から変更内容を表示します"
-                    : "比較用データを保存できませんでした。ブラウザの保存設定をご確認ください"
+                    ? "今回のCSVを比較元として保存しました。次回から差分を表示します"
+                    : "比較元を保存できませんでした。ブラウザの保存設定をご確認ください"
             );
             return;
         }
@@ -9394,8 +9380,8 @@
         all.forEach(cardId => selectedSingleCardIds.add(cardId));
         updateCsvDiffPanel(
             all.length
-                ? `${all.length}件の変更を検出し、単品告知画像用に選択しました`
-                : "前回のCSVから対象となる変更はありません"
+                ? `${all.length}件の変更を検出し、単品作成用に自動選択しました`
+                : "前回CSVから対象となる変更はありません"
         );
     }
 
@@ -9417,7 +9403,7 @@
             status.textContent = statusMessage || (
                 csvDiffResults.hasBaseline
                     ? "前回CSVと比較できます"
-                    : "はじめてCSVを読み込むと、比較用データとして保存します"
+                    : "初回CSVを読み込むと比較元として保存します"
             );
         }
 
@@ -9426,7 +9412,7 @@
                 const savedAt = new Date(csvDiffResults.previousSavedAt);
                 meta.textContent = Number.isNaN(savedAt.getTime())
                     ? "商品名・種別・画像URLを基準に比較"
-                    : `比較用データ：${savedAt.toLocaleString("ja-JP")}｜商品名・種別・画像URLを基準`;
+                    : `比較元：${savedAt.toLocaleString("ja-JP")}｜商品名・種別・画像URLを基準`;
             } else {
                 meta.textContent = "商品名・種別・画像URLを基準に比較します";
             }
@@ -9452,7 +9438,7 @@
             return;
         }
         if (!saveCsvSnapshot(globalCardData)) {
-            alert("比較用データを保存できませんでした。ブラウザの保存設定をご確認ください。");
+            alert("比較元を保存できませんでした。ブラウザの保存設定をご確認ください。");
             return;
         }
         csvDiffResults = {
@@ -9463,8 +9449,8 @@
             strengthened: [],
             all: []
         };
-        updateCsvDiffPanel("今回のCSVを比較用データとして保存しました");
-        alert("今回のCSVを比較用データとして保存しました。");
+        updateCsvDiffPanel("今回のCSVを新しい比較元として保存しました");
+        alert("今回のCSVを比較元として保存しました。");
     }
 
     function parseCSV(text) {
@@ -10012,7 +9998,7 @@
             container.innerHTML = `
                 <div class="single-preview-empty">
                     <strong>商品を選択してください</strong>
-                    <span>選択した商品のプレビューが表示されます</span>
+                    <span>選択した商品ごとに告知画像のプレビューが表示されます</span>
                 </div>
             `;
             return;
@@ -10076,7 +10062,7 @@
                     >
                         <header class="single-ad-header">
                             <div class="single-ad-logo-box">
-                                <img class="single-ad-logo" src="${logoDataUrl}" alt="ショップロゴ">
+                                <img class="single-ad-logo" src="${logoDataUrl}" alt="Shop Logo">
                             </div>
                             <div class="single-ad-date">${escapeHtml(dateText)} UPDATED</div>
                         </header>
@@ -10476,7 +10462,7 @@
             pageDiv.innerHTML = `
                 <div class="header-area">
                     <div class="logo-container">
-                        <img class="logo-img" src="${logoDataUrl}" alt="ショップロゴ">
+                        <img class="logo-img" src="${logoDataUrl}" alt="Shop Logo">
                     </div>
                     <div class="title-container">
                         <h1 class="title-text">${escapeHtml(title)}</h1>
@@ -10559,7 +10545,7 @@
         const total = globalCardData.length;
         if (total === 0) {
             panel.dataset.state = "idle";
-            text.textContent = "CSV読み込み後に、画像の読み込み状況を表示します。";
+            text.textContent = "CSVを読み込むと画像の状態を確認できます。";
             const retryButton = document.getElementById("retryFailedImagesButton");
             if (retryButton) retryButton.hidden = true;
             updateWorkflowSummary();
@@ -10587,8 +10573,8 @@
         }
 
         text.textContent =
-            `画像：読み込み済み ${loaded}/${total}件` +
-            `｜読み込み中 ${loading}件｜エラー ${failed}件｜画像なし ${missing}件`;
+            `画像：完了 ${loaded}/${total}件` +
+            `｜読込中 ${loading}件｜失敗 ${failed}件｜画像なし ${missing}件`;
         if (retryButton) retryButton.hidden = failed === 0;
         updateWorkflowSummary();
     }
@@ -10792,7 +10778,7 @@
         );
         if (areas.length === 0) return;
         if (typeof html2canvas !== "function") {
-            alert("画像保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
+            alert("画像書き出し機能を読み込めませんでした。通信環境をご確認ください。");
             return;
         }
 
@@ -10831,7 +10817,7 @@
         );
         if (areas.length === 0) return;
         if (typeof html2canvas !== "function" || typeof JSZip !== "function") {
-            alert("ZIP保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
+            alert("ZIP書き出し機能を読み込めませんでした。通信環境をご確認ください。");
             return;
         }
 
@@ -10886,7 +10872,7 @@
 
         const JsPdf = window.jspdf?.jsPDF;
         if (typeof html2canvas !== "function" || typeof JsPdf !== "function") {
-            alert("PDF保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
+            alert("PDF書き出し機能を読み込めませんでした。通信環境をご確認ください。");
             return;
         }
 
@@ -10953,11 +10939,11 @@
             document.querySelectorAll("#singlePreviewContainer .single-ad")
         );
         if (areas.length === 0) {
-            alert("保存する商品を選択してください。");
+            alert("書き出す商品を選択してください。");
             return;
         }
         if (typeof html2canvas !== "function") {
-            alert("画像保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
+            alert("画像書き出し機能を読み込めませんでした。通信環境をご確認ください。");
             return;
         }
 
@@ -11003,7 +10989,7 @@
             return;
         }
         if (typeof html2canvas !== "function" || typeof JSZip !== "function") {
-            alert("ZIP保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
+            alert("ZIP書き出し機能を読み込めませんでした。通信環境をご確認ください。");
             return;
         }
 
