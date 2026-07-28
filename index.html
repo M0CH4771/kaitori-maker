@@ -1101,6 +1101,20 @@
             font-size: 42px;
         }
 
+        .page-emblem strong.is-group-label {
+            display: block;
+            width: 76px;
+            max-height: 64px;
+            overflow: hidden;
+            font-size: var(--group-label-size, 30px);
+            line-height: 1.05;
+            letter-spacing: 0;
+            text-align: center;
+            white-space: normal;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
         /* ===== カードグリッド ===== */
         .card-grid {
             display: grid;
@@ -3432,7 +3446,7 @@
             --ad-card: #fff;
             position: relative;
             display: grid;
-            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            grid-template-rows: auto auto minmax(0, 1fr);
             flex: 0 0 auto;
             overflow: hidden;
             padding: 54px;
@@ -3457,7 +3471,7 @@
             width: 1500px;
             height: 1000px;
             grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-            grid-template-rows: auto auto minmax(0, 1fr) auto;
+            grid-template-rows: auto auto minmax(0, 1fr);
             column-gap: 48px;
         }
 
@@ -3637,13 +3651,6 @@
             margin-top: 30px;
             padding-top: 20px;
             border-top: 3px solid var(--ad-primary);
-        }
-
-        .single-ad-note {
-            color: var(--ad-muted);
-            font-size: 17px;
-            font-weight: 800;
-            line-height: 1.5;
         }
 
         .single-landscape .single-ad-header,
@@ -6768,8 +6775,8 @@
 
         /*
          * 複数商品は行ごとに分割し、各行を同じ高さの領域へ収める。
-         * 画像の横幅だけでなく高さも制限することで、縦長画像が
-         * 注意書きへ重なるのを防ぐ。1商品用レイアウトには適用しない。
+         * 画像の横幅だけでなく高さも制限することで、縦長画像も
+         * 商品情報の範囲内へ収める。1商品用レイアウトには適用しない。
          */
         .single-ad.is-multi {
             --multi-grade-ink: var(--ad-bg);
@@ -6778,7 +6785,7 @@
             --multi-info-muted: #596579;
             --multi-info-border: var(--ad-primary);
             grid-template-columns: 1fr;
-            grid-template-rows: auto auto minmax(0,1fr) auto;
+            grid-template-rows: auto auto minmax(0,1fr);
             column-gap: 0;
             padding: 38px;
         }
@@ -6900,7 +6907,7 @@
             grid-template-rows: repeat(var(--multi-rows, 1), minmax(0, 1fr));
             gap: var(--multi-row-gap, 18px);
             margin-top: 14px;
-            padding: 2px 3px 7px;
+            padding: 2px 3px 0;
         }
 
         .single-ad-products-row {
@@ -6916,7 +6923,7 @@
         .single-ad-product-card {
             display: grid;
             width: var(--multi-card-width, calc(50% - 9px));
-            height: 100%;
+            height: auto;
             min-width: 0;
             min-height: 0;
             flex: 0 0 var(--multi-card-width, calc(50% - 9px));
@@ -6940,6 +6947,7 @@
             height: 100%;
             min-width: 0;
             min-height: 0;
+            order: 0 !important;
             align-items: center;
             overflow: visible;
             padding: 0 3px 2px !important;
@@ -7020,15 +7028,6 @@
             border-top: 2px solid var(--ad-primary);
             border-radius: 0;
             background: transparent;
-        }
-
-        .single-ad.is-multi .single-ad-note {
-            display: -webkit-box;
-            overflow: hidden;
-            font-size: 14px;
-            line-height: 1.35;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
         }
 
         .single-ad.is-multi[data-density="compact"] {
@@ -7128,22 +7127,27 @@
             padding-top: 8px;
         }
 
-        .single-ad.is-multi[data-density="dense"] .single-ad-note {
-            font-size: 12px;
-            -webkit-line-clamp: 2;
-        }
-
         /*
          * 単品告知の共通調整
-         * ロゴは全デザインで中央へ固定し、日付だけを右側へ配置する。
-         * 見出しサイズは商品数ごとの適正値を基準に、設定した倍率を反映する。
+         * ロゴ位置は左・中央・右から選択し、日付と重ならない列へ配置する。
+         * 見出し・商品名・金額は商品数ごとの基準値へ設定倍率を反映する。
          */
         .single-ad {
             --single-headline-size: 57px;
+            --single-name-size: 39px;
+            --single-price-size: 72px;
         }
 
         .single-ad .single-ad-heading h2 {
             font-size: var(--single-headline-size) !important;
+        }
+
+        .single-ad .single-ad-card-name {
+            font-size: var(--single-name-size) !important;
+        }
+
+        .single-ad .single-ad-price {
+            font-size: var(--single-price-size) !important;
         }
 
         .single-ad .single-ad-header {
@@ -7153,8 +7157,8 @@
         }
 
         .single-ad .single-ad-logo-box {
-            grid-column: 2;
-            justify-self: center;
+            grid-column: 1;
+            justify-self: start;
             margin-inline: 0;
         }
 
@@ -7164,13 +7168,184 @@
             white-space: nowrap;
         }
 
-        .single-ad .single-ad-footer {
-            grid-template-columns: minmax(0, 1fr);
+        .single-ad[data-logo-align="center"] .single-ad-logo-box {
+            grid-column: 2;
+            justify-self: center;
         }
 
-        @media (max-width: 900px) {
+        .single-ad[data-logo-align="right"] .single-ad-logo-box {
+            grid-column: 3;
+            justify-self: end;
+        }
+
+        .single-ad[data-logo-align="right"] .single-ad-date {
+            grid-column: 1;
+            grid-row: 1;
+            justify-self: start;
+        }
+
+        .single-scale-field + .single-scale-field {
+            margin-top: 12px;
+        }
+
+        /* 設定画面：デザイン関連をひとつの領域へ整理 */
+        .settings-section-label {
+            display: flex;
+            align-items: baseline;
+            gap: 9px;
+            padding: 18px 24px 0;
+        }
+
+        .settings-section-label strong {
+            color: #f8fafc;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .settings-section-label span {
+            color: #7f8da1;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .settings-section-label + .settings-grid {
+            padding-top: 12px;
+        }
+
+        .design-settings-accordion {
+            border-color: rgba(217,173,74,.34);
+            background:
+                linear-gradient(135deg, rgba(217,173,74,.055), transparent 40%),
+                rgba(255,255,255,.025);
+        }
+
+        .design-settings-accordion > summary {
+            min-height: 54px;
+        }
+
+        .design-settings-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            padding-top: 16px;
+            padding-bottom: 20px;
+        }
+
+        .appearance-panel {
+            grid-column: 1 / -1;
+            min-width: 0;
+            padding: 15px;
+            border: 1px solid rgba(217,173,74,.18);
+            border-radius: 11px;
+            background: rgba(5,10,18,.44);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+        }
+
+        .appearance-panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .appearance-panel-heading strong,
+        .appearance-panel-heading span {
+            display: block;
+        }
+
+        .appearance-panel-heading strong {
+            color: #f8fafc;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .appearance-panel-heading span {
+            margin-top: 3px;
+            color: #8f9cad;
+            font-size: 10px;
+            font-weight: 700;
+        }
+
+        .appearance-panel .title-customizer-grid {
+            padding: 0;
+            border: 0;
+            background: transparent;
+        }
+
+        .price-customizer-grid {
+            display: grid;
+            grid-template-columns: minmax(260px, 1.8fr) minmax(180px, 1fr) minmax(110px, .55fr);
+            align-items: end;
+            gap: 12px;
+        }
+
+        .single-appearance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(190px, 1fr));
+            align-items: end;
+            gap: 14px;
+        }
+
+        .single-price-color-grid {
+            display: grid;
+            grid-column: 1 / -1;
+            grid-template-columns: minmax(220px, 1fr) minmax(110px, .45fr);
+            align-items: end;
+            gap: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,.075);
+        }
+
+        .appearance-panel input[type="color"]:disabled {
+            cursor: not-allowed;
+            filter: grayscale(.7);
+            opacity: .45;
+        }
+
+        .appearance-panel .help {
+            margin-top: 11px;
+        }
+
+        @media (max-width: 1500px) {
+            .design-settings-grid {
+                grid-template-columns: repeat(3, minmax(0,1fr));
+            }
+        }
+
+        @media (max-width: 1050px) {
             .workflow-summary {
                 grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+
+            .design-settings-grid,
+            .single-appearance-grid {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+
+            .price-customizer-grid {
+                grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+            }
+
+            .price-customizer-grid > :last-child {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .settings-section-label {
+                padding-right: 16px;
+                padding-left: 16px;
+            }
+
+            .design-settings-grid,
+            .single-appearance-grid,
+            .price-customizer-grid,
+            .single-price-color-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .price-customizer-grid > :last-child,
+            .single-price-color-grid {
+                grid-column: auto;
             }
         }
     </style>
@@ -7273,6 +7448,10 @@
             ></div>
         </section>
 
+        <div class="settings-section-label">
+            <strong>基本設定</strong>
+            <span>CSV・ロゴ・掲載内容</span>
+        </div>
         <div class="settings-grid">
             <div class="control-group">
                 <label><span class="step">1</span>CSVファイルを読み込む</label>
@@ -7297,146 +7476,209 @@
                 <small class="help">タイトルとページ番号は別々に表示されます。</small>
             </div>
 
-            <div class="control-group title-customizer-group">
-                <label><span class="step">4</span>タイトル設定</label>
-                <input type="hidden" id="titleStyleSelect" value="power">
-                <div class="title-customizer-grid">
-                    <div class="title-custom-field">
-                        <label for="titleColorInput">文字色</label>
-                        <input type="color" id="titleColorInput" value="#ffffff">
-                    </div>
-                    <div class="title-custom-field">
-                        <label for="titleFontSelect">フォント</label>
-                        <select id="titleFontSelect">
-                            <option value="gothic">太字ゴシック</option>
-                            <option value="standard">標準ゴシック</option>
-                            <option value="rounded">丸ゴシック</option>
-                            <option value="mincho">明朝体</option>
-                            <option value="condensed">幅狭ゴシック</option>
-                            <option value="elegant">細字ゴシック</option>
-                        </select>
-                    </div>
-                    <div class="title-custom-field">
-                        <label for="titleSizeRange">文字サイズ</label>
-                        <div class="title-size-controls">
-                            <input
-                                type="range"
-                                id="titleSizeRange"
-                                min="36"
-                                max="110"
-                                step="1"
-                                value="76"
-                            >
-                            <input
-                                type="number"
-                                id="titleSizeInput"
-                                min="36"
-                                max="110"
-                                step="1"
-                                value="76"
-                                aria-label="タイトル文字サイズ"
-                            >
-                        </div>
-                    </div>
-                    <div class="title-custom-field">
-                        <label for="titleOutlineColorInput">縁取り色</label>
-                        <input type="color" id="titleOutlineColorInput" value="#111827">
-                    </div>
-                    <div class="title-custom-field">
-                        <label for="titleOutlineWidthSelect">縁取り</label>
-                        <select id="titleOutlineWidthSelect">
-                            <option value="0">なし</option>
-                            <option value="1">細い</option>
-                            <option value="2" selected>標準</option>
-                            <option value="3">太い</option>
-                            <option value="4">かなり太い</option>
-                            <option value="5">最も太い</option>
-                        </select>
-                    </div>
-                </div>
-                <small class="help">ここで設定した文字サイズ・色・フォント・縁取りは、すべてのデザインに適用されます。</small>
-            </div>
-
             <div class="control-group">
-                <label><span class="step">5</span>更新日</label>
+                <label><span class="step">4</span>更新日</label>
                 <input type="date" id="dateInput">
             </div>
 
             <div class="control-group">
-                <label><span class="step">6</span>注意書き</label>
+                <label><span class="step">5</span>注意書き</label>
                 <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
                 <small class="help">この内容はテンプレートに保存されます。</small>
             </div>
-
-            <div class="control-group">
-                <label><span class="step">7</span>デザインパターン</label>
-                <select id="themeSelect">
-                    <optgroup label="ダーク・クラシック">
-                        <option value="signal">01 黒×金｜クラシック</option>
-                        <option value="editorial">05 白×黒｜エディトリアル</option>
-                        <option value="luxury">11 黒×金｜ダーク</option>
-                        <option value="royal">13 紺×金｜クラシック</option>
-                        <option value="forest">17 深緑×金｜クラシック</option>
-                        <option value="chocolate">27 茶×生成り｜クラフト</option>
-                    </optgroup>
-                    <optgroup label="シンプル">
-                        <option value="trust">02 青×白｜ベーシック</option>
-                        <option value="market">03 白×赤｜スタンダード</option>
-                        <option value="clean">14 白×グレー｜ミニマル</option>
-                        <option value="mono">21 白×黒｜グリッド</option>
-                        <option value="mint">24 ミント×白｜テクニカル</option>
-                        <option value="ice">26 水色×白｜シャープ</option>
-                    </optgroup>
-                    <optgroup label="ポップ">
-                        <option value="alert">04 赤×黄｜セール</option>
-                        <option value="soft">08 ピンク×白｜ソフト</option>
-                        <option value="scoreboard">10 黒×黄｜スポーツ</option>
-                        <option value="fire">12 赤×黒｜フレイム</option>
-                        <option value="pop">18 黄×赤｜コミック</option>
-                        <option value="sunset">23 オレンジ×紫｜ポスター</option>
-                        <option value="lavender">25 紫×白｜ソフト</option>
-                    </optgroup>
-                    <optgroup label="和風・ヴィンテージ">
-                        <option value="wa">06 赤×白｜和風</option>
-                        <option value="ticket">09 ベージュ×赤｜チケット</option>
-                        <option value="sakura">16 ピンク×白｜和風</option>
-                        <option value="retro">19 茶×生成り｜レトロ</option>
-                        <option value="japan">28 白×黒×朱｜和風</option>
-                    </optgroup>
-                    <optgroup label="デジタル">
-                        <option value="cyber">07 紫×シアン｜デジタル</option>
-                        <option value="neon">15 黒×ネオン｜シティ</option>
-                        <option value="hologram">20 シルバー×虹色｜ホログラム</option>
-                        <option value="ocean">22 青×水色｜ウェーブ</option>
-                        <option value="galaxy">29 紺×紫｜ギャラクシー</option>
-                        <option value="lime">30 黒×黄緑｜ターミナル</option>
-                    </optgroup>
-                </select>
-                <small class="help">デザインを変更すると、配色・枠・余白・価格表示・ヘッダーが切り替わります。</small>
-            </div>
-
-            <div class="control-group">
-                <label><span class="step">8</span>レイアウト</label>
-                <select id="layoutSelect">
-                    <option value="portrait_10x6">A4縦｜60商品（10列 × 6行）</option>
-                    <option value="landscape_15x4">A4横｜60商品（15列 × 4行）</option>
-                    <option value="portrait_6x5">A4縦｜30商品（6列 × 5行）</option>
-                    <option value="landscape_10x3">A4横｜30商品（10列 × 3行）</option>
-                </select>
-                <small class="help">用紙の向きと、1ページに表示する商品数を選択します。この内容はテンプレートに保存されます。</small>
-            </div>
-
-            <div class="control-group">
-                <label><span class="step">9</span>カード名</label>
-                <select id="cardNameDisplaySelect">
-                    <option value="show">表示する</option>
-                    <option value="hide">表示しない</option>
-                </select>
-                <small class="help">プレビューとPNG出力の両方に反映されます。</small>
-            </div>
-
         </div>
+
+        <details class="settings-accordion design-settings-accordion" open>
+            <summary>
+                <span>デザイン設定</span>
+                <span class="card-editor-count">配色・レイアウト・文字</span>
+            </summary>
+            <div class="settings-grid design-settings-grid">
+                <div class="control-group">
+                    <label for="themeSelect">デザインパターン</label>
+                    <select id="themeSelect">
+                        <optgroup label="ダーク・クラシック">
+                            <option value="signal">01 黒×金｜クラシック</option>
+                            <option value="editorial">05 白×黒｜エディトリアル</option>
+                            <option value="luxury">11 黒×金｜ダーク</option>
+                            <option value="royal">13 紺×金｜クラシック</option>
+                            <option value="forest">17 深緑×金｜クラシック</option>
+                            <option value="chocolate">27 茶×生成り｜クラフト</option>
+                        </optgroup>
+                        <optgroup label="シンプル">
+                            <option value="trust">02 青×白｜ベーシック</option>
+                            <option value="market">03 白×赤｜スタンダード</option>
+                            <option value="clean">14 白×グレー｜ミニマル</option>
+                            <option value="mono">21 白×黒｜グリッド</option>
+                            <option value="mint">24 ミント×白｜テクニカル</option>
+                            <option value="ice">26 水色×白｜シャープ</option>
+                        </optgroup>
+                        <optgroup label="ポップ">
+                            <option value="alert">04 赤×黄｜セール</option>
+                            <option value="soft">08 ピンク×白｜ソフト</option>
+                            <option value="scoreboard">10 黒×黄｜スポーツ</option>
+                            <option value="fire">12 赤×黒｜フレイム</option>
+                            <option value="pop">18 黄×赤｜コミック</option>
+                            <option value="sunset">23 オレンジ×紫｜ポスター</option>
+                            <option value="lavender">25 紫×白｜ソフト</option>
+                        </optgroup>
+                        <optgroup label="和風・ヴィンテージ">
+                            <option value="wa">06 赤×白｜和風</option>
+                            <option value="ticket">09 ベージュ×赤｜チケット</option>
+                            <option value="sakura">16 ピンク×白｜和風</option>
+                            <option value="retro">19 茶×生成り｜レトロ</option>
+                            <option value="japan">28 白×黒×朱｜和風</option>
+                        </optgroup>
+                        <optgroup label="デジタル">
+                            <option value="cyber">07 紫×シアン｜デジタル</option>
+                            <option value="neon">15 黒×ネオン｜シティ</option>
+                            <option value="hologram">20 シルバー×虹色｜ホログラム</option>
+                            <option value="ocean">22 青×水色｜ウェーブ</option>
+                            <option value="galaxy">29 紺×紫｜ギャラクシー</option>
+                            <option value="lime">30 黒×黄緑｜ターミナル</option>
+                        </optgroup>
+                    </select>
+                    <small class="help">配色・枠・余白・価格面・ヘッダーが切り替わります。</small>
+                </div>
+
+                <div class="control-group">
+                    <label for="layoutSelect">レイアウト</label>
+                    <select id="layoutSelect">
+                        <option value="portrait_10x6">A4縦｜60商品（10列 × 6行）</option>
+                        <option value="landscape_15x4">A4横｜60商品（15列 × 4行）</option>
+                        <option value="portrait_6x5">A4縦｜30商品（6列 × 5行）</option>
+                        <option value="landscape_10x3">A4横｜30商品（10列 × 3行）</option>
+                    </select>
+                    <small class="help">用紙の向きと、1ページの商品数を選択します。</small>
+                </div>
+
+                <div class="control-group">
+                    <label for="cardNameDisplaySelect">カード名</label>
+                    <select id="cardNameDisplaySelect">
+                        <option value="show">表示する</option>
+                        <option value="hide">表示しない</option>
+                    </select>
+                    <small class="help">プレビューとPNG出力の両方に反映されます。</small>
+                </div>
+
+                <div class="appearance-panel">
+                    <div class="appearance-panel-heading">
+                        <div>
+                            <strong>タイトルの見た目</strong>
+                            <span>文字色・フォント・サイズ・縁取り</span>
+                        </div>
+                    </div>
+                    <input type="hidden" id="titleStyleSelect" value="power">
+                    <div class="title-customizer-grid">
+                        <div class="title-custom-field">
+                            <label for="titleColorInput">文字色</label>
+                            <input type="color" id="titleColorInput" value="#ffffff">
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="titleFontSelect">フォント</label>
+                            <select id="titleFontSelect">
+                                <option value="gothic">太字ゴシック</option>
+                                <option value="standard">標準ゴシック</option>
+                                <option value="rounded">丸ゴシック</option>
+                                <option value="mincho">明朝体</option>
+                                <option value="condensed">幅狭ゴシック</option>
+                                <option value="elegant">細字ゴシック</option>
+                            </select>
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="titleSizeRange">文字サイズ</label>
+                            <div class="title-size-controls">
+                                <input
+                                    type="range"
+                                    id="titleSizeRange"
+                                    min="36"
+                                    max="110"
+                                    step="1"
+                                    value="76"
+                                >
+                                <input
+                                    type="number"
+                                    id="titleSizeInput"
+                                    min="36"
+                                    max="110"
+                                    step="1"
+                                    value="76"
+                                    aria-label="タイトル文字サイズ"
+                                >
+                            </div>
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="titleOutlineColorInput">縁取り色</label>
+                            <input type="color" id="titleOutlineColorInput" value="#111827">
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="titleOutlineWidthSelect">縁取り</label>
+                            <select id="titleOutlineWidthSelect">
+                                <option value="0">なし</option>
+                                <option value="1">細い</option>
+                                <option value="2" selected>標準</option>
+                                <option value="3">太い</option>
+                                <option value="4">かなり太い</option>
+                                <option value="5">最も太い</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="appearance-panel">
+                    <div class="appearance-panel-heading">
+                        <div>
+                            <strong>買取価格の見た目</strong>
+                            <span>金額部分の文字サイズと色</span>
+                        </div>
+                    </div>
+                    <div class="price-customizer-grid">
+                        <div class="title-custom-field">
+                            <label for="priceSizeRange">
+                                <span>文字サイズ</span>
+                                <output
+                                    class="title-size-output"
+                                    id="priceSizeOutput"
+                                    for="priceSizeRange priceSizeInput"
+                                >100%</output>
+                            </label>
+                            <div class="title-size-controls">
+                                <input
+                                    type="range"
+                                    id="priceSizeRange"
+                                    min="60"
+                                    max="140"
+                                    step="1"
+                                    value="100"
+                                >
+                                <input
+                                    type="number"
+                                    id="priceSizeInput"
+                                    min="60"
+                                    max="140"
+                                    step="1"
+                                    value="100"
+                                    aria-label="買取価格の文字サイズ（パーセント）"
+                                >
+                            </div>
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="priceColorModeSelect">文字色</label>
+                            <select id="priceColorModeSelect">
+                                <option value="theme">デザインの標準色</option>
+                                <option value="custom">指定した色</option>
+                            </select>
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="priceColorInput">指定色</label>
+                            <input type="color" id="priceColorInput" value="#ffffff">
+                        </div>
+                    </div>
+                    <small class="help">金額が枠からはみ出す場合は、レイアウトを保つため自動で縮小されます。</small>
+                </div>
+            </div>
+        </details>
 
         <details class="settings-accordion">
             <summary>
@@ -7445,7 +7687,7 @@
             </summary>
             <div class="settings-grid advanced-settings-grid">
                 <div class="control-group">
-                    <label><span class="step">10</span>ページ分割</label>
+                    <label>ページ分割</label>
                     <select id="pageSplitSelect">
                         <option value="fill">商品数を優先して配置</option>
                         <option value="group_pack">掲載グループを保って配置</option>
@@ -7455,7 +7697,7 @@
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">11</span>カードの並び順</label>
+                    <label>カードの並び順</label>
                     <select id="sortOrderSelect">
                         <option value="group_csv">掲載グループ順（CSV順）</option>
                         <option value="csv_all">CSV全体の順番</option>
@@ -7581,6 +7823,10 @@
                 <div class="workflow-stat"><span>出力枚数</span><strong id="singleOutputCount">0枚</strong></div>
             </div>
 
+            <div class="settings-section-label">
+                <strong>基本設定</strong>
+                <span>CSV・ロゴ・掲載内容</span>
+            </div>
             <div class="settings-grid">
                 <div class="control-group">
                     <label><span class="step">1</span>CSVファイルを読み込む</label>
@@ -7600,100 +7846,197 @@
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">3</span>画像サイズ</label>
-                    <select id="singleSizeSelect">
-                        <option value="square">正方形｜1200 × 1200</option>
-                        <option value="portrait">縦長｜1080 × 1350</option>
-                        <option value="landscape">横長｜1500 × 1000</option>
-                    </select>
-                </div>
-
-                <div class="control-group">
-                    <label><span class="step">4</span>告知デザイン</label>
-                    <select id="singleDesignSelect">
-                        <option value="blackgold">01 黒×金｜スタンダード</option>
-                        <option value="redimpact">02 赤×黄｜価格強調</option>
-                        <option value="royal">03 青×白｜左右分割</option>
-                        <option value="clean">04 白×グレー｜シンプル</option>
-                        <option value="cyber">05 黒×ネオン｜デジタル</option>
-                        <option value="sakura">06 ピンク×白｜ソフト</option>
-                        <option value="retro">07 ベージュ×茶｜レトロ</option>
-                        <option value="pop">08 黄×赤｜ポップ</option>
-                        <option value="emerald">09 深緑×金｜クラシック</option>
-                        <option value="mono">10 白×黒｜エディトリアル</option>
-                    </select>
-                </div>
-
-                <div class="control-group">
-                    <label><span class="step">5</span>1枚あたりの商品数</label>
-                    <select id="singleItemsPerImageSelect">
-                        <option value="1">1商品</option>
-                        <option value="2">2商品</option>
-                        <option value="3">3商品</option>
-                        <option value="4">4商品</option>
-                        <option value="5">5商品</option>
-                        <option value="6">6商品</option>
-                        <option value="7">7商品</option>
-                        <option value="8">8商品</option>
-                        <option value="9">9商品</option>
-                        <option value="10">10商品</option>
-                    </select>
-                    <small class="help">選択した順に、設定した商品数ごとに画像を作成します。1商品の画像は単品向けレイアウトで表示されます。</small>
-                </div>
-
-                <div class="control-group">
-                    <label><span class="step">6</span>見出し</label>
+                    <label><span class="step">3</span>見出し</label>
                     <input type="text" id="singleHeadlineInput" value="強化買取中">
-                    <div class="title-custom-field">
-                        <label for="singleHeadlineSizeRange">
-                            <span>文字サイズ</span>
-                            <output
-                                class="title-size-output"
-                                id="singleHeadlineSizeOutput"
-                                for="singleHeadlineSizeRange singleHeadlineSizeInput"
-                            >100%</output>
-                        </label>
-                        <div class="title-size-controls">
-                            <input
-                                type="range"
-                                id="singleHeadlineSizeRange"
-                                min="60"
-                                max="160"
-                                step="1"
-                                value="100"
-                            >
-                            <input
-                                type="number"
-                                id="singleHeadlineSizeInput"
-                                min="60"
-                                max="160"
-                                step="1"
-                                value="100"
-                                aria-label="見出し文字サイズ（パーセント）"
-                            >
-                        </div>
-                    </div>
-                    <small class="help">現在のレイアウトに合う文字サイズを100%として調整します。</small>
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">7</span>価格ラベル</label>
+                    <label><span class="step">4</span>価格ラベル</label>
                     <input type="text" id="singlePriceLabelInput" value="買取価格">
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">8</span>注意書き</label>
-                    <textarea id="singleNoteInput" rows="3">※相場や在庫状況、状態等により価格が変動する場合がございます。</textarea>
-                </div>
-
-                <div class="control-group">
-                    <label><span class="step">9</span>種別・グレード</label>
+                    <label><span class="step">5</span>種別・グレード</label>
                     <select id="singleGradeDisplaySelect">
                         <option value="show">入力がある場合のみ表示</option>
                         <option value="hide">表示しない</option>
                     </select>
                 </div>
             </div>
+
+            <details class="settings-accordion design-settings-accordion" open>
+                <summary>
+                    <span>デザイン設定</span>
+                    <span class="card-editor-count">配色・配置・文字</span>
+                </summary>
+                <div class="settings-grid design-settings-grid">
+                    <div class="control-group">
+                        <label for="singleSizeSelect">画像サイズ</label>
+                        <select id="singleSizeSelect">
+                            <option value="square">正方形｜1200 × 1200</option>
+                            <option value="portrait">縦長｜1080 × 1350</option>
+                            <option value="landscape">横長｜1500 × 1000</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="singleDesignSelect">告知デザイン</label>
+                        <select id="singleDesignSelect">
+                            <option value="blackgold">01 黒×金｜スタンダード</option>
+                            <option value="redimpact">02 赤×黄｜価格強調</option>
+                            <option value="royal">03 青×白｜左右分割</option>
+                            <option value="clean">04 白×グレー｜シンプル</option>
+                            <option value="cyber">05 黒×ネオン｜デジタル</option>
+                            <option value="sakura">06 ピンク×白｜ソフト</option>
+                            <option value="retro">07 ベージュ×茶｜レトロ</option>
+                            <option value="pop">08 黄×赤｜ポップ</option>
+                            <option value="emerald">09 深緑×金｜クラシック</option>
+                            <option value="mono">10 白×黒｜エディトリアル</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="singleItemsPerImageSelect">1枚あたりの商品数</label>
+                        <select id="singleItemsPerImageSelect">
+                            <option value="1">1商品</option>
+                            <option value="2">2商品</option>
+                            <option value="3">3商品</option>
+                            <option value="4">4商品</option>
+                            <option value="5">5商品</option>
+                            <option value="6">6商品</option>
+                            <option value="7">7商品</option>
+                            <option value="8">8商品</option>
+                            <option value="9">9商品</option>
+                            <option value="10">10商品</option>
+                        </select>
+                        <small class="help">選択した順に、設定した商品数ごとに画像を作成します。</small>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="singleLogoAlignSelect">ロゴ位置</label>
+                        <select id="singleLogoAlignSelect">
+                            <option value="left">左揃え</option>
+                            <option value="center" selected>中央揃え</option>
+                            <option value="right">右揃え</option>
+                        </select>
+                    </div>
+
+                    <div class="appearance-panel">
+                        <div class="appearance-panel-heading">
+                            <div>
+                                <strong>文字の見た目</strong>
+                                <span>商品数ごとの基準サイズから調整します</span>
+                            </div>
+                        </div>
+                        <div class="single-appearance-grid">
+                            <div class="title-custom-field">
+                                <label for="singleHeadlineSizeRange">
+                                    <span>見出し</span>
+                                    <output
+                                        class="title-size-output"
+                                        id="singleHeadlineSizeOutput"
+                                        for="singleHeadlineSizeRange singleHeadlineSizeInput"
+                                    >100%</output>
+                                </label>
+                                <div class="title-size-controls">
+                                    <input
+                                        type="range"
+                                        id="singleHeadlineSizeRange"
+                                        min="60"
+                                        max="160"
+                                        step="1"
+                                        value="100"
+                                    >
+                                    <input
+                                        type="number"
+                                        id="singleHeadlineSizeInput"
+                                        min="60"
+                                        max="160"
+                                        step="1"
+                                        value="100"
+                                        aria-label="見出し文字サイズ（パーセント）"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="title-custom-field">
+                                <label for="singleNameSizeRange">
+                                    <span>商品名</span>
+                                    <output
+                                        class="title-size-output"
+                                        id="singleNameSizeOutput"
+                                        for="singleNameSizeRange singleNameSizeInput"
+                                    >100%</output>
+                                </label>
+                                <div class="title-size-controls">
+                                    <input
+                                        type="range"
+                                        id="singleNameSizeRange"
+                                        min="60"
+                                        max="160"
+                                        step="1"
+                                        value="100"
+                                    >
+                                    <input
+                                        type="number"
+                                        id="singleNameSizeInput"
+                                        min="60"
+                                        max="160"
+                                        step="1"
+                                        value="100"
+                                        aria-label="商品名文字サイズ（パーセント）"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="title-custom-field">
+                                <label for="singlePriceSizeRange">
+                                    <span>買取価格</span>
+                                    <output
+                                        class="title-size-output"
+                                        id="singlePriceSizeOutput"
+                                        for="singlePriceSizeRange singlePriceSizeInput"
+                                    >100%</output>
+                                </label>
+                                <div class="title-size-controls">
+                                    <input
+                                        type="range"
+                                        id="singlePriceSizeRange"
+                                        min="60"
+                                        max="160"
+                                        step="1"
+                                        value="100"
+                                    >
+                                    <input
+                                        type="number"
+                                        id="singlePriceSizeInput"
+                                        min="60"
+                                        max="160"
+                                        step="1"
+                                        value="100"
+                                        aria-label="買取価格の文字サイズ（パーセント）"
+                                    >
+                                </div>
+                            </div>
+
+                            <div class="single-price-color-grid">
+                                <div class="title-custom-field">
+                                    <label for="singlePriceColorModeSelect">買取価格の文字色</label>
+                                    <select id="singlePriceColorModeSelect">
+                                        <option value="theme">デザインの標準色</option>
+                                        <option value="custom">指定した色</option>
+                                    </select>
+                                </div>
+                                <div class="title-custom-field">
+                                    <label for="singlePriceColorInput">指定色</label>
+                                    <input type="color" id="singlePriceColorInput" value="#ffffff">
+                                </div>
+                            </div>
+                        </div>
+                        <small class="help">文字が価格枠に収まらない場合は、自動で縮小されます。</small>
+                    </div>
+                </div>
+            </details>
 
             <div class="template-manager">
                 <div class="template-field">
@@ -7907,6 +8250,15 @@
         outlineColor: "#111827",
         outlineWidth: 2
     };
+    const DEFAULT_PRICE_CUSTOM = {
+        scale: 100,
+        colorMode: "theme",
+        color: "#ffffff"
+    };
+    const LARGE_PRICE_THEMES = new Set([
+        "signal", "trust", "market", "alert", "editorial",
+        "wa", "cyber", "soft", "ticket", "scoreboard"
+    ]);
     const LEGACY_THEME_MAP = {
         luxury: "signal",
         fire: "alert",
@@ -7941,6 +8293,12 @@
     };
     const SINGLE_SIZES = ["square", "portrait", "landscape"];
     const DEFAULT_SINGLE_HEADLINE_SCALE = 100;
+    const DEFAULT_SINGLE_NAME_SCALE = 100;
+    const DEFAULT_SINGLE_PRICE_SCALE = 100;
+    const DEFAULT_SINGLE_PRICE_COLOR_MODE = "theme";
+    const DEFAULT_SINGLE_PRICE_COLOR = "#ffffff";
+    const SINGLE_LOGO_ALIGNMENTS = ["left", "center", "right"];
+    const DEFAULT_SINGLE_LOGO_ALIGNMENT = "center";
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
@@ -7960,6 +8318,9 @@
         "kaitori_title_size",
         "kaitori_title_outline_color",
         "kaitori_title_outline_width",
+        "kaitori_price_scale",
+        "kaitori_price_color_mode",
+        "kaitori_price_color",
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
@@ -7976,6 +8337,8 @@
         CSV_SNAPSHOT_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
     ]);
+    const hasOwn = (object, property) =>
+        Object.prototype.hasOwnProperty.call(object, property);
 
     function makeStoreId() {
         return `store_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -8023,7 +8386,7 @@
                 if (!logoCandidate && typeof template.logo === "string") {
                     logoCandidate = template.logo;
                 }
-                if (Object.hasOwn(template, "logo")) {
+                if (hasOwn(template, "logo")) {
                     delete template.logo;
                     changed = true;
                 }
@@ -8081,7 +8444,7 @@
         }
 
         let storeId = localStorage.getItem(ACTIVE_STORE_KEY);
-        if (!storeId || !Object.hasOwn(registry.stores, storeId)) {
+        if (!storeId || !hasOwn(registry.stores, storeId)) {
             storeId = Object.keys(registry.stores)[0];
             localStorage.setItem(ACTIVE_STORE_KEY, storeId);
         }
@@ -8135,7 +8498,7 @@
 
     function switchStoreProfile(storeId) {
         const registry = getStoreRegistry();
-        if (!Object.hasOwn(registry.stores, storeId) || storeId === activeStoreId) {
+        if (!hasOwn(registry.stores, storeId) || storeId === activeStoreId) {
             return;
         }
         persistCurrentStoreState();
@@ -8283,7 +8646,7 @@
                     backup.store.data.kaitori_logo || ""
                 );
                 STORE_DATA_KEYS.forEach(baseKey => {
-                    if (!Object.hasOwn(backup.store.data, baseKey)) return;
+                    if (!hasOwn(backup.store.data, baseKey)) return;
                     let value = backup.store.data[baseKey];
 
                     if (
@@ -8368,13 +8731,65 @@
         return String(number).padStart(2, "0");
     }
 
+    function isNumericGroupValue(value) {
+        const normalized = String(value ?? "")
+            .trim()
+            .replace(/[０-９]/g, digit =>
+                String.fromCharCode(digit.charCodeAt(0) - 0xFEE0)
+            )
+            .replace(/[＋－．]/g, character => ({
+                "＋": "+",
+                "－": "-",
+                "．": "."
+            })[character]);
+
+        return /^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(normalized);
+    }
+
+    function getGroupLabelFontSize(value) {
+        const visualUnits = Array.from(String(value ?? "")).reduce(
+            (total, character) => {
+                if (/\s/.test(character)) return total + 0.35;
+                if (/[A-Za-z0-9]/.test(character)) return total + 0.62;
+                return total + 1;
+            },
+            0
+        );
+        const lineCount = visualUnits > 3.4 ? 2 : 1;
+        const calculated = Math.floor((72 * lineCount) / Math.max(visualUnits, 1));
+        const maximum = lineCount === 2 ? 28 : 36;
+        return Math.min(maximum, Math.max(10, calculated));
+    }
+
+    function getPageEmblemContent(pageCards, pageNumber, splitMode) {
+        const group = String(pageCards[0]?.group ?? "").trim();
+        const useGroupLabel =
+            splitMode === "group_page" &&
+            group !== "" &&
+            !isNumericGroupValue(group);
+
+        if (useGroupLabel) {
+            return {
+                text: group,
+                isGroupLabel: true,
+                fontSize: getGroupLabelFontSize(group)
+            };
+        }
+
+        return {
+            text: pageNumberText(pageNumber),
+            isGroupLabel: false,
+            fontSize: null
+        };
+    }
+
     function normalizeTheme(theme) {
         if (THEMES.includes(theme)) return theme;
         return LEGACY_THEME_MAP[theme] || "signal";
     }
 
     function normalizeLayout(layout) {
-        if (Object.hasOwn(LAYOUTS, layout)) return layout;
+        if (hasOwn(LAYOUTS, layout)) return layout;
         return LEGACY_LAYOUT_MAP[layout] || "portrait_10x6";
     }
 
@@ -8401,7 +8816,7 @@
     }
 
     function normalizeTitleCustomization(settings = {}) {
-        const font = Object.hasOwn(TITLE_FONT_OPTIONS, settings.font)
+        const font = hasOwn(TITLE_FONT_OPTIONS, settings.font)
             ? settings.font
             : DEFAULT_TITLE_CUSTOM.font;
         return {
@@ -8459,6 +8874,54 @@
         setScopedItem("kaitori_title_outline_width", String(settings.outlineWidth));
     }
 
+    function normalizePriceCustomization(settings = {}) {
+        return {
+            scale: clampTitleNumber(
+                settings.scale,
+                60,
+                140,
+                DEFAULT_PRICE_CUSTOM.scale
+            ),
+            colorMode:
+                settings.colorMode === "custom" ? "custom" : "theme",
+            color: normalizeHexColor(
+                settings.color,
+                DEFAULT_PRICE_CUSTOM.color
+            )
+        };
+    }
+
+    function collectPriceCustomization() {
+        return normalizePriceCustomization({
+            scale: document.getElementById("priceSizeInput")?.value,
+            colorMode: document.getElementById("priceColorModeSelect")?.value,
+            color: document.getElementById("priceColorInput")?.value
+        });
+    }
+
+    function applyPriceCustomizationSettings(settings = {}) {
+        const normalized = normalizePriceCustomization(settings);
+        document.getElementById("priceSizeRange").value =
+            String(normalized.scale);
+        document.getElementById("priceSizeInput").value =
+            String(normalized.scale);
+        document.getElementById("priceSizeOutput").textContent =
+            `${normalized.scale}%`;
+        document.getElementById("priceColorModeSelect").value =
+            normalized.colorMode;
+        const colorInput = document.getElementById("priceColorInput");
+        colorInput.value = normalized.color;
+        colorInput.disabled = normalized.colorMode !== "custom";
+    }
+
+    function savePriceCustomization(
+        settings = collectPriceCustomization()
+    ) {
+        setScopedItem("kaitori_price_scale", String(settings.scale));
+        setScopedItem("kaitori_price_color_mode", settings.colorMode);
+        setScopedItem("kaitori_price_color", settings.color);
+    }
+
     function getExportAreas(root = document) {
         if (root === document) {
             return Array.from(
@@ -8469,6 +8932,44 @@
             return [root];
         }
         return Array.from(root.querySelectorAll(".exportArea"));
+    }
+
+    function getBuylistPriceBaseSize(page) {
+        const theme = normalizeTheme(page?.dataset?.theme);
+        return page?.classList?.contains("portrait") &&
+            LARGE_PRICE_THEMES.has(theme)
+            ? 23
+            : 21;
+    }
+
+    function applyPriceCustomization(
+        root = document,
+        settings = collectPriceCustomization()
+    ) {
+        const normalized = normalizePriceCustomization(settings);
+        getExportAreas(root).forEach(page => {
+            const fontSize =
+                getBuylistPriceBaseSize(page) * normalized.scale / 100;
+            page.dataset.priceScale = String(normalized.scale);
+            page.dataset.priceColorMode = normalized.colorMode;
+            page.dataset.priceColor = normalized.color;
+            page.querySelectorAll(".card-price-text").forEach(price => {
+                price.style.setProperty(
+                    "font-size",
+                    `${fontSize.toFixed(2)}px`,
+                    "important"
+                );
+                if (normalized.colorMode === "custom") {
+                    price.style.setProperty(
+                        "color",
+                        normalized.color,
+                        "important"
+                    );
+                } else {
+                    price.style.removeProperty("color");
+                }
+            });
+        });
     }
 
     function applyTitleElementStyle(title, settings, size = settings.size) {
@@ -8582,6 +9083,12 @@
         return LEGACY_SINGLE_DESIGN_MAP[design] || "blackgold";
     }
 
+    function normalizeSingleLogoAlignment(alignment) {
+        return SINGLE_LOGO_ALIGNMENTS.includes(alignment)
+            ? alignment
+            : DEFAULT_SINGLE_LOGO_ALIGNMENT;
+    }
+
     function collectSingleSettings() {
         const design = document.getElementById("singleDesignSelect")?.value;
         const size = document.getElementById("singleSizeSelect")?.value;
@@ -8595,14 +9102,41 @@
             160,
             DEFAULT_SINGLE_HEADLINE_SCALE
         );
+        const nameScale = clampTitleNumber(
+            document.getElementById("singleNameSizeInput")?.value,
+            60,
+            160,
+            DEFAULT_SINGLE_NAME_SCALE
+        );
+        const priceScale = clampTitleNumber(
+            document.getElementById("singlePriceSizeInput")?.value,
+            60,
+            160,
+            DEFAULT_SINGLE_PRICE_SCALE
+        );
+        const priceColorMode =
+            document.getElementById("singlePriceColorModeSelect")?.value ===
+            "custom"
+                ? "custom"
+                : DEFAULT_SINGLE_PRICE_COLOR_MODE;
+        const priceColor = normalizeHexColor(
+            document.getElementById("singlePriceColorInput")?.value,
+            DEFAULT_SINGLE_PRICE_COLOR
+        );
         return {
             design: normalizeSingleDesign(design),
             size: SINGLE_SIZES.includes(size) ? size : "square",
             itemsPerImage,
+            logoAlign: normalizeSingleLogoAlignment(
+                document.getElementById("singleLogoAlignSelect")?.value
+            ),
             headline: document.getElementById("singleHeadlineInput")?.value ?? "強化買取中",
             headlineScale,
+            nameScale,
+            priceScale,
+            priceColorMode,
+            priceColor,
             priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
-            note: document.getElementById("singleNoteInput")?.value ?? "",
             gradeDisplay:
                 document.getElementById("singleGradeDisplaySelect")?.value === "hide"
                     ? "hide"
@@ -8618,6 +9152,8 @@
         }
         document.getElementById("singleItemsPerImageSelect").value =
             String(Math.min(10, Math.max(1, Number(settings.itemsPerImage) || 1)));
+        document.getElementById("singleLogoAlignSelect").value =
+            normalizeSingleLogoAlignment(settings.logoAlign);
         if (typeof settings.headline === "string") {
             document.getElementById("singleHeadlineInput").value = settings.headline;
         }
@@ -8633,11 +9169,46 @@
             String(headlineScale);
         document.getElementById("singleHeadlineSizeOutput").textContent =
             `${headlineScale}%`;
+        const nameScale = clampTitleNumber(
+            settings.nameScale,
+            60,
+            160,
+            DEFAULT_SINGLE_NAME_SCALE
+        );
+        document.getElementById("singleNameSizeRange").value =
+            String(nameScale);
+        document.getElementById("singleNameSizeInput").value =
+            String(nameScale);
+        document.getElementById("singleNameSizeOutput").textContent =
+            `${nameScale}%`;
+        const priceScale = clampTitleNumber(
+            settings.priceScale,
+            60,
+            160,
+            DEFAULT_SINGLE_PRICE_SCALE
+        );
+        document.getElementById("singlePriceSizeRange").value =
+            String(priceScale);
+        document.getElementById("singlePriceSizeInput").value =
+            String(priceScale);
+        document.getElementById("singlePriceSizeOutput").textContent =
+            `${priceScale}%`;
+        const priceColorMode =
+            settings.priceColorMode === "custom"
+                ? "custom"
+                : DEFAULT_SINGLE_PRICE_COLOR_MODE;
+        const priceColor = normalizeHexColor(
+            settings.priceColor,
+            DEFAULT_SINGLE_PRICE_COLOR
+        );
+        document.getElementById("singlePriceColorModeSelect").value =
+            priceColorMode;
+        const priceColorInput =
+            document.getElementById("singlePriceColorInput");
+        priceColorInput.value = priceColor;
+        priceColorInput.disabled = priceColorMode !== "custom";
         if (typeof settings.priceLabel === "string") {
             document.getElementById("singlePriceLabelInput").value = settings.priceLabel;
-        }
-        if (typeof settings.note === "string") {
-            document.getElementById("singleNoteInput").value = settings.note;
         }
         document.getElementById("singleGradeDisplaySelect").value =
             settings.gradeDisplay === "hide" ? "hide" : "show";
@@ -8682,7 +9253,7 @@
             select.appendChild(option);
         });
 
-        if (selectedName && Object.hasOwn(templates, selectedName)) {
+        if (selectedName && hasOwn(templates, selectedName)) {
             select.value = selectedName;
         }
     }
@@ -8700,7 +9271,7 @@
 
         const templates = getSingleNamedTemplates();
         if (
-            Object.hasOwn(templates, name) &&
+            hasOwn(templates, name) &&
             !confirm(`テンプレート「${name}」を現在の設定で上書きしますか？`)
         ) {
             return;
@@ -8804,6 +9375,10 @@
         const savedTitleSize = getScopedItem("kaitori_title_size");
         const savedTitleOutlineColor = getScopedItem("kaitori_title_outline_color");
         const savedTitleOutlineWidth = getScopedItem("kaitori_title_outline_width");
+        const savedPriceScale = getScopedItem("kaitori_price_scale");
+        const savedPriceColorMode =
+            getScopedItem("kaitori_price_color_mode");
+        const savedPriceColor = getScopedItem("kaitori_price_color");
         const savedCardNameDisplay = getScopedItem("kaitori_card_name_display");
         const savedPageSplit = getScopedItem("kaitori_page_split");
         const savedSortOrder = getScopedItem("kaitori_sort_order");
@@ -8822,6 +9397,12 @@
                 savedTitleOutlineColor || DEFAULT_TITLE_CUSTOM.outlineColor,
             outlineWidth:
                 savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth
+        });
+        applyPriceCustomizationSettings({
+            scale: savedPriceScale ?? DEFAULT_PRICE_CUSTOM.scale,
+            colorMode:
+                savedPriceColorMode ?? DEFAULT_PRICE_CUSTOM.colorMode,
+            color: savedPriceColor ?? DEFAULT_PRICE_CUSTOM.color
         });
         if (savedLayout) {
             document.getElementById("layoutSelect").value =
@@ -8884,6 +9465,7 @@
             theme: getSelectedTheme(),
             titleStyle: getSelectedTitleStyle(),
             titleCustom: collectTitleCustomization(),
+            priceCustom: collectPriceCustomization(),
             cardNameDisplay: getCardNameDisplay(),
             pageSplit: getPageSplitMode(),
             sortOrder: getSortOrder(),
@@ -8900,6 +9482,9 @@
         setScopedItem("kaitori_title_style", settings.titleStyle);
         saveTitleCustomization(
             normalizeTitleCustomization(settings.titleCustom || {})
+        );
+        savePriceCustomization(
+            normalizePriceCustomization(settings.priceCustom || {})
         );
         setScopedItem("kaitori_card_name_display", settings.cardNameDisplay);
         setScopedItem("kaitori_page_split", settings.pageSplit);
@@ -9013,7 +9598,7 @@
             select.appendChild(option);
         });
 
-        if (selectedName && Object.hasOwn(templates, selectedName)) {
+        if (selectedName && hasOwn(templates, selectedName)) {
             select.value = selectedName;
         }
     }
@@ -9031,7 +9616,7 @@
 
         const templates = getNamedTemplates();
         if (
-            Object.hasOwn(templates, name) &&
+            hasOwn(templates, name) &&
             !confirm(`「${name}」を現在の設定で上書きしますか？`)
         ) {
             return;
@@ -9079,6 +9664,9 @@
             normalizeTitleStyle(settings.titleStyle);
         applyTitleCustomizationSettings(
             settings.titleCustom || collectTitleCustomization()
+        );
+        applyPriceCustomizationSettings(
+            settings.priceCustom || collectPriceCustomization()
         );
         document.getElementById("cardNameDisplaySelect").value =
             settings.cardNameDisplay === "hide" ? "hide" : "show";
@@ -9152,6 +9740,8 @@
         document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.dataset.theme = theme;
         });
+        applyPriceCustomization();
+        requestAnimationFrame(() => adjustTextSize());
         syncQuickHeaderPreview();
     }
 
@@ -9167,7 +9757,7 @@
             page.dataset.titleStyle = style;
         });
         applyTitleCustomization();
-        requestAnimationFrame(adjustTitleSizes);
+        requestAnimationFrame(() => adjustTitleSizes());
     }
 
     function getCardNameDisplay() {
@@ -9241,7 +9831,7 @@
         applyTitleCustomizationSettings(settings);
         saveTitleCustomization(settings);
         applyTitleCustomization();
-        requestAnimationFrame(adjustTitleSizes);
+        requestAnimationFrame(() => adjustTitleSizes());
         scheduleWorkspaceAutosave();
     };
 
@@ -9276,6 +9866,43 @@
         document.getElementById(id).addEventListener("input", updateTitleCustomization);
         document.getElementById(id).addEventListener("change", updateTitleCustomization);
     });
+
+    const updatePriceCustomization = () => {
+        const settings = collectPriceCustomization();
+        applyPriceCustomizationSettings(settings);
+        savePriceCustomization(settings);
+        applyPriceCustomization(document, settings);
+        requestAnimationFrame(() => adjustTextSize());
+        scheduleWorkspaceAutosave();
+    };
+
+    document.getElementById("priceSizeRange").addEventListener("input", event => {
+        document.getElementById("priceSizeInput").value = event.target.value;
+        updatePriceCustomization();
+    });
+    document.getElementById("priceSizeInput").addEventListener("input", event => {
+        const value = Number(event.target.value);
+        if (!Number.isFinite(value) || value < 60 || value > 140) return;
+        document.getElementById("priceSizeRange").value =
+            String(Math.round(value));
+        updatePriceCustomization();
+    });
+    document.getElementById("priceSizeInput").addEventListener("change", event => {
+        const normalized = clampTitleNumber(
+            event.target.value,
+            60,
+            140,
+            DEFAULT_PRICE_CUSTOM.scale
+        );
+        event.target.value = String(normalized);
+        document.getElementById("priceSizeRange").value = String(normalized);
+        updatePriceCustomization();
+    });
+    document.getElementById("priceColorModeSelect")
+        .addEventListener("change", updatePriceCustomization);
+    document.getElementById("priceColorInput")
+        .addEventListener("input", updatePriceCustomization);
+
     document.getElementById("cardNameDisplaySelect")
         .addEventListener("change", () => {
             applyCardNameVisibility();
@@ -9297,8 +9924,7 @@
 
     [
         "singleHeadlineInput",
-        "singlePriceLabelInput",
-        "singleNoteInput"
+        "singlePriceLabelInput"
     ].forEach(id => {
         document.getElementById(id).addEventListener("input", () => {
             saveSingleSettings();
@@ -9306,51 +9932,96 @@
         });
     });
 
-    const updateSingleHeadlineScale = value => {
-        const headlineScale = clampTitleNumber(
+    const SINGLE_SCALE_CONTROLS = {
+        headline: {
+            rangeId: "singleHeadlineSizeRange",
+            inputId: "singleHeadlineSizeInput",
+            outputId: "singleHeadlineSizeOutput",
+            fallback: DEFAULT_SINGLE_HEADLINE_SCALE
+        },
+        name: {
+            rangeId: "singleNameSizeRange",
+            inputId: "singleNameSizeInput",
+            outputId: "singleNameSizeOutput",
+            fallback: DEFAULT_SINGLE_NAME_SCALE
+        },
+        price: {
+            rangeId: "singlePriceSizeRange",
+            inputId: "singlePriceSizeInput",
+            outputId: "singlePriceSizeOutput",
+            fallback: DEFAULT_SINGLE_PRICE_SCALE
+        }
+    };
+
+    const updateSingleScale = (control, value) => {
+        const config = SINGLE_SCALE_CONTROLS[control];
+        if (!config) return;
+        const normalizedScale = clampTitleNumber(
             value,
             60,
             160,
-            DEFAULT_SINGLE_HEADLINE_SCALE
+            config.fallback
         );
-        document.getElementById("singleHeadlineSizeRange").value =
-            String(headlineScale);
-        document.getElementById("singleHeadlineSizeInput").value =
-            String(headlineScale);
-        document.getElementById("singleHeadlineSizeOutput").textContent =
-            `${headlineScale}%`;
+        document.getElementById(config.rangeId).value =
+            String(normalizedScale);
+        document.getElementById(config.inputId).value =
+            String(normalizedScale);
+        document.getElementById(config.outputId).textContent =
+            `${normalizedScale}%`;
         saveSingleSettings();
         const settings = collectSingleSettings();
         const preview = document.getElementById("singlePreviewContainer");
         applySingleHeadlineSizes(preview, settings);
         requestAnimationFrame(() => {
+            adjustSingleAdPriceSizes(preview);
             updateSingleAdLayoutStatus(preview);
             fitSinglePreviews();
         });
     };
 
-    document.getElementById("singleHeadlineSizeRange")
-        .addEventListener("input", event => {
-            updateSingleHeadlineScale(event.target.value);
-        });
+    Object.entries(SINGLE_SCALE_CONTROLS).forEach(([control, config]) => {
+        document.getElementById(config.rangeId)
+            .addEventListener("input", event => {
+                updateSingleScale(control, event.target.value);
+            });
+        document.getElementById(config.inputId)
+            .addEventListener("input", event => {
+                const value = Number(event.target.value);
+                if (!Number.isFinite(value) || value < 60 || value > 160) {
+                    return;
+                }
+                updateSingleScale(control, value);
+            });
+        document.getElementById(config.inputId)
+            .addEventListener("change", event => {
+                updateSingleScale(control, event.target.value);
+            });
+    });
 
-    document.getElementById("singleHeadlineSizeInput")
-        .addEventListener("input", event => {
-            const value = Number(event.target.value);
-            if (!Number.isFinite(value) || value < 60 || value > 160) return;
-            updateSingleHeadlineScale(value);
+    const updateSinglePriceColor = () => {
+        const settings = collectSingleSettings();
+        document.getElementById("singlePriceColorInput").disabled =
+            settings.priceColorMode !== "custom";
+        saveSingleSettings();
+        const preview = document.getElementById("singlePreviewContainer");
+        applySingleHeadlineSizes(preview, settings);
+        requestAnimationFrame(() => {
+            adjustSingleAdPriceSizes(preview);
+            updateSingleAdLayoutStatus(preview);
         });
+    };
 
-    document.getElementById("singleHeadlineSizeInput")
-        .addEventListener("change", event => {
-            updateSingleHeadlineScale(event.target.value);
-        });
+    document.getElementById("singlePriceColorModeSelect")
+        .addEventListener("change", updateSinglePriceColor);
+    document.getElementById("singlePriceColorInput")
+        .addEventListener("input", updateSinglePriceColor);
 
     [
         "singleSizeSelect",
         "singleDesignSelect",
         "singleGradeDisplaySelect",
-        "singleItemsPerImageSelect"
+        "singleItemsPerImageSelect",
+        "singleLogoAlignSelect"
     ].forEach(id => {
         document.getElementById(id).addEventListener("change", () => {
             saveSingleSettings();
@@ -10209,6 +10880,46 @@
         return Math.round(baseSize * scale) / 100;
     }
 
+    function getSingleProductNameSize(settings, isMulti, density, size) {
+        let baseSize = size === "portrait" ? 34 : 39;
+        if (isMulti) {
+            baseSize = density === "dense"
+                ? 16
+                : density === "compact"
+                    ? 18
+                    : 21;
+        }
+        const scale = clampTitleNumber(
+            settings.nameScale,
+            60,
+            160,
+            DEFAULT_SINGLE_NAME_SCALE
+        );
+        return Math.round(baseSize * scale) / 100;
+    }
+
+    function getSinglePriceSize(settings, isMulti, density, size) {
+        let baseSize = size === "portrait"
+            ? 61
+            : settings.design === "redimpact"
+                ? 78
+                : 72;
+        if (isMulti) {
+            baseSize = density === "dense"
+                ? 24
+                : density === "compact"
+                    ? 27
+                    : 31;
+        }
+        const scale = clampTitleNumber(
+            settings.priceScale,
+            60,
+            160,
+            DEFAULT_SINGLE_PRICE_SCALE
+        );
+        return Math.round(baseSize * scale) / 100;
+    }
+
     function getSingleAdAreas(root = document) {
         if (!root) return [];
         if (root instanceof Element && root.matches(".single-ad")) {
@@ -10228,10 +10939,26 @@
                     area.dataset.design || settings.design
                 )
             };
+            const isMulti = area.classList.contains("is-multi");
+            const areaSize = SINGLE_SIZES.find(size =>
+                area.classList.contains(`single-${size}`)
+            ) || areaSettings.size;
             const headlineSize = getSingleHeadlineSize(
                 areaSettings,
-                area.classList.contains("is-multi"),
+                isMulti,
                 area.dataset.density
+            );
+            const nameSize = getSingleProductNameSize(
+                areaSettings,
+                isMulti,
+                area.dataset.density,
+                areaSize
+            );
+            const priceSize = getSinglePriceSize(
+                areaSettings,
+                isMulti,
+                area.dataset.density,
+                areaSize
             );
             const headline = area.querySelector(".single-ad-heading h2");
 
@@ -10239,8 +10966,22 @@
                 "--single-headline-size",
                 `${headlineSize}px`
             );
+            area.style.setProperty("--single-name-size", `${nameSize}px`);
+            area.style.setProperty("--single-price-size", `${priceSize}px`);
             area.dataset.headlineScale = String(areaSettings.headlineScale);
             area.dataset.headlineSize = String(headlineSize);
+            area.dataset.nameScale = String(areaSettings.nameScale);
+            area.dataset.nameSize = String(nameSize);
+            area.dataset.priceScale = String(areaSettings.priceScale);
+            area.dataset.priceSize = String(priceSize);
+            area.dataset.priceColorMode =
+                areaSettings.priceColorMode === "custom"
+                    ? "custom"
+                    : "theme";
+            area.dataset.priceColor = normalizeHexColor(
+                areaSettings.priceColor,
+                DEFAULT_SINGLE_PRICE_COLOR
+            );
             if (headline) {
                 headline.style.setProperty(
                     "font-size",
@@ -10248,6 +10989,29 @@
                     "important"
                 );
             }
+            area.querySelectorAll(".single-ad-card-name").forEach(name => {
+                name.style.setProperty(
+                    "font-size",
+                    `${nameSize}px`,
+                    "important"
+                );
+            });
+            area.querySelectorAll(".single-ad-price").forEach(price => {
+                price.style.setProperty(
+                    "font-size",
+                    `${priceSize}px`,
+                    "important"
+                );
+                if (area.dataset.priceColorMode === "custom") {
+                    price.style.setProperty(
+                        "color",
+                        area.dataset.priceColor,
+                        "important"
+                    );
+                } else {
+                    price.style.removeProperty("color");
+                }
+            });
         });
     }
 
@@ -10269,7 +11033,6 @@
 
         const settings = collectSingleSettings();
         const dateText = formatDate(document.getElementById("dateInput").value);
-        const noteHtml = escapeHtml(settings.note).replace(/\n/g, "<br>");
         const groups = [];
         for (let i = 0; i < cards.length; i += settings.itemsPerImage) {
             groups.push(cards.slice(i, i + settings.itemsPerImage));
@@ -10292,6 +11055,18 @@
                 settings,
                 isMulti,
                 multiLayout?.density
+            );
+            const nameSize = getSingleProductNameSize(
+                settings,
+                isMulti,
+                multiLayout?.density,
+                settings.size
+            );
+            const priceSize = getSinglePriceSize(
+                settings,
+                isMulti,
+                multiLayout?.density,
+                settings.size
             );
             const productBody = isMulti
                 ? `<div
@@ -10324,6 +11099,7 @@
                     <article
                         class="single-ad single-${settings.size}${isMulti ? " is-multi" : ""}"
                         data-design="${settings.design}"
+                        data-logo-align="${settings.logoAlign}"
                         data-single-card-id="${group.map(item => item.id).join(",")}"
                         data-count="${group.length}"
                         data-columns="${multiLayout?.columns || 1}"
@@ -10331,7 +11107,17 @@
                         data-density="${multiLayout?.density || "single"}"
                         data-headline-scale="${settings.headlineScale}"
                         data-headline-size="${headlineSize}"
-                        style="--single-headline-size:${headlineSize}px"
+                        data-name-scale="${settings.nameScale}"
+                        data-name-size="${nameSize}"
+                        data-price-scale="${settings.priceScale}"
+                        data-price-size="${priceSize}"
+                        data-price-color-mode="${settings.priceColorMode}"
+                        data-price-color="${settings.priceColor}"
+                        style="
+                            --single-headline-size:${headlineSize}px;
+                            --single-name-size:${nameSize}px;
+                            --single-price-size:${priceSize}px;
+                        "
                         id="singleAd_${index + 1}"
                     >
                         <header class="single-ad-header">
@@ -10346,10 +11132,6 @@
                         </div>
 
                         ${productBody}
-
-                        <footer class="single-ad-footer">
-                            <div class="single-ad-note">${noteHtml}</div>
-                        </footer>
                     </article>
                 </div>
             `;
@@ -10372,36 +11154,45 @@
     function getSingleAdLayoutIssues(area) {
         if (!area?.classList?.contains("single-ad")) return [];
         if (!area.classList.contains("is-multi")) return [];
-        const tolerance = 2;
+        const tolerance = 3;
         const issues = [];
-        const overflowed = element =>
-            element &&
-            (
-                element.scrollHeight > element.clientHeight + tolerance ||
-                element.scrollWidth > element.clientWidth + tolerance
+        const outside = (parent, child) => {
+            if (!parent || !child) return false;
+            const parentRect = parent.getBoundingClientRect();
+            const childRect = child.getBoundingClientRect();
+            return (
+                childRect.left < parentRect.left - tolerance ||
+                childRect.top < parentRect.top - tolerance ||
+                childRect.right > parentRect.right + tolerance ||
+                childRect.bottom > parentRect.bottom + tolerance
             );
-
-        if (overflowed(area)) issues.push("画像全体");
-
+        };
         const products = area.querySelector(".single-ad-products");
-        if (overflowed(products)) issues.push("商品一覧");
-
-        area.querySelectorAll(".single-ad-products-row").forEach((row, index) => {
-            if (overflowed(row)) issues.push(`商品行${index + 1}`);
-        });
-        area.querySelectorAll(".single-ad-product-card").forEach((card, index) => {
-            if (overflowed(card)) issues.push(`商品${index + 1}`);
-        });
-
-        const regions = [
+        const majorRegions = [
             ["ヘッダー", area.querySelector(".single-ad-header")],
             ["見出し", area.querySelector(".single-ad-heading")],
-            ["商品一覧", products],
-            ["注意書き", area.querySelector(".single-ad-footer")]
+            ["商品一覧", products]
         ].filter(([, element]) => element);
-        for (let index = 0; index < regions.length - 1; index += 1) {
-            const [currentName, current] = regions[index];
-            const [nextName, next] = regions[index + 1];
+        majorRegions.forEach(([name, element]) => {
+            if (outside(area, element)) issues.push(`${name}が画像外`);
+        });
+        area.querySelectorAll(".single-ad-products-row").forEach((row, index) => {
+            if (outside(area, row)) issues.push(`商品行${index + 1}が画像外`);
+            row.querySelectorAll(".single-ad-product-card").forEach((card, cardIndex) => {
+                if (outside(row, card)) {
+                    issues.push(`商品${index + 1}-${cardIndex + 1}が範囲外`);
+                }
+                const imageStage = card.querySelector(".single-ad-image-stage");
+                const info = card.querySelector(".single-ad-info");
+                if (outside(card, imageStage) || outside(card, info)) {
+                    issues.push(`商品${index + 1}-${cardIndex + 1}の内容が範囲外`);
+                }
+            });
+        });
+
+        for (let index = 0; index < majorRegions.length - 1; index += 1) {
+            const [currentName, current] = majorRegions[index];
+            const [nextName, next] = majorRegions[index + 1];
             const currentRect = current.getBoundingClientRect();
             const nextRect = next.getBoundingClientRect();
             if (currentRect.bottom > nextRect.top + tolerance) {
@@ -10409,19 +11200,24 @@
             }
         }
 
-        const footer = area.querySelector(".single-ad-footer");
-        if (products && footer) {
-            const productsRect = products.getBoundingClientRect();
-            const footerRect = footer.getBoundingClientRect();
-            if (productsRect.bottom > footerRect.top + tolerance) {
-                issues.push("商品一覧と注意書きの重なり");
-            }
+        const logo = area.querySelector(".single-ad-logo-box");
+        const date = area.querySelector(".single-ad-date");
+        if (logo && date) {
+            const logoRect = logo.getBoundingClientRect();
+            const dateRect = date.getBoundingClientRect();
+            const overlaps = !(
+                logoRect.right <= dateRect.left + tolerance ||
+                dateRect.right <= logoRect.left + tolerance ||
+                logoRect.bottom <= dateRect.top + tolerance ||
+                dateRect.bottom <= logoRect.top + tolerance
+            );
+            if (overlaps) issues.push("ロゴと日付の重なり");
         }
         return [...new Set(issues)];
     }
 
     function updateSingleAdLayoutStatus(root = document) {
-        root.querySelectorAll(".single-ad").forEach(area => {
+        getSingleAdAreas(root).forEach(area => {
             const issues = getSingleAdLayoutIssues(area);
             area.dataset.layoutStatus = issues.length ? "error" : "ok";
             area.dataset.layoutIssues = issues.join(",");
@@ -10737,6 +11533,7 @@
         const orientationClass = layoutConfig.orientation;
         const selectedTheme = getSelectedTheme();
         const selectedTitleStyle = getSelectedTitleStyle();
+        const splitMode = getPageSplitMode();
         const pages = buildPages(layoutConfig.maxPerPage);
         const container = document.getElementById("pagesContainer");
 
@@ -10754,6 +11551,14 @@
 
         pages.forEach((pageCards, pageIndex) => {
             const pageNumber = pageIndex + 1;
+            const pageEmblem = getPageEmblemContent(
+                pageCards,
+                pageNumber,
+                splitMode
+            );
+            const pageEmblemAttributes = pageEmblem.isGroupLabel
+                ? ` class="is-group-label" style="--group-label-size:${pageEmblem.fontSize}px"`
+                : "";
             const pageDiv = document.createElement("div");
             pageDiv.className = `exportArea ${orientationClass}${
                 getCardNameDisplay() === "hide" ? " hide-card-names" : ""
@@ -10807,7 +11612,7 @@
                         <h1 class="title-text">${escapeHtml(title)}</h1>
                     </div>
                     <div class="page-emblem">
-                        <strong>${pageNumberText(pageNumber)}</strong>
+                        <strong${pageEmblemAttributes}>${escapeHtml(pageEmblem.text)}</strong>
                     </div>
                 </div>
 
@@ -10835,6 +11640,7 @@
         });
 
         applyTitleCustomization(container);
+        applyPriceCustomization(container);
         requestAnimationFrame(() => {
             adjustTitleSizes();
             adjustTextSize();
@@ -11064,6 +11870,7 @@
             await waitForImages(exportClone);
             applySingleHeadlineSizes(exportClone);
             adjustTitleSizes(exportClone);
+            applyPriceCustomization(exportClone);
             adjustTextSize(exportClone);
             adjustSingleAdPriceSizes(exportClone);
             await new Promise(resolve => setTimeout(resolve, 250));
