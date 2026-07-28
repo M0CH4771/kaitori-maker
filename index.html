@@ -265,19 +265,23 @@
             color: var(--gold-light);
         }
 
-        .quick-header-preview {
-            position: sticky;
-            z-index: 120;
-            top: 10px;
-            margin: 14px 24px 0;
+        .quick-header-preview,
+        .quick-price-preview {
+            position: relative;
+            z-index: 0;
+            margin: 14px 0 0;
             padding: 10px;
             border: 1px solid rgba(217,173,74,0.46);
             border-radius: 13px;
             background: rgba(7, 11, 18, 0.96);
             box-shadow:
-                0 12px 30px rgba(0,0,0,0.34),
+                0 8px 22px rgba(0,0,0,0.24),
                 inset 0 0 0 1px rgba(255,255,255,0.04);
             backdrop-filter: blur(12px);
+        }
+
+        .quick-price-preview {
+            border-color: rgba(217,173,74,0.3);
         }
 
         .quick-header-preview-toolbar {
@@ -323,7 +327,8 @@
             white-space: nowrap;
         }
 
-        .quick-header-preview-viewport {
+        .quick-header-preview-viewport,
+        .quick-price-preview-viewport {
             position: relative;
             width: 100%;
             min-height: 86px;
@@ -338,6 +343,14 @@
             background-size: 16px 16px;
         }
 
+        .quick-price-preview-viewport {
+            display: flex;
+            min-height: 96px;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
         .quick-header-preview-stage {
             position: absolute !important;
             top: 6px !important;
@@ -350,6 +363,35 @@
 
         .quick-header-preview-stage .header-area {
             margin-bottom: 0;
+        }
+
+        .quick-price-preview-stage.exportArea {
+            position: relative !important;
+            display: flex !important;
+            width: min(100%, 340px) !important;
+            height: auto !important;
+            min-height: 0 !important;
+            align-items: center;
+            justify-content: center;
+            overflow: visible !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            isolation: auto;
+        }
+
+        .quick-price-preview-stage.exportArea::before,
+        .quick-price-preview-stage.exportArea::after {
+            display: none !important;
+        }
+
+        .quick-price-preview-stage .card-price-container {
+            width: 100% !important;
+            height: 48px !important;
+            min-height: 48px !important;
+            margin: 0 !important;
+            padding: 4px 12px !important;
         }
 
         .settings-grid {
@@ -6430,10 +6472,9 @@
                 grid-template-columns: 1fr;
             }
 
-            .quick-header-preview {
-                top: 4px;
-                margin-right: 10px;
-                margin-left: 10px;
+            .quick-header-preview,
+            .quick-price-preview {
+                margin-top: 12px;
                 padding: 8px;
             }
 
@@ -7430,24 +7471,6 @@
             <div class="workflow-stat"><span>画像エラー</span><strong id="buylistImageIssueCount">0件</strong></div>
         </div>
 
-        <section class="quick-header-preview" aria-label="ヘッダープレビュー">
-            <div class="quick-header-preview-toolbar">
-                <div class="quick-header-preview-label">
-                    <strong>ヘッダープレビュー</strong>
-                    <span>タイトル・ロゴ・配色を確認できます</span>
-                </div>
-                <button
-                    class="quick-header-preview-button"
-                    type="button"
-                    onclick="scrollToFullPreview()"
-                >全体プレビューを見る</button>
-            </div>
-            <div
-                class="quick-header-preview-viewport"
-                id="quickHeaderPreviewViewport"
-            ></div>
-        </section>
-
         <div class="settings-section-label">
             <strong>基本設定</strong>
             <span>CSV・ロゴ・掲載内容</span>
@@ -7624,6 +7647,23 @@
                             </select>
                         </div>
                     </div>
+                    <section class="quick-header-preview" aria-label="ヘッダープレビュー">
+                        <div class="quick-header-preview-toolbar">
+                            <div class="quick-header-preview-label">
+                                <strong>ヘッダープレビュー</strong>
+                                <span>タイトル・ロゴ・配色を確認できます</span>
+                            </div>
+                            <button
+                                class="quick-header-preview-button"
+                                type="button"
+                                onclick="scrollToFullPreview()"
+                            >全体プレビューを見る</button>
+                        </div>
+                        <div
+                            class="quick-header-preview-viewport"
+                            id="quickHeaderPreviewViewport"
+                        ></div>
+                    </section>
                 </div>
 
                 <div class="appearance-panel">
@@ -7676,6 +7716,18 @@
                         </div>
                     </div>
                     <small class="help">金額が枠からはみ出す場合は、レイアウトを保つため自動で縮小されます。</small>
+                    <section class="quick-price-preview" aria-label="買取価格プレビュー">
+                        <div class="quick-header-preview-toolbar">
+                            <div class="quick-header-preview-label">
+                                <strong>買取価格プレビュー</strong>
+                                <span>選択中デザインの金額部分を確認できます</span>
+                            </div>
+                        </div>
+                        <div
+                            class="quick-price-preview-viewport"
+                            id="quickPricePreviewViewport"
+                        ></div>
+                    </section>
                 </div>
             </div>
         </details>
@@ -8970,6 +9022,13 @@
                 }
             });
         });
+
+        if (
+            root === document ||
+            root === document.getElementById("pagesContainer")
+        ) {
+            syncQuickPricePreview();
+        }
     }
 
     function applyTitleElementStyle(title, settings, size = settings.size) {
@@ -9075,6 +9134,89 @@
             stage.style.transform = `scale(${scale})`;
             viewport.style.height =
                 `${Math.ceil(naturalHeight * scale + 12)}px`;
+        });
+    }
+
+    function syncQuickPricePreview() {
+        const viewport = document.getElementById("quickPricePreviewViewport");
+        if (!viewport) return;
+
+        const sourcePage = document.querySelector(
+            "#pagesContainer .exportArea"
+        );
+        const sourcePrice = sourcePage?.querySelector(
+            ".card-price-container"
+        );
+        const theme = sourcePage?.dataset.theme || getSelectedTheme();
+        const orientation = sourcePage?.classList.contains("landscape")
+            ? "landscape"
+            : getSelectedLayoutConfig().orientation;
+        const settings = collectPriceCustomization();
+        const stage = document.createElement("div");
+        stage.className = "exportArea quick-price-preview-stage";
+        stage.dataset.theme = theme;
+        stage.dataset.priceScale = String(settings.scale);
+        stage.dataset.priceColorMode = settings.colorMode;
+        stage.dataset.priceColor = settings.color;
+
+        const priceContainer = sourcePrice
+            ? sourcePrice.cloneNode(true)
+            : document.createElement("div");
+        if (!sourcePrice) {
+            priceContainer.className = "card-price-container";
+            const priceText = document.createElement("span");
+            priceText.className = "card-price-text";
+            const firstVisibleCard = globalCardData.find(card => !card.hidden);
+            priceText.textContent = firstVisibleCard?.price || "¥12,000";
+            priceContainer.appendChild(priceText);
+        }
+
+        priceContainer.removeAttribute("style");
+        const priceText = priceContainer.querySelector(".card-price-text");
+        if (priceText) {
+            priceText.removeAttribute("style");
+            const baseSize =
+                orientation === "portrait" && LARGE_PRICE_THEMES.has(theme)
+                    ? 23
+                    : 21;
+            const fontSize = baseSize * settings.scale / 100;
+            priceText.style.setProperty(
+                "font-size",
+                `${fontSize.toFixed(2)}px`,
+                "important"
+            );
+            if (settings.colorMode === "custom") {
+                priceText.style.setProperty(
+                    "color",
+                    settings.color,
+                    "important"
+                );
+            }
+        }
+
+        stage.appendChild(priceContainer);
+        viewport.replaceChildren(stage);
+
+        requestAnimationFrame(() => {
+            if (!priceText) return;
+            priceText.style.transform = "none";
+            const availableWidth = Math.max(
+                0,
+                priceContainer.clientWidth - 24
+            );
+            const availableHeight = Math.max(
+                0,
+                priceContainer.clientHeight - 8
+            );
+            if (!availableWidth || !availableHeight) return;
+
+            const scale = Math.min(
+                1,
+                availableWidth / Math.max(1, priceText.scrollWidth),
+                availableHeight / Math.max(1, priceText.scrollHeight)
+            );
+            priceText.style.transform =
+                scale < 0.999 ? `scale(${scale})` : "none";
         });
     }
 
@@ -12201,6 +12343,7 @@
         fitPreviewPages();
         fitSinglePreviews();
         syncQuickHeaderPreview();
+        syncQuickPricePreview();
     });
 
     document.addEventListener("visibilitychange", () => {
