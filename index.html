@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="kaitori-shared-sync-api-url" content="https://script.google.com/macros/s/AKfycbyAPnu-UiVREKtUCUi9B4wubH2NPvRGyRmxxVBo5j8n7wG2ERPQ2K9j3i5w-a0TtaomeQ/exec">
+    <meta name="kaitori-shared-sync-token" content="e27f0b965e15287ef2b6ab350ef54f62650a11e7f1f42eda">
     <title>買取表・単品告知画像ジェネレーター</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -83,7 +85,7 @@
 
         .store-profile-bar {
             display: grid;
-            grid-template-columns: auto minmax(180px, 1fr) minmax(190px, 1fr) auto auto auto auto auto;
+            grid-template-columns: auto minmax(180px, 1fr) minmax(190px, 1fr) auto auto auto auto auto auto;
             align-items: end;
             gap: 10px;
             padding: 13px 15px;
@@ -114,6 +116,50 @@
             margin-top: 3px;
             color: #9ca8ba;
             font-size: 9px;
+        }
+
+        .store-profile-title .shared-sync-status {
+            display: inline-flex;
+            width: fit-content;
+            align-items: center;
+            gap: 5px;
+            margin-top: 6px;
+            padding: 3px 7px;
+            color: #cbd5e1;
+            border: 1px solid rgba(203, 213, 225, 0.2);
+            border-radius: 999px;
+            background: rgba(148, 163, 184, 0.09);
+            font-size: 8px;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
+        .shared-sync-status::before {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: currentColor;
+            content: "";
+        }
+
+        .shared-sync-status[data-state="synced"] {
+            color: #8ff0bb;
+            border-color: rgba(74, 222, 128, 0.28);
+            background: rgba(34, 197, 94, 0.11);
+        }
+
+        .shared-sync-status[data-state="checking"],
+        .shared-sync-status[data-state="saving"],
+        .shared-sync-status[data-state="pending"] {
+            color: #ffe08a;
+            border-color: rgba(250, 204, 21, 0.3);
+            background: rgba(234, 179, 8, 0.1);
+        }
+
+        .shared-sync-status[data-state="error"] {
+            color: #ffb4c0;
+            border-color: rgba(251, 113, 133, 0.3);
+            background: rgba(244, 63, 94, 0.1);
         }
 
         .store-profile-field label {
@@ -7418,6 +7464,12 @@
         <div class="store-profile-title">
             <strong>店舗プロフィール</strong>
             <span>ロゴやテンプレートを店舗ごとに保存できます</span>
+            <span
+                class="shared-sync-status"
+                id="sharedSyncStatus"
+                data-state="off"
+                title="共有同期の接続先がまだ設定されていません"
+            >共有同期：設定待ち</span>
         </div>
         <div class="store-profile-field">
             <label for="storeProfileSelect">使用する店舗</label>
@@ -7443,6 +7495,11 @@
                 onchange="importStoreBackup(event)"
             >
         </label>
+        <button
+            type="button"
+            onclick="configureSharedSettingsSync()"
+            title="管理者向け：共有設定の接続先を変更します"
+        >共有同期設定</button>
         <button
             class="store-delete-button"
             type="button"
@@ -8358,6 +8415,18 @@
     const WORKING_DRAFT_STORAGE_KEY = "kaitori_working_draft_v1";
     const STORE_REGISTRY_KEY = "kaitori_store_registry_v1";
     const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
+    const SHARED_SYNC_API_URL_STORAGE_KEY =
+        "kaitori_shared_sync_api_url_v1";
+    const SHARED_SYNC_EMBEDDED_URL_STORAGE_KEY =
+        "kaitori_shared_sync_embedded_url_v1";
+    const SHARED_SYNC_META_STORAGE_KEY =
+        "kaitori_shared_sync_meta_v1";
+    const SHARED_SYNC_CLIENT_ID_STORAGE_KEY =
+        "kaitori_shared_sync_client_id_v1";
+    const SHARED_SYNC_APP_ID = "kaitori-table-generator";
+    const SHARED_SYNC_SCHEMA_VERSION = 1;
+    const SHARED_SYNC_PUSH_DELAY = 1100;
+    const SHARED_SYNC_REQUEST_TIMEOUT = 12000;
     const STORE_DATA_KEYS = [
         "kaitori_title",
         "kaitori_disclaimer",
@@ -8382,6 +8451,12 @@
         CSV_SNAPSHOT_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
     ];
+    const SHARED_STORE_DATA_KEYS = STORE_DATA_KEYS.filter(
+        baseKey =>
+            baseKey !== CSV_SNAPSHOT_STORAGE_KEY &&
+            baseKey !== WORKING_DRAFT_STORAGE_KEY
+    );
+    const SHARED_STORE_DATA_KEY_SET = new Set(SHARED_STORE_DATA_KEYS);
     const JSON_STORE_DATA_KEYS = new Set([
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
@@ -8391,6 +8466,783 @@
     ]);
     const hasOwn = (object, property) =>
         Object.prototype.hasOwnProperty.call(object, property);
+    const EMBEDDED_SHARED_SYNC_API_URL = String(
+        document.querySelector(
+            'meta[name="kaitori-shared-sync-api-url"]'
+        )?.content || ""
+    ).trim();
+    const EMBEDDED_SHARED_SYNC_TOKEN = String(
+        document.querySelector(
+            'meta[name="kaitori-shared-sync-token"]'
+        )?.content || ""
+    ).trim();
+
+    let sharedSyncReady = false;
+    let sharedSyncApplyingRemote = false;
+    let sharedSyncInteractionEnabled = false;
+    let sharedSyncPushInFlight = false;
+    let sharedSyncPushQueued = false;
+    let sharedSyncPushTimer = null;
+    let sharedSyncInitializationPromise = null;
+    let sharedSyncRemoteVersion = 0;
+    let sharedSyncLastCheckAt = 0;
+    let sharedSyncReloadScheduled = false;
+
+    function normalizeSharedSyncApiUrl(value) {
+        const rawValue = String(value || "").trim();
+        if (!rawValue) return "";
+        try {
+            const url = new URL(rawValue);
+            if (url.protocol !== "https:" && url.protocol !== "http:") {
+                return "";
+            }
+            return url.toString();
+        } catch (error) {
+            return "";
+        }
+    }
+
+    function getSharedSyncConfig() {
+        let storedApiUrl = localStorage.getItem(
+            SHARED_SYNC_API_URL_STORAGE_KEY
+        );
+        const normalizedEmbeddedApiUrl =
+            normalizeSharedSyncApiUrl(EMBEDDED_SHARED_SYNC_API_URL);
+        const lastEmbeddedApiUrl = normalizeSharedSyncApiUrl(
+            localStorage.getItem(
+                SHARED_SYNC_EMBEDDED_URL_STORAGE_KEY
+            )
+        );
+
+        if (
+            normalizedEmbeddedApiUrl &&
+            normalizedEmbeddedApiUrl !== lastEmbeddedApiUrl
+        ) {
+            storedApiUrl = normalizedEmbeddedApiUrl;
+            localStorage.setItem(
+                SHARED_SYNC_API_URL_STORAGE_KEY,
+                normalizedEmbeddedApiUrl
+            );
+            localStorage.setItem(
+                SHARED_SYNC_EMBEDDED_URL_STORAGE_KEY,
+                normalizedEmbeddedApiUrl
+            );
+        }
+
+        const apiUrl = normalizeSharedSyncApiUrl(
+            storedApiUrl === null
+                ? normalizedEmbeddedApiUrl
+                : storedApiUrl
+        );
+        return {
+            apiUrl,
+            token: EMBEDDED_SHARED_SYNC_TOKEN
+        };
+    }
+
+    function isSharedSyncConfigured(config = getSharedSyncConfig()) {
+        return Boolean(config.apiUrl && config.token);
+    }
+
+    function setSharedSyncStatus(state, detail = "") {
+        const status = document.getElementById("sharedSyncStatus");
+        if (!status) return;
+        const labels = {
+            off: "共有同期：設定待ち",
+            checking: "共有同期：確認中",
+            pending: "共有同期：変更あり",
+            saving: "共有同期：保存中",
+            synced: "共有同期：最新",
+            error: "共有同期：接続エラー"
+        };
+        status.dataset.state = hasOwn(labels, state) ? state : "off";
+        status.textContent = labels[status.dataset.state];
+        status.title = detail || {
+            off: "共有同期の接続先がまだ設定されていません",
+            checking: "共有設定の更新を確認しています",
+            pending: "端末内の変更を共有先へ保存します",
+            saving: "共有設定を保存しています",
+            synced: "この端末には最新の共有設定が反映されています",
+            error: "共有先へ接続できません。端末内の設定は引き続き使用できます"
+        }[status.dataset.state];
+    }
+
+    function readSharedSyncMeta() {
+        try {
+            const parsed = JSON.parse(
+                localStorage.getItem(SHARED_SYNC_META_STORAGE_KEY) || "null"
+            );
+            if (parsed && typeof parsed === "object") {
+                return {
+                    version: Math.max(0, Number(parsed.version) || 0),
+                    pending: Boolean(parsed.pending),
+                    updatedAt: String(parsed.updatedAt || ""),
+                    localChangedAt: String(parsed.localChangedAt || ""),
+                    lastMutationId: String(parsed.lastMutationId || "")
+                };
+            }
+        } catch (error) {
+            // 壊れた同期情報は初期値へ戻す
+        }
+        return {
+            version: 0,
+            pending: false,
+            updatedAt: "",
+            localChangedAt: "",
+            lastMutationId: ""
+        };
+    }
+
+    function writeSharedSyncMeta(meta) {
+        localStorage.setItem(
+            SHARED_SYNC_META_STORAGE_KEY,
+            JSON.stringify({
+                version: Math.max(0, Number(meta.version) || 0),
+                pending: Boolean(meta.pending),
+                updatedAt: String(meta.updatedAt || ""),
+                localChangedAt: String(meta.localChangedAt || ""),
+                lastMutationId: String(meta.lastMutationId || "")
+            })
+        );
+    }
+
+    function getSharedSyncClientId() {
+        let clientId = localStorage.getItem(
+            SHARED_SYNC_CLIENT_ID_STORAGE_KEY
+        );
+        if (!clientId) {
+            clientId =
+                `client_${Date.now().toString(36)}_` +
+                Math.random().toString(36).slice(2, 10);
+            localStorage.setItem(
+                SHARED_SYNC_CLIENT_ID_STORAGE_KEY,
+                clientId
+            );
+        }
+        return clientId;
+    }
+
+    function collectSharedSettingsState() {
+        const registry = getStoreRegistry();
+        const stores = {};
+
+        Object.keys(registry.stores).forEach(storeId => {
+            const data = {};
+            SHARED_STORE_DATA_KEYS.forEach(baseKey => {
+                const rawValue = localStorage.getItem(
+                    scopedStorageKey(baseKey, storeId)
+                );
+                if (rawValue !== null) {
+                    data[baseKey] = rawValue;
+                }
+            });
+            stores[storeId] = { data };
+        });
+
+        return {
+            app: SHARED_SYNC_APP_ID,
+            schemaVersion: SHARED_SYNC_SCHEMA_VERSION,
+            generatedAt: new Date().toISOString(),
+            registry: {
+                version: 1,
+                legacyMigrated: true,
+                stores: registry.stores
+            },
+            stores
+        };
+    }
+
+    function normalizeSharedSettingsState(state) {
+        if (
+            !state ||
+            state.app !== SHARED_SYNC_APP_ID ||
+            Number(state.schemaVersion) !== SHARED_SYNC_SCHEMA_VERSION ||
+            !state.registry ||
+            !state.registry.stores ||
+            typeof state.registry.stores !== "object"
+        ) {
+            throw new Error("共有設定の形式が正しくありません。");
+        }
+
+        const registryStores = Object.create(null);
+        const storePayloads = Object.create(null);
+        const sourcePayloads =
+            state.stores && typeof state.stores === "object"
+                ? state.stores
+                : {};
+
+        Object.entries(state.registry.stores)
+            .slice(0, 100)
+            .forEach(([storeId, store]) => {
+                if (
+                    !/^[A-Za-z0-9_-]{1,120}$/.test(storeId) ||
+                    ["__proto__", "prototype", "constructor"].includes(storeId)
+                ) {
+                    return;
+                }
+
+                const safeStore =
+                    store && typeof store === "object" ? store : {};
+                registryStores[storeId] = {
+                    name: String(safeStore.name || "名称未設定店舗").slice(0, 60),
+                    createdAt: String(
+                        safeStore.createdAt || new Date().toISOString()
+                    ),
+                    updatedAt: String(safeStore.updatedAt || ""),
+                    importedAt: String(safeStore.importedAt || "")
+                };
+
+                const sourceData =
+                    sourcePayloads[storeId]?.data &&
+                    typeof sourcePayloads[storeId].data === "object"
+                        ? sourcePayloads[storeId].data
+                        : {};
+                const data = {};
+                SHARED_STORE_DATA_KEYS.forEach(baseKey => {
+                    if (hasOwn(sourceData, baseKey)) {
+                        data[baseKey] = String(sourceData[baseKey] ?? "");
+                    }
+                });
+                storePayloads[storeId] = { data };
+            });
+
+        if (Object.keys(registryStores).length === 0) {
+            throw new Error("共有設定に店舗情報がありません。");
+        }
+
+        return {
+            registry: {
+                version: 1,
+                legacyMigrated: true,
+                stores: registryStores
+            },
+            stores: storePayloads
+        };
+    }
+
+    function applySharedSettingsState(state, remoteMeta = {}) {
+        const normalized = normalizeSharedSettingsState(state);
+        const previousRegistry = getStoreRegistry();
+        const previousActiveStoreId =
+            localStorage.getItem(ACTIVE_STORE_KEY);
+        const nextStoreIds = Object.keys(normalized.registry.stores);
+        const allStoreIds = new Set([
+            ...Object.keys(previousRegistry.stores || {}),
+            ...nextStoreIds
+        ]);
+
+        sharedSyncApplyingRemote = true;
+        try {
+            allStoreIds.forEach(storeId => {
+                const remoteStore = normalized.stores[storeId];
+                SHARED_STORE_DATA_KEYS.forEach(baseKey => {
+                    const storageKey = scopedStorageKey(baseKey, storeId);
+                    if (
+                        remoteStore &&
+                        hasOwn(remoteStore.data, baseKey)
+                    ) {
+                        localStorage.setItem(
+                            storageKey,
+                            remoteStore.data[baseKey]
+                        );
+                    } else {
+                        localStorage.removeItem(storageKey);
+                    }
+                });
+            });
+
+            localStorage.setItem(
+                STORE_REGISTRY_KEY,
+                JSON.stringify(normalized.registry)
+            );
+            const nextActiveStoreId =
+                previousActiveStoreId &&
+                hasOwn(
+                    normalized.registry.stores,
+                    previousActiveStoreId
+                )
+                    ? previousActiveStoreId
+                    : nextStoreIds[0];
+            localStorage.setItem(ACTIVE_STORE_KEY, nextActiveStoreId);
+            activeStoreId = nextActiveStoreId;
+
+            sharedSyncRemoteVersion = Math.max(
+                0,
+                Number(remoteMeta.version) || 0
+            );
+            writeSharedSyncMeta({
+                version: sharedSyncRemoteVersion,
+                pending: false,
+                updatedAt: remoteMeta.updatedAt || "",
+                localChangedAt: "",
+                lastMutationId: remoteMeta.mutationId || ""
+            });
+        } finally {
+            sharedSyncApplyingRemote = false;
+        }
+    }
+
+    function requestSharedSyncJsonp(parameters = {}) {
+        const config = getSharedSyncConfig();
+        if (!isSharedSyncConfigured(config)) {
+            return Promise.reject(
+                new Error("共有同期の接続先が設定されていません。")
+            );
+        }
+
+        return new Promise((resolve, reject) => {
+            const callbackName =
+                `__kaitoriSharedSync_${Date.now()}_` +
+                Math.random().toString(36).slice(2, 9);
+            const script = document.createElement("script");
+            let settled = false;
+
+            const cleanup = () => {
+                window.clearTimeout(timeoutId);
+                delete window[callbackName];
+                script.remove();
+            };
+            const finish = (handler, value) => {
+                if (settled) return;
+                settled = true;
+                cleanup();
+                handler(value);
+            };
+
+            window[callbackName] = payload => {
+                if (!payload || payload.ok !== true) {
+                    finish(
+                        reject,
+                        new Error(
+                            payload?.message ||
+                            "共有設定を取得できませんでした。"
+                        )
+                    );
+                    return;
+                }
+                finish(resolve, payload);
+            };
+
+            script.onerror = () => {
+                finish(
+                    reject,
+                    new Error("共有先へ接続できませんでした。")
+                );
+            };
+            const timeoutId = window.setTimeout(() => {
+                finish(
+                    reject,
+                    new Error("共有先からの応答がタイムアウトしました。")
+                );
+            }, SHARED_SYNC_REQUEST_TIMEOUT);
+
+            const url = new URL(config.apiUrl);
+            url.searchParams.set("action", parameters.action || "load");
+            url.searchParams.set("token", config.token);
+            url.searchParams.set("callback", callbackName);
+            url.searchParams.set("_", String(Date.now()));
+            Object.entries(parameters).forEach(([key, value]) => {
+                if (key === "action" || value === undefined || value === null) {
+                    return;
+                }
+                url.searchParams.set(key, String(value));
+            });
+            script.async = true;
+            script.referrerPolicy = "no-referrer";
+            script.src = url.toString();
+            document.head.appendChild(script);
+        });
+    }
+
+    function loadSharedSettingsRemote() {
+        return requestSharedSyncJsonp({ action: "load" });
+    }
+
+    async function submitSharedSettingsRemote({
+        state,
+        baseVersion,
+        mutationId
+    }) {
+        const config = getSharedSyncConfig();
+        const body = new URLSearchParams();
+        body.set("action", "save");
+        body.set("token", config.token);
+        body.set("baseVersion", String(baseVersion));
+        body.set("mutationId", mutationId);
+        body.set("payload", JSON.stringify(state));
+
+        await fetch(config.apiUrl, {
+            method: "POST",
+            mode: "no-cors",
+            cache: "no-store",
+            credentials: "include",
+            redirect: "follow",
+            referrerPolicy: "no-referrer",
+            body
+        });
+    }
+
+    function waitForSharedSync(milliseconds) {
+        return new Promise(resolve => {
+            window.setTimeout(resolve, milliseconds);
+        });
+    }
+
+    async function confirmSharedSettingsMutation(
+        mutationId,
+        baseVersion
+    ) {
+        let lastResponse = null;
+        let lastError = null;
+        for (const delay of [350, 850, 1600]) {
+            await waitForSharedSync(delay);
+            try {
+                lastResponse = await loadSharedSettingsRemote();
+                if (
+                    lastResponse.mutationId === mutationId ||
+                    Number(lastResponse.version) > Number(baseVersion)
+                ) {
+                    return lastResponse;
+                }
+            } catch (error) {
+                lastError = error;
+            }
+        }
+        if (lastResponse) return lastResponse;
+        throw lastError || new Error("共有設定の保存を確認できませんでした。");
+    }
+
+    function acceptSharedSettingsRemote(response, message) {
+        if (!response?.found || !response.state) {
+            throw new Error("共有設定の内容を取得できませんでした。");
+        }
+        applySharedSettingsState(response.state, response);
+        setSharedSyncStatus(
+            "synced",
+            message || "他の端末で更新された共有設定を反映しました"
+        );
+
+        if (window.__KAITORI_DISABLE_SHARED_SYNC_RELOAD__) {
+            return;
+        }
+        sharedSyncReloadScheduled = true;
+        window.setTimeout(() => window.location.reload(), 80);
+    }
+
+    function scheduleSharedSettingsPush() {
+        if (
+            sharedSyncApplyingRemote ||
+            !sharedSyncInteractionEnabled
+        ) {
+            return;
+        }
+
+        const meta = readSharedSyncMeta();
+        writeSharedSyncMeta({
+            ...meta,
+            version: sharedSyncRemoteVersion || meta.version,
+            pending: true,
+            localChangedAt: new Date().toISOString()
+        });
+
+        if (!isSharedSyncConfigured()) {
+            setSharedSyncStatus(
+                "off",
+                "設定はこの端末へ保存されています。接続先を設定すると自動同期が始まります"
+            );
+            return;
+        }
+
+        setSharedSyncStatus("pending");
+        window.clearTimeout(sharedSyncPushTimer);
+        if (!sharedSyncReady || sharedSyncPushInFlight) {
+            sharedSyncPushQueued = true;
+            return;
+        }
+        sharedSyncPushTimer = window.setTimeout(
+            () => pushSharedSettingsNow(),
+            SHARED_SYNC_PUSH_DELAY
+        );
+    }
+
+    async function pushSharedSettingsNow({ force = false } = {}) {
+        if (!isSharedSyncConfigured()) {
+            setSharedSyncStatus("off");
+            return false;
+        }
+        if (sharedSyncPushInFlight) {
+            sharedSyncPushQueued = true;
+            return false;
+        }
+        if (!sharedSyncReady) {
+            sharedSyncPushQueued = true;
+            return false;
+        }
+
+        const meta = readSharedSyncMeta();
+        if (!force && !meta.pending) {
+            setSharedSyncStatus("synced");
+            return true;
+        }
+
+        window.clearTimeout(sharedSyncPushTimer);
+        sharedSyncPushInFlight = true;
+        sharedSyncPushQueued = false;
+        const baseVersion = sharedSyncRemoteVersion;
+        const mutationId =
+            `${getSharedSyncClientId()}_${Date.now().toString(36)}_` +
+            Math.random().toString(36).slice(2, 8);
+        const state = collectSharedSettingsState();
+        setSharedSyncStatus("saving");
+
+        try {
+            await submitSharedSettingsRemote({
+                state,
+                baseVersion,
+                mutationId
+            });
+            const confirmed = await confirmSharedSettingsMutation(
+                mutationId,
+                baseVersion
+            );
+
+            if (confirmed.mutationId === mutationId) {
+                sharedSyncRemoteVersion = Math.max(
+                    0,
+                    Number(confirmed.version) || 0
+                );
+                writeSharedSyncMeta({
+                    version: sharedSyncRemoteVersion,
+                    pending: false,
+                    updatedAt: confirmed.updatedAt || "",
+                    localChangedAt: "",
+                    lastMutationId: mutationId
+                });
+                setSharedSyncStatus(
+                    "synced",
+                    confirmed.updatedAt
+                        ? `共有設定を保存しました：${new Date(
+                            confirmed.updatedAt
+                        ).toLocaleString("ja-JP")}`
+                        : "共有設定を保存しました"
+                );
+                return true;
+            }
+
+            if (
+                confirmed.found &&
+                Number(confirmed.version) > Number(baseVersion)
+            ) {
+                acceptSharedSettingsRemote(
+                    confirmed,
+                    "同時に更新された別端末の設定を反映しました"
+                );
+                return false;
+            }
+            throw new Error("共有設定の保存を確認できませんでした。");
+        } catch (error) {
+            console.warn("共有設定を保存できませんでした。", error);
+            writeSharedSyncMeta({
+                ...readSharedSyncMeta(),
+                version: sharedSyncRemoteVersion,
+                pending: true
+            });
+            setSharedSyncStatus("error", error.message || String(error));
+            return false;
+        } finally {
+            sharedSyncPushInFlight = false;
+            if (
+                sharedSyncPushQueued &&
+                !sharedSyncReloadScheduled &&
+                sharedSyncReady
+            ) {
+                sharedSyncPushQueued = false;
+                sharedSyncPushTimer = window.setTimeout(
+                    () => pushSharedSettingsNow(),
+                    120
+                );
+            }
+        }
+    }
+
+    async function initializeSharedSettingsSync(force = false) {
+        if (!isSharedSyncConfigured()) {
+            sharedSyncReady = false;
+            setSharedSyncStatus("off");
+            return false;
+        }
+        if (sharedSyncInitializationPromise && !force) {
+            return sharedSyncInitializationPromise;
+        }
+
+        sharedSyncInitializationPromise = (async () => {
+            sharedSyncReady = false;
+            setSharedSyncStatus("checking");
+            try {
+                const remote = await loadSharedSettingsRemote();
+                const meta = readSharedSyncMeta();
+
+                if (remote.found && remote.state) {
+                    sharedSyncRemoteVersion = Math.max(
+                        0,
+                        Number(remote.version) || 0
+                    );
+                    if (
+                        meta.pending &&
+                        Number(meta.version) === sharedSyncRemoteVersion
+                    ) {
+                        sharedSyncReady = true;
+                        return await pushSharedSettingsNow({ force: true });
+                    }
+
+                    if (
+                        Number(meta.version) !== sharedSyncRemoteVersion ||
+                        meta.pending
+                    ) {
+                        acceptSharedSettingsRemote(
+                            remote,
+                            "最新の共有設定をこの端末へ反映しました"
+                        );
+                        return true;
+                    }
+
+                    sharedSyncReady = true;
+                    setSharedSyncStatus(
+                        "synced",
+                        remote.updatedAt
+                            ? `最終更新：${new Date(
+                                remote.updatedAt
+                            ).toLocaleString("ja-JP")}`
+                            : "最新の共有設定です"
+                    );
+                    if (sharedSyncPushQueued) {
+                        return await pushSharedSettingsNow();
+                    }
+                    return true;
+                }
+
+                sharedSyncRemoteVersion = 0;
+                sharedSyncReady = true;
+                writeSharedSyncMeta({
+                    ...meta,
+                    version: 0,
+                    pending: true,
+                    localChangedAt:
+                        meta.localChangedAt || new Date().toISOString()
+                });
+                return await pushSharedSettingsNow({ force: true });
+            } catch (error) {
+                console.warn("共有設定を取得できませんでした。", error);
+                sharedSyncReady = false;
+                setSharedSyncStatus("error", error.message || String(error));
+                return false;
+            }
+        })();
+
+        try {
+            return await sharedSyncInitializationPromise;
+        } finally {
+            sharedSyncInitializationPromise = null;
+        }
+    }
+
+    async function checkSharedSettingsUpdates(force = false) {
+        if (!isSharedSyncConfigured() || sharedSyncReloadScheduled) return;
+        const now = Date.now();
+        if (!force && now - sharedSyncLastCheckAt < 2500) return;
+        sharedSyncLastCheckAt = now;
+
+        if (!sharedSyncReady) {
+            await initializeSharedSettingsSync();
+            return;
+        }
+        if (sharedSyncPushInFlight) return;
+        if (readSharedSyncMeta().pending) {
+            await pushSharedSettingsNow();
+            return;
+        }
+
+        setSharedSyncStatus("checking");
+        try {
+            const remote = await loadSharedSettingsRemote();
+            if (
+                remote.found &&
+                Number(remote.version) !== sharedSyncRemoteVersion
+            ) {
+                acceptSharedSettingsRemote(
+                    remote,
+                    "他の端末で更新された共有設定を反映しました"
+                );
+                return;
+            }
+            if (!remote.found) {
+                sharedSyncRemoteVersion = 0;
+                writeSharedSyncMeta({
+                    ...readSharedSyncMeta(),
+                    version: 0,
+                    pending: true
+                });
+                await pushSharedSettingsNow({ force: true });
+                return;
+            }
+            setSharedSyncStatus(
+                "synced",
+                remote.updatedAt
+                    ? `最終更新：${new Date(
+                        remote.updatedAt
+                    ).toLocaleString("ja-JP")}`
+                    : "最新の共有設定です"
+            );
+        } catch (error) {
+            console.warn("共有設定の更新確認に失敗しました。", error);
+            setSharedSyncStatus("error", error.message || String(error));
+        }
+    }
+
+    async function configureSharedSettingsSync() {
+        const currentConfig = getSharedSyncConfig();
+        const input = window.prompt(
+            "GASのウェブアプリURL（末尾が /exec のURL）を入力してください。\n空欄でこの端末の共有同期を停止します。",
+            currentConfig.apiUrl
+        );
+        if (input === null) return;
+
+        const trimmed = String(input).trim();
+        if (!trimmed) {
+            localStorage.setItem(SHARED_SYNC_API_URL_STORAGE_KEY, "");
+            sharedSyncReady = false;
+            window.clearTimeout(sharedSyncPushTimer);
+            setSharedSyncStatus(
+                "off",
+                "共有同期を停止しました。設定はこの端末へ引き続き保存されます"
+            );
+            return;
+        }
+
+        const normalizedUrl = normalizeSharedSyncApiUrl(trimmed);
+        if (!normalizedUrl || !/\/exec(?:\?|$)/.test(normalizedUrl)) {
+            alert("GASをウェブアプリとしてデプロイした、末尾が /exec のURLを入力してください。");
+            return;
+        }
+
+        const changed = normalizedUrl !== currentConfig.apiUrl;
+        localStorage.setItem(
+            SHARED_SYNC_API_URL_STORAGE_KEY,
+            normalizedUrl
+        );
+        if (changed) {
+            writeSharedSyncMeta({
+                version: 0,
+                pending: true,
+                updatedAt: "",
+                localChangedAt: new Date().toISOString(),
+                lastMutationId: ""
+            });
+        }
+        sharedSyncReady = false;
+        sharedSyncReloadScheduled = false;
+        await initializeSharedSettingsSync(true);
+    }
 
     function makeStoreId() {
         return `store_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -8418,7 +9270,12 @@
     }
 
     function saveStoreRegistry(registry) {
-        localStorage.setItem(STORE_REGISTRY_KEY, JSON.stringify(registry));
+        const serialized = JSON.stringify(registry);
+        if (localStorage.getItem(STORE_REGISTRY_KEY) === serialized) {
+            return;
+        }
+        localStorage.setItem(STORE_REGISTRY_KEY, serialized);
+        scheduleSharedSettingsPush();
     }
 
     function scopedStorageKey(baseKey, storeId) {
@@ -8513,10 +9370,15 @@
     }
 
     function setScopedItem(baseKey, value) {
-        localStorage.setItem(
-            scopedStorageKey(baseKey, activeStoreId),
-            String(value)
-        );
+        const storageKey = scopedStorageKey(baseKey, activeStoreId);
+        const serialized = String(value);
+        if (localStorage.getItem(storageKey) === serialized) {
+            return;
+        }
+        localStorage.setItem(storageKey, serialized);
+        if (SHARED_STORE_DATA_KEY_SET.has(baseKey)) {
+            scheduleSharedSettingsPush();
+        }
     }
 
     function renderStoreProfileSelect() {
@@ -9586,6 +10448,20 @@
             restoredDraft ? "前回の作業を復元しました" : "保存済み"
         );
         requestAnimationFrame(fitPreviewPages);
+        sharedSyncInteractionEnabled = true;
+        initializeSharedSettingsSync();
+    });
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            checkSharedSettingsUpdates();
+        }
+    });
+    window.addEventListener("focus", () => {
+        checkSharedSettingsUpdates();
+    });
+    window.addEventListener("online", () => {
+        checkSharedSettingsUpdates(true);
     });
 
     function getNamedTemplates() {
