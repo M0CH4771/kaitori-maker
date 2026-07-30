@@ -819,9 +819,10 @@
 
         .card-editor-row {
             display: grid;
-            min-width: 780px;
+            min-width: 890px;
             grid-template-columns: 58px minmax(180px, 1.8fr) minmax(90px, .7fr)
-                minmax(100px, .8fr) minmax(110px, .75fr) auto auto auto;
+                minmax(100px, .8fr) minmax(110px, .75fr) minmax(100px, .7fr)
+                auto auto auto;
             align-items: center;
             gap: 8px;
             padding: 8px;
@@ -6299,6 +6300,81 @@
             text-shadow: var(--price-shadow, 0 2px 0 rgba(0,0,0,0.36));
         }
 
+        /* 状態A-がある商品だけ、従来の30px価格枠を保ったまま2段表示する */
+        .card-price-container.has-a-minus {
+            align-items: stretch;
+            justify-content: stretch;
+            padding: 1px 3px;
+            white-space: normal;
+        }
+
+        .card-price-stack {
+            display: grid;
+            width: 100%;
+            min-width: 0;
+            height: 100%;
+            grid-template-rows: minmax(0, 1.45fr) minmax(0, 1fr);
+        }
+
+        .card-price-row {
+            display: flex;
+            position: relative;
+            min-width: 0;
+            align-items: center;
+            gap: 2px;
+            overflow: hidden;
+        }
+
+        .card-price-row + .card-price-row::before {
+            position: absolute;
+            top: 0;
+            right: 0;
+            left: 0;
+            height: 1px;
+            background: var(--price-ink);
+            content: "";
+            opacity: 0.32;
+        }
+
+        .card-price-grade-label {
+            display: inline-flex;
+            min-width: 23px;
+            flex: 0 0 auto;
+            align-items: center;
+            justify-content: center;
+            padding: 1px 2px 0;
+            color: var(--price-ink);
+            border: 1px solid currentColor;
+            border-radius: 2px;
+            background: transparent;
+            font-size: 6.2px;
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: -0.035em;
+            white-space: nowrap;
+        }
+
+        .card-price-row-primary .card-price-grade-label {
+            color: var(--price-surface);
+            border-color: var(--price-ink);
+            background: var(--price-ink);
+        }
+
+        .card-price-row .card-price-text {
+            display: block;
+            min-width: 0;
+            overflow: visible;
+            flex: 1 1 auto;
+            text-align: center;
+            transform-origin: center;
+        }
+
+        .quick-price-preview-stage .has-a-minus .card-price-grade-label {
+            min-width: 36px;
+            padding: 2px 4px 1px;
+            font-size: 8px;
+        }
+
         .single-ad[data-design="blackgold"] {
             --single-price-surface: #b9122d; --single-price-ink: #ffffff;
             --single-price-label: #fff0a7; --single-price-border: #fff0a7;
@@ -6626,12 +6702,13 @@
             .card-editor-thumb {
                 width: 42px;
                 height: 58px;
-                grid-row: 1 / span 4;
+                grid-row: 1 / span 5;
             }
 
             .card-editor-row .editor-type,
             .card-editor-row .editor-group,
-            .card-editor-row .editor-price {
+            .card-editor-row .editor-price,
+            .card-editor-row .editor-a-minus-price {
                 grid-column: 2 / -1;
             }
 
@@ -7427,864 +7504,6 @@
                 grid-column: auto;
             }
         }
-
-        /* ===== 初回利用ガイド・操作導線 ===== */
-        .app-intro {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 24px;
-            padding: 18px 22px;
-            border: 1px solid rgba(255,255,255,.1);
-            border-radius: 16px;
-            background:
-                linear-gradient(110deg, rgba(217,173,74,.1), transparent 36%),
-                #0d1420;
-            box-shadow: 0 12px 30px rgba(0,0,0,.22);
-        }
-
-        .app-intro-copy {
-            min-width: 0;
-        }
-
-        .app-intro-kicker {
-            display: block;
-            margin-bottom: 4px;
-            color: #f0cb6a;
-            font-size: 9px;
-            font-weight: 900;
-            letter-spacing: .16em;
-        }
-
-        .app-intro h1 {
-            margin: 0;
-            color: #fff;
-            font-size: clamp(19px, 2vw, 28px);
-            line-height: 1.25;
-            letter-spacing: .025em;
-        }
-
-        .app-intro p {
-            margin: 6px 0 0;
-            color: #9eabba;
-            font-size: 12px;
-            line-height: 1.6;
-        }
-
-        .app-intro-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 0 0 auto;
-        }
-
-        .app-intro-actions button {
-            width: auto;
-            min-height: 40px;
-            padding: 9px 14px;
-            color: #f8fafc;
-            border: 1px solid rgba(255,255,255,.14);
-            background: #151f2e;
-            box-shadow: none;
-            font-size: 11px;
-        }
-
-        .view-tabs {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            width: min(100%, 700px);
-        }
-
-        .view-tab {
-            display: flex;
-            min-width: 0;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-        }
-
-        .view-tab-label {
-            color: inherit;
-            font-size: 14px;
-            font-weight: 900;
-        }
-
-        .view-tab-description {
-            color: #758298;
-            font-size: 9px;
-            font-weight: 700;
-        }
-
-        .view-tab.is-active .view-tab-description {
-            color: #e6d6a6;
-        }
-
-        .store-profile-bar {
-            position: relative;
-            z-index: 45;
-            grid-template-columns: minmax(190px, auto) minmax(220px, 420px) auto;
-            align-items: center;
-            gap: 14px;
-        }
-
-        .store-profile-title {
-            min-width: 0;
-        }
-
-        .store-profile-manager {
-            position: relative;
-            justify-self: end;
-        }
-
-        .store-profile-manager > summary {
-            display: inline-flex;
-            min-height: 38px;
-            align-items: center;
-            gap: 7px;
-            padding: 9px 12px;
-            color: #dce4ee;
-            border: 1px solid rgba(255,255,255,.14);
-            border-radius: 8px;
-            background: #151f2e;
-            cursor: pointer;
-            font-size: 10px;
-            font-weight: 900;
-            list-style: none;
-            white-space: nowrap;
-        }
-
-        .store-profile-manager > summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .store-profile-manager > summary::after {
-            color: #f0cb6a;
-            content: "▾";
-            font-size: 10px;
-        }
-
-        .store-profile-manager[open] > summary::after {
-            content: "▴";
-        }
-
-        .store-profile-manager-panel {
-            position: absolute;
-            top: calc(100% + 9px);
-            right: 0;
-            display: grid;
-            width: min(760px, calc(100vw - 36px));
-            grid-template-columns: minmax(220px, 1fr) repeat(4, auto);
-            align-items: end;
-            gap: 9px;
-            padding: 14px;
-            border: 1px solid rgba(217,173,74,.35);
-            border-radius: 12px;
-            background: #111a28;
-            box-shadow: 0 18px 45px rgba(0,0,0,.45);
-        }
-
-        .store-profile-manager-panel .store-profile-field label {
-            margin-bottom: 6px;
-        }
-
-        .first-use-guide {
-            position: relative;
-            overflow: hidden;
-            padding: 20px 22px;
-            border: 1px solid rgba(217,173,74,.34);
-            border-radius: 16px;
-            background:
-                radial-gradient(circle at 94% 0, rgba(69,199,142,.12), transparent 28%),
-                linear-gradient(120deg, rgba(217,173,74,.1), transparent 38%),
-                #101827;
-            box-shadow: 0 14px 36px rgba(0,0,0,.24);
-        }
-
-        .first-use-guide[hidden] {
-            display: none;
-        }
-
-        .first-use-guide-header {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            gap: 24px;
-        }
-
-        .first-use-guide-copy {
-            min-width: 0;
-        }
-
-        .first-use-guide-eyebrow {
-            display: block;
-            margin-bottom: 5px;
-            color: #f0cb6a;
-            font-size: 9px;
-            font-weight: 900;
-            letter-spacing: .12em;
-        }
-
-        .first-use-guide h2 {
-            margin: 0;
-            color: #fff;
-            font-size: clamp(17px, 1.8vw, 23px);
-            line-height: 1.35;
-        }
-
-        .first-use-guide p {
-            margin: 7px 0 0;
-            color: #aab5c5;
-            font-size: 12px;
-            line-height: 1.65;
-        }
-
-        .first-use-guide-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex: 0 0 auto;
-        }
-
-        .first-use-guide-actions button {
-            width: auto;
-            min-height: 40px;
-            padding: 9px 14px;
-            font-size: 11px;
-            white-space: nowrap;
-        }
-
-        .guide-primary-action {
-            color: #111827;
-            border: 1px solid #ffeaa6;
-            background: linear-gradient(135deg, #ffe99b, #d9ad4a);
-            box-shadow: 0 7px 18px rgba(217,173,74,.2);
-        }
-
-        .guide-dismiss-action {
-            color: #cbd5e1;
-            border: 1px solid rgba(255,255,255,.13);
-            background: rgba(255,255,255,.055);
-        }
-
-        .guide-steps {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0,1fr));
-            gap: 10px;
-            margin: 18px 0 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .guide-step {
-            display: grid;
-            grid-template-columns: 32px minmax(0,1fr);
-            grid-template-rows: auto auto;
-            column-gap: 10px;
-            min-width: 0;
-            padding: 12px;
-            color: #7f8da1;
-            border: 1px solid rgba(255,255,255,.085);
-            border-radius: 11px;
-            background: rgba(255,255,255,.025);
-            transition: border-color .2s, background .2s, transform .2s;
-        }
-
-        .guide-step-number {
-            display: grid;
-            width: 32px;
-            height: 32px;
-            grid-row: 1 / span 2;
-            place-items: center;
-            color: #bac4d2;
-            border: 1px solid rgba(255,255,255,.14);
-            border-radius: 50%;
-            background: #111a28;
-            font-size: 11px;
-            font-weight: 900;
-        }
-
-        .guide-step strong {
-            align-self: end;
-            overflow: hidden;
-            color: #d7dee9;
-            font-size: 11px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .guide-step small {
-            align-self: start;
-            overflow: hidden;
-            margin-top: 2px;
-            color: #7f8da1;
-            font-size: 9px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .guide-step.is-current {
-            border-color: rgba(217,173,74,.62);
-            background: rgba(217,173,74,.09);
-            transform: translateY(-1px);
-        }
-
-        .guide-step.is-current .guide-step-number {
-            color: #111827;
-            border-color: #ffe69a;
-            background: linear-gradient(135deg, #ffe99b, #d9ad4a);
-        }
-
-        .guide-step.is-current strong {
-            color: #fff3c7;
-        }
-
-        .guide-step.is-complete {
-            border-color: rgba(69,199,142,.32);
-            background: rgba(69,199,142,.06);
-        }
-
-        .guide-step.is-complete .guide-step-number {
-            color: #071a12;
-            border-color: #7ce7b7;
-            background: #45c78e;
-        }
-
-        .guide-step.is-complete .guide-step-number::before {
-            content: "✓";
-        }
-
-        .guide-step.is-complete .guide-step-number {
-            font-size: 0;
-        }
-
-        .guide-step.is-complete .guide-step-number::before {
-            font-size: 14px;
-        }
-
-        .guide-progress {
-            width: 100%;
-            height: 4px;
-            overflow: hidden;
-            margin-top: 14px;
-            border-radius: 999px;
-            background: rgba(255,255,255,.075);
-        }
-
-        .guide-progress-bar {
-            width: 0;
-            height: 100%;
-            border-radius: inherit;
-            background: linear-gradient(90deg, #d9ad4a, #45c78e);
-            transition: width .3s ease;
-        }
-
-        .workflow-summary:not(.has-data) {
-            display: none;
-        }
-
-        .preview-container.is-empty-preview {
-            display: grid;
-            min-height: 230px;
-            place-items: center;
-            padding: 24px;
-        }
-
-        .preview-container.is-empty-preview .preview-page {
-            position: relative;
-            width: 100% !important;
-            height: auto !important;
-        }
-
-        .preview-source-template {
-            position: absolute !important;
-            top: 0;
-            left: 0;
-            visibility: hidden !important;
-            pointer-events: none !important;
-        }
-
-        .preview-empty-card {
-            display: grid;
-            min-height: 178px;
-            place-items: center;
-            padding: 24px;
-            color: #8f9cad;
-            border: 1px dashed #34445a;
-            border-radius: 14px;
-            background:
-                linear-gradient(135deg, rgba(217,173,74,.055), transparent 46%),
-                rgba(255,255,255,.025);
-            text-align: center;
-        }
-
-        .preview-empty-card strong,
-        .preview-empty-card span {
-            display: block;
-        }
-
-        .preview-empty-card strong {
-            color: #e8edf7;
-            font-size: 15px;
-        }
-
-        .preview-empty-card span {
-            margin-top: 7px;
-            color: #7f8da1;
-            font-size: 11px;
-            line-height: 1.6;
-        }
-
-        .settings-grid.primary-settings-grid {
-            align-items: stretch;
-        }
-
-        .primary-settings-grid > .csv-upload-group {
-            grid-column: 1 / -1;
-        }
-
-        .csv-upload-group {
-            grid-column: span 2;
-            border-color: rgba(217,173,74,.36);
-            background:
-                linear-gradient(135deg, rgba(217,173,74,.065), transparent 44%),
-                rgba(255,255,255,.028);
-        }
-
-        .csv-upload-group.is-dragging {
-            border-color: #f0cb6a;
-            background: rgba(217,173,74,.13);
-            box-shadow: 0 0 0 3px rgba(217,173,74,.14);
-        }
-
-        .csv-upload-group[data-state="ready"] {
-            border-color: rgba(69,199,142,.45);
-        }
-
-        .csv-upload-group[data-state="error"] {
-            border-color: rgba(255,103,125,.55);
-            background: rgba(255,71,99,.055);
-        }
-
-        .csv-upload-group input[type="file"] {
-            min-height: 47px;
-            padding: 7px;
-            border-style: dashed;
-        }
-
-        input[type="file"]::file-selector-button {
-            min-height: 31px;
-            margin-right: 9px;
-            padding: 7px 11px;
-            color: #111827;
-            border: 0;
-            border-radius: 7px;
-            background: linear-gradient(135deg, #ffe99b, #d9ad4a);
-            cursor: pointer;
-            font: 900 11px "Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
-        }
-
-        .csv-upload-status {
-            display: flex;
-            align-items: flex-start;
-            gap: 9px;
-            margin-top: 9px;
-            padding: 9px 10px;
-            border: 1px solid rgba(255,255,255,.075);
-            border-radius: 8px;
-            background: rgba(0,0,0,.14);
-        }
-
-        .csv-upload-status-dot {
-            width: 8px;
-            height: 8px;
-            margin-top: 4px;
-            flex: 0 0 auto;
-            border-radius: 50%;
-            background: #657287;
-        }
-
-        .csv-upload-group[data-state="loading"] .csv-upload-status-dot {
-            background: #f0cb6a;
-            box-shadow: 0 0 0 4px rgba(240,203,106,.1);
-        }
-
-        .csv-upload-group[data-state="ready"] .csv-upload-status-dot {
-            background: #45c78e;
-            box-shadow: 0 0 0 4px rgba(69,199,142,.1);
-        }
-
-        .csv-upload-group[data-state="error"] .csv-upload-status-dot {
-            background: #ff677d;
-            box-shadow: 0 0 0 4px rgba(255,103,125,.1);
-        }
-
-        .csv-upload-status-copy {
-            min-width: 0;
-        }
-
-        .csv-upload-status strong,
-        .csv-upload-status span {
-            display: block;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .csv-upload-status strong {
-            color: #e8edf7;
-            font-size: 10px;
-        }
-
-        .csv-upload-status span {
-            margin-top: 2px;
-            color: #7f8da1;
-            font-size: 9px;
-        }
-
-        .optional-badge {
-            display: inline-flex;
-            margin-left: 6px;
-            padding: 2px 6px;
-            color: #91a0b4;
-            border: 1px solid rgba(145,160,180,.22);
-            border-radius: 999px;
-            font-size: 8px;
-            font-weight: 900;
-            vertical-align: 1px;
-        }
-
-        .wide-field {
-            grid-column: span 3;
-        }
-
-        .secondary-settings {
-            margin: 12px 24px 0;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,.09);
-            border-radius: 11px;
-            background: rgba(255,255,255,.022);
-        }
-
-        .secondary-settings > summary {
-            display: flex;
-            min-height: 46px;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            padding: 11px 15px;
-            color: #dce4ee;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: 900;
-            list-style: none;
-        }
-
-        .secondary-settings > summary::-webkit-details-marker {
-            display: none;
-        }
-
-        .secondary-settings > summary::after {
-            color: #f0cb6a;
-            content: "＋";
-            font-size: 17px;
-        }
-
-        .secondary-settings[open] > summary {
-            border-bottom: 1px solid rgba(255,255,255,.08);
-        }
-
-        .secondary-settings[open] > summary::after {
-            content: "−";
-        }
-
-        .secondary-settings-summary-copy {
-            display: flex;
-            min-width: 0;
-            align-items: baseline;
-            gap: 8px;
-        }
-
-        .secondary-settings-summary-copy span {
-            overflow: hidden;
-            color: #7f8da1;
-            font-size: 9px;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-
-        .secondary-settings .template-manager {
-            margin: 0;
-            border: 0;
-            border-radius: 0;
-        }
-
-        .secondary-settings .csv-diff-panel {
-            margin: 0;
-            border: 0;
-            border-radius: 0;
-        }
-
-        .secondary-settings.inline-secondary-settings {
-            grid-column: 1 / -1;
-            margin: 0;
-        }
-
-        .inline-secondary-settings > .settings-grid {
-            grid-template-columns: repeat(4, minmax(0,1fr));
-            padding: 16px;
-        }
-
-        .single-selection {
-            margin-top: 12px;
-        }
-
-        .single-selection-heading {
-            display: flex;
-            align-items: baseline;
-            justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 11px;
-        }
-
-        .single-selection-heading strong {
-            color: #f8fafc;
-            font-size: 13px;
-        }
-
-        .single-selection-heading span {
-            color: #8f9cad;
-            font-size: 10px;
-        }
-
-        .panel-actions {
-            align-items: stretch;
-        }
-
-        .export-readiness {
-            display: flex;
-            min-width: 0;
-            align-items: center;
-            gap: 11px;
-            padding: 10px 12px;
-            border: 1px solid #2b3a4e;
-            border-radius: 9px;
-            background: #111a28;
-        }
-
-        .export-readiness-dot {
-            width: 10px;
-            height: 10px;
-            flex: 0 0 auto;
-            border-radius: 50%;
-            background: #657287;
-        }
-
-        .export-readiness[data-state="loading"] .export-readiness-dot {
-            background: #f0cb6a;
-            box-shadow: 0 0 0 4px rgba(240,203,106,.1);
-        }
-
-        .export-readiness[data-state="ready"] {
-            border-color: rgba(69,199,142,.34);
-            background: rgba(69,199,142,.055);
-        }
-
-        .export-readiness[data-state="ready"] .export-readiness-dot {
-            background: #45c78e;
-            box-shadow: 0 0 0 4px rgba(69,199,142,.1);
-        }
-
-        .export-readiness[data-state="warning"] {
-            border-color: rgba(240,203,106,.34);
-        }
-
-        .export-readiness[data-state="warning"] .export-readiness-dot {
-            background: #f0cb6a;
-        }
-
-        .export-readiness-copy {
-            min-width: 0;
-        }
-
-        .export-readiness strong,
-        .export-readiness small {
-            display: block;
-        }
-
-        .export-readiness strong {
-            color: #edf2f7;
-            font-size: 10px;
-        }
-
-        .export-readiness small {
-            margin-top: 2px;
-            color: #8f9cad;
-            font-size: 9px;
-            line-height: 1.45;
-        }
-
-        button:disabled {
-            cursor: not-allowed;
-            filter: grayscale(.35);
-            opacity: .42;
-            transform: none !important;
-        }
-
-        .guide-focus-pulse {
-            animation: guide-focus-pulse 1.45s ease;
-        }
-
-        @keyframes guide-focus-pulse {
-            0%, 100% {
-                box-shadow: inherit;
-            }
-            35% {
-                box-shadow: 0 0 0 4px rgba(240,203,106,.24), 0 14px 30px rgba(0,0,0,.26);
-            }
-        }
-
-        @media (max-width: 1000px) {
-            .app-intro,
-            .first-use-guide-header {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .app-intro-actions,
-            .first-use-guide-actions {
-                align-self: stretch;
-            }
-
-            .first-use-guide-actions button {
-                flex: 1 1 0;
-            }
-
-            .store-profile-bar {
-                grid-template-columns: minmax(160px, .8fr) minmax(200px, 1.2fr) auto;
-            }
-
-            .csv-upload-group,
-            .wide-field {
-                grid-column: span 2;
-            }
-
-            .primary-settings-grid > .csv-upload-group {
-                grid-column: 1 / -1;
-            }
-
-            .inline-secondary-settings > .settings-grid {
-                grid-template-columns: repeat(2, minmax(0,1fr));
-            }
-        }
-
-        @media (max-width: 680px) {
-            .app-intro {
-                padding: 16px;
-            }
-
-            .app-intro-actions {
-                width: 100%;
-            }
-
-            .app-intro-actions button {
-                width: 100%;
-            }
-
-            .view-tab {
-                flex-direction: column;
-                gap: 2px;
-                padding-right: 8px;
-                padding-left: 8px;
-            }
-
-            .store-profile-bar {
-                grid-template-columns: 1fr auto;
-                align-items: end;
-            }
-
-            .store-profile-title {
-                grid-column: 1 / -1;
-            }
-
-            .store-profile-manager-panel {
-                position: static;
-                width: 100%;
-                grid-template-columns: 1fr;
-                margin-top: 9px;
-            }
-
-            .store-profile-manager[open] {
-                grid-column: 1 / -1;
-                justify-self: stretch;
-            }
-
-            .store-profile-manager[open] > summary {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .first-use-guide {
-                padding: 16px;
-            }
-
-            .first-use-guide-actions {
-                flex-direction: column;
-            }
-
-            .first-use-guide-actions button {
-                width: 100%;
-            }
-
-            .guide-steps {
-                grid-template-columns: 1fr;
-            }
-
-            .guide-step {
-                grid-template-columns: 30px minmax(0,1fr);
-                padding: 10px;
-            }
-
-            .guide-step-number {
-                width: 30px;
-                height: 30px;
-            }
-
-            .workflow-summary.has-data {
-                display: grid;
-            }
-
-            .csv-upload-group,
-            .wide-field {
-                grid-column: auto;
-            }
-
-            .primary-settings-grid > .csv-upload-group {
-                grid-column: 1 / -1;
-            }
-
-            .inline-secondary-settings > .settings-grid {
-                grid-template-columns: 1fr;
-                padding: 12px;
-            }
-
-            .inline-secondary-settings .wide-field {
-                grid-column: auto;
-            }
-
-            .secondary-settings {
-                margin-right: 16px;
-                margin-left: 16px;
-            }
-
-            .secondary-settings.inline-secondary-settings {
-                margin: 0;
-            }
-
-            .single-selection-heading {
-                align-items: flex-start;
-                flex-direction: column;
-                gap: 3px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -8295,44 +7514,25 @@
 </div>
 
 <div class="app-container">
-    <header class="app-intro">
-        <div class="app-intro-copy">
-            <span class="app-intro-kicker">BUYLIST CREATOR</span>
-            <h1>買取表・単品告知画像ジェネレーター</h1>
-            <p>CSVを読み込み、仕上がりを確認して保存するだけ。作業内容と店舗設定は自動で保存されます。</p>
-        </div>
-        <div class="app-intro-actions">
-            <button type="button" onclick="showFirstUseGuide()">使い方を表示</button>
-        </div>
-    </header>
-
     <nav class="view-tabs" aria-label="作成する画像の種類">
         <button
             class="view-tab is-active"
             id="buylistTabButton"
             type="button"
-            aria-pressed="true"
             onclick="switchAppView('buylist')"
-        >
-            <span class="view-tab-label">買取表</span>
-            <span class="view-tab-description">A4に商品を一覧表示</span>
-        </button>
+        >買取表</button>
         <button
             class="view-tab"
             id="singleTabButton"
             type="button"
-            aria-pressed="false"
             onclick="switchAppView('single')"
-        >
-            <span class="view-tab-label">単品告知画像</span>
-            <span class="view-tab-description">1枚に1〜10商品</span>
-        </button>
+        >単品告知画像</button>
     </nav>
 
     <section class="store-profile-bar" aria-label="店舗プロフィール">
         <div class="store-profile-title">
-            <strong>使用する店舗</strong>
-            <span>ロゴ・デザイン・テンプレートを店舗ごとに保存</span>
+            <strong>店舗プロフィール</strong>
+            <span>店舗ごとのロゴやテンプレートを自動保存します</span>
             <span
                 class="shared-sync-status"
                 id="sharedSyncStatus"
@@ -8341,89 +7541,35 @@
             >共有同期：設定待ち</span>
         </div>
         <div class="store-profile-field">
-            <label for="storeProfileSelect">店舗を選択</label>
+            <label for="storeProfileSelect">使用する店舗</label>
             <select id="storeProfileSelect" onchange="switchStoreProfile(this.value)"></select>
         </div>
-        <details class="store-profile-manager">
-            <summary>店舗を管理</summary>
-            <div class="store-profile-manager-panel">
-                <div class="store-profile-field">
-                    <label for="newStoreNameInput">店舗名を入力</label>
-                    <input type="text" id="newStoreNameInput" placeholder="例：秋葉原店">
-                </div>
-                <button
-                    class="store-add-button"
-                    type="button"
-                    onclick="createStoreProfile()"
-                >新しい店舗を追加</button>
-                <button type="button" onclick="renameStoreProfile()">選択中の店舗名を変更</button>
-                <button
-                    type="button"
-                    onclick="configureSharedSettingsSync()"
-                    title="管理者向け：共有設定の接続先を変更します"
-                >共有同期設定</button>
-                <button
-                    class="store-delete-button"
-                    type="button"
-                    onclick="deleteStoreProfile()"
-                >選択中の店舗を削除</button>
-            </div>
-        </details>
-    </section>
-
-    <section
-        class="first-use-guide"
-        id="firstUseGuide"
-        aria-labelledby="firstUseGuideTitle"
-        aria-live="polite"
-    >
-        <div class="first-use-guide-header">
-            <div class="first-use-guide-copy">
-                <span class="first-use-guide-eyebrow">はじめての方へ｜3ステップで完成</span>
-                <h2 id="firstUseGuideTitle">まずCSVファイルを読み込みます</h2>
-                <p id="firstUseGuideMessage">必要な設定は自動で入っています。最初はCSVを選ぶだけで大丈夫です。</p>
-            </div>
-            <div class="first-use-guide-actions">
-                <button
-                    class="guide-primary-action"
-                    id="firstUseGuideAction"
-                    type="button"
-                    data-action="csv"
-                    onclick="runFirstUseGuideAction()"
-                >CSVを選ぶ</button>
-                <button
-                    class="guide-dismiss-action"
-                    type="button"
-                    onclick="hideFirstUseGuide()"
-                >ガイドを閉じる</button>
-            </div>
+        <div class="store-profile-field">
+            <label for="newStoreNameInput">新しい店舗名</label>
+            <input type="text" id="newStoreNameInput" placeholder="例：秋葉原店">
         </div>
-        <ol class="guide-steps">
-            <li class="guide-step is-current" data-guide-step="1">
-                <span class="guide-step-number">1</span>
-                <strong>CSVを読み込む</strong>
-                <small>商品データを取り込む</small>
-            </li>
-            <li class="guide-step" data-guide-step="2">
-                <span class="guide-step-number">2</span>
-                <strong id="firstUseGuideStep2Title">仕上がりを確認</strong>
-                <small id="firstUseGuideStep2Text">必要ならデザインを調整</small>
-            </li>
-            <li class="guide-step" data-guide-step="3">
-                <span class="guide-step-number">3</span>
-                <strong>保存する</strong>
-                <small>PNG・ZIP・PDFから選択</small>
-            </li>
-        </ol>
-        <div class="guide-progress" aria-hidden="true">
-            <div class="guide-progress-bar" id="firstUseGuideProgress"></div>
-        </div>
+        <button
+            class="store-add-button"
+            type="button"
+            onclick="createStoreProfile()"
+        >店舗を追加</button>
+        <button type="button" onclick="renameStoreProfile()">店舗名を変更</button>
+        <button
+            type="button"
+            onclick="configureSharedSettingsSync()"
+            title="管理者向け：共有設定の接続先を変更します"
+        >共有同期設定</button>
+        <button
+            class="store-delete-button"
+            type="button"
+            onclick="deleteStoreProfile()"
+        >店舗を削除</button>
     </section>
 
     <aside class="control-panel" id="buylistControl" aria-label="買取表の設定">
         <div class="panel-heading">
             <div class="panel-heading-row">
-                <h2>買取表を作成</h2>
+                <h2>買取表ジェネレーター</h2>
                 <span
                     class="save-state-indicator"
                     id="saveStateIndicator"
@@ -8431,7 +7577,7 @@
                     title="作業内容はブラウザへ自動保存されます"
                 >保存済み</span>
             </div>
-            <p>CSVを読み込むと自動でページを作成します。タイトルやデザインの変更は任意です。</p>
+            <p>設定内容はプレビューに自動で反映されます</p>
         </div>
 
         <div class="workflow-summary" aria-live="polite">
@@ -8442,72 +7588,47 @@
         </div>
 
         <div class="settings-section-label">
-            <strong>商品データと掲載内容</strong>
-            <span>CSVだけでも作成できます</span>
+            <strong>基本設定</strong>
+            <span>CSV・ロゴ・掲載内容</span>
         </div>
-        <div class="settings-grid primary-settings-grid">
-            <div
-                class="control-group csv-upload-group"
-                id="buylistCsvStep"
-                data-state="empty"
-                data-file-input="csvInput"
-            >
+        <div class="settings-grid">
+            <div class="control-group">
                 <label><span class="step">1</span>CSVファイルを読み込む</label>
                 <input type="file" id="csvInput" accept=".csv,text/csv">
-                <div class="csv-upload-status" aria-live="polite">
-                    <span class="csv-upload-status-dot"></span>
-                    <div class="csv-upload-status-copy">
-                        <strong id="buylistCsvFileName">CSVが選択されていません</strong>
-                        <span id="buylistCsvFileDetail">ファイルを選択するか、この枠へドロップしてください</span>
-                    </div>
-                </div>
                 <button
                     class="btn-csv-sample"
                     type="button"
                     onclick="downloadSampleCsv()"
                 >CSVテンプレートをダウンロード</button>
-                <small class="help">「掲載グループ」「カード名」「買取金額」が必要です。「種別」と「画像リンク」は空欄でも使用できます。</small>
+                <small class="help">「掲載グループ」「カード名」「買取金額」が必要です。「状態A-」は任意で、値がある商品だけ通常価格の下に表示されます。</small>
             </div>
 
-            <details class="secondary-settings inline-secondary-settings">
-                <summary>
-                    <span class="secondary-settings-summary-copy">
-                        ロゴ・タイトル・注意書き
-                        <span>必要な場合だけ変更</span>
-                    </span>
-                </summary>
-                <div class="settings-grid">
-                    <div class="control-group">
-                        <label>ショップロゴ<span class="optional-badge">任意</span></label>
-                        <input type="file" id="logoInput" accept="image/*">
-                        <small class="help">選択中の店舗に保存されます。容量が大きい画像は自動で調整されます。</small>
-                    </div>
+            <div class="control-group">
+                <label><span class="step">2</span>ショップロゴ</label>
+                <input type="file" id="logoInput" accept="image/*">
+                <small class="help">選択中の店舗に保存されます。容量が大きい画像は自動で調整されます。</small>
+            </div>
 
-                    <div class="control-group">
-                        <label>タイトル<span class="optional-badge">任意</span></label>
-                        <input type="text" id="titleInput" value="PSA10 高価買取">
-                        <small class="help">タイトルとページ番号は別々に表示されます。</small>
-                    </div>
+            <div class="control-group">
+                <label><span class="step">3</span>タイトル</label>
+                <input type="text" id="titleInput" value="PSA10 高価買取">
+                <small class="help">タイトルとページ番号は別々に表示されます。</small>
+            </div>
 
-                    <div class="control-group">
-                        <label>更新日<span class="optional-badge">任意</span></label>
-                        <input type="date" id="dateInput">
-                    </div>
+            <div class="control-group">
+                <label><span class="step">4</span>更新日</label>
+                <input type="date" id="dateInput">
+            </div>
 
-                    <div class="control-group wide-field">
-                        <label>注意書き<span class="optional-badge">任意</span></label>
-                        <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
+            <div class="control-group">
+                <label><span class="step">5</span>注意書き</label>
+                <textarea id="disclaimerInput" rows="4">※相場や在庫状況、状態等により価格が変動する場合がございます。
 買取枚数が1日の上限に達したカードに関しましては、減額か返却での対応となります。</textarea>
-                        <small class="help">この内容はテンプレートに保存されます。</small>
-                    </div>
-                </div>
-            </details>
+                <small class="help">この内容はテンプレートに保存されます。</small>
+            </div>
         </div>
 
-        <details
-            class="settings-accordion design-settings-accordion"
-            id="buylistDesignStep"
-        >
+        <details class="settings-accordion design-settings-accordion" open>
             <summary>
                 <span>デザイン設定</span>
                 <span class="card-editor-count">配色・レイアウト・文字</span>
@@ -8758,31 +7879,23 @@
             </div>
         </details>
 
-        <details class="secondary-settings">
-            <summary>
-                <span class="secondary-settings-summary-copy">
-                    テンプレート
-                    <span>繰り返し使う設定を保存・適用</span>
-                </span>
-            </summary>
-            <div class="template-manager">
-                <div class="template-field">
-                    <label for="templateNameInput">テンプレート名</label>
-                    <input type="text" id="templateNameInput" placeholder="例：BOX用・A4横">
-                </div>
-                <div class="template-field">
-                    <label for="templateSelect">保存済みテンプレート</label>
-                    <select id="templateSelect">
-                        <option value="">テンプレートを選択</option>
-                    </select>
-                </div>
-                <div class="template-buttons">
-                    <button class="btn-template" type="button" onclick="saveNamedTemplate()">名前をつけて保存</button>
-                    <button class="btn-load" type="button" onclick="loadNamedTemplate()">適用</button>
-                    <button class="btn-delete" type="button" onclick="deleteNamedTemplate()">削除</button>
-                </div>
+        <div class="template-manager">
+            <div class="template-field">
+                <label for="templateNameInput">テンプレート名</label>
+                <input type="text" id="templateNameInput" placeholder="例：BOX用・A4横">
             </div>
-        </details>
+            <div class="template-field">
+                <label for="templateSelect">保存済みテンプレート</label>
+                <select id="templateSelect">
+                    <option value="">テンプレートを選択</option>
+                </select>
+            </div>
+            <div class="template-buttons">
+                <button class="btn-template" type="button" onclick="saveNamedTemplate()">名前をつけて保存</button>
+                <button class="btn-load" type="button" onclick="loadNamedTemplate()">適用</button>
+                <button class="btn-delete" type="button" onclick="deleteNamedTemplate()">削除</button>
+            </div>
+        </div>
 
         <div class="image-status-panel" id="imageStatusPanel" data-state="idle">
             <span class="image-status-dot"></span>
@@ -8809,50 +7922,26 @@
                 <button type="button" onclick="showAllCardsInBuylist()">全商品を表示</button>
             </div>
             <p class="card-editor-help">
-                カード名・掲載グループ・種別・価格・強化買取・表示状態を編集できます。上下ボタンでCSV内の順番を変更できます。
+                カード名・掲載グループ・種別・状態A価格・状態A-価格・強化買取・表示状態を編集できます。上下ボタンでCSV内の順番を変更できます。
             </p>
             <div class="card-editor-list" id="cardEditorList">
                 <div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>
             </div>
         </details>
 
-        <div class="panel-actions" id="buylistExportStep">
-            <div
-                class="export-readiness"
-                id="buylistExportReadiness"
-                data-state="waiting"
-                aria-live="polite"
-            >
-                <span class="export-readiness-dot"></span>
-                <div class="export-readiness-copy">
-                    <strong id="buylistExportReadinessTitle">CSVを読み込むと保存できます</strong>
-                    <small id="buylistExportReadinessDetail">PNGはページごと、ZIPとPDFは1ファイルで保存されます</small>
-                </div>
+        <div class="panel-actions">
+            <div class="export-note">
+                画像の読み込み完了後に保存してください。PNGはページごと、ZIPとPDFは1ファイルで保存されます。
             </div>
-            <button class="btn-export" id="buylistPngButton" type="button" onclick="exportToImage()" disabled>PNGを個別に保存</button>
-            <button class="btn-zip" id="buylistZipButton" type="button" onclick="exportToZip()" disabled>ZIPでまとめて保存</button>
-            <button class="btn-pdf" id="buylistPdfButton" type="button" onclick="exportToPdf()" disabled>PDFで保存</button>
+            <button class="btn-export" type="button" onclick="exportToImage()">PNGを個別に保存</button>
+            <button class="btn-zip" type="button" onclick="exportToZip()">ZIPでまとめて保存</button>
+            <button class="btn-pdf" type="button" onclick="exportToPdf()">PDFで保存</button>
         </div>
     </aside>
 
-    <main
-        class="preview-container is-empty-preview"
-        id="pagesContainer"
-        aria-label="買取表プレビュー"
-    >
+    <main class="preview-container" id="pagesContainer" aria-label="買取表プレビュー">
         <div class="preview-page">
-            <div class="preview-empty-card">
-                <div>
-                    <strong>CSVを読み込むと完成イメージが表示されます</strong>
-                    <span>最初は上の「CSVを選ぶ」から始めてください</span>
-                </div>
-            </div>
-            <div
-                class="exportArea portrait preview-source-template"
-                data-theme="signal"
-                data-title-style="power"
-                aria-hidden="true"
-            >
+            <div class="exportArea portrait" data-theme="signal" data-title-style="power">
                 <div class="header-area">
                     <div class="logo-container">
                         <img
@@ -8871,8 +7960,8 @@
 
                 <div class="card-grid initial-card-grid">
                     <div class="empty-state">
-                        <strong>CSVを読み込むと完成イメージが表示されます</strong>
-                        <span>最初は上の「CSVを選ぶ」から始めてください</span>
+                        <strong>CSVを読み込んでください</strong>
+                        <span>読み込んだ商品がプレビューに表示されます</span>
                     </div>
                 </div>
 
@@ -8891,8 +7980,8 @@
     <section class="single-maker view-hidden" id="singleMakerView">
         <aside class="control-panel" aria-label="単品告知画像の設定">
             <div class="panel-heading">
-                <h2>単品告知画像を作成</h2>
-                <p>CSVを読み込んで商品を選択します。1枚に<strong>1〜10商品</strong>を配置できます。</p>
+                <h2>単品告知画像ジェネレーター</h2>
+                <p>1枚に<strong>1〜10商品</strong>を配置できます</p>
             </div>
 
             <div class="workflow-summary" aria-live="polite">
@@ -8903,25 +7992,13 @@
             </div>
 
             <div class="settings-section-label">
-                <strong>商品データと掲載内容</strong>
-                <span>CSVを読み込んだあと商品を選びます</span>
+                <strong>基本設定</strong>
+                <span>CSV・ロゴ・掲載内容</span>
             </div>
-            <div class="settings-grid primary-settings-grid">
-                <div
-                    class="control-group csv-upload-group"
-                    id="singleCsvStep"
-                    data-state="empty"
-                    data-file-input="singleCsvInput"
-                >
+            <div class="settings-grid">
+                <div class="control-group">
                     <label><span class="step">1</span>CSVファイルを読み込む</label>
                     <input type="file" id="singleCsvInput" accept=".csv,text/csv">
-                    <div class="csv-upload-status" aria-live="polite">
-                        <span class="csv-upload-status-dot"></span>
-                        <div class="csv-upload-status-copy">
-                            <strong id="singleCsvFileName">CSVが選択されていません</strong>
-                            <span id="singleCsvFileDetail">買取表で読み込んだCSVは、もう一度選ぶ必要はありません</span>
-                        </div>
-                    </div>
                     <button
                         class="btn-csv-sample"
                         type="button"
@@ -8930,45 +8007,32 @@
                     <small class="help">買取表で読み込み済みのCSVは、そのまま使用できます。テンプレートには項目名のみ入っています。</small>
                 </div>
 
-                <details class="secondary-settings inline-secondary-settings">
-                    <summary>
-                        <span class="secondary-settings-summary-copy">
-                            ロゴ・見出し・表示項目
-                            <span>必要な場合だけ変更</span>
-                        </span>
-                    </summary>
-                    <div class="settings-grid">
-                        <div class="control-group">
-                            <label>ショップロゴ<span class="optional-badge">任意</span></label>
-                            <input type="file" id="singleLogoInput" accept="image/*">
-                            <small class="help">買取表と共通のロゴを使用します。容量が大きい画像は自動で調整されます。</small>
-                        </div>
+                <div class="control-group">
+                    <label><span class="step">2</span>ショップロゴ</label>
+                    <input type="file" id="singleLogoInput" accept="image/*">
+                    <small class="help">買取表と共通のロゴを使用します。容量が大きい画像は自動で調整されます。</small>
+                </div>
 
-                        <div class="control-group">
-                            <label>見出し<span class="optional-badge">任意</span></label>
-                            <input type="text" id="singleHeadlineInput" value="強化買取中">
-                        </div>
+                <div class="control-group">
+                    <label><span class="step">3</span>見出し</label>
+                    <input type="text" id="singleHeadlineInput" value="強化買取中">
+                </div>
 
-                        <div class="control-group">
-                            <label>価格ラベル<span class="optional-badge">任意</span></label>
-                            <input type="text" id="singlePriceLabelInput" value="買取価格">
-                        </div>
+                <div class="control-group">
+                    <label><span class="step">4</span>価格ラベル</label>
+                    <input type="text" id="singlePriceLabelInput" value="買取価格">
+                </div>
 
-                        <div class="control-group">
-                            <label>種別・グレード<span class="optional-badge">任意</span></label>
-                            <select id="singleGradeDisplaySelect">
-                                <option value="show">入力がある場合のみ表示</option>
-                                <option value="hide">表示しない</option>
-                            </select>
-                        </div>
-                    </div>
-                </details>
+                <div class="control-group">
+                    <label><span class="step">5</span>種別・グレード</label>
+                    <select id="singleGradeDisplaySelect">
+                        <option value="show">入力がある場合のみ表示</option>
+                        <option value="hide">表示しない</option>
+                    </select>
+                </div>
             </div>
 
-            <details
-                class="settings-accordion design-settings-accordion"
-                id="singleDesignStep"
-            >
+            <details class="settings-accordion design-settings-accordion" open>
                 <summary>
                     <span>デザイン設定</span>
                     <span class="card-editor-count">配色・配置・文字</span>
@@ -9142,104 +8206,84 @@
                 </div>
             </details>
 
-            <details class="secondary-settings">
-                <summary>
-                    <span class="secondary-settings-summary-copy">
-                        テンプレート
-                        <span>繰り返し使う設定を保存・適用</span>
-                    </span>
-                </summary>
-                <div class="template-manager">
-                    <div class="template-field">
-                        <label for="singleTemplateNameInput">テンプレート名</label>
-                        <input
-                            type="text"
-                            id="singleTemplateNameInput"
-                            placeholder="例：BOX正方形・赤デザイン"
-                        >
-                    </div>
-                    <div class="template-field">
-                        <label for="singleTemplateSelect">保存済みテンプレート</label>
-                        <select id="singleTemplateSelect">
-                            <option value="">テンプレートを選択</option>
-                        </select>
-                    </div>
-                    <div class="template-buttons">
-                        <button
-                            class="btn-template"
-                            type="button"
-                            onclick="saveSingleNamedTemplate()"
-                        >名前をつけて保存</button>
-                        <button
-                            class="btn-load"
-                            type="button"
-                            onclick="loadSingleNamedTemplate()"
-                        >適用</button>
-                        <button
-                            class="btn-delete"
-                            type="button"
-                            onclick="deleteSingleNamedTemplate()"
-                        >削除</button>
-                    </div>
+            <div class="template-manager">
+                <div class="template-field">
+                    <label for="singleTemplateNameInput">テンプレート名</label>
+                    <input
+                        type="text"
+                        id="singleTemplateNameInput"
+                        placeholder="例：BOX正方形・赤デザイン"
+                    >
                 </div>
-            </details>
+                <div class="template-field">
+                    <label for="singleTemplateSelect">保存済みテンプレート</label>
+                    <select id="singleTemplateSelect">
+                        <option value="">テンプレートを選択</option>
+                    </select>
+                </div>
+                <div class="template-buttons">
+                    <button
+                        class="btn-template"
+                        type="button"
+                        onclick="saveSingleNamedTemplate()"
+                    >名前をつけて保存</button>
+                    <button
+                        class="btn-load"
+                        type="button"
+                        onclick="loadSingleNamedTemplate()"
+                    >適用</button>
+                    <button
+                        class="btn-delete"
+                        type="button"
+                        onclick="deleteSingleNamedTemplate()"
+                    >削除</button>
+                </div>
+            </div>
 
-            <details class="secondary-settings">
-                <summary>
-                    <span class="secondary-settings-summary-copy">
-                        前回CSVとの比較
-                        <span id="csvDiffStatus">値上がり・新規・強化買取をまとめて選択</span>
-                    </span>
-                </summary>
-                <div class="csv-diff-panel" id="csvDiffPanel">
-                    <div class="csv-diff-heading">
-                        <strong>前回のCSVと比較して商品を選択</strong>
-                        <span>変更があった商品を条件別に選択できます</span>
-                    </div>
-                    <div class="csv-diff-actions">
-                        <button
-                            class="diff-button"
-                            data-kind="priceUp"
-                            type="button"
-                            onclick="selectCsvDiffCards('priceUp')"
-                        ><strong id="diffPriceUpCount">0</strong><span>値上がりした商品</span></button>
-                        <button
-                            class="diff-button"
-                            data-kind="newItems"
-                            type="button"
-                            onclick="selectCsvDiffCards('newItems')"
-                        ><strong id="diffNewCount">0</strong><span>新しく追加された商品</span></button>
-                        <button
-                            class="diff-button"
-                            data-kind="strengthened"
-                            type="button"
-                            onclick="selectCsvDiffCards('strengthened')"
-                        ><strong id="diffStrengthenedCount">0</strong><span>新たに強化買取の商品</span></button>
-                        <button
-                            class="diff-button"
-                            data-kind="all"
-                            type="button"
-                            onclick="selectCsvDiffCards('all')"
-                        ><strong id="diffAllCount">0</strong><span>変更商品をすべて選択</span></button>
-                    </div>
-                    <div class="csv-diff-footer">
-                        <div class="csv-diff-meta" id="csvDiffMeta">
-                            商品名・種別・画像URLを基準に比較します
-                        </div>
-                        <button
-                            class="btn-muted"
-                            type="button"
-                            onclick="resetCsvDiffBaseline()"
-                        >今回のCSVを比較用に保存</button>
-                    </div>
+            <div class="csv-diff-panel" id="csvDiffPanel">
+                <div class="csv-diff-heading">
+                    <strong>前回のCSVと比較して商品を選択</strong>
+                    <span id="csvDiffStatus">はじめてCSVを読み込むと、比較用データとして保存します</span>
                 </div>
-            </details>
+                <div class="csv-diff-actions">
+                    <button
+                        class="diff-button"
+                        data-kind="priceUp"
+                        type="button"
+                        onclick="selectCsvDiffCards('priceUp')"
+                    ><strong id="diffPriceUpCount">0</strong><span>値上がりした商品</span></button>
+                    <button
+                        class="diff-button"
+                        data-kind="newItems"
+                        type="button"
+                        onclick="selectCsvDiffCards('newItems')"
+                    ><strong id="diffNewCount">0</strong><span>新しく追加された商品</span></button>
+                    <button
+                        class="diff-button"
+                        data-kind="strengthened"
+                        type="button"
+                        onclick="selectCsvDiffCards('strengthened')"
+                    ><strong id="diffStrengthenedCount">0</strong><span>新たに強化買取の商品</span></button>
+                    <button
+                        class="diff-button"
+                        data-kind="all"
+                        type="button"
+                        onclick="selectCsvDiffCards('all')"
+                    ><strong id="diffAllCount">0</strong><span>変更商品をすべて選択</span></button>
+                </div>
+                <div class="csv-diff-footer">
+                    <div class="csv-diff-meta" id="csvDiffMeta">
+                        商品名・種別・画像URLを基準に比較します
+                    </div>
+                    <button
+                        class="btn-muted"
+                        type="button"
+                        onclick="resetCsvDiffBaseline()"
+                    >今回のCSVを比較用に保存</button>
+                </div>
+            </div>
 
-            <div class="single-selection" id="singleSelectionStep">
-                <div class="single-selection-heading">
-                    <strong><span class="step">2</span>告知する商品を選ぶ</strong>
-                    <span>選択した順に、設定した商品数ごとに画像を作成します</span>
-                </div>
+            <div class="single-selection">
                 <div class="single-selection-toolbar">
                     <input
                         type="text"
@@ -9256,21 +8300,12 @@
                 </div>
             </div>
 
-            <div class="panel-actions" id="singleExportStep">
-                <div
-                    class="export-readiness"
-                    id="singleExportReadiness"
-                    data-state="waiting"
-                    aria-live="polite"
-                >
-                    <span class="export-readiness-dot"></span>
-                    <div class="export-readiness-copy">
-                        <strong id="singleExportReadinessTitle">商品を選択すると保存できます</strong>
-                        <small id="singleExportReadinessDetail">PNGは画像ごと、ZIPは1ファイルで保存されます</small>
-                    </div>
+            <div class="panel-actions">
+                <div class="export-note">
+                    PNGは画像ごとに保存されます。複数の画像を1ファイルにまとめる場合はZIPを選択してください。
                 </div>
-                <button class="btn-export" id="singlePngButton" type="button" onclick="exportSingleImages()" disabled>PNGを個別に保存</button>
-                <button class="btn-zip" id="singleZipButton" type="button" onclick="exportSingleZip()" disabled>ZIPでまとめて保存</button>
+                <button class="btn-export" type="button" onclick="exportSingleImages()">PNGを個別に保存</button>
+                <button class="btn-zip" type="button" onclick="exportSingleZip()">ZIPでまとめて保存</button>
             </div>
         </aside>
 
@@ -9280,8 +8315,8 @@
             aria-label="単品告知画像プレビュー"
         >
             <div class="single-preview-empty">
-                <strong>CSVを読み込み、告知する商品を選択してください</strong>
-                <span>選択した商品の完成イメージがここに表示されます</span>
+                <strong>商品を選択してください</strong>
+                <span>選択した商品のプレビューが表示されます</span>
             </div>
         </section>
     </section>
@@ -9388,6 +8423,8 @@
         colorMode: "theme",
         color: "#ffffff"
     };
+    const DUAL_PRICE_PRIMARY_SCALE = 0.7;
+    const DUAL_PRICE_SECONDARY_SCALE = 0.5;
     const LARGE_PRICE_THEMES = new Set([
         "signal", "trust", "market", "alert", "editorial",
         "wa", "cyber", "soft", "ticket", "scoreboard"
@@ -9437,8 +8474,6 @@
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
     const WORKING_DRAFT_STORAGE_KEY = "kaitori_working_draft_v1";
-    const FIRST_USE_GUIDE_STORAGE_KEY =
-        "kaitori_first_use_guide_dismissed_v1";
     const STORE_REGISTRY_KEY = "kaitori_store_registry_v1";
     const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
     const SHARED_SYNC_API_URL_STORAGE_KEY =
@@ -10510,10 +9545,6 @@
 
     let logoDataUrl = DEFAULT_LOGO;
     let globalCardData = [];
-    let activeGeneratorView = "buylist";
-    let currentCsvFileName = "";
-    let currentCsvReadState = "empty";
-    let currentCsvStatusDetail = "";
     let imageLoadPromise = Promise.resolve();
     let workspaceAutosaveTimer = null;
     let cardEditRenderTimer = null;
@@ -10757,18 +9788,32 @@
             : 21;
     }
 
+    function getBuylistPriceTextSize(page, priceText, scale) {
+        const baseSize = getBuylistPriceBaseSize(page) * scale / 100;
+        const row = priceText?.closest?.(".card-price-row");
+        if (!row) return baseSize;
+        return baseSize * (
+            row.classList.contains("card-price-row-minus")
+                ? DUAL_PRICE_SECONDARY_SCALE
+                : DUAL_PRICE_PRIMARY_SCALE
+        );
+    }
+
     function applyPriceCustomization(
         root = document,
         settings = collectPriceCustomization()
     ) {
         const normalized = normalizePriceCustomization(settings);
         getExportAreas(root).forEach(page => {
-            const fontSize =
-                getBuylistPriceBaseSize(page) * normalized.scale / 100;
             page.dataset.priceScale = String(normalized.scale);
             page.dataset.priceColorMode = normalized.colorMode;
             page.dataset.priceColor = normalized.color;
             page.querySelectorAll(".card-price-text").forEach(price => {
+                const fontSize = getBuylistPriceTextSize(
+                    page,
+                    price,
+                    normalized.scale
+                );
                 price.style.setProperty(
                     "font-size",
                     `${fontSize.toFixed(2)}px`,
@@ -10916,7 +9961,8 @@
             : getSelectedLayoutConfig().orientation;
         const settings = collectPriceCustomization();
         const stage = document.createElement("div");
-        stage.className = "exportArea quick-price-preview-stage";
+        stage.className =
+            `exportArea ${orientation} quick-price-preview-stage`;
         stage.dataset.theme = theme;
         stage.dataset.priceScale = String(settings.scale);
         stage.dataset.priceColorMode = settings.colorMode;
@@ -10935,14 +9981,13 @@
         }
 
         priceContainer.removeAttribute("style");
-        const priceText = priceContainer.querySelector(".card-price-text");
-        if (priceText) {
+        priceContainer.querySelectorAll(".card-price-text").forEach(priceText => {
             priceText.removeAttribute("style");
-            const baseSize =
-                orientation === "portrait" && LARGE_PRICE_THEMES.has(theme)
-                    ? 23
-                    : 21;
-            const fontSize = baseSize * settings.scale / 100;
+            const fontSize = getBuylistPriceTextSize(
+                stage,
+                priceText,
+                settings.scale
+            );
             priceText.style.setProperty(
                 "font-size",
                 `${fontSize.toFixed(2)}px`,
@@ -10955,32 +10000,12 @@
                     "important"
                 );
             }
-        }
+        });
 
         stage.appendChild(priceContainer);
         viewport.replaceChildren(stage);
 
-        requestAnimationFrame(() => {
-            if (!priceText) return;
-            priceText.style.transform = "none";
-            const availableWidth = Math.max(
-                0,
-                priceContainer.clientWidth - 24
-            );
-            const availableHeight = Math.max(
-                0,
-                priceContainer.clientHeight - 8
-            );
-            if (!availableWidth || !availableHeight) return;
-
-            const scale = Math.min(
-                1,
-                availableWidth / Math.max(1, priceText.scrollWidth),
-                availableHeight / Math.max(1, priceText.scrollHeight)
-            );
-            priceText.style.transform =
-                scale < 0.999 ? `scale(${scale})` : "none";
-        });
+        requestAnimationFrame(() => adjustTextSize(stage));
     }
 
     function normalizeSingleDesign(design) {
@@ -11243,419 +10268,14 @@
         alert(`テンプレート「${name}」を削除しました。`);
     }
 
-    function getRelevantImageCounts(cards) {
-        return cards.reduce((result, card) => {
-            const state = card.imageState || "pending";
-            result[state] = (result[state] || 0) + 1;
-            return result;
-        }, {
-            pending: 0,
-            loading: 0,
-            loaded: 0,
-            error: 0,
-            missing: 0
-        });
-    }
-
-    function updateCsvUploadStatus() {
-        const state = ["empty", "loading", "ready", "error"].includes(
-            currentCsvReadState
-        )
-            ? currentCsvReadState
-            : "empty";
-        const isReady = state === "ready" && globalCardData.length > 0;
-        const title = {
-            empty: "CSVが選択されていません",
-            loading: currentCsvFileName || "CSVを読み込んでいます",
-            ready:
-                currentCsvFileName ||
-                (globalCardData.length ? "前回の作業を復元しました" : "CSV読込完了"),
-            error: currentCsvFileName || "CSVを読み込めませんでした"
-        }[state];
-        const detail = currentCsvStatusDetail || {
-            empty: "ファイルを選択するか、この枠へドロップしてください",
-            loading: "内容と列名を確認しています",
-            ready: `${globalCardData.length}件の商品を読み込みました`,
-            error: "列名とデータ内容を確認して、もう一度選択してください"
-        }[state];
-
-        [
-            ["buylistCsvStep", "buylistCsvFileName", "buylistCsvFileDetail"],
-            ["singleCsvStep", "singleCsvFileName", "singleCsvFileDetail"]
-        ].forEach(([groupId, nameId, detailId]) => {
-            const group = document.getElementById(groupId);
-            const name = document.getElementById(nameId);
-            const detailElement = document.getElementById(detailId);
-            if (group) group.dataset.state = isReady ? "ready" : state;
-            if (name) name.textContent = title;
-            if (detailElement) detailElement.textContent = detail;
-        });
-    }
-
-    function setCsvReadState(state, fileName = "", detail = "") {
-        currentCsvReadState = state;
-        if (fileName) currentCsvFileName = String(fileName).slice(0, 180);
-        currentCsvStatusDetail = detail;
-        updateCsvUploadStatus();
-        updateWorkflowGuide();
-    }
-
-    function setExportButtonsDisabled(ids, disabled, title = "") {
-        ids.forEach(id => {
-            const button = document.getElementById(id);
-            if (!button) return;
-            button.disabled = Boolean(disabled);
-            button.title = disabled ? title : "";
-        });
-    }
-
-    function updateExportReadiness() {
-        const buylistCards = globalCardData.filter(card => !card.hidden);
-        const buylistCounts = getRelevantImageCounts(buylistCards);
-        const buylistPending =
-            buylistCounts.pending + buylistCounts.loading;
-        const buylistIssues =
-            buylistCounts.error + buylistCounts.missing;
-        const buylistPages = globalCardData.length
-            ? document.querySelectorAll("#pagesContainer .exportArea").length
-            : 0;
-        const buylistReady =
-            buylistCards.length > 0 &&
-            buylistPages > 0 &&
-            buylistPending === 0;
-        const buylistReadiness =
-            document.getElementById("buylistExportReadiness");
-        const buylistTitle =
-            document.getElementById("buylistExportReadinessTitle");
-        const buylistDetail =
-            document.getElementById("buylistExportReadinessDetail");
-
-        if (buylistReadiness) {
-            buylistReadiness.dataset.state = !buylistCards.length
-                ? "waiting"
-                : buylistPending
-                    ? "loading"
-                    : buylistIssues
-                        ? "warning"
-                        : "ready";
-        }
-        if (buylistTitle) {
-            buylistTitle.textContent = !buylistCards.length
-                ? "CSVを読み込むと保存できます"
-                : buylistPending
-                    ? `商品画像を読み込み中です（残り${buylistPending}件）`
-                    : buylistIssues
-                        ? `保存できます｜画像を確認する商品が${buylistIssues}件あります`
-                        : "保存準備ができました";
-        }
-        if (buylistDetail) {
-            buylistDetail.textContent = !buylistCards.length
-                ? "PNGはページごと、ZIPとPDFは1ファイルで保存されます"
-                : buylistPending
-                    ? "読み込み完了まで、そのままお待ちください"
-                    : buylistIssues
-                        ? `画像なし・読込エラーの商品は「NO IMAGE」で保存されます｜全${buylistPages}枚`
-                        : `全${buylistPages}枚｜PNG・ZIP・PDFから保存方法を選べます`;
-        }
-        setExportButtonsDisabled(
-            ["buylistPngButton", "buylistZipButton", "buylistPdfButton"],
-            !buylistReady,
-            buylistCards.length
-                ? "商品画像の読み込み完了後に保存できます"
-                : "先にCSVを読み込んでください"
-        );
-
-        const selectedCards = getSelectedSingleCards();
-        const singleCounts = getRelevantImageCounts(selectedCards);
-        const singlePending = singleCounts.pending + singleCounts.loading;
-        const singleIssues = singleCounts.error + singleCounts.missing;
-        const singleOutputs = document.querySelectorAll(
-            "#singlePreviewContainer .single-ad"
-        ).length;
-        const singleReady =
-            selectedCards.length > 0 &&
-            singleOutputs > 0 &&
-            singlePending === 0;
-        const singleReadiness =
-            document.getElementById("singleExportReadiness");
-        const singleTitle =
-            document.getElementById("singleExportReadinessTitle");
-        const singleDetail =
-            document.getElementById("singleExportReadinessDetail");
-
-        if (singleReadiness) {
-            singleReadiness.dataset.state = !selectedCards.length
-                ? "waiting"
-                : singlePending
-                    ? "loading"
-                    : singleIssues
-                        ? "warning"
-                        : "ready";
-        }
-        if (singleTitle) {
-            singleTitle.textContent = !globalCardData.length
-                ? "CSVを読み込むと商品を選べます"
-                : !selectedCards.length
-                    ? "告知する商品を選択してください"
-                    : singlePending
-                        ? `選択商品の画像を読み込み中です（残り${singlePending}件）`
-                        : singleIssues
-                            ? `保存できます｜画像を確認する商品が${singleIssues}件あります`
-                            : "保存準備ができました";
-        }
-        if (singleDetail) {
-            singleDetail.textContent = !selectedCards.length
-                ? "PNGは画像ごと、ZIPは1ファイルで保存されます"
-                : singlePending
-                    ? "読み込み完了まで、そのままお待ちください"
-                    : singleIssues
-                        ? `画像なし・読込エラーの商品は「NO IMAGE」で保存されます｜全${singleOutputs}枚`
-                        : `選択${selectedCards.length}商品・全${singleOutputs}枚を保存できます`;
-        }
-        setExportButtonsDisabled(
-            ["singlePngButton", "singleZipButton"],
-            !singleReady,
-            selectedCards.length
-                ? "選択商品の画像読み込み完了後に保存できます"
-                : "先に告知する商品を選択してください"
-        );
-    }
-
-    function updateWorkflowGuide() {
-        updateCsvUploadStatus();
-        updateExportReadiness();
-
-        const guide = document.getElementById("firstUseGuide");
-        const title = document.getElementById("firstUseGuideTitle");
-        const message = document.getElementById("firstUseGuideMessage");
-        const action = document.getElementById("firstUseGuideAction");
-        const progress = document.getElementById("firstUseGuideProgress");
-        if (!guide || !title || !message || !action || !progress) return;
-
-        const hasData = globalCardData.length > 0;
-        const isSingle = activeGeneratorView === "single";
-        const relevantCards = isSingle
-            ? getSelectedSingleCards()
-            : globalCardData.filter(card => !card.hidden);
-        const imageCounts = getRelevantImageCounts(relevantCards);
-        const pending = imageCounts.pending + imageCounts.loading;
-        const issues = imageCounts.error + imageCounts.missing;
-        const selectedCount = getSelectedSingleCards().length;
-        const step2Title =
-            document.getElementById("firstUseGuideStep2Title");
-        const step2Text =
-            document.getElementById("firstUseGuideStep2Text");
-        if (step2Title) {
-            step2Title.textContent = isSingle
-                ? "商品を選ぶ"
-                : "仕上がりを確認";
-        }
-        if (step2Text) {
-            step2Text.textContent = isSingle
-                ? "告知する商品をチェック"
-                : "必要ならデザインを調整";
-        }
-
-        let currentStep = 1;
-        let completedSteps = 0;
-        let progressValue = 12;
-        let actionType = "csv";
-        let actionLabel = "CSVを選ぶ";
-        let heading = "まずCSVファイルを読み込みます";
-        let description =
-            "必要な設定は自動で入っています。最初はCSVを選ぶだけで大丈夫です。";
-
-        if (hasData && isSingle && selectedCount === 0) {
-            currentStep = 2;
-            completedSteps = 1;
-            progressValue = 48;
-            actionType = "selection";
-            actionLabel = "商品選択へ進む";
-            heading = `${globalCardData.length}件を読み込みました。次に商品を選びます`;
-            description =
-                "告知したい商品へチェックを入れると、プレビューが自動で作成されます。";
-        } else if (hasData && pending > 0) {
-            currentStep = 2;
-            completedSteps = 1;
-            progressValue = 68;
-            actionType = "preview";
-            actionLabel = "プレビューを見る";
-            heading = `商品画像を読み込んでいます（残り${pending}件）`;
-            description =
-                "読み込み中でもタイトルやデザインは変更できます。保存できる状態になると自動で案内が切り替わります。";
-        } else if (hasData) {
-            currentStep = 3;
-            completedSteps = 2;
-            progressValue = 100;
-            actionType = "export";
-            actionLabel = "保存方法を選ぶ";
-            heading = isSingle
-                ? `${selectedCount}商品・${document.querySelectorAll("#singlePreviewContainer .single-ad").length}枚の保存準備ができました`
-                : `${document.querySelectorAll("#pagesContainer .exportArea").length}枚の保存準備ができました`;
-            description = issues
-                ? `画像なし・読込エラーが${issues}件あります。該当商品は「NO IMAGE」で保存されるため、必要に応じて確認してください。`
-                : "プレビューを確認し、PNG・ZIP・PDFから保存方法を選んでください。";
-        }
-
-        title.textContent = heading;
-        message.textContent = description;
-        action.dataset.action = actionType;
-        action.textContent = actionLabel;
-        progress.style.width = `${progressValue}%`;
-
-        guide.querySelectorAll(".guide-step").forEach((step, index) => {
-            const stepNumber = index + 1;
-            step.classList.toggle(
-                "is-complete",
-                stepNumber <= completedSteps
-            );
-            step.classList.toggle(
-                "is-current",
-                stepNumber === currentStep
-            );
-        });
-    }
-
-    function showFirstUseGuide() {
-        const guide = document.getElementById("firstUseGuide");
-        if (!guide) return;
-        localStorage.removeItem(FIRST_USE_GUIDE_STORAGE_KEY);
-        guide.hidden = false;
-        updateWorkflowGuide();
-        guide.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-
-    function hideFirstUseGuide() {
-        const guide = document.getElementById("firstUseGuide");
-        if (!guide) return;
-        localStorage.setItem(FIRST_USE_GUIDE_STORAGE_KEY, "1");
-        guide.hidden = true;
-    }
-
-    function focusGuideTarget(target, openDetails = false) {
-        if (!target) return;
-        if (openDetails && target.tagName === "DETAILS") {
-            target.open = true;
-        }
-        target.classList.remove("guide-focus-pulse");
-        void target.offsetWidth;
-        target.classList.add("guide-focus-pulse");
-        target.scrollIntoView({ behavior: "smooth", block: "center" });
-        window.setTimeout(
-            () => target.classList.remove("guide-focus-pulse"),
-            1600
-        );
-    }
-
-    function runFirstUseGuideAction() {
-        const action =
-            document.getElementById("firstUseGuideAction")?.dataset.action;
-        if (action === "csv") {
-            const inputId = activeGeneratorView === "single"
-                ? "singleCsvInput"
-                : "csvInput";
-            document.getElementById(inputId)?.click();
-            return;
-        }
-        if (action === "selection") {
-            focusGuideTarget(
-                document.getElementById("singleSelectionStep")
-            );
-            return;
-        }
-        if (action === "preview") {
-            focusGuideTarget(
-                document.getElementById(
-                    activeGeneratorView === "single"
-                        ? "singlePreviewContainer"
-                        : "pagesContainer"
-                )
-            );
-            return;
-        }
-        if (action === "export") {
-            focusGuideTarget(
-                document.getElementById(
-                    activeGeneratorView === "single"
-                        ? "singleExportStep"
-                        : "buylistExportStep"
-                )
-            );
-        }
-    }
-
-    function readCsvFile(file) {
-        if (!file) return;
-        const isCsv =
-            /\.csv$/i.test(file.name || "") ||
-            String(file.type || "").includes("csv") ||
-            String(file.type || "") === "text/plain";
-        if (!isCsv) {
-            setCsvReadState(
-                "error",
-                file.name || "選択したファイル",
-                "CSV形式のファイルを選択してください"
-            );
-            alert("CSV形式のファイルを選択してください。");
-            return;
-        }
-
-        setCsvReadState(
-            "loading",
-            file.name || "CSVファイル",
-            "内容と列名を確認しています"
-        );
-        const reader = new FileReader();
-        reader.onerror = () => {
-            setCsvReadState(
-                "error",
-                file.name || "CSVファイル",
-                "ファイルを読み込めませんでした。もう一度お試しください"
-            );
-        };
-        reader.onload = event => {
-            parseCSV(event.target.result, file.name || "CSVファイル");
-        };
-        reader.readAsText(file);
-    }
-
-    function setupCsvDropZone(groupId) {
-        const group = document.getElementById(groupId);
-        if (!group) return;
-        ["dragenter", "dragover"].forEach(eventName => {
-            group.addEventListener(eventName, event => {
-                event.preventDefault();
-                event.stopPropagation();
-                group.classList.add("is-dragging");
-            });
-        });
-        ["dragleave", "drop"].forEach(eventName => {
-            group.addEventListener(eventName, event => {
-                event.preventDefault();
-                event.stopPropagation();
-                group.classList.remove("is-dragging");
-            });
-        });
-        group.addEventListener("drop", event => {
-            const file = event.dataTransfer?.files?.[0];
-            if (file) readCsvFile(file);
-        });
-    }
-
     function switchAppView(view) {
         const isSingle = view === "single";
         const isBuylist = !isSingle;
-        activeGeneratorView = isSingle ? "single" : "buylist";
         document.getElementById("buylistControl").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("pagesContainer").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("singleMakerView").classList.toggle("view-hidden", !isSingle);
         document.getElementById("buylistTabButton").classList.toggle("is-active", isBuylist);
         document.getElementById("singleTabButton").classList.toggle("is-active", isSingle);
-        document.getElementById("buylistTabButton")
-            .setAttribute("aria-pressed", String(isBuylist));
-        document.getElementById("singleTabButton")
-            .setAttribute("aria-pressed", String(isSingle));
-        updateWorkflowGuide();
 
         requestAnimationFrame(() => {
             if (isSingle) {
@@ -11748,20 +10368,11 @@
         renderCardEditor();
         renderSingleCardPicker();
         renderSingleAdPreviews();
-        setupCsvDropZone("buylistCsvStep");
-        setupCsvDropZone("singleCsvStep");
-        const firstUseGuide = document.getElementById("firstUseGuide");
-        if (firstUseGuide) {
-            firstUseGuide.hidden =
-                localStorage.getItem(FIRST_USE_GUIDE_STORAGE_KEY) === "1";
-        }
         isRestoringWorkspace = false;
         setSaveState(
             "saved",
             restoredDraft ? "前回の作業を復元しました" : "保存済み"
         );
-        updateCsvUploadStatus();
-        updateWorkflowSummary();
         requestAnimationFrame(fitPreviewPages);
         sharedSyncInteractionEnabled = true;
         initializeSharedSettingsSync();
@@ -11840,6 +10451,7 @@
             name: String(card.name || ""),
             type: String(card.type || ""),
             price: String(card.price || ""),
+            aMinusPrice: String(card.aMinusPrice || ""),
             imgUrl: String(card.imgUrl || ""),
             hidden: Boolean(card.hidden)
         };
@@ -11853,7 +10465,6 @@
             const draft = {
                 version: 1,
                 savedAt: new Date().toISOString(),
-                sourceName: currentCsvFileName,
                 date: document.getElementById("dateInput")?.value || "",
                 settings,
                 cards: globalCardData.map(serializeCardForDraft),
@@ -11884,8 +10495,6 @@
             );
             if (!draft || !Array.isArray(draft.cards)) return false;
 
-            currentCsvFileName =
-                String(draft.sourceName || "前回の作業を復元").slice(0, 180);
             if (draft.date) {
                 document.getElementById("dateInput").value = draft.date;
             }
@@ -11900,16 +10509,12 @@
                 name: String(card.name || ""),
                 type: String(card.type || ""),
                 price: String(card.price || ""),
+                aMinusPrice: normalizeOptionalAMinusPrice(card.aMinusPrice),
                 imgUrl: String(card.imgUrl || ""),
                 hidden: Boolean(card.hidden),
                 resolvedImg: null,
                 imageState: card.imgUrl ? "pending" : "missing"
             }));
-            currentCsvReadState =
-                globalCardData.length > 0 ? "ready" : "empty";
-            currentCsvStatusDetail = globalCardData.length > 0
-                ? `${globalCardData.length}件の商品を前回の作業から復元しました`
-                : "";
 
             selectedSingleCardIds.clear();
             (draft.selectedSingleCardIds || []).forEach(cardId => {
@@ -12136,11 +10741,7 @@
 
         container.querySelectorAll(".preview-page").forEach(shell => {
             const page = shell.querySelector(".exportArea");
-            if (!page || page.classList.contains("preview-source-template")) {
-                shell.style.width = "";
-                shell.style.height = "";
-                return;
-            }
+            if (!page) return;
 
             const naturalWidth = page.offsetWidth;
             const naturalHeight = page.offsetHeight;
@@ -12414,11 +11015,21 @@
     });
 
     document.getElementById("csvInput").addEventListener("change", event => {
-        readCsvFile(event.target.files[0]);
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = loadEvent => parseCSV(loadEvent.target.result);
+        reader.readAsText(file);
     });
 
     document.getElementById("singleCsvInput").addEventListener("change", event => {
-        readCsvFile(event.target.files[0]);
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = loadEvent => parseCSV(loadEvent.target.result);
+        reader.readAsText(file);
     });
 
     function downloadSampleCsv() {
@@ -12428,6 +11039,7 @@
             "カード名",
             "種別",
             "買取金額",
+            "状態A-",
             "画像リンク"
         ];
         const csvText = `\uFEFF${headers.join(",")}\r\n`;
@@ -12461,6 +11073,34 @@
         return result;
     }
 
+    function normalizeCsvHeaderName(value) {
+        return String(value ?? "")
+            .normalize("NFKC")
+            .replace(/[−‐‑‒–—―﹣ー]/g, "-")
+            .replace(/\s+/g, "")
+            .toLocaleUpperCase("ja");
+    }
+
+    function isStateAMinusHeader(value) {
+        const normalized = normalizeCsvHeaderName(value)
+            .replace(/[()[\]{}【】「」『』]/g, "");
+        return /^(?:状態)?A-(?:(?:買取)?(?:金額|価格))?$/.test(normalized) ||
+            normalized === "状態Aマイナス" ||
+            normalized === "Aマイナス";
+    }
+
+    function normalizeOptionalAMinusPrice(value) {
+        const cleaned = String(value ?? "").replace(/"/g, "").trim();
+        const compact = cleaned.normalize("NFKC").replace(/\s+/g, "");
+        if (
+            !compact ||
+            /^(?:-|−|―|ー|終了|0円?|[¥￥]0円?)$/.test(compact)
+        ) {
+            return "";
+        }
+        return cleaned;
+    }
+
     function normalizeDiffKeyPart(value) {
         return String(value ?? "")
             .normalize("NFKC")
@@ -12486,6 +11126,7 @@
                 type: card.type || "",
                 group: card.group || "",
                 price: card.price || "",
+                aMinusPrice: card.aMinusPrice || "",
                 status: card.status || "",
                 imgUrl: card.imgUrl || ""
             }))
@@ -12647,16 +11288,22 @@
         alert("今回のCSVを比較用データとして保存しました。");
     }
 
-    function parseCSV(text, fileName = "CSVファイル") {
+    function parseCSV(text) {
         const cleanText = String(text).replace(/^\uFEFF/, "");
         const lines = cleanText.split(/\r?\n/);
-        const nextCardData = [];
+        globalCardData = [];
+        selectedSingleCardIds.clear();
+        imagePromiseCache.clear();
+        updateImageStatus();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
 
         let headerIndex = -1;
         const headerMap = {};
         const coreKeywords = [
             "カード名", "商品名", "強化買取金額", "買取金額",
-            "掲載状況", "掲載グループ", "画像リンク", "画像URL"
+            "掲載状況", "掲載グループ", "画像リンク", "画像URL",
+            "状態A-"
         ];
 
         for (let i = 0; i < Math.min(lines.length, 15); i++) {
@@ -12678,25 +11325,36 @@
         }
 
         if (headerIndex === -1) {
-            setCsvReadState(
-                "error",
-                fileName,
-                globalCardData.length
-                    ? "必要な列名が見つかりません。前回の作業データは保持しています"
-                    : "必要な列名が見つかりません。CSVテンプレートをご確認ください"
-            );
             alert("CSV内に有効なヘッダー項目（カード名・買取金額など）が見つかりませんでした。");
             return;
         }
 
-        function getValueByKeywords(parts, keywords) {
+        function getValueByKeywords(
+            parts,
+            keywords,
+            columnFilter = () => true
+        ) {
             for (const keyword of keywords) {
                 for (const columnName in headerMap) {
-                    if (columnName.includes(keyword)) {
+                    if (
+                        columnFilter(columnName) &&
+                        columnName.includes(keyword)
+                    ) {
                         const index = headerMap[columnName];
                         return index < parts.length ? String(parts[index]).trim() : "";
                     }
                 }
+            }
+            return "";
+        }
+
+        function getValueByHeaderMatcher(parts, matcher) {
+            for (const columnName in headerMap) {
+                if (!matcher(columnName)) continue;
+                const index = headerMap[columnName];
+                return index < parts.length
+                    ? String(parts[index]).trim()
+                    : "";
             }
             return "";
         }
@@ -12711,7 +11369,14 @@
             const name = getValueByKeywords(parts, ["カード名", "商品名", "タイトル", "品名"]);
             const type = getValueByKeywords(parts, ["種別", "型番", "グレード", "タイプ", "区分"]);
             const imgUrl = getValueByKeywords(parts, ["画像リンク", "画像URL", "画像", "Image"]);
-            let price = getValueByKeywords(parts, ["強化買取金額", "買取金額", "買取価格", "金額", "価格"]);
+            let price = getValueByKeywords(
+                parts,
+                ["強化買取金額", "買取金額", "買取価格", "金額", "価格"],
+                columnName => !isStateAMinusHeader(columnName)
+            );
+            const aMinusPrice = normalizeOptionalAMinusPrice(
+                getValueByHeaderMatcher(parts, isStateAMinusHeader)
+            );
 
             price = price.replace(/"/g, "").trim();
 
@@ -12719,14 +11384,15 @@
             if (!group || group === "NaN") continue;
             if (!price || price === "-" || price === "終了" || price === "0" || price === "¥0") continue;
 
-            nextCardData.push({
-                id: nextCardData.length,
-                originalIndex: nextCardData.length,
+            globalCardData.push({
+                id: globalCardData.length,
+                originalIndex: globalCardData.length,
                 group,
                 status,
                 name,
                 type,
                 price,
+                aMinusPrice,
                 imgUrl,
                 hidden: false,
                 resolvedImg: null,
@@ -12734,29 +11400,6 @@
             });
         }
 
-        if (nextCardData.length === 0) {
-            setCsvReadState(
-                "error",
-                fileName,
-                globalCardData.length
-                    ? "掲載対象の商品が0件でした。前回の作業データは保持しています"
-                    : "掲載グループと買取金額が入った有効な商品が見つかりません"
-            );
-            alert(
-                "掲載対象の商品が見つかりませんでした。\n" +
-                "「掲載グループ」と「買取金額」の値をご確認ください。"
-            );
-            return;
-        }
-
-        globalCardData = nextCardData;
-        selectedSingleCardIds.clear();
-        imagePromiseCache.clear();
-        setCsvReadState(
-            "ready",
-            fileName,
-            `${globalCardData.length}件の商品を読み込みました`
-        );
         computeCsvDiff(globalCardData);
         updateImageStatus();
         renderCardEditor();
@@ -12797,7 +11440,13 @@
             .sort((a, b) => a.originalIndex - b.originalIndex)
             .filter(card => {
                 if (!query) return true;
-                return [card.name, card.group, card.type, card.price]
+                return [
+                    card.name,
+                    card.group,
+                    card.type,
+                    card.price,
+                    card.aMinusPrice
+                ]
                     .some(value =>
                         String(value || "")
                             .toLocaleLowerCase("ja")
@@ -12819,6 +11468,7 @@
             const group = escapeHtml(card.group || "");
             const type = escapeHtml(card.type || "");
             const price = escapeHtml(card.price || "");
+            const aMinusPrice = escapeHtml(card.aMinusPrice || "");
             const strengthened = String(card.status || "").includes("強化");
             return `
                 <div class="card-editor-row${card.hidden ? " is-hidden" : ""}">
@@ -12855,8 +11505,17 @@
                         class="editor-price"
                         type="text"
                         value="${price}"
-                        aria-label="買取価格"
+                        placeholder="状態A"
+                        aria-label="状態A価格"
                         onchange="updateCardField(${id}, 'price', this.value)"
+                    >
+                    <input
+                        class="editor-a-minus-price"
+                        type="text"
+                        value="${aMinusPrice}"
+                        placeholder="状態A-"
+                        aria-label="状態A-価格"
+                        onchange="updateCardField(${id}, 'aMinusPrice', this.value)"
                     >
                     <label class="card-editor-check">
                         <input
@@ -12908,7 +11567,12 @@
 
     function updateCardField(cardId, field, value) {
         const card = getCardById(cardId);
-        if (!card || !["name", "group", "type", "price"].includes(field)) return;
+        if (
+            !card ||
+            !["name", "group", "type", "price", "aMinusPrice"].includes(field)
+        ) {
+            return;
+        }
         card[field] = String(value || "").trim();
         refreshOutputsAfterCardEdit(false);
     }
@@ -12960,19 +11624,27 @@
     }
 
     function renderNoData() {
-        const container = document.getElementById("pagesContainer");
-        container.classList.add("is-empty-preview");
-        container.innerHTML = `
+        const layoutConfig = getSelectedLayoutConfig();
+        const orientation = layoutConfig.orientation;
+        const theme = getSelectedTheme();
+        const titleStyle = getSelectedTitleStyle();
+        const cardNameClass = getCardNameDisplay() === "hide" ? " hide-card-names" : "";
+        document.getElementById("pagesContainer").innerHTML = `
             <div class="preview-page">
-                <div class="preview-empty-card">
-                    <div>
-                        <strong>掲載対象の商品がありません</strong>
-                        <span>商品データ編集で「表示」を確認するか、別のCSVを読み込んでください</span>
+                <div
+                    class="exportArea ${orientation}${cardNameClass}"
+                    data-theme="${theme}"
+                    data-title-style="${titleStyle}"
+                >
+                    <div class="empty-state">
+                        <strong>NO VALID DATA</strong>
+                        <span>有効なデータが見つかりませんでした</span>
                     </div>
                 </div>
             </div>
         `;
-        updateWorkflowSummary();
+        applyTitleCustomization(document.getElementById("pagesContainer"));
+        requestAnimationFrame(fitPreviewPages);
     }
 
     function getFilteredSingleCards() {
@@ -12982,7 +11654,13 @@
         if (!query) return globalCardData;
 
         return globalCardData.filter(card =>
-            [card.name, card.type, card.group, card.price]
+            [
+                card.name,
+                card.type,
+                card.group,
+                card.price,
+                card.aMinusPrice
+            ]
                 .some(value => String(value || "").toLocaleLowerCase("ja").includes(query))
         );
     }
@@ -13128,10 +11806,6 @@
             const element = document.getElementById(id);
             if (element) element.textContent = value;
         });
-        document.querySelectorAll(".workflow-summary").forEach(summary => {
-            summary.classList.toggle("has-data", globalCardData.length > 0);
-        });
-        updateWorkflowGuide();
     }
 
     function singleProductMarkup(card, settings) {
@@ -13380,10 +12054,8 @@
         if (cards.length === 0) {
             container.innerHTML = `
                 <div class="single-preview-empty">
-                    <strong>${globalCardData.length
-                        ? "告知する商品を選択してください"
-                        : "CSVを読み込み、告知する商品を選択してください"}</strong>
-                    <span>選択した商品の完成イメージがここに表示されます</span>
+                    <strong>商品を選択してください</strong>
+                    <span>選択した商品のプレビューが表示されます</span>
                 </div>
             `;
             return;
@@ -13905,7 +12577,6 @@
             return;
         }
 
-        container.classList.remove("is-empty-preview");
         container.innerHTML = "";
 
         pages.forEach((pageCards, pageIndex) => {
@@ -13938,7 +12609,27 @@
                     : "";
                 const name = escapeHtml(card.name || "");
                 const price = escapeHtml(card.price);
+                const aMinusPrice = escapeHtml(
+                    normalizeOptionalAMinusPrice(card.aMinusPrice)
+                );
                 const imageUrl = escapeHtml(card.imgUrl);
+                const priceHtml = aMinusPrice
+                    ? `
+                        <div
+                            class="card-price-stack"
+                            aria-label="状態A ${price}、状態A- ${aMinusPrice}"
+                        >
+                            <div class="card-price-row card-price-row-primary">
+                                <span class="card-price-grade-label">状態A</span>
+                                <span class="card-price-text">${price}</span>
+                            </div>
+                            <div class="card-price-row card-price-row-minus">
+                                <span class="card-price-grade-label">状態A-</span>
+                                <span class="card-price-text">${aMinusPrice}</span>
+                            </div>
+                        </div>
+                    `
+                    : `<span class="card-price-text">${price}</span>`;
 
                 return `
                     <div class="card-item">
@@ -13955,8 +12646,8 @@
                         </div>
                         <div class="card-name" title="${name}">${name}</div>
                         <div class="card-meta">${gradeHtml}</div>
-                        <div class="card-price-container">
-                            <span class="card-price-text">${price}</span>
+                        <div class="card-price-container${aMinusPrice ? " has-a-minus" : ""}">
+                            ${priceHtml}
                         </div>
                     </div>
                 `;
@@ -14019,22 +12710,63 @@
 
     function adjustTextSize(root = document) {
         root.querySelectorAll(".card-price-container").forEach(container => {
-            const textElement = container.querySelector(".card-price-text");
-            if (!textElement) return;
+            const textElements = Array.from(
+                container.querySelectorAll(".card-price-text")
+            );
+            if (textElements.length === 0) return;
 
-            textElement.style.transform = "none";
+            textElements.forEach(textElement => {
+                textElement.style.transform = "none";
+            });
 
+            if (container.classList.contains("has-a-minus")) {
+                container.querySelectorAll(".card-price-row").forEach(row => {
+                    const textElement = row.querySelector(".card-price-text");
+                    const label = row.querySelector(".card-price-grade-label");
+                    if (!textElement) return;
+
+                    const availableWidth = Math.max(
+                        0,
+                        row.clientWidth - (label?.offsetWidth || 0) - 4
+                    );
+                    const availableHeight = Math.max(0, row.clientHeight - 2);
+                    const textWidth = textElement.scrollWidth;
+                    const textHeight = textElement.scrollHeight;
+                    if (
+                        !availableWidth ||
+                        !availableHeight ||
+                        !textWidth ||
+                        !textHeight
+                    ) {
+                        return;
+                    }
+
+                    const finalScale = Math.min(
+                        1,
+                        availableWidth / textWidth,
+                        availableHeight / textHeight
+                    );
+                    if (finalScale < 1) {
+                        textElement.style.transform = `scale(${finalScale})`;
+                    }
+                });
+                return;
+            }
+
+            const textElement = textElements[0];
             const availableWidth = Math.max(0, container.clientWidth - 22);
             const availableHeight = Math.max(0, container.clientHeight - 4);
             const textWidth = textElement.scrollWidth;
             const textHeight = textElement.scrollHeight;
+            if (!availableWidth || !availableHeight || !textWidth || !textHeight) {
+                return;
+            }
 
-            if (!availableWidth || !availableHeight || !textWidth || !textHeight) return;
-
-            const scaleX = Math.min(1, availableWidth / textWidth);
-            const scaleY = Math.min(1, availableHeight / textHeight);
-            const finalScale = Math.min(scaleX, scaleY);
-
+            const finalScale = Math.min(
+                1,
+                availableWidth / textWidth,
+                availableHeight / textHeight
+            );
             if (finalScale < 1) {
                 textElement.style.transform = `scale(${finalScale})`;
             }
