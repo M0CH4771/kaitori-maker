@@ -6300,11 +6300,20 @@
             text-shadow: var(--price-shadow, 0 2px 0 rgba(0,0,0,0.36));
         }
 
-        /* 状態A-がある商品だけ、従来の30px価格枠を保ったまま2段表示する */
+        /*
+         * 状態A-があるページではカード外寸を変えず、画像領域の一部を
+         * 価格帯へ振り分ける。ページ内の価格帯を同じ高さにそろえることで、
+         * 状態A-がない商品と混在してもカードの並びを崩さない。
+         */
+        .exportArea.has-dual-price-page .card-price-container {
+            height: 42px;
+            padding: 2px 4px;
+        }
+
         .card-price-container.has-a-minus {
             align-items: stretch;
             justify-content: stretch;
-            padding: 1px 3px;
+            padding: 1px 4px;
             white-space: normal;
         }
 
@@ -6313,7 +6322,7 @@
             width: 100%;
             min-width: 0;
             height: 100%;
-            grid-template-rows: minmax(0, 1.45fr) minmax(0, 1fr);
+            grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr);
         }
 
         .card-price-row {
@@ -6321,7 +6330,7 @@
             position: relative;
             min-width: 0;
             align-items: center;
-            gap: 2px;
+            gap: 3px;
             overflow: hidden;
         }
 
@@ -6333,21 +6342,21 @@
             height: 1px;
             background: var(--price-ink);
             content: "";
-            opacity: 0.32;
+            opacity: 0.5;
         }
 
         .card-price-grade-label {
             display: inline-flex;
-            min-width: 23px;
+            min-width: 27px;
             flex: 0 0 auto;
             align-items: center;
             justify-content: center;
-            padding: 1px 2px 0;
+            padding: 1px 2px;
             color: var(--price-ink);
             border: 1px solid currentColor;
             border-radius: 2px;
             background: transparent;
-            font-size: 6.2px;
+            font-size: 7.2px;
             font-weight: 950;
             line-height: 1;
             letter-spacing: -0.035em;
@@ -6367,6 +6376,15 @@
             flex: 1 1 auto;
             text-align: center;
             transform-origin: center;
+        }
+
+        .card-price-row-primary .card-price-text {
+            font-weight: 1000;
+        }
+
+        .card-price-row-minus .card-price-text {
+            font-weight: 950;
+            opacity: 0.98;
         }
 
         .quick-price-preview-stage .has-a-minus .card-price-grade-label {
@@ -8423,8 +8441,8 @@
         colorMode: "theme",
         color: "#ffffff"
     };
-    const DUAL_PRICE_PRIMARY_SCALE = 0.7;
-    const DUAL_PRICE_SECONDARY_SCALE = 0.5;
+    const DUAL_PRICE_PRIMARY_SCALE = 0.9;
+    const DUAL_PRICE_SECONDARY_SCALE = 0.68;
     const LARGE_PRICE_THEMES = new Set([
         "signal", "trust", "market", "alert", "editorial",
         "wa", "cyber", "soft", "ticket", "scoreboard"
@@ -11780,6 +11798,17 @@
         return number > 0 ? `¥${number.toLocaleString("ja-JP")}` : text;
     }
 
+    function normalizeBuylistPriceDisplay(price) {
+        const text = String(price || "").trim().normalize("NFKC");
+        if (!text) return "";
+        const numericText = text.replace(/[¥￥円,\s]/g, "");
+        if (!/^\d+(?:\.\d+)?$/.test(numericText)) return text;
+        const number = Number(numericText);
+        return Number.isFinite(number) && number > 0
+            ? `¥${number.toLocaleString("ja-JP")}`
+            : text;
+    }
+
     function updateWorkflowSummary() {
         const visible = globalCardData.filter(card => !card.hidden).length;
         const layout = getSelectedLayoutConfig();
@@ -12581,6 +12610,9 @@
 
         pages.forEach((pageCards, pageIndex) => {
             const pageNumber = pageIndex + 1;
+            const pageHasAMinus = pageCards.some(card =>
+                Boolean(normalizeOptionalAMinusPrice(card.aMinusPrice))
+            );
             const pageEmblem = getPageEmblemContent(
                 pageCards,
                 pageNumber,
@@ -12592,6 +12624,8 @@
             const pageDiv = document.createElement("div");
             pageDiv.className = `exportArea ${orientationClass}${
                 getCardNameDisplay() === "hide" ? " hide-card-names" : ""
+            }${
+                pageHasAMinus ? " has-dual-price-page" : ""
             }`;
             pageDiv.dataset.theme = selectedTheme;
             pageDiv.dataset.titleStyle = selectedTitleStyle;
@@ -12608,9 +12642,14 @@
                     ? `<span class="card-grade">${grade}</span>`
                     : "";
                 const name = escapeHtml(card.name || "");
-                const price = escapeHtml(card.price);
+                const price = escapeHtml(
+                    normalizeBuylistPriceDisplay(card.price)
+                );
+                const normalizedAMinusPrice = normalizeOptionalAMinusPrice(
+                    card.aMinusPrice
+                );
                 const aMinusPrice = escapeHtml(
-                    normalizeOptionalAMinusPrice(card.aMinusPrice)
+                    normalizeBuylistPriceDisplay(normalizedAMinusPrice)
                 );
                 const imageUrl = escapeHtml(card.imgUrl);
                 const priceHtml = aMinusPrice
