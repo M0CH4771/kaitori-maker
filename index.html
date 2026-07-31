@@ -434,6 +434,11 @@
             padding: 4px 12px !important;
         }
 
+        .quick-price-preview-stage .card-price-container.has-a-minus {
+            height: 66px !important;
+            min-height: 66px !important;
+        }
+
         .settings-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -6301,13 +6306,22 @@
         }
 
         /*
-         * 状態A-があるページではカード外寸を変えず、画像領域の一部を
-         * 価格帯へ振り分ける。ページ内の価格帯を同じ高さにそろえることで、
-         * 状態A-がない商品と混在してもカードの並びを崩さない。
+         * カード名を非表示にした場合だけ、空いた領域を画像ではなく価格帯へ
+         * 振り分ける。状態A-があるページ内は全カードの価格帯を同じ高さにし、
+         * 混在時もカードの並びを崩さない。
          */
-        .exportArea.has-dual-price-page .card-price-container {
-            height: 42px;
+        .exportArea.hide-card-names.has-dual-price-page .card-price-container {
+            height: 60px;
             padding: 2px 4px;
+        }
+
+        .exportArea.hide-card-names.has-dual-price-page:is(
+            [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
+            [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
+            [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
+            [data-theme="scoreboard"]
+        ) .card-price-container {
+            height: 66px;
         }
 
         .card-price-container.has-a-minus {
@@ -6322,7 +6336,7 @@
             width: 100%;
             min-width: 0;
             height: 100%;
-            grid-template-rows: minmax(0, 1.25fr) minmax(0, 1fr);
+            grid-template-rows: minmax(0, 1.08fr) minmax(0, 1fr);
         }
 
         .card-price-row {
@@ -6347,7 +6361,7 @@
 
         .card-price-grade-label {
             display: inline-flex;
-            min-width: 27px;
+            min-width: 28px;
             flex: 0 0 auto;
             align-items: center;
             justify-content: center;
@@ -6356,7 +6370,7 @@
             border: 1px solid currentColor;
             border-radius: 2px;
             background: transparent;
-            font-size: 7.2px;
+            font-size: 7.5px;
             font-weight: 950;
             line-height: 1;
             letter-spacing: -0.035em;
@@ -6391,6 +6405,62 @@
             min-width: 36px;
             padding: 2px 4px 1px;
             font-size: 8px;
+        }
+
+        .single-ad-price.is-dual {
+            display: grid;
+            grid-template-rows: minmax(0, 1.08fr) minmax(0, 1fr);
+            align-items: stretch;
+            justify-content: stretch;
+            padding: 7px 14px;
+        }
+
+        .single-ad-price-row {
+            display: grid;
+            position: relative;
+            min-width: 0;
+            min-height: 0;
+            grid-template-columns: auto minmax(0, 1fr);
+            align-items: center;
+            gap: 12px;
+        }
+
+        .single-ad-price-row + .single-ad-price-row {
+            border-top: 2px solid currentColor;
+        }
+
+        .single-ad-state-label {
+            display: block;
+            min-width: 0;
+            max-width: 132px;
+            overflow: hidden;
+            color: var(--single-price-label);
+            font-size: 18px;
+            font-weight: 950;
+            line-height: 1;
+            letter-spacing: .02em;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .single-ad-price-value {
+            display: inline-block;
+            min-width: 0;
+            justify-self: center;
+            transform-origin: center;
+            white-space: nowrap;
+        }
+
+        .single-ad-price.is-dual
+        .single-ad-price-row-primary
+        .single-ad-price-value {
+            font-size: .76em;
+        }
+
+        .single-ad-price.is-dual
+        .single-ad-price-row-minus
+        .single-ad-price-value {
+            font-size: .68em;
         }
 
         .single-ad[data-design="blackgold"] {
@@ -6450,7 +6520,12 @@
             text-shadow: var(--single-price-shadow, 0 3px 0 rgba(0,0,0,0.32));
         }
 
-        /* 非表示項目の予約スペースを完全に除去して画像へ戻す */
+        .single-ad[data-design] .single-ad-state-label {
+            color: var(--single-price-label);
+            text-shadow: none;
+        }
+
+        /* 非表示にしたカード名の領域は、状態A-表示時に価格帯へ割り当てる */
         .exportArea.hide-card-names .card-name {
             display: none !important;
             min-height: 0 !important;
@@ -7196,6 +7271,28 @@
             transform: none;
         }
 
+        .single-ad.is-multi
+        .single-ad-product-card
+        .single-ad-price.is-dual {
+            padding: 3px 5px;
+        }
+
+        .single-ad.is-multi .single-ad-price-row {
+            gap: 5px;
+        }
+
+        .single-ad.is-multi
+        .single-ad-price-row
+        + .single-ad-price-row {
+            border-top-width: 1px;
+        }
+
+        .single-ad.is-multi .single-ad-state-label {
+            max-width: 58px;
+            font-size: 10px;
+            letter-spacing: 0;
+        }
+
         .single-ad.is-multi .single-ad-footer {
             margin-top: 14px;
             padding: 11px 0 0;
@@ -7228,6 +7325,11 @@
         .single-ad.is-multi[data-density="compact"] .single-ad-product-card .single-ad-price {
             min-height: 50px;
             font-size: 27px;
+        }
+
+        .single-ad.is-multi[data-density="compact"] .single-ad-state-label {
+            max-width: 48px;
+            font-size: 9px;
         }
 
         .single-ad.is-multi[data-density="dense"] {
@@ -7294,6 +7396,21 @@
             border-width: 2px;
             border-radius: 7px;
             font-size: 24px;
+        }
+
+        .single-ad.is-multi[data-density="dense"]
+        .single-ad-product-card
+        .single-ad-price.is-dual {
+            padding: 2px 4px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-price-row {
+            gap: 3px;
+        }
+
+        .single-ad.is-multi[data-density="dense"] .single-ad-state-label {
+            max-width: 42px;
+            font-size: 8px;
         }
 
         .single-ad.is-multi[data-density="dense"] .single-ad-footer {
@@ -7469,6 +7586,16 @@
             border-top: 1px solid rgba(255,255,255,.075);
         }
 
+        .price-label-customizer-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: end;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,.075);
+        }
+
         .appearance-panel input[type="color"]:disabled {
             cursor: not-allowed;
             filter: grayscale(.7);
@@ -7513,7 +7640,8 @@
             .design-settings-grid,
             .single-appearance-grid,
             .price-customizer-grid,
-            .single-price-color-grid {
+            .single-price-color-grid,
+            .price-label-customizer-grid {
                 grid-template-columns: 1fr;
             }
 
@@ -7618,7 +7746,7 @@
                     type="button"
                     onclick="downloadSampleCsv()"
                 >CSVテンプレートをダウンロード</button>
-                <small class="help">「掲載グループ」「カード名」「買取金額」が必要です。「状態A-」は任意で、値がある商品だけ通常価格の下に表示されます。</small>
+                <small class="help">「掲載グループ」「カード名」「買取金額」が必要です。「状態A-」は任意で、カード名を「表示しない」にした場合のみ通常価格の下に表示されます。</small>
             </div>
 
             <div class="control-group">
@@ -7716,7 +7844,7 @@
                         <option value="show">表示する</option>
                         <option value="hide">表示しない</option>
                     </select>
-                    <small class="help">プレビューとPNG出力の両方に反映されます。</small>
+                    <small class="help">「表示しない」では画像を拡大せず価格欄を広げ、入力済みの状態A-価格も表示します。</small>
                 </div>
 
                 <div class="appearance-panel">
@@ -7847,6 +7975,28 @@
                         <div class="title-custom-field">
                             <label for="priceColorInput">指定色</label>
                             <input type="color" id="priceColorInput" value="#ffffff">
+                        </div>
+                    </div>
+                    <div class="price-label-customizer-grid">
+                        <div class="title-custom-field">
+                            <label for="pricePrimaryLabelInput">状態Aの表示名</label>
+                            <input
+                                type="text"
+                                id="pricePrimaryLabelInput"
+                                value="状態A"
+                                maxlength="12"
+                                aria-label="状態A価格の表示名"
+                            >
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="priceSecondaryLabelInput">状態A-の表示名</label>
+                            <input
+                                type="text"
+                                id="priceSecondaryLabelInput"
+                                value="状態A-"
+                                maxlength="12"
+                                aria-label="状態A-価格の表示名"
+                            >
                         </div>
                     </div>
                     <small class="help">金額が枠からはみ出す場合は、レイアウトを保つため自動で縮小されます。</small>
@@ -8042,7 +8192,28 @@
                 </div>
 
                 <div class="control-group">
-                    <label><span class="step">5</span>種別・グレード</label>
+                    <label><span class="step">5</span>状態Aの表示名</label>
+                    <input
+                        type="text"
+                        id="singlePrimaryPriceLabelInput"
+                        value="状態A"
+                        maxlength="12"
+                    >
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">6</span>状態A-の表示名</label>
+                    <input
+                        type="text"
+                        id="singleSecondaryPriceLabelInput"
+                        value="状態A-"
+                        maxlength="12"
+                    >
+                    <small class="help">状態A-価格がある商品だけ、2つの価格を表示します。</small>
+                </div>
+
+                <div class="control-group">
+                    <label><span class="step">7</span>種別・グレード</label>
                     <select id="singleGradeDisplaySelect">
                         <option value="show">入力がある場合のみ表示</option>
                         <option value="hide">表示しない</option>
@@ -8439,10 +8610,12 @@
     const DEFAULT_PRICE_CUSTOM = {
         scale: 100,
         colorMode: "theme",
-        color: "#ffffff"
+        color: "#ffffff",
+        primaryLabel: "状態A",
+        secondaryLabel: "状態A-"
     };
-    const DUAL_PRICE_PRIMARY_SCALE = 0.9;
-    const DUAL_PRICE_SECONDARY_SCALE = 0.68;
+    const DUAL_PRICE_PRIMARY_SCALE = 1;
+    const DUAL_PRICE_SECONDARY_SCALE = 0.9;
     const LARGE_PRICE_THEMES = new Set([
         "signal", "trust", "market", "alert", "editorial",
         "wa", "cyber", "soft", "ticket", "scoreboard"
@@ -8485,6 +8658,8 @@
     const DEFAULT_SINGLE_PRICE_SCALE = 100;
     const DEFAULT_SINGLE_PRICE_COLOR_MODE = "theme";
     const DEFAULT_SINGLE_PRICE_COLOR = "#ffffff";
+    const DEFAULT_SINGLE_PRIMARY_PRICE_LABEL = "状態A";
+    const DEFAULT_SINGLE_SECONDARY_PRICE_LABEL = "状態A-";
     const SINGLE_LOGO_ALIGNMENTS = ["left", "center", "right"];
     const DEFAULT_SINGLE_LOGO_ALIGNMENT = "center";
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
@@ -8521,6 +8696,8 @@
         "kaitori_price_scale",
         "kaitori_price_color_mode",
         "kaitori_price_color",
+        "kaitori_price_primary_label",
+        "kaitori_price_secondary_label",
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
@@ -9679,6 +9856,11 @@
             : fallback;
     }
 
+    function normalizeEditablePriceLabel(value, fallback) {
+        if (typeof value !== "string") return fallback;
+        return value.replace(/\s+/g, " ").trim().slice(0, 12);
+    }
+
     function normalizeTitleCustomization(settings = {}) {
         const font = hasOwn(TITLE_FONT_OPTIONS, settings.font)
             ? settings.font
@@ -9751,6 +9933,14 @@
             color: normalizeHexColor(
                 settings.color,
                 DEFAULT_PRICE_CUSTOM.color
+            ),
+            primaryLabel: normalizeEditablePriceLabel(
+                settings.primaryLabel,
+                DEFAULT_PRICE_CUSTOM.primaryLabel
+            ),
+            secondaryLabel: normalizeEditablePriceLabel(
+                settings.secondaryLabel,
+                DEFAULT_PRICE_CUSTOM.secondaryLabel
             )
         };
     }
@@ -9759,7 +9949,11 @@
         return normalizePriceCustomization({
             scale: document.getElementById("priceSizeInput")?.value,
             colorMode: document.getElementById("priceColorModeSelect")?.value,
-            color: document.getElementById("priceColorInput")?.value
+            color: document.getElementById("priceColorInput")?.value,
+            primaryLabel:
+                document.getElementById("pricePrimaryLabelInput")?.value,
+            secondaryLabel:
+                document.getElementById("priceSecondaryLabelInput")?.value
         });
     }
 
@@ -9776,6 +9970,10 @@
         const colorInput = document.getElementById("priceColorInput");
         colorInput.value = normalized.color;
         colorInput.disabled = normalized.colorMode !== "custom";
+        document.getElementById("pricePrimaryLabelInput").value =
+            normalized.primaryLabel;
+        document.getElementById("priceSecondaryLabelInput").value =
+            normalized.secondaryLabel;
     }
 
     function savePriceCustomization(
@@ -9784,6 +9982,14 @@
         setScopedItem("kaitori_price_scale", String(settings.scale));
         setScopedItem("kaitori_price_color_mode", settings.colorMode);
         setScopedItem("kaitori_price_color", settings.color);
+        setScopedItem(
+            "kaitori_price_primary_label",
+            settings.primaryLabel
+        );
+        setScopedItem(
+            "kaitori_price_secondary_label",
+            settings.secondaryLabel
+        );
     }
 
     function getExportAreas(root = document) {
@@ -9826,6 +10032,30 @@
             page.dataset.priceScale = String(normalized.scale);
             page.dataset.priceColorMode = normalized.colorMode;
             page.dataset.priceColor = normalized.color;
+            page.querySelectorAll(
+                ".card-price-row-primary .card-price-grade-label"
+            ).forEach(label => {
+                label.textContent = normalized.primaryLabel;
+            });
+            page.querySelectorAll(
+                ".card-price-row-minus .card-price-grade-label"
+            ).forEach(label => {
+                label.textContent = normalized.secondaryLabel;
+            });
+            page.querySelectorAll(".card-price-stack").forEach(stack => {
+                const prices = Array.from(
+                    stack.querySelectorAll(".card-price-text")
+                ).map(price => price.textContent || "");
+                const primaryDescription =
+                    normalized.primaryLabel || "通常価格";
+                const secondaryDescription =
+                    normalized.secondaryLabel || "状態A-価格";
+                stack.setAttribute(
+                    "aria-label",
+                    `${primaryDescription} ${prices[0] || ""}、` +
+                    `${secondaryDescription} ${prices[1] || ""}`
+                );
+            });
             page.querySelectorAll(".card-price-text").forEach(price => {
                 const fontSize = getBuylistPriceTextSize(
                     page,
@@ -10085,6 +10315,18 @@
             priceColorMode,
             priceColor,
             priceLabel: document.getElementById("singlePriceLabelInput")?.value ?? "買取価格",
+            primaryPriceLabel: normalizeEditablePriceLabel(
+                document.getElementById(
+                    "singlePrimaryPriceLabelInput"
+                )?.value,
+                DEFAULT_SINGLE_PRIMARY_PRICE_LABEL
+            ),
+            secondaryPriceLabel: normalizeEditablePriceLabel(
+                document.getElementById(
+                    "singleSecondaryPriceLabelInput"
+                )?.value,
+                DEFAULT_SINGLE_SECONDARY_PRICE_LABEL
+            ),
             gradeDisplay:
                 document.getElementById("singleGradeDisplaySelect")?.value === "hide"
                     ? "hide"
@@ -10158,6 +10400,16 @@
         if (typeof settings.priceLabel === "string") {
             document.getElementById("singlePriceLabelInput").value = settings.priceLabel;
         }
+        document.getElementById("singlePrimaryPriceLabelInput").value =
+            normalizeEditablePriceLabel(
+                settings.primaryPriceLabel,
+                DEFAULT_SINGLE_PRIMARY_PRICE_LABEL
+            );
+        document.getElementById("singleSecondaryPriceLabelInput").value =
+            normalizeEditablePriceLabel(
+                settings.secondaryPriceLabel,
+                DEFAULT_SINGLE_SECONDARY_PRICE_LABEL
+            );
         document.getElementById("singleGradeDisplaySelect").value =
             settings.gradeDisplay === "hide" ? "hide" : "show";
     }
@@ -10327,6 +10579,10 @@
         const savedPriceColorMode =
             getScopedItem("kaitori_price_color_mode");
         const savedPriceColor = getScopedItem("kaitori_price_color");
+        const savedPricePrimaryLabel =
+            getScopedItem("kaitori_price_primary_label");
+        const savedPriceSecondaryLabel =
+            getScopedItem("kaitori_price_secondary_label");
         const savedCardNameDisplay = getScopedItem("kaitori_card_name_display");
         const savedPageSplit = getScopedItem("kaitori_page_split");
         const savedSortOrder = getScopedItem("kaitori_sort_order");
@@ -10350,7 +10606,13 @@
             scale: savedPriceScale ?? DEFAULT_PRICE_CUSTOM.scale,
             colorMode:
                 savedPriceColorMode ?? DEFAULT_PRICE_CUSTOM.colorMode,
-            color: savedPriceColor ?? DEFAULT_PRICE_CUSTOM.color
+            color: savedPriceColor ?? DEFAULT_PRICE_CUSTOM.color,
+            primaryLabel:
+                savedPricePrimaryLabel ??
+                DEFAULT_PRICE_CUSTOM.primaryLabel,
+            secondaryLabel:
+                savedPriceSecondaryLabel ??
+                DEFAULT_PRICE_CUSTOM.secondaryLabel
         });
         if (savedLayout) {
             document.getElementById("layoutSelect").value =
@@ -10866,10 +11128,17 @@
         .addEventListener("change", updatePriceCustomization);
     document.getElementById("priceColorInput")
         .addEventListener("input", updatePriceCustomization);
+    [
+        "pricePrimaryLabelInput",
+        "priceSecondaryLabelInput"
+    ].forEach(id => {
+        document.getElementById(id)
+            .addEventListener("input", updatePriceCustomization);
+    });
 
     document.getElementById("cardNameDisplaySelect")
         .addEventListener("change", () => {
-            applyCardNameVisibility();
+            renderPages();
             scheduleWorkspaceAutosave();
         });
     document.getElementById("pageSplitSelect").addEventListener("change", () => {
@@ -10888,7 +11157,9 @@
 
     [
         "singleHeadlineInput",
-        "singlePriceLabelInput"
+        "singlePriceLabelInput",
+        "singlePrimaryPriceLabelInput",
+        "singleSecondaryPriceLabelInput"
     ].forEach(id => {
         document.getElementById(id).addEventListener("input", () => {
             saveSingleSettings();
@@ -11798,6 +12069,63 @@
         return number > 0 ? `¥${number.toLocaleString("ja-JP")}` : text;
     }
 
+    function renderSinglePriceMarkup(card, settings) {
+        const priceText = normalizeSinglePriceDisplay(card.price);
+        const aMinusPriceText = normalizeSinglePriceDisplay(
+            normalizeOptionalAMinusPrice(card.aMinusPrice)
+        );
+        const price = escapeHtml(priceText);
+        const priceLabel = escapeHtml(settings.priceLabel);
+
+        if (!aMinusPriceText) {
+            return `
+                <div class="single-ad-price-label">${priceLabel}</div>
+                <div class="single-ad-price">
+                    <span class="single-ad-price-value">${price}</span>
+                </div>
+            `;
+        }
+
+        const primaryLabelText = normalizeEditablePriceLabel(
+            settings.primaryPriceLabel,
+            DEFAULT_SINGLE_PRIMARY_PRICE_LABEL
+        );
+        const secondaryLabelText = normalizeEditablePriceLabel(
+            settings.secondaryPriceLabel,
+            DEFAULT_SINGLE_SECONDARY_PRICE_LABEL
+        );
+        const primaryLabel = escapeHtml(primaryLabelText);
+        const secondaryLabel = escapeHtml(secondaryLabelText);
+        const aMinusPrice = escapeHtml(aMinusPriceText);
+        const ariaLabel = escapeHtml(
+            `${primaryLabelText || "通常価格"} ${priceText}、` +
+            `${secondaryLabelText || "状態A-価格"} ${aMinusPriceText}`
+        );
+
+        return `
+            <div class="single-ad-price-label">${priceLabel}</div>
+            <div
+                class="single-ad-price is-dual"
+                aria-label="${ariaLabel}"
+            >
+                <div class="single-ad-price-row single-ad-price-row-primary">
+                    <span
+                        class="single-ad-state-label"
+                        title="${primaryLabel}"
+                    >${primaryLabel}</span>
+                    <span class="single-ad-price-value">${price}</span>
+                </div>
+                <div class="single-ad-price-row single-ad-price-row-minus">
+                    <span
+                        class="single-ad-state-label"
+                        title="${secondaryLabel}"
+                    >${secondaryLabel}</span>
+                    <span class="single-ad-price-value">${aMinusPrice}</span>
+                </div>
+            </div>
+        `;
+    }
+
     function normalizeBuylistPriceDisplay(price) {
         const text = String(price || "").trim().normalize("NFKC");
         if (!text) return "";
@@ -11846,7 +12174,6 @@
                 : "";
         const imageSource = card.resolvedImg || LOADING_IMAGE;
         const imageUrl = escapeHtml(card.imgUrl || "");
-        const price = escapeHtml(normalizeSinglePriceDisplay(card.price));
         return `
             <div class="single-ad-product-card">
                 <div class="single-ad-image-stage">
@@ -11862,8 +12189,7 @@
                 <div class="single-ad-info">
                     <div class="single-ad-card-name">${name}</div>
                     ${gradeHtml}
-                    <div class="single-ad-price-label">${escapeHtml(settings.priceLabel)}</div>
-                    <div class="single-ad-price"><span>${price}</span></div>
+                    ${renderSinglePriceMarkup(card, settings)}
                 </div>
             </div>
         `;
@@ -12106,7 +12432,9 @@
                 ? `<div class="single-ad-grade">${grade}</div>` : "";
             const imageSource = card.resolvedImg || LOADING_IMAGE;
             const imageUrl = escapeHtml(card.imgUrl || "");
-            const price = escapeHtml(normalizeSinglePriceDisplay(card.price));
+            const groupHasAMinus = group.some(item =>
+                Boolean(normalizeOptionalAMinusPrice(item.aMinusPrice))
+            );
             const multiLayout = isMulti
                 ? getSingleMultiLayout(settings.size, group.length)
                 : null;
@@ -12148,15 +12476,16 @@
                     <div class="single-ad-info">
                         <div class="single-ad-card-name">${name}</div>
                         ${gradeHtml}
-                        <div class="single-ad-price-label">${escapeHtml(settings.priceLabel)}</div>
-                        <div class="single-ad-price"><span>${price}</span></div>
+                        ${renderSinglePriceMarkup(card, settings)}
                     </div>
                    </div>`;
 
             return `
                 <div class="single-preview-shell">
                     <article
-                        class="single-ad single-${settings.size}${isMulti ? " is-multi" : ""}"
+                        class="single-ad single-${settings.size}${
+                            isMulti ? " is-multi" : ""
+                        }${groupHasAMinus ? " has-dual-price" : ""}"
                         data-design="${settings.design}"
                         data-logo-align="${settings.logoAlign}"
                         data-single-card-id="${group.map(item => item.id).join(",")}"
@@ -12285,9 +12614,59 @@
 
     function adjustSingleAdPriceSizes(root = document) {
         root.querySelectorAll(".single-ad-price").forEach(container => {
-            const text = container.querySelector("span");
+            const values = Array.from(
+                container.querySelectorAll(".single-ad-price-value")
+            );
+            values.forEach(value => {
+                value.style.transform = "none";
+            });
+
+            if (container.classList.contains("is-dual")) {
+                container.querySelectorAll(".single-ad-price-row")
+                    .forEach(row => {
+                        const value = row.querySelector(
+                            ".single-ad-price-value"
+                        );
+                        const label = row.querySelector(
+                            ".single-ad-state-label"
+                        );
+                        if (!value) return;
+
+                        const availableWidth = Math.max(
+                            0,
+                            row.clientWidth -
+                            (label?.offsetWidth || 0) -
+                            12
+                        );
+                        const availableHeight = Math.max(
+                            0,
+                            row.clientHeight - 2
+                        );
+                        const textWidth = value.scrollWidth;
+                        const textHeight = value.scrollHeight;
+                        if (
+                            !availableWidth ||
+                            !availableHeight ||
+                            !textWidth ||
+                            !textHeight
+                        ) {
+                            return;
+                        }
+
+                        const scale = Math.min(
+                            1,
+                            availableWidth / textWidth,
+                            availableHeight / textHeight
+                        );
+                        if (scale < 1) {
+                            value.style.transform = `scale(${scale})`;
+                        }
+                    });
+                return;
+            }
+
+            const text = values[0];
             if (!text) return;
-            text.style.transform = "none";
             const availableWidth = Math.max(0, container.clientWidth - 36);
             const textWidth = text.scrollWidth;
             if (!availableWidth || !textWidth || textWidth <= availableWidth) return;
@@ -12590,6 +12969,7 @@
         const cols = layoutConfig.cols;
         const rows = layoutConfig.rows;
         const orientationClass = layoutConfig.orientation;
+        const hideCardNames = getCardNameDisplay() === "hide";
         const selectedTheme = getSelectedTheme();
         const selectedTitleStyle = getSelectedTitleStyle();
         const splitMode = getPageSplitMode();
@@ -12600,6 +12980,13 @@
         const dateText = formatDate(document.getElementById("dateInput").value);
         const disclaimerHtml = escapeHtml(document.getElementById("disclaimerInput").value)
             .replace(/\n/g, "<br>");
+        const priceCustomization = collectPriceCustomization();
+        const primaryPriceLabel = escapeHtml(
+            priceCustomization.primaryLabel
+        );
+        const secondaryPriceLabel = escapeHtml(
+            priceCustomization.secondaryLabel
+        );
 
         if (pages.length === 0) {
             renderNoData();
@@ -12610,7 +12997,7 @@
 
         pages.forEach((pageCards, pageIndex) => {
             const pageNumber = pageIndex + 1;
-            const pageHasAMinus = pageCards.some(card =>
+            const pageHasAMinus = hideCardNames && pageCards.some(card =>
                 Boolean(normalizeOptionalAMinusPrice(card.aMinusPrice))
             );
             const pageEmblem = getPageEmblemContent(
@@ -12623,7 +13010,7 @@
                 : "";
             const pageDiv = document.createElement("div");
             pageDiv.className = `exportArea ${orientationClass}${
-                getCardNameDisplay() === "hide" ? " hide-card-names" : ""
+                hideCardNames ? " hide-card-names" : ""
             }${
                 pageHasAMinus ? " has-dual-price-page" : ""
             }`;
@@ -12642,28 +13029,34 @@
                     ? `<span class="card-grade">${grade}</span>`
                     : "";
                 const name = escapeHtml(card.name || "");
-                const price = escapeHtml(
-                    normalizeBuylistPriceDisplay(card.price)
-                );
+                const priceText = normalizeBuylistPriceDisplay(card.price);
+                const price = escapeHtml(priceText);
                 const normalizedAMinusPrice = normalizeOptionalAMinusPrice(
                     card.aMinusPrice
                 );
-                const aMinusPrice = escapeHtml(
-                    normalizeBuylistPriceDisplay(normalizedAMinusPrice)
-                );
+                const aMinusPriceText = hideCardNames
+                    ? normalizeBuylistPriceDisplay(normalizedAMinusPrice)
+                    : "";
+                const aMinusPrice = escapeHtml(aMinusPriceText);
                 const imageUrl = escapeHtml(card.imgUrl);
+                const dualPriceAria = escapeHtml(
+                    `${priceCustomization.primaryLabel || "通常価格"} ` +
+                    `${priceText}、` +
+                    `${priceCustomization.secondaryLabel || "状態A-価格"} ` +
+                    `${aMinusPriceText}`
+                );
                 const priceHtml = aMinusPrice
                     ? `
                         <div
                             class="card-price-stack"
-                            aria-label="状態A ${price}、状態A- ${aMinusPrice}"
+                            aria-label="${dualPriceAria}"
                         >
                             <div class="card-price-row card-price-row-primary">
-                                <span class="card-price-grade-label">状態A</span>
+                                <span class="card-price-grade-label">${primaryPriceLabel}</span>
                                 <span class="card-price-text">${price}</span>
                             </div>
                             <div class="card-price-row card-price-row-minus">
-                                <span class="card-price-grade-label">状態A-</span>
+                                <span class="card-price-grade-label">${secondaryPriceLabel}</span>
                                 <span class="card-price-text">${aMinusPrice}</span>
                             </div>
                         </div>
@@ -12780,13 +13173,17 @@
                         return;
                     }
 
-                    const finalScale = Math.min(
+                    const widthScale = Math.min(
                         1,
-                        availableWidth / textWidth,
+                        availableWidth / textWidth
+                    );
+                    const heightScale = Math.min(
+                        1,
                         availableHeight / textHeight
                     );
-                    if (finalScale < 1) {
-                        textElement.style.transform = `scale(${finalScale})`;
+                    if (widthScale < 1 || heightScale < 1) {
+                        textElement.style.transform =
+                            `scale(${widthScale}, ${heightScale})`;
                     }
                 });
                 return;
