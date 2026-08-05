@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -6361,20 +6362,30 @@
 
         .card-price-grade-label {
             display: inline-flex;
-            min-width: 28px;
+            min-width: 32px;
             flex: 0 0 auto;
             align-items: center;
             justify-content: center;
-            padding: 1px 2px;
+            padding: 1.5px 2px;
             color: var(--price-ink);
             border: 1px solid currentColor;
-            border-radius: 2px;
+            border-radius: 2.5px;
             background: transparent;
-            font-size: 7.5px;
+            font-size: 8.8px;
             font-weight: 950;
             line-height: 1;
-            letter-spacing: -0.035em;
+            letter-spacing: -0.04em;
             white-space: nowrap;
+        }
+
+        .exportArea:is(
+            [data-layout="portrait_6x5"],
+            [data-layout="landscape_10x3"]
+        ) .card-price-grade-label {
+            min-width: 38px;
+            padding: 2px 3px;
+            border-radius: 3px;
+            font-size: 10.5px;
         }
 
         .card-price-row-primary .card-price-grade-label {
@@ -6402,9 +6413,9 @@
         }
 
         .quick-price-preview-stage .has-a-minus .card-price-grade-label {
-            min-width: 36px;
-            padding: 2px 4px 1px;
-            font-size: 8px;
+            min-width: 44px;
+            padding: 2px 5px;
+            font-size: 11px;
         }
 
         .single-ad-price.is-dual {
@@ -6435,7 +6446,7 @@
             max-width: 132px;
             overflow: hidden;
             color: var(--single-price-label);
-            font-size: 18px;
+            font-size: 21px;
             font-weight: 950;
             line-height: 1;
             letter-spacing: .02em;
@@ -7288,8 +7299,8 @@
         }
 
         .single-ad.is-multi .single-ad-state-label {
-            max-width: 58px;
-            font-size: 10px;
+            max-width: 66px;
+            font-size: 12px;
             letter-spacing: 0;
         }
 
@@ -7328,8 +7339,8 @@
         }
 
         .single-ad.is-multi[data-density="compact"] .single-ad-state-label {
-            max-width: 48px;
-            font-size: 9px;
+            max-width: 58px;
+            font-size: 11px;
         }
 
         .single-ad.is-multi[data-density="dense"] {
@@ -7409,8 +7420,8 @@
         }
 
         .single-ad.is-multi[data-density="dense"] .single-ad-state-label {
-            max-width: 42px;
-            font-size: 8px;
+            max-width: 50px;
+            font-size: 10px;
         }
 
         .single-ad.is-multi[data-density="dense"] .single-ad-footer {
@@ -13015,6 +13026,9 @@
                 pageHasAMinus ? " has-dual-price-page" : ""
             }`;
             pageDiv.dataset.theme = selectedTheme;
+            pageDiv.dataset.layout = normalizeLayout(
+                document.getElementById("layoutSelect")?.value
+            );
             pageDiv.dataset.titleStyle = selectedTitleStyle;
             pageDiv.dataset.titleCustom = "true";
             pageDiv.id = `exportArea_${pageNumber}`;
