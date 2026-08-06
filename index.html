@@ -2695,6 +2695,17 @@
       ).length;
       state.matchCounts = counts;
 
+      // 0件のカテゴリはタブに表示しないため、現在のカテゴリが0件なら
+      // 結果のある先頭カテゴリへ自動で切り替える。
+      const visibleTypes = getVisibleTabTypes();
+      if (visibleTypes.length > 0 && !visibleTypes.includes(state.currentTab)) {
+        state.currentTab = visibleTypes[0];
+        state.initialKey = "ALL";
+        state.rarityKey = "ALL";
+        applyCategoryDefaultSort(state.currentTab);
+        renderInitialBar();
+      }
+
       let rows = searchItems(getCurrentData(), query);
 
       rows = rows.filter((item) => {
@@ -2741,10 +2752,26 @@
       }
     }
 
+    function getCategoryTotal(type) {
+      return type === "fav"
+        ? database.all.filter((item) => favoriteKeys.has(item.stableKey)).length
+        : (database[type] || []).length;
+    }
+
+    function getTabCount(type) {
+      return state.query
+        ? Number(state.matchCounts[type] || 0)
+        : getCategoryTotal(type);
+    }
+
+    function getVisibleTabTypes() {
+      return ["psa", "box", "sotai", "fav"].filter((type) => getTabCount(type) > 0);
+    }
+
     function renderTabs() {
       const fragment = document.createDocumentFragment();
 
-      ["psa", "box", "sotai", "fav"].forEach((type) => {
+      getVisibleTabTypes().forEach((type) => {
         const button = document.createElement("button");
         button.type = "button";
         button.className = "tab-button" + (state.currentTab === type ? " active" : "");
@@ -2753,10 +2780,7 @@
         const label = document.createTextNode(TYPE_META[type].short);
         const count = document.createElement("span");
         count.className = "tab-count";
-        const total = type === "fav"
-          ? database.all.filter((item) => favoriteKeys.has(item.stableKey)).length
-          : database[type].length;
-        count.textContent = state.query ? state.matchCounts[type] : total;
+        count.textContent = getTabCount(type);
 
         button.append(label, count);
         button.addEventListener("click", () => switchTab(type));
