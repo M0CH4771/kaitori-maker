@@ -10755,7 +10755,6 @@
             const draft = {
                 version: 1,
                 savedAt: new Date().toISOString(),
-                date: document.getElementById("dateInput")?.value || "",
                 settings,
                 cards: globalCardData.map(serializeCardForDraft),
                 selectedSingleCardIds: Array.from(selectedSingleCardIds)
@@ -10785,9 +10784,7 @@
             );
             if (!draft || !Array.isArray(draft.cards)) return false;
 
-            if (draft.date) {
-                document.getElementById("dateInput").value = draft.date;
-            }
+            // 更新日は前回の作業データから復元せず、起動時に設定した当日の日付を維持する。
 
             globalCardData = draft.cards.map((card, index) => ({
                 id: Number.isFinite(Number(card.id)) ? Number(card.id) : index,
