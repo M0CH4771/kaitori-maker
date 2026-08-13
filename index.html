@@ -8178,7 +8178,7 @@
                 type="button"
                 onclick="confirmOfficialBaseline()"
                 disabled
-            >本日分として確定</button>
+            >設定日分として確定</button>
         </div>
         <div
             class="official-baseline-status"
@@ -8187,7 +8187,7 @@
             aria-live="polite"
         >CSVを読み込むと、選択区分の正式価格と比較します。</div>
         <p class="official-baseline-help">
-            確定対象はCSVから採用された全商品です。試作・プレビュー・画像保存だけでは正式価格は更新されません。
+            「更新日」に設定した日付分として保存します。同じ区分・同じ日付で再確定すると、その日付分だけを上書きします。
         </p>
     </section>
 
@@ -10323,6 +10323,8 @@
     let csvDiffResults = {
         hasBaseline: false,
         previousSavedAt: "",
+        targetDate: "",
+        comparisonDate: "",
         category: "psa",
         priceUp: [],
         priceDown: [],
@@ -11647,7 +11649,11 @@
         scheduleWorkspaceAutosave();
     });
     document.getElementById("dateInput").addEventListener("change", () => {
+        computeOfficialPriceDifferences(globalCardData, {
+            autoSelect: false
+        });
         updateAllPages();
+        renderSingleCardPicker();
         renderSingleAdPreviews();
         scheduleWorkspaceAutosave();
     });
@@ -12171,6 +12177,81 @@
         };
     }
 
+    function normalizeOfficialDateValue(value) {
+        const text = String(value || "").trim();
+        const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(text);
+        if (!match) return "";
+        const year = Number(match[1]);
+        const month = Number(match[2]);
+        const day = Number(match[3]);
+        const date = new Date(Date.UTC(year, month - 1, day));
+        if (
+            date.getUTCFullYear() !== year ||
+            date.getUTCMonth() + 1 !== month ||
+            date.getUTCDate() !== day
+        ) {
+            return "";
+        }
+        return text;
+    }
+
+    function localDateValue(date = new Date()) {
+        if (!(date instanceof Date) || Number.isNaN(date.getTime())) return "";
+        return [
+            date.getFullYear(),
+            String(date.getMonth() + 1).padStart(2, "0"),
+            String(date.getDate()).padStart(2, "0")
+        ].join("-");
+    }
+
+    function officialDateFromTimestamp(value) {
+        const date = new Date(value);
+        return Number.isNaN(date.getTime()) ? "" : localDateValue(date);
+    }
+
+    function getOfficialTargetDate() {
+        return normalizeOfficialDateValue(
+            document.getElementById("dateInput")?.value
+        );
+    }
+
+    function formatOfficialDateLabel(value, short = false) {
+        const normalized = normalizeOfficialDateValue(value);
+        if (!normalized) return "日付未設定";
+        const [year, month, day] = normalized.split("-").map(Number);
+        return short
+            ? `${month}/${day}`
+            : `${year}/${month}/${day}`;
+    }
+
+    function normalizeOfficialBaselineRecord(baseline, fallbackDate = "") {
+        if (!baseline || !Array.isArray(baseline.entries)) return null;
+        const entryMap = new Map();
+        baseline.entries.slice(0, 30000).forEach(rawEntry => {
+            const entry = normalizeOfficialBaselineEntry(rawEntry);
+            if (entry) entryMap.set(entry.k, entry);
+        });
+        const entries = Array.from(entryMap.values())
+            .sort((a, b) => a.k.localeCompare(b.k));
+        if (entries.length === 0) return null;
+
+        const confirmedDate =
+            normalizeOfficialDateValue(fallbackDate) ||
+            normalizeOfficialDateValue(baseline.confirmedDate) ||
+            officialDateFromTimestamp(baseline.confirmedAt) ||
+            localDateValue();
+        return {
+            confirmedAt: String(baseline.confirmedAt || ""),
+            confirmedDate,
+            confirmedBy: String(baseline.confirmedBy || "").slice(0, 40),
+            count: entries.length,
+            fingerprint: String(
+                baseline.fingerprint || officialEntriesFingerprint(entries)
+            ),
+            entries
+        };
+    }
+
     function normalizeOfficialBaselines(value) {
         let source = value;
         if (typeof value === "string") {
@@ -12187,29 +12268,47 @@
         const categories = {};
 
         Object.keys(OFFICIAL_BASELINE_CATEGORIES).forEach(category => {
-            const baseline = sourceCategories[category];
-            if (!baseline || !Array.isArray(baseline.entries)) return;
-            const entryMap = new Map();
-            baseline.entries.slice(0, 30000).forEach(rawEntry => {
-                const entry = normalizeOfficialBaselineEntry(rawEntry);
-                if (entry) entryMap.set(entry.k, entry);
+            const categorySource = sourceCategories[category];
+            if (!categorySource || typeof categorySource !== "object") return;
+            const recordMap = new Map();
+            const sourceRecords =
+                categorySource.records &&
+                typeof categorySource.records === "object"
+                    ? categorySource.records
+                    : categorySource.dates &&
+                        typeof categorySource.dates === "object"
+                        ? categorySource.dates
+                        : null;
+
+            if (sourceRecords) {
+                Object.entries(sourceRecords).forEach(([dateKey, rawRecord]) => {
+                    const record = normalizeOfficialBaselineRecord(
+                        rawRecord,
+                        dateKey
+                    );
+                    if (record) recordMap.set(record.confirmedDate, record);
+                });
+            }
+
+            // 旧形式（区分ごとに1件）も、その確定日の日付データとして引き継ぐ。
+            if (Array.isArray(categorySource.entries)) {
+                const legacyRecord = normalizeOfficialBaselineRecord(
+                    categorySource
+                );
+                if (legacyRecord) {
+                    recordMap.set(legacyRecord.confirmedDate, legacyRecord);
+                }
+            }
+
+            if (recordMap.size === 0) return;
+            const records = {};
+            Array.from(recordMap.keys()).sort().forEach(dateKey => {
+                records[dateKey] = recordMap.get(dateKey);
             });
-            const entries = Array.from(entryMap.values())
-                .sort((a, b) => a.k.localeCompare(b.k));
-            if (entries.length === 0) return;
-            categories[category] = {
-                confirmedAt: String(baseline.confirmedAt || ""),
-                confirmedDate: String(baseline.confirmedDate || ""),
-                confirmedBy: String(baseline.confirmedBy || "").slice(0, 40),
-                count: entries.length,
-                fingerprint: String(
-                    baseline.fingerprint || officialEntriesFingerprint(entries)
-                ),
-                entries
-            };
+            categories[category] = { records };
         });
 
-        return { version: 1, categories };
+        return { version: 2, categories };
     }
 
     function getOfficialBaselines() {
@@ -12218,10 +12317,40 @@
         );
     }
 
-    function getOfficialBaselineForCategory(category) {
-        return getOfficialBaselines().categories[
+    function getOfficialRecordsForCategory(
+        category,
+        baselines = getOfficialBaselines()
+    ) {
+        return baselines.categories[
             normalizeOfficialCategory(category)
+        ]?.records || {};
+    }
+
+    function getOfficialBaselineForDate(
+        category,
+        targetDate,
+        baselines = getOfficialBaselines()
+    ) {
+        const normalizedDate = normalizeOfficialDateValue(targetDate);
+        if (!normalizedDate) return null;
+        return getOfficialRecordsForCategory(category, baselines)[
+            normalizedDate
         ] || null;
+    }
+
+    function getOfficialComparisonBaselineForDate(
+        category,
+        targetDate,
+        baselines = getOfficialBaselines()
+    ) {
+        const normalizedDate = normalizeOfficialDateValue(targetDate);
+        if (!normalizedDate) return null;
+        const records = getOfficialRecordsForCategory(category, baselines);
+        const previousDate = Object.keys(records)
+            .filter(dateKey => dateKey < normalizedDate)
+            .sort()
+            .pop();
+        return previousDate ? records[previousDate] : null;
     }
 
     function createOfficialBaselineEntries(cards) {
@@ -12260,6 +12389,7 @@
 
     function resetCardPriceChange(card) {
         card.previousPrice = null;
+        card.previousPriceDate = "";
         card.priceDelta = 0;
         card.priceChangeType = "same";
     }
@@ -12269,13 +12399,21 @@
         { autoSelect = false, statusMessage = "" } = {}
     ) {
         const category = getSelectedOfficialCategory();
-        const baseline = getOfficialBaselineForCategory(category);
+        const targetDate = getOfficialTargetDate();
+        const baselines = getOfficialBaselines();
+        const baseline = getOfficialComparisonBaselineForDate(
+            category,
+            targetDate,
+            baselines
+        );
         cards.forEach(resetCardPriceChange);
 
         if (!baseline) {
             csvDiffResults = {
                 hasBaseline: false,
                 previousSavedAt: "",
+                targetDate,
+                comparisonDate: "",
                 category,
                 baselineCount: 0,
                 priceUp: [],
@@ -12308,6 +12446,7 @@
             }
 
             card.previousPrice = Number(oldCard.p);
+            card.previousPriceDate = baseline.confirmedDate || "";
             const difference = Math.round(currentPrice - Number(oldCard.p));
             card.priceDelta = difference;
             if (difference > 0) {
@@ -12333,6 +12472,8 @@
         csvDiffResults = {
             hasBaseline: true,
             previousSavedAt: baseline.confirmedAt || "",
+            targetDate,
+            comparisonDate: baseline.confirmedDate || "",
             category,
             baselineCount: baseline.count || baseline.entries.length,
             confirmedBy: baseline.confirmedBy || "",
@@ -12359,6 +12500,19 @@
             : date.toLocaleString("ja-JP");
     }
 
+    function getOfficialConfirmButtonText(
+        targetDate,
+        mode = "confirm"
+    ) {
+        const dateLabel = formatOfficialDateLabel(targetDate, true);
+        if (!normalizeOfficialDateValue(targetDate)) {
+            return "設定日分として確定";
+        }
+        if (mode === "confirmed") return `${dateLabel}分は確定済み`;
+        if (mode === "overwrite") return `${dateLabel}分を上書き`;
+        return `${dateLabel}分として確定`;
+    }
+
     function updateOfficialBaselinePanel() {
         const status = document.getElementById("officialBaselineStatus");
         const button = document.getElementById("confirmOfficialBaselineButton");
@@ -12366,13 +12520,35 @@
 
         const category = getSelectedOfficialCategory();
         const categoryLabel = getOfficialCategoryLabel(category);
-        const baseline = getOfficialBaselineForCategory(category);
+        const targetDate = getOfficialTargetDate();
+        const targetDateLabel = formatOfficialDateLabel(targetDate);
+        const baselines = getOfficialBaselines();
+        const targetBaseline = getOfficialBaselineForDate(
+            category,
+            targetDate,
+            baselines
+        );
+        const comparisonBaseline = getOfficialComparisonBaselineForDate(
+            category,
+            targetDate,
+            baselines
+        );
         const sharedConfigured = isSharedSyncConfigured();
+
+        if (!targetDate) {
+            status.dataset.state = "blocked";
+            status.textContent =
+                "買取表の「更新日」を設定してください。確定日にはこの日付を使用します。";
+            button.disabled = true;
+            button.textContent = "設定日分として確定";
+            return;
+        }
 
         if (sharedConfigured && !sharedSyncReady) {
             status.dataset.state = "blocked";
             status.textContent =
-                `${categoryLabel}：共有されている正式価格を確認中です。` +
+                `${categoryLabel}・${targetDateLabel}分：` +
+                "共有されている正式価格を確認中です。" +
                 "確認が終わるまで確定できません。";
             button.disabled = true;
             button.textContent = "共有価格を確認中";
@@ -12380,22 +12556,35 @@
         }
 
         if (globalCardData.length === 0) {
-            status.dataset.state = baseline ? "ready" : "idle";
-            status.textContent = baseline
-                ? `${categoryLabel}｜最終確定 ${formatOfficialBaselineTime(
-                    baseline.confirmedAt
-                )}｜${baseline.count.toLocaleString("ja-JP")}商品` +
-                    (baseline.confirmedBy ? `｜担当 ${baseline.confirmedBy}` : "")
-                : `${categoryLabel}：正式価格はまだ確定されていません。` +
-                    "CSVを読み込んでください。";
+            status.dataset.state = targetBaseline ? "ready" : "idle";
+            status.textContent = targetBaseline
+                ? `${categoryLabel}｜${targetDateLabel}分は確定済み｜` +
+                    `${targetBaseline.count.toLocaleString("ja-JP")}商品｜` +
+                    `確定操作 ${formatOfficialBaselineTime(
+                        targetBaseline.confirmedAt
+                    )}` +
+                    (targetBaseline.confirmedBy
+                        ? `｜担当 ${targetBaseline.confirmedBy}`
+                        : "")
+                : `${categoryLabel}｜${targetDateLabel}分は未確定` +
+                    (comparisonBaseline
+                        ? `｜比較元 ${formatOfficialDateLabel(
+                            comparisonBaseline.confirmedDate
+                        )}分`
+                        : "｜それ以前の確定データなし") +
+                    "｜CSVを読み込んでください";
             button.disabled = true;
-            button.textContent = "本日分として確定";
+            button.textContent = getOfficialConfirmButtonText(
+                targetDate,
+                targetBaseline ? "confirmed" : "confirm"
+            );
             return;
         }
 
         const currentFingerprint = currentOfficialFingerprint();
         const matchesCurrent = Boolean(
-            baseline && baseline.fingerprint === currentFingerprint
+            targetBaseline &&
+            targetBaseline.fingerprint === currentFingerprint
         );
         const syncNote = sharedConfigured ? "全端末共有" : "この端末のみ";
         const sharedSavePending = Boolean(
@@ -12405,7 +12594,7 @@
         if (matchesCurrent && sharedSavePending) {
             status.dataset.state = "blocked";
             status.textContent =
-                `${categoryLabel}はこの端末で確定済みですが、` +
+                `${categoryLabel}・${targetDateLabel}分はこの端末で確定済みですが、` +
                 "共有保存が完了していません。接続を確認して再試行してください。";
             button.disabled = false;
             button.textContent = "共有保存を再試行";
@@ -12415,27 +12604,38 @@
         if (matchesCurrent) {
             status.dataset.state = "ready";
             status.textContent =
-                `${categoryLabel}｜${formatOfficialBaselineTime(
-                    baseline.confirmedAt
-                )}に確定済み｜${baseline.count.toLocaleString("ja-JP")}商品` +
-                (baseline.confirmedBy ? `｜担当 ${baseline.confirmedBy}` : "") +
+                `${categoryLabel}｜${targetDateLabel}分は確定済み｜` +
+                `${targetBaseline.count.toLocaleString("ja-JP")}商品｜` +
+                `確定操作 ${formatOfficialBaselineTime(
+                    targetBaseline.confirmedAt
+                )}` +
+                (targetBaseline.confirmedBy
+                    ? `｜担当 ${targetBaseline.confirmedBy}`
+                    : "") +
                 `｜${syncNote}`;
             button.disabled = true;
-            button.textContent = "本日分として確定済み";
+            button.textContent = getOfficialConfirmButtonText(
+                targetDate,
+                "confirmed"
+            );
             return;
         }
 
         status.dataset.state = "changed";
-        status.textContent = baseline
-            ? `${categoryLabel}｜比較元 ${formatOfficialBaselineTime(
-                baseline.confirmedAt
-            )}・${baseline.count.toLocaleString("ja-JP")}商品` +
-                (baseline.confirmedBy ? `・担当 ${baseline.confirmedBy}` : "") +
-                `｜現在 ${globalCardData.length.toLocaleString("ja-JP")}商品｜${syncNote}`
-            : `${categoryLabel}：正式価格未確定｜現在 ` +
-                `${globalCardData.length.toLocaleString("ja-JP")}商品｜${syncNote}`;
+        status.textContent =
+            `${categoryLabel}｜${targetDateLabel}分` +
+            (targetBaseline ? "を上書きします" : "は未確定") +
+            (comparisonBaseline
+                ? `｜比較元 ${formatOfficialDateLabel(
+                    comparisonBaseline.confirmedDate
+                )}分・${comparisonBaseline.count.toLocaleString("ja-JP")}商品`
+                : "｜それ以前の確定データなし") +
+            `｜現在 ${globalCardData.length.toLocaleString("ja-JP")}商品｜${syncNote}`;
         button.disabled = false;
-        button.textContent = "本日分として確定";
+        button.textContent = getOfficialConfirmButtonText(
+            targetDate,
+            targetBaseline ? "overwrite" : "confirm"
+        );
     }
 
     function initializeOfficialBaselineControls() {
@@ -12457,7 +12657,9 @@
         operatorInput.value = String(
             getScopedItem(OFFICIAL_OPERATOR_STORAGE_KEY) || ""
         ).slice(0, 40);
-        updateOfficialBaselinePanel();
+        computeOfficialPriceDifferences(globalCardData, {
+            autoSelect: false
+        });
     }
 
     function handleOfficialCategoryChange() {
@@ -12487,14 +12689,25 @@
             return;
         }
 
+        const targetDate = getOfficialTargetDate();
+        if (!targetDate) {
+            alert("買取表の「更新日」を設定してください。");
+            document.getElementById("dateInput")?.focus();
+            return;
+        }
+
         const category = getSelectedOfficialCategory();
         const categoryLabel = getOfficialCategoryLabel(category);
+        const targetDateLabel = formatOfficialDateLabel(targetDate);
         const operatorInput = document.getElementById(
             "officialBaselineOperatorInput"
         );
         const operator = String(operatorInput?.value || "").trim().slice(0, 40);
         setScopedItem(OFFICIAL_OPERATOR_STORAGE_KEY, operator);
-        const baselineBeforeSync = getOfficialBaselineForCategory(category);
+        const baselineBeforeSync = getOfficialBaselineForDate(
+            category,
+            targetDate
+        );
         const retryingSharedSave = Boolean(
             isSharedSyncConfigured() &&
             baselineBeforeSync &&
@@ -12517,7 +12730,7 @@
                 updateOfficialBaselinePanel();
                 alert(
                     retrySucceeded
-                        ? `${categoryLabel}の共有保存を確認しました。`
+                        ? `${categoryLabel}・${targetDateLabel}分の共有保存を確認しました。`
                         : "共有保存を確認できませんでした。接続を確認して、もう一度お試しください。"
                 );
                 return;
@@ -12525,7 +12738,16 @@
         }
 
         const baselines = getOfficialBaselines();
-        const existing = baselines.categories[category];
+        const existing = getOfficialBaselineForDate(
+            category,
+            targetDate,
+            baselines
+        );
+        const comparisonBaseline = getOfficialComparisonBaselineForDate(
+            category,
+            targetDate,
+            baselines
+        );
         const entries = createOfficialBaselineEntries(globalCardData);
         if (entries.length === 0) {
             alert("正式価格として保存できる有効な商品がありません。");
@@ -12533,14 +12755,22 @@
         }
 
         const existingText = existing
-            ? `\n現在の確定：${formatOfficialBaselineTime(existing.confirmedAt)}` +
+            ? `\n${targetDateLabel}分の現在の確定：` +
+                `${formatOfficialBaselineTime(existing.confirmedAt)}` +
                 `／${existing.count.toLocaleString("ja-JP")}商品` +
                 (existing.confirmedBy ? `／担当 ${existing.confirmedBy}` : "")
-            : "\nこの区分をはじめて確定します。";
+            : `\n${targetDateLabel}分を新規登録します。`;
+        const comparisonText = comparisonBaseline
+            ? `\n前回比の比較元：${formatOfficialDateLabel(
+                comparisonBaseline.confirmedDate
+            )}分`
+            : "\n前回比の比較元：なし";
         if (!confirm(
-            `${categoryLabel}の本日分として、CSVの採用商品 ` +
-            `${entries.length.toLocaleString("ja-JP")}件を確定しますか？` +
-            `${existingText}\n\nほかの区分の正式価格は変更されません。`
+            `${categoryLabel}の${targetDateLabel}分として、CSVの採用商品 ` +
+            `${entries.length.toLocaleString("ja-JP")}件を` +
+            `${existing ? "上書き" : "確定"}しますか？` +
+            `${existingText}${comparisonText}\n\n` +
+            "ほかの日付・区分の正式価格は変更されません。"
         )) {
             return;
         }
@@ -12548,17 +12778,16 @@
         const now = new Date();
         const baseline = {
             confirmedAt: now.toISOString(),
-            confirmedDate: [
-                now.getFullYear(),
-                String(now.getMonth() + 1).padStart(2, "0"),
-                String(now.getDate()).padStart(2, "0")
-            ].join("-"),
+            confirmedDate: targetDate,
             confirmedBy: operator,
             count: entries.length,
             fingerprint: officialEntriesFingerprint(entries),
             entries
         };
-        baselines.categories[category] = baseline;
+        if (!baselines.categories[category]) {
+            baselines.categories[category] = { records: {} };
+        }
+        baselines.categories[category].records[targetDate] = baseline;
 
         try {
             setScopedItem(
@@ -12576,13 +12805,18 @@
         }
         updateOfficialBaselinePanel();
         updateCsvDiffPanel(
-            `${categoryLabel}を本日分として確定しました。` +
+            `${categoryLabel}の${targetDateLabel}分を` +
+            `${existing ? "上書き" : "確定"}しました。` +
             "現在表示中の前回比は、画像保存のためそのまま維持しています"
         );
         alert(
             sharedSaved
-                ? `${categoryLabel}の本日分を確定しました。\nほかの区分の比較基準は変更していません。`
-                : `${categoryLabel}はこの端末へ保存しましたが、共有保存を確認できませんでした。\n接続復旧後にもう一度確定してください。`
+                ? `${categoryLabel}の${targetDateLabel}分を` +
+                    `${existing ? "上書き" : "確定"}しました。\n` +
+                    "ほかの日付・区分は変更していません。"
+                : `${categoryLabel}の${targetDateLabel}分はこの端末へ保存しましたが、` +
+                    "共有保存を確認できませんでした。\n" +
+                    "接続復旧後にもう一度お試しください。"
         );
     }
 
@@ -12601,11 +12835,15 @@
         const difference = Math.abs(Number(card.priceDelta) || 0);
         if (!difference || !["up", "down"].includes(type)) return null;
         const sign = type === "up" ? "＋" : "－";
+        const previousDateLabel = card.previousPriceDate
+            ? `${formatOfficialDateLabel(card.previousPriceDate)}分 `
+            : "前回 ";
         return {
             type,
             text: `${sign}${difference.toLocaleString("ja-JP")}円`,
             title:
-                `前回 ${Number(card.previousPrice || 0).toLocaleString("ja-JP")}円 ` +
+                `${previousDateLabel}` +
+                `${Number(card.previousPrice || 0).toLocaleString("ja-JP")}円 ` +
                 `→ 今回 ${parsePriceNumber(card.price).toLocaleString("ja-JP")}円`
         };
     }
@@ -12634,10 +12872,20 @@
         });
 
         if (status) {
+            const categoryLabel = getOfficialCategoryLabel(
+                csvDiffResults.category
+            );
+            const targetDateLabel = formatOfficialDateLabel(
+                csvDiffResults.targetDate || getOfficialTargetDate()
+            );
             status.textContent = statusMessage || (
                 csvDiffResults.hasBaseline
-                    ? `${getOfficialCategoryLabel(csvDiffResults.category)}の正式価格と比較中`
-                    : `${getOfficialCategoryLabel(csvDiffResults.category)}の正式価格は未確定です`
+                    ? `${categoryLabel}｜${targetDateLabel}分を` +
+                        `${formatOfficialDateLabel(
+                            csvDiffResults.comparisonDate
+                        )}分と比較中`
+                    : `${categoryLabel}｜${targetDateLabel}分より前の` +
+                        "確定データはありません"
             );
         }
 
@@ -12645,7 +12893,9 @@
             if (csvDiffResults.previousSavedAt) {
                 meta.textContent =
                     `${getOfficialCategoryLabel(csvDiffResults.category)}｜` +
-                    `正式確定 ${formatOfficialBaselineTime(
+                    `比較元 ${formatOfficialDateLabel(
+                        csvDiffResults.comparisonDate
+                    )}分｜確定操作 ${formatOfficialBaselineTime(
                         csvDiffResults.previousSavedAt
                     )}｜${Number(csvDiffResults.baselineCount || 0)
                         .toLocaleString("ja-JP")}商品` +
@@ -12656,7 +12906,9 @@
             } else {
                 meta.textContent =
                     `${getOfficialCategoryLabel(csvDiffResults.category)}｜` +
-                    "「本日分として確定」を押すまで比較基準は更新されません";
+                    `${formatOfficialDateLabel(
+                        csvDiffResults.targetDate || getOfficialTargetDate()
+                    )}分より前に確定された価格が、前回比の比較元になります`;
             }
         }
     }
