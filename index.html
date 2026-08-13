@@ -3275,7 +3275,7 @@
 
         .csv-diff-actions {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 9px;
         }
 
@@ -7660,6 +7660,420 @@
                 grid-column: auto;
             }
         }
+
+        /* ===== 大量データ・CSV確認・編集履歴 ===== */
+        .csv-import-report {
+            margin: 16px 24px 0;
+            overflow: hidden;
+            color: #dce5f1;
+            border: 1px solid rgba(96,165,250,.24);
+            border-radius: 11px;
+            background: rgba(15,23,42,.58);
+        }
+
+        .csv-import-report[hidden] {
+            display: none;
+        }
+
+        .csv-import-report > summary {
+            display: flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 900;
+            list-style: none;
+        }
+
+        .csv-import-report > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .csv-import-report > summary::after {
+            color: #93c5fd;
+            content: "詳細を見る";
+            font-size: 9px;
+        }
+
+        .csv-import-report[open] > summary::after {
+            content: "閉じる";
+        }
+
+        .csv-import-report[data-state="warning"] {
+            border-color: rgba(251,191,36,.38);
+            background: rgba(120,53,15,.16);
+        }
+
+        .csv-import-report[data-state="error"] {
+            border-color: rgba(251,113,133,.42);
+            background: rgba(127,29,29,.17);
+        }
+
+        .csv-report-summary-counts {
+            color: #aebbd0;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .csv-report-body {
+            padding: 0 15px 15px;
+            border-top: 1px solid rgba(255,255,255,.075);
+        }
+
+        .csv-report-stats {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0,1fr));
+            gap: 8px;
+            margin-top: 13px;
+        }
+
+        .csv-report-stat {
+            padding: 9px 10px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 8px;
+            background: rgba(255,255,255,.035);
+        }
+
+        .csv-report-stat span,
+        .csv-report-stat strong {
+            display: block;
+        }
+
+        .csv-report-stat span {
+            color: #8796aa;
+            font-size: 9px;
+            font-weight: 800;
+        }
+
+        .csv-report-stat strong {
+            margin-top: 3px;
+            color: #f8fafc;
+            font-size: 16px;
+        }
+
+        .csv-report-issues {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .csv-report-issue {
+            padding: 9px 10px;
+            color: #cad5e4;
+            border-left: 3px solid #64748b;
+            border-radius: 6px;
+            background: rgba(255,255,255,.035);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.55;
+        }
+
+        .csv-report-issue.is-error {
+            border-left-color: #fb7185;
+        }
+
+        .csv-report-issue.is-warning {
+            border-left-color: #fbbf24;
+        }
+
+        .csv-report-samples {
+            margin: 10px 0 0;
+            padding: 10px 12px 10px 28px;
+            color: #9eabba;
+            border-radius: 7px;
+            background: rgba(3,7,18,.35);
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .pagination-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 12px;
+            color: #aebbd0;
+            border-top: 1px solid rgba(255,255,255,.07);
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .pagination-bar[hidden] {
+            display: none;
+        }
+
+        .pagination-bar button,
+        .undo-edit-button {
+            width: auto;
+            min-height: 34px;
+            margin: 0;
+            padding: 7px 12px;
+            color: #e8edf7;
+            border: 1px solid #3a4a60;
+            border-radius: 7px;
+            background: #152033;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .pagination-bar button:disabled,
+        .undo-edit-button:disabled {
+            cursor: not-allowed;
+            opacity: .38;
+        }
+
+        .undo-edit-button:not(:disabled) {
+            color: #fff1b8;
+            border-color: rgba(217,173,74,.46);
+        }
+
+        .single-selection .pagination-bar {
+            border-top: 0;
+            border-bottom: 1px solid rgba(255,255,255,.07);
+        }
+
+        /* ===== 区分別の正式価格・前回比 ===== */
+        .official-baseline-panel {
+            padding: 16px 18px;
+            color: #e8edf7;
+            border: 1px solid rgba(217,173,74,.28);
+            border-radius: 14px;
+            background:
+                linear-gradient(105deg, rgba(217,173,74,.085), transparent 35%),
+                #0d1420;
+            box-shadow: 0 10px 28px rgba(0,0,0,.22);
+        }
+
+        .official-baseline-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 13px;
+        }
+
+        .official-baseline-heading strong {
+            color: #fff4c7;
+            font-size: 14px;
+            font-weight: 950;
+        }
+
+        .official-baseline-heading span {
+            color: #8f9cad;
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .official-baseline-grid {
+            display: grid;
+            grid-template-columns:
+                minmax(150px,.7fr)
+                minmax(230px,1.2fr)
+                minmax(170px,.8fr)
+                minmax(190px,.9fr);
+            align-items: end;
+            gap: 10px;
+        }
+
+        .official-baseline-field label {
+            display: block;
+            margin-bottom: 5px;
+            color: #cbd5e1;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .official-baseline-field input,
+        .official-baseline-field select {
+            min-height: 40px;
+            margin: 0;
+            font-size: 12px;
+        }
+
+        .official-confirm-button {
+            min-height: 40px;
+            margin: 0;
+            padding: 9px 14px;
+            color: #16120a;
+            border: 1px solid #ffe79a;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #fff0aa, #d9ad4a);
+            box-shadow: 0 5px 14px rgba(217,173,74,.17);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 950;
+        }
+
+        .official-confirm-button:disabled {
+            cursor: not-allowed;
+            filter: grayscale(.4);
+            opacity: .48;
+        }
+
+        .official-baseline-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 11px;
+            padding: 9px 11px;
+            color: #cbd5e1;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 8px;
+            background: rgba(3,7,18,.3);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.55;
+        }
+
+        .official-baseline-status::before {
+            width: 7px;
+            height: 7px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: #94a3b8;
+            content: "";
+        }
+
+        .official-baseline-status[data-state="ready"]::before {
+            background: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74,222,128,.1);
+        }
+
+        .official-baseline-status[data-state="changed"]::before {
+            background: #facc15;
+            box-shadow: 0 0 0 3px rgba(250,204,21,.1);
+        }
+
+        .official-baseline-status[data-state="blocked"]::before {
+            background: #fb7185;
+            box-shadow: 0 0 0 3px rgba(251,113,133,.1);
+        }
+
+        .official-baseline-help {
+            margin: 8px 0 0;
+            color: #7f8da1;
+            font-size: 9px;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        .price-change-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 100%;
+            padding: 3px 7px;
+            color: #fff;
+            border: 1px solid rgba(255,255,255,.7);
+            border-radius: 999px;
+            box-shadow: 0 2px 5px rgba(0,0,0,.28);
+            font-weight: 1000;
+            line-height: 1;
+            letter-spacing: -.02em;
+            white-space: nowrap;
+        }
+
+        .price-change-badge.is-up {
+            background: linear-gradient(180deg, #ff445f, #b90024);
+        }
+
+        .price-change-badge.is-down {
+            background: linear-gradient(180deg, #4c9dff, #1554a5);
+        }
+
+        .price-change-badge.is-new {
+            color: #17120a;
+            border-color: #fff2a8;
+            background: linear-gradient(180deg, #fff19a, #e3ad2e);
+        }
+
+        .card-img-container > .price-change-badge {
+            position: absolute;
+            z-index: 5;
+            right: 3px;
+            bottom: 3px;
+            max-width: calc(100% - 6px);
+            overflow: hidden;
+            padding: 3px 5px;
+            font-size: 8px;
+            text-overflow: ellipsis;
+        }
+
+        .single-ad-price-label.has-price-change {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            letter-spacing: .05em;
+        }
+
+        .single-ad-price-label .price-change-badge {
+            padding: 5px 10px;
+            font-size: 15px;
+            letter-spacing: 0;
+        }
+
+        .single-ad.is-multi .single-ad-price-label.has-price-change {
+            gap: 5px;
+        }
+
+        .single-ad.is-multi .single-ad-price-label .price-change-badge {
+            padding: 3px 5px;
+            font-size: 9px;
+        }
+
+        .single-picker-price-line {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .single-picker-price-line .price-change-badge {
+            padding: 3px 5px;
+            font-size: 8px;
+        }
+
+        .diff-button[data-kind="priceDown"] strong {
+            color: #69aaff;
+        }
+
+        @media (max-width: 680px) {
+            .csv-import-report {
+                margin-right: 16px;
+                margin-left: 16px;
+            }
+
+            .csv-report-stats,
+            .csv-report-issues {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .card-editor-toolbar .undo-edit-button {
+                width: 100%;
+            }
+
+            .official-baseline-heading {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .official-baseline-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1100px) and (min-width: 681px) {
+            .official-baseline-grid {
+                grid-template-columns: repeat(2, minmax(0,1fr));
+            }
+        }
     </style>
 </head>
 <body>
@@ -7720,6 +8134,61 @@
             type="button"
             onclick="deleteStoreProfile()"
         >店舗を削除</button>
+    </section>
+
+    <section
+        class="official-baseline-panel"
+        id="officialBaselinePanel"
+        aria-label="正式価格の比較と確定"
+    >
+        <div class="official-baseline-heading">
+            <strong>正式価格との前回比</strong>
+            <span>PSA・BOX・素体・その他を別々の比較基準として管理します</span>
+        </div>
+        <div class="official-baseline-grid">
+            <div class="official-baseline-field">
+                <label for="officialBaselineCategorySelect">比較・確定する区分</label>
+                <select id="officialBaselineCategorySelect">
+                    <option value="psa">PSA</option>
+                    <option value="box">BOX</option>
+                    <option value="sotai">素体</option>
+                    <option value="other">その他</option>
+                </select>
+            </div>
+            <div class="official-baseline-field">
+                <label for="priceChangeDisplaySelect">画像に表示する前回比</label>
+                <select id="priceChangeDisplaySelect">
+                    <option value="all">値上がり・値下がり・NEW</option>
+                    <option value="up_new">値上がり・NEWのみ</option>
+                    <option value="off">表示しない</option>
+                </select>
+            </div>
+            <div class="official-baseline-field">
+                <label for="officialBaselineOperatorInput">確定担当者</label>
+                <input
+                    type="text"
+                    id="officialBaselineOperatorInput"
+                    maxlength="40"
+                    placeholder="例：生本"
+                >
+            </div>
+            <button
+                class="official-confirm-button"
+                id="confirmOfficialBaselineButton"
+                type="button"
+                onclick="confirmOfficialBaseline()"
+                disabled
+            >本日分として確定</button>
+        </div>
+        <div
+            class="official-baseline-status"
+            id="officialBaselineStatus"
+            data-state="idle"
+            aria-live="polite"
+        >CSVを読み込むと、選択区分の正式価格と比較します。</div>
+        <p class="official-baseline-help">
+            確定対象はCSVから採用された全商品です。試作・プレビュー・画像保存だけでは正式価格は更新されません。
+        </p>
     </section>
 
     <aside class="control-panel" id="buylistControl" aria-label="買取表の設定">
@@ -8086,6 +8555,23 @@
             >エラー画像を再読み込み</button>
         </div>
 
+        <details
+            class="csv-import-report"
+            id="csvImportReport"
+            data-state="ready"
+            aria-live="polite"
+            hidden
+        >
+            <summary>
+                <span id="csvReportTitle">CSV読込結果</span>
+                <span
+                    class="csv-report-summary-counts"
+                    id="csvReportSummaryCounts"
+                ></span>
+            </summary>
+            <div class="csv-report-body" id="csvReportBody"></div>
+        </details>
+
         <details class="card-editor-panel" id="cardEditorPanel">
             <summary>
                 <span>商品データを編集</span>
@@ -8096,14 +8582,40 @@
                     type="search"
                     id="cardEditorSearchInput"
                     placeholder="カード名・グループ・種別で検索"
+                    aria-label="編集する商品を検索"
                 >
                 <button type="button" onclick="showAllCardsInBuylist()">全商品を表示</button>
+                <button
+                    class="undo-edit-button"
+                    id="undoCardEditButton"
+                    type="button"
+                    onclick="undoLastCardEdit()"
+                    disabled
+                >直前の編集を元に戻す</button>
             </div>
             <p class="card-editor-help">
                 カード名・掲載グループ・種別・状態A価格・状態A-価格・強化買取・表示状態を編集できます。上下ボタンでCSV内の順番を変更できます。
             </p>
             <div class="card-editor-list" id="cardEditorList">
                 <div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>
+            </div>
+            <div
+                class="pagination-bar"
+                id="cardEditorPagination"
+                aria-label="商品編集一覧のページ"
+                hidden
+            >
+                <button
+                    id="cardEditorPrevButton"
+                    type="button"
+                    onclick="changeCardEditorPage(-1)"
+                >前へ</button>
+                <span id="cardEditorPageStatus">1 / 1ページ</span>
+                <button
+                    id="cardEditorNextButton"
+                    type="button"
+                    onclick="changeCardEditorPage(1)"
+                >次へ</button>
             </div>
         </details>
 
@@ -8441,8 +8953,8 @@
 
             <div class="csv-diff-panel" id="csvDiffPanel">
                 <div class="csv-diff-heading">
-                    <strong>前回のCSVと比較して商品を選択</strong>
-                    <span id="csvDiffStatus">はじめてCSVを読み込むと、比較用データとして保存します</span>
+                    <strong>正式確定価格と比較して商品を選択</strong>
+                    <span id="csvDiffStatus">比較区分の正式価格がある場合に差額を表示します</span>
                 </div>
                 <div class="csv-diff-actions">
                     <button
@@ -8451,6 +8963,12 @@
                         type="button"
                         onclick="selectCsvDiffCards('priceUp')"
                     ><strong id="diffPriceUpCount">0</strong><span>値上がりした商品</span></button>
+                    <button
+                        class="diff-button"
+                        data-kind="priceDown"
+                        type="button"
+                        onclick="selectCsvDiffCards('priceDown')"
+                    ><strong id="diffPriceDownCount">0</strong><span>値下がりした商品</span></button>
                     <button
                         class="diff-button"
                         data-kind="newItems"
@@ -8472,13 +8990,8 @@
                 </div>
                 <div class="csv-diff-footer">
                     <div class="csv-diff-meta" id="csvDiffMeta">
-                        商品名・種別・画像URLを基準に比較します
+                        商品ID、またはカード名・種別・掲載グループを基準に比較します
                     </div>
-                    <button
-                        class="btn-muted"
-                        type="button"
-                        onclick="resetCsvDiffBaseline()"
-                    >今回のCSVを比較用に保存</button>
                 </div>
             </div>
 
@@ -8488,12 +9001,31 @@
                         type="text"
                         id="singleSearchInput"
                         placeholder="カード名・種別・掲載グループで検索"
+                        aria-label="単品告知に使用する商品を検索"
                     >
                     <button class="btn-soft" type="button" onclick="selectVisibleSingleCards()">表示中の商品を選択</button>
                     <button class="btn-muted" type="button" onclick="clearSingleSelection()">すべて選択解除</button>
                     <button class="btn-muted" type="button" onclick="invertVisibleSingleCards()">選択を反転</button>
                 </div>
                 <div class="single-selection-count" id="singleSelectionCount">0件選択中</div>
+                <div
+                    class="pagination-bar"
+                    id="singlePickerPagination"
+                    aria-label="商品選択一覧のページ"
+                    hidden
+                >
+                    <button
+                        id="singlePickerPrevButton"
+                        type="button"
+                        onclick="changeSinglePickerPage(-1)"
+                    >前へ</button>
+                    <span id="singlePickerPageStatus">1 / 1ページ</span>
+                    <button
+                        id="singlePickerNextButton"
+                        type="button"
+                        onclick="changeSinglePickerPage(1)"
+                    >次へ</button>
+                </div>
                 <div class="single-card-picker" id="singleCardPicker">
                     <div class="single-empty-picker">CSVを読み込むと商品を選択できます</div>
                 </div>
@@ -8676,6 +9208,14 @@
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
+    const OFFICIAL_BASELINES_STORAGE_KEY =
+        "kaitori_official_price_baselines_v1";
+    const OFFICIAL_CATEGORY_STORAGE_KEY =
+        "kaitori_official_baseline_category_v1";
+    const OFFICIAL_OPERATOR_STORAGE_KEY =
+        "kaitori_official_baseline_operator_v1";
+    const PRICE_CHANGE_DISPLAY_STORAGE_KEY =
+        "kaitori_price_change_display_v1";
     const WORKING_DRAFT_STORAGE_KEY = "kaitori_working_draft_v1";
     const STORE_REGISTRY_KEY = "kaitori_store_registry_v1";
     const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
@@ -8691,6 +9231,19 @@
     const SHARED_SYNC_SCHEMA_VERSION = 1;
     const SHARED_SYNC_PUSH_DELAY = 1100;
     const SHARED_SYNC_REQUEST_TIMEOUT = 12000;
+    const CARD_EDITOR_PAGE_SIZE = 100;
+    const SINGLE_PICKER_PAGE_SIZE = 80;
+    const MAX_CARD_EDIT_HISTORY = 30;
+    const IMAGE_FETCH_TIMEOUT = 9000;
+    const IMAGE_LOAD_CONCURRENCY = 8;
+    const MAX_IMAGE_BLOB_SIZE = 12 * 1024 * 1024;
+    const OFFICIAL_BASELINE_CATEGORIES = {
+        psa: "PSA",
+        box: "BOX",
+        sotai: "素体",
+        other: "その他"
+    };
+    const PRICE_CHANGE_DISPLAY_MODES = ["all", "up_new", "off"];
     const STORE_DATA_KEYS = [
         "kaitori_title",
         "kaitori_disclaimer",
@@ -8711,6 +9264,10 @@
         "kaitori_card_name_display",
         "kaitori_page_split",
         "kaitori_sort_order",
+        PRICE_CHANGE_DISPLAY_STORAGE_KEY,
+        OFFICIAL_BASELINES_STORAGE_KEY,
+        OFFICIAL_CATEGORY_STORAGE_KEY,
+        OFFICIAL_OPERATOR_STORAGE_KEY,
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
@@ -8720,7 +9277,9 @@
     const SHARED_STORE_DATA_KEYS = STORE_DATA_KEYS.filter(
         baseKey =>
             baseKey !== CSV_SNAPSHOT_STORAGE_KEY &&
-            baseKey !== WORKING_DRAFT_STORAGE_KEY
+            baseKey !== WORKING_DRAFT_STORAGE_KEY &&
+            baseKey !== OFFICIAL_CATEGORY_STORAGE_KEY &&
+            baseKey !== OFFICIAL_OPERATOR_STORAGE_KEY
     );
     const SHARED_STORE_DATA_KEY_SET = new Set(SHARED_STORE_DATA_KEYS);
     const JSON_STORE_DATA_KEYS = new Set([
@@ -8728,6 +9287,7 @@
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY,
+        OFFICIAL_BASELINES_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
     ]);
     const hasOwn = (object, property) =>
@@ -9751,13 +10311,21 @@
     let logoDataUrl = DEFAULT_LOGO;
     let globalCardData = [];
     let imageLoadPromise = Promise.resolve();
+    let imageLoadingTask = null;
+    let imageLoadGeneration = 0;
     let workspaceAutosaveTimer = null;
     let cardEditRenderTimer = null;
     let isRestoringWorkspace = false;
+    let cardEditorPage = 1;
+    let singlePickerPage = 1;
+    let cardEditHistory = [];
+    let csvImportReportState = createEmptyCsvImportReport();
     let csvDiffResults = {
         hasBaseline: false,
         previousSavedAt: "",
+        category: "psa",
         priceUp: [],
+        priceDown: [],
         newItems: [],
         strengthened: [],
         all: []
@@ -10648,8 +11216,12 @@
         renderStoreProfileSelect();
         refreshTemplateSelect();
         refreshSingleTemplateSelect();
+        initializeOfficialBaselineControls();
         const restoredDraft = restoreWorkingDraft();
         if (restoredDraft) {
+            computeOfficialPriceDifferences(globalCardData, {
+                autoSelect: false
+            });
             renderPages();
         } else {
             updateAllPages();
@@ -10665,7 +11237,9 @@
         );
         requestAnimationFrame(fitPreviewPages);
         sharedSyncInteractionEnabled = true;
-        initializeSharedSettingsSync();
+        initializeSharedSettingsSync().finally(() => {
+            updateOfficialBaselinePanel();
+        });
     });
 
     document.addEventListener("visibilitychange", () => {
@@ -10679,6 +11253,19 @@
     window.addEventListener("online", () => {
         checkSharedSettingsUpdates(true);
     });
+
+    document.getElementById("officialBaselineCategorySelect")
+        .addEventListener("change", handleOfficialCategoryChange);
+    document.getElementById("priceChangeDisplaySelect")
+        .addEventListener("change", handlePriceChangeDisplayChange);
+    document.getElementById("officialBaselineOperatorInput")
+        .addEventListener("input", event => {
+            setScopedItem(
+                OFFICIAL_OPERATOR_STORAGE_KEY,
+                String(event.target.value || "").trim().slice(0, 40)
+            );
+            updateOfficialBaselinePanel();
+        });
 
     function getNamedTemplates() {
         try {
@@ -10703,6 +11290,7 @@
             cardNameDisplay: getCardNameDisplay(),
             pageSplit: getPageSplitMode(),
             sortOrder: getSortOrder(),
+            priceChangeDisplay: getSelectedPriceChangeDisplayMode(),
             savedAt: new Date().toISOString()
         };
     }
@@ -10723,6 +11311,10 @@
         setScopedItem("kaitori_card_name_display", settings.cardNameDisplay);
         setScopedItem("kaitori_page_split", settings.pageSplit);
         setScopedItem("kaitori_sort_order", settings.sortOrder);
+        setScopedItem(
+            PRICE_CHANGE_DISPLAY_STORAGE_KEY,
+            normalizePriceChangeDisplayMode(settings.priceChangeDisplay)
+        );
     }
 
     function setSaveState(state, message) {
@@ -10738,6 +11330,7 @@
             originalIndex: Number(card.originalIndex),
             group: String(card.group || ""),
             status: String(card.status || ""),
+            productId: String(card.productId || ""),
             name: String(card.name || ""),
             type: String(card.type || ""),
             price: String(card.price || ""),
@@ -10793,6 +11386,7 @@
                     : index,
                 group: String(card.group || ""),
                 status: String(card.status || ""),
+                productId: String(card.productId || ""),
                 name: String(card.name || ""),
                 type: String(card.type || ""),
                 price: String(card.price || ""),
@@ -10907,6 +11501,8 @@
             PAGE_SPLIT_MODES.includes(settings.pageSplit) ? settings.pageSplit : "fill";
         document.getElementById("sortOrderSelect").value =
             SORT_MODES.includes(settings.sortOrder) ? settings.sortOrder : "group_csv";
+        document.getElementById("priceChangeDisplaySelect").value =
+            normalizePriceChangeDisplayMode(settings.priceChangeDisplay);
         document.getElementById("templateNameInput").value = name;
 
         saveLastUsedSettings(collectCurrentTemplateSettings());
@@ -11157,10 +11753,16 @@
         scheduleWorkspaceAutosave();
     });
     document.getElementById("cardEditorSearchInput")
-        .addEventListener("input", renderCardEditor);
+        .addEventListener("input", () => {
+            cardEditorPage = 1;
+            renderCardEditor();
+        });
 
     document.getElementById("singleSearchInput")
-        .addEventListener("input", renderSingleCardPicker);
+        .addEventListener("input", () => {
+            singlePickerPage = 1;
+            renderSingleCardPicker();
+        });
 
     [
         "singleHeadlineInput",
@@ -11315,7 +11917,10 @@
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = loadEvent => parseCSV(loadEvent.target.result);
+        reader.onload = loadEvent => {
+            parseCSV(loadEvent.target.result, file.name);
+            event.target.value = "";
+        };
         reader.readAsText(file);
     });
 
@@ -11324,7 +11929,10 @@
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = loadEvent => parseCSV(loadEvent.target.result);
+        reader.onload = loadEvent => {
+            parseCSV(loadEvent.target.result, file.name);
+            event.target.value = "";
+        };
         reader.readAsText(file);
     });
 
@@ -11345,28 +11953,133 @@
         downloadBlob(blob, "買取表_CSVテンプレート.csv");
     }
 
-    function parseCSVLine(text) {
-        const result = [];
+    function parseCSVRows(text) {
+        const rows = [];
+        let row = [];
         let inQuotes = false;
         let value = "";
+        const source = String(text ?? "");
 
-        for (let i = 0; i < text.length; i++) {
-            const char = text[i];
-            if (char === '"' && text[i + 1] === '"') {
+        for (let i = 0; i < source.length; i++) {
+            const char = source[i];
+            if (char === '"' && inQuotes && source[i + 1] === '"') {
                 value += '"';
                 i++;
             } else if (char === '"') {
                 inQuotes = !inQuotes;
             } else if (char === "," && !inQuotes) {
-                result.push(value);
+                row.push(value);
+                value = "";
+            } else if ((char === "\n" || char === "\r") && !inQuotes) {
+                if (char === "\r" && source[i + 1] === "\n") i++;
+                row.push(value);
+                rows.push(row);
+                row = [];
                 value = "";
             } else {
                 value += char;
             }
         }
 
-        result.push(value);
-        return result;
+        if (value || row.length > 0) {
+            row.push(value);
+            rows.push(row);
+        }
+        return rows;
+    }
+
+    function createEmptyCsvImportReport(sourceName = "") {
+        return {
+            sourceName: String(sourceName || ""),
+            totalRows: 0,
+            accepted: 0,
+            excluded: 0,
+            errorMessage: "",
+            exclusions: {
+                notPublished: 0,
+                missingGroup: 0,
+                missingPrice: 0
+            },
+            warnings: {
+                missingName: 0,
+                missingImage: 0,
+                aMinusHigher: 0,
+                duplicateRows: 0
+            },
+            samples: []
+        };
+    }
+
+    function addCsvReportSample(report, rowNumber, message) {
+        if (!report || report.samples.length >= 12) return;
+        report.samples.push({
+            rowNumber: Math.max(1, Number(rowNumber) || 1),
+            message: String(message || "").slice(0, 180)
+        });
+    }
+
+    function renderCsvImportReport(report = csvImportReportState) {
+        const panel = document.getElementById("csvImportReport");
+        const title = document.getElementById("csvReportTitle");
+        const summary = document.getElementById("csvReportSummaryCounts");
+        const body = document.getElementById("csvReportBody");
+        if (!panel || !title || !summary || !body || !report) return;
+
+        const warningTotal = Object.values(report.warnings)
+            .reduce((sum, count) => sum + Number(count || 0), 0);
+        const hasIssues = report.excluded > 0 || warningTotal > 0;
+        panel.hidden = false;
+        panel.dataset.state = report.errorMessage
+            ? "error"
+            : hasIssues ? "warning" : "ready";
+        panel.open = Boolean(report.errorMessage || hasIssues);
+        title.textContent = report.errorMessage
+            ? "CSVを読み込めませんでした"
+            : "CSV読込結果";
+        summary.textContent = report.errorMessage
+            ? "要確認"
+            : `${report.accepted}/${report.totalRows}件を採用`;
+
+        const issueDefinitions = [
+            ["is-error", report.exclusions.notPublished, "非掲載・無効のため除外"],
+            ["is-error", report.exclusions.missingGroup, "掲載グループなしで除外"],
+            ["is-error", report.exclusions.missingPrice, "価格なし・0円で除外"],
+            ["is-warning", report.warnings.missingName, "カード名が空欄"],
+            ["is-warning", report.warnings.missingImage, "画像リンクが空欄"],
+            ["is-warning", report.warnings.aMinusHigher, "状態A-が状態Aより高い"],
+            ["is-warning", report.warnings.duplicateRows, "同一商品と思われる重複行"]
+        ].filter(([, count]) => Number(count) > 0);
+
+        const issueHtml = report.errorMessage
+            ? `<div class="csv-report-issue is-error">${escapeHtml(report.errorMessage)}</div>`
+            : issueDefinitions.length
+                ? issueDefinitions.map(([type, count, label]) => `
+                    <div class="csv-report-issue ${type}">
+                        ${escapeHtml(label)}：${Number(count).toLocaleString("ja-JP")}件
+                    </div>
+                `).join("")
+                : '<div class="csv-report-issue">除外・警告はありません。</div>';
+
+        const sampleHtml = report.samples.length
+            ? `<ol class="csv-report-samples">${report.samples.map(sample => `
+                <li>${sample.rowNumber}行目：${escapeHtml(sample.message)}</li>
+            `).join("")}</ol>`
+            : "";
+        const sourceLabel = report.sourceName
+            ? `<span title="${escapeHtml(report.sourceName)}">${escapeHtml(report.sourceName)}</span>`
+            : "<span>読み込んだCSV</span>";
+
+        body.innerHTML = `
+            <div class="csv-report-stats">
+                <div class="csv-report-stat"><span>対象行</span><strong>${report.totalRows.toLocaleString("ja-JP")}</strong></div>
+                <div class="csv-report-stat"><span>採用</span><strong>${report.accepted.toLocaleString("ja-JP")}</strong></div>
+                <div class="csv-report-stat"><span>除外</span><strong>${report.excluded.toLocaleString("ja-JP")}</strong></div>
+                <div class="csv-report-stat"><span>警告</span><strong>${warningTotal.toLocaleString("ja-JP")}</strong></div>
+            </div>
+            <div class="csv-report-issues">${issueHtml}</div>
+            ${sampleHtml}
+            <div class="csv-diff-meta">対象ファイル：${sourceLabel}</div>
+        `;
     }
 
     function normalizeCsvHeaderName(value) {
@@ -11404,116 +12117,505 @@
             .toLocaleLowerCase("ja");
     }
 
-    function cardDiffKey(card) {
-        const imageOrGroup = card.imgUrl || card.group || "";
-        return [
-            card.name,
-            card.type,
-            imageOrGroup
-        ].map(normalizeDiffKeyPart).join("||");
+    function normalizeOfficialCategory(value) {
+        return hasOwn(OFFICIAL_BASELINE_CATEGORIES, value)
+            ? value
+            : "psa";
     }
 
-    function createCsvSnapshot(cards) {
+    function getOfficialCategoryLabel(category = getSelectedOfficialCategory()) {
+        return OFFICIAL_BASELINE_CATEGORIES[
+            normalizeOfficialCategory(category)
+        ];
+    }
+
+    function normalizePriceChangeDisplayMode(value) {
+        return PRICE_CHANGE_DISPLAY_MODES.includes(value)
+            ? value
+            : "all";
+    }
+
+    function getSelectedOfficialCategory() {
+        return normalizeOfficialCategory(
+            document.getElementById("officialBaselineCategorySelect")?.value
+        );
+    }
+
+    function getSelectedPriceChangeDisplayMode() {
+        return normalizePriceChangeDisplayMode(
+            document.getElementById("priceChangeDisplaySelect")?.value
+        );
+    }
+
+    function officialCardKey(card) {
+        const productId = normalizeDiffKeyPart(card.productId);
+        if (productId) return `id:${productId}`;
+        return `fields:${[
+            card.name,
+            card.type,
+            card.group
+        ].map(normalizeDiffKeyPart).join("||")}`;
+    }
+
+    function normalizeOfficialBaselineEntry(entry) {
+        if (!entry || typeof entry !== "object") return null;
+        const key = String(entry.k ?? entry.key ?? "").slice(0, 800);
+        const price = Number(entry.p ?? entry.price);
+        if (!key || !Number.isFinite(price) || price <= 0) return null;
         return {
-            savedAt: new Date().toISOString(),
-            cards: cards.map(card => ({
-                key: cardDiffKey(card),
-                name: card.name || "",
-                type: card.type || "",
-                group: card.group || "",
-                price: card.price || "",
-                aMinusPrice: card.aMinusPrice || "",
-                status: card.status || "",
-                imgUrl: card.imgUrl || ""
-            }))
+            k: key,
+            p: Math.round(price),
+            s: Boolean(
+                entry.s ?? String(entry.status || "").includes("強化")
+            ) ? 1 : 0
         };
     }
 
-    function loadCsvSnapshot() {
-        try {
-            const snapshot = JSON.parse(
-                getScopedItem(CSV_SNAPSHOT_STORAGE_KEY) || "null"
-            );
-            return snapshot && Array.isArray(snapshot.cards) ? snapshot : null;
-        } catch (error) {
-            return null;
+    function normalizeOfficialBaselines(value) {
+        let source = value;
+        if (typeof value === "string") {
+            try {
+                source = JSON.parse(value || "{}");
+            } catch (error) {
+                source = {};
+            }
         }
+        const sourceCategories =
+            source?.categories && typeof source.categories === "object"
+                ? source.categories
+                : {};
+        const categories = {};
+
+        Object.keys(OFFICIAL_BASELINE_CATEGORIES).forEach(category => {
+            const baseline = sourceCategories[category];
+            if (!baseline || !Array.isArray(baseline.entries)) return;
+            const entryMap = new Map();
+            baseline.entries.slice(0, 30000).forEach(rawEntry => {
+                const entry = normalizeOfficialBaselineEntry(rawEntry);
+                if (entry) entryMap.set(entry.k, entry);
+            });
+            const entries = Array.from(entryMap.values())
+                .sort((a, b) => a.k.localeCompare(b.k));
+            if (entries.length === 0) return;
+            categories[category] = {
+                confirmedAt: String(baseline.confirmedAt || ""),
+                confirmedDate: String(baseline.confirmedDate || ""),
+                confirmedBy: String(baseline.confirmedBy || "").slice(0, 40),
+                count: entries.length,
+                fingerprint: String(
+                    baseline.fingerprint || officialEntriesFingerprint(entries)
+                ),
+                entries
+            };
+        });
+
+        return { version: 1, categories };
     }
 
-    function saveCsvSnapshot(cards) {
-        try {
-            setScopedItem(
-                CSV_SNAPSHOT_STORAGE_KEY,
-                JSON.stringify(createCsvSnapshot(cards))
-            );
-            return true;
-        } catch (error) {
-            return false;
-        }
+    function getOfficialBaselines() {
+        return normalizeOfficialBaselines(
+            getScopedItem(OFFICIAL_BASELINES_STORAGE_KEY) || "{}"
+        );
     }
 
-    function computeCsvDiff(cards) {
-        const previous = loadCsvSnapshot();
-        const saved = saveCsvSnapshot(cards);
+    function getOfficialBaselineForCategory(category) {
+        return getOfficialBaselines().categories[
+            normalizeOfficialCategory(category)
+        ] || null;
+    }
 
-        if (!previous) {
+    function createOfficialBaselineEntries(cards) {
+        const entryMap = new Map();
+        cards.forEach(card => {
+            const price = parsePriceNumber(card.price);
+            const key = officialCardKey(card);
+            if (!key || !Number.isFinite(price) || price <= 0) return;
+            entryMap.set(key, {
+                k: key,
+                p: Math.round(price),
+                s: String(card.status || "").includes("強化") ? 1 : 0
+            });
+        });
+        return Array.from(entryMap.values())
+            .sort((a, b) => a.k.localeCompare(b.k));
+    }
+
+    function officialEntriesFingerprint(entries) {
+        let hash = 2166136261;
+        entries.forEach(entry => {
+            const value = `${entry.k}:${entry.p}:${entry.s}|`;
+            for (let index = 0; index < value.length; index++) {
+                hash ^= value.charCodeAt(index);
+                hash = Math.imul(hash, 16777619);
+            }
+        });
+        return `${entries.length}-${(hash >>> 0).toString(16).padStart(8, "0")}`;
+    }
+
+    function currentOfficialFingerprint() {
+        return officialEntriesFingerprint(
+            createOfficialBaselineEntries(globalCardData)
+        );
+    }
+
+    function resetCardPriceChange(card) {
+        card.previousPrice = null;
+        card.priceDelta = 0;
+        card.priceChangeType = "same";
+    }
+
+    function computeOfficialPriceDifferences(
+        cards,
+        { autoSelect = false, statusMessage = "" } = {}
+    ) {
+        const category = getSelectedOfficialCategory();
+        const baseline = getOfficialBaselineForCategory(category);
+        cards.forEach(resetCardPriceChange);
+
+        if (!baseline) {
             csvDiffResults = {
                 hasBaseline: false,
                 previousSavedAt: "",
+                category,
+                baselineCount: 0,
                 priceUp: [],
+                priceDown: [],
                 newItems: [],
                 strengthened: [],
                 all: []
             };
-            updateCsvDiffPanel(
-                saved
-                    ? "今回のCSVを比較用データとして保存しました。次回から変更内容を表示します"
-                    : "比較用データを保存できませんでした。ブラウザの保存設定をご確認ください"
-            );
-            return;
+            updateCsvDiffPanel(statusMessage);
+            updateOfficialBaselinePanel();
+            return csvDiffResults;
         }
 
         const previousMap = new Map(
-            previous.cards.map(card => [card.key || cardDiffKey(card), card])
+            baseline.entries.map(entry => [entry.k, entry])
         );
         const priceUp = [];
+        const priceDown = [];
         const newItems = [];
         const strengthened = [];
 
         cards.forEach(card => {
-            const oldCard = previousMap.get(cardDiffKey(card));
+            const currentPrice = parsePriceNumber(card.price);
+            if (!Number.isFinite(currentPrice) || currentPrice <= 0) return;
+            const oldCard = previousMap.get(officialCardKey(card));
             if (!oldCard) {
+                card.priceChangeType = "new";
                 newItems.push(card.id);
                 return;
             }
 
-            if (parsePriceNumber(card.price) > parsePriceNumber(oldCard.price)) {
+            card.previousPrice = Number(oldCard.p);
+            const difference = Math.round(currentPrice - Number(oldCard.p));
+            card.priceDelta = difference;
+            if (difference > 0) {
+                card.priceChangeType = "up";
                 priceUp.push(card.id);
+            } else if (difference < 0) {
+                card.priceChangeType = "down";
+                priceDown.push(card.id);
             }
 
             const isStrengthened = String(card.status || "").includes("強化");
-            const wasStrengthened = String(oldCard.status || "").includes("強化");
-            if (isStrengthened && !wasStrengthened) {
+            if (isStrengthened && !Boolean(oldCard.s)) {
                 strengthened.push(card.id);
             }
         });
 
-        const all = [...new Set([...priceUp, ...newItems, ...strengthened])];
+        const all = [...new Set([
+            ...priceUp,
+            ...priceDown,
+            ...newItems,
+            ...strengthened
+        ])];
         csvDiffResults = {
             hasBaseline: true,
-            previousSavedAt: previous.savedAt || "",
+            previousSavedAt: baseline.confirmedAt || "",
+            category,
+            baselineCount: baseline.count || baseline.entries.length,
+            confirmedBy: baseline.confirmedBy || "",
             priceUp,
+            priceDown,
             newItems,
             strengthened,
             all
         };
 
-        all.forEach(cardId => selectedSingleCardIds.add(cardId));
-        updateCsvDiffPanel(
-            all.length
-                ? `${all.length}件の変更を検出し、単品告知画像用に選択しました`
-                : "前回のCSVから対象となる変更はありません"
+        if (autoSelect) {
+            [...new Set([...priceUp, ...newItems, ...strengthened])]
+                .forEach(cardId => selectedSingleCardIds.add(cardId));
+        }
+        updateCsvDiffPanel(statusMessage);
+        updateOfficialBaselinePanel();
+        return csvDiffResults;
+    }
+
+    function formatOfficialBaselineTime(value) {
+        const date = new Date(value);
+        return Number.isNaN(date.getTime())
+            ? "日時不明"
+            : date.toLocaleString("ja-JP");
+    }
+
+    function updateOfficialBaselinePanel() {
+        const status = document.getElementById("officialBaselineStatus");
+        const button = document.getElementById("confirmOfficialBaselineButton");
+        if (!status || !button) return;
+
+        const category = getSelectedOfficialCategory();
+        const categoryLabel = getOfficialCategoryLabel(category);
+        const baseline = getOfficialBaselineForCategory(category);
+        const sharedConfigured = isSharedSyncConfigured();
+
+        if (sharedConfigured && !sharedSyncReady) {
+            status.dataset.state = "blocked";
+            status.textContent =
+                `${categoryLabel}：共有されている正式価格を確認中です。` +
+                "確認が終わるまで確定できません。";
+            button.disabled = true;
+            button.textContent = "共有価格を確認中";
+            return;
+        }
+
+        if (globalCardData.length === 0) {
+            status.dataset.state = baseline ? "ready" : "idle";
+            status.textContent = baseline
+                ? `${categoryLabel}｜最終確定 ${formatOfficialBaselineTime(
+                    baseline.confirmedAt
+                )}｜${baseline.count.toLocaleString("ja-JP")}商品` +
+                    (baseline.confirmedBy ? `｜担当 ${baseline.confirmedBy}` : "")
+                : `${categoryLabel}：正式価格はまだ確定されていません。` +
+                    "CSVを読み込んでください。";
+            button.disabled = true;
+            button.textContent = "本日分として確定";
+            return;
+        }
+
+        const currentFingerprint = currentOfficialFingerprint();
+        const matchesCurrent = Boolean(
+            baseline && baseline.fingerprint === currentFingerprint
         );
+        const syncNote = sharedConfigured ? "全端末共有" : "この端末のみ";
+        const sharedSavePending = Boolean(
+            sharedConfigured && readSharedSyncMeta().pending
+        );
+
+        if (matchesCurrent && sharedSavePending) {
+            status.dataset.state = "blocked";
+            status.textContent =
+                `${categoryLabel}はこの端末で確定済みですが、` +
+                "共有保存が完了していません。接続を確認して再試行してください。";
+            button.disabled = false;
+            button.textContent = "共有保存を再試行";
+            return;
+        }
+
+        if (matchesCurrent) {
+            status.dataset.state = "ready";
+            status.textContent =
+                `${categoryLabel}｜${formatOfficialBaselineTime(
+                    baseline.confirmedAt
+                )}に確定済み｜${baseline.count.toLocaleString("ja-JP")}商品` +
+                (baseline.confirmedBy ? `｜担当 ${baseline.confirmedBy}` : "") +
+                `｜${syncNote}`;
+            button.disabled = true;
+            button.textContent = "本日分として確定済み";
+            return;
+        }
+
+        status.dataset.state = "changed";
+        status.textContent = baseline
+            ? `${categoryLabel}｜比較元 ${formatOfficialBaselineTime(
+                baseline.confirmedAt
+            )}・${baseline.count.toLocaleString("ja-JP")}商品` +
+                (baseline.confirmedBy ? `・担当 ${baseline.confirmedBy}` : "") +
+                `｜現在 ${globalCardData.length.toLocaleString("ja-JP")}商品｜${syncNote}`
+            : `${categoryLabel}：正式価格未確定｜現在 ` +
+                `${globalCardData.length.toLocaleString("ja-JP")}商品｜${syncNote}`;
+        button.disabled = false;
+        button.textContent = "本日分として確定";
+    }
+
+    function initializeOfficialBaselineControls() {
+        const categorySelect = document.getElementById(
+            "officialBaselineCategorySelect"
+        );
+        const displaySelect = document.getElementById(
+            "priceChangeDisplaySelect"
+        );
+        const operatorInput = document.getElementById(
+            "officialBaselineOperatorInput"
+        );
+        categorySelect.value = normalizeOfficialCategory(
+            getScopedItem(OFFICIAL_CATEGORY_STORAGE_KEY)
+        );
+        displaySelect.value = normalizePriceChangeDisplayMode(
+            getScopedItem(PRICE_CHANGE_DISPLAY_STORAGE_KEY)
+        );
+        operatorInput.value = String(
+            getScopedItem(OFFICIAL_OPERATOR_STORAGE_KEY) || ""
+        ).slice(0, 40);
+        updateOfficialBaselinePanel();
+    }
+
+    function handleOfficialCategoryChange() {
+        const category = getSelectedOfficialCategory();
+        setScopedItem(OFFICIAL_CATEGORY_STORAGE_KEY, category);
+        selectedSingleCardIds.clear();
+        computeOfficialPriceDifferences(globalCardData, { autoSelect: true });
+        renderCardEditor();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+        if (globalCardData.length > 0) renderPages();
+        scheduleWorkspaceAutosave("比較区分を保存しました");
+    }
+
+    function handlePriceChangeDisplayChange() {
+        const mode = getSelectedPriceChangeDisplayMode();
+        setScopedItem(PRICE_CHANGE_DISPLAY_STORAGE_KEY, mode);
+        if (globalCardData.length > 0) renderPages();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+        scheduleWorkspaceAutosave("前回比の表示設定を保存しました");
+    }
+
+    async function confirmOfficialBaseline() {
+        if (globalCardData.length === 0) {
+            alert("先にCSVを読み込んでください。");
+            return;
+        }
+
+        const category = getSelectedOfficialCategory();
+        const categoryLabel = getOfficialCategoryLabel(category);
+        const operatorInput = document.getElementById(
+            "officialBaselineOperatorInput"
+        );
+        const operator = String(operatorInput?.value || "").trim().slice(0, 40);
+        setScopedItem(OFFICIAL_OPERATOR_STORAGE_KEY, operator);
+        const baselineBeforeSync = getOfficialBaselineForCategory(category);
+        const retryingSharedSave = Boolean(
+            isSharedSyncConfigured() &&
+            baselineBeforeSync &&
+            baselineBeforeSync.fingerprint === currentOfficialFingerprint() &&
+            readSharedSyncMeta().pending
+        );
+
+        if (isSharedSyncConfigured()) {
+            if (!sharedSyncReady) {
+                alert("共有されている正式価格の確認中です。少し待ってからもう一度お試しください。");
+                return;
+            }
+            await checkSharedSettingsUpdates(true);
+            if (sharedSyncReloadScheduled) {
+                alert("別の端末による最新更新を反映します。再読み込み後に、もう一度確定してください。");
+                return;
+            }
+            if (retryingSharedSave) {
+                const retrySucceeded = !readSharedSyncMeta().pending;
+                updateOfficialBaselinePanel();
+                alert(
+                    retrySucceeded
+                        ? `${categoryLabel}の共有保存を確認しました。`
+                        : "共有保存を確認できませんでした。接続を確認して、もう一度お試しください。"
+                );
+                return;
+            }
+        }
+
+        const baselines = getOfficialBaselines();
+        const existing = baselines.categories[category];
+        const entries = createOfficialBaselineEntries(globalCardData);
+        if (entries.length === 0) {
+            alert("正式価格として保存できる有効な商品がありません。");
+            return;
+        }
+
+        const existingText = existing
+            ? `\n現在の確定：${formatOfficialBaselineTime(existing.confirmedAt)}` +
+                `／${existing.count.toLocaleString("ja-JP")}商品` +
+                (existing.confirmedBy ? `／担当 ${existing.confirmedBy}` : "")
+            : "\nこの区分をはじめて確定します。";
+        if (!confirm(
+            `${categoryLabel}の本日分として、CSVの採用商品 ` +
+            `${entries.length.toLocaleString("ja-JP")}件を確定しますか？` +
+            `${existingText}\n\nほかの区分の正式価格は変更されません。`
+        )) {
+            return;
+        }
+
+        const now = new Date();
+        const baseline = {
+            confirmedAt: now.toISOString(),
+            confirmedDate: [
+                now.getFullYear(),
+                String(now.getMonth() + 1).padStart(2, "0"),
+                String(now.getDate()).padStart(2, "0")
+            ].join("-"),
+            confirmedBy: operator,
+            count: entries.length,
+            fingerprint: officialEntriesFingerprint(entries),
+            entries
+        };
+        baselines.categories[category] = baseline;
+
+        try {
+            setScopedItem(
+                OFFICIAL_BASELINES_STORAGE_KEY,
+                JSON.stringify(baselines)
+            );
+        } catch (error) {
+            alert("正式価格の保存容量を超えました。商品件数をご確認ください。");
+            return;
+        }
+
+        let sharedSaved = true;
+        if (isSharedSyncConfigured()) {
+            sharedSaved = await pushSharedSettingsNow({ force: true });
+        }
+        updateOfficialBaselinePanel();
+        updateCsvDiffPanel(
+            `${categoryLabel}を本日分として確定しました。` +
+            "現在表示中の前回比は、画像保存のためそのまま維持しています"
+        );
+        alert(
+            sharedSaved
+                ? `${categoryLabel}の本日分を確定しました。\nほかの区分の比較基準は変更していません。`
+                : `${categoryLabel}はこの端末へ保存しましたが、共有保存を確認できませんでした。\n接続復旧後にもう一度確定してください。`
+        );
+    }
+
+    function getPriceChangePresentation(card) {
+        const mode = getSelectedPriceChangeDisplayMode();
+        const type = String(card?.priceChangeType || "same");
+        if (mode === "off" || type === "same") return null;
+        if (mode === "up_new" && type === "down") return null;
+        if (type === "new") {
+            return {
+                type: "new",
+                text: "NEW",
+                title: "前回の正式確定価格にはなかった新規商品"
+            };
+        }
+        const difference = Math.abs(Number(card.priceDelta) || 0);
+        if (!difference || !["up", "down"].includes(type)) return null;
+        const sign = type === "up" ? "＋" : "－";
+        return {
+            type,
+            text: `${sign}${difference.toLocaleString("ja-JP")}円`,
+            title:
+                `前回 ${Number(card.previousPrice || 0).toLocaleString("ja-JP")}円 ` +
+                `→ 今回 ${parsePriceNumber(card.price).toLocaleString("ja-JP")}円`
+        };
+    }
+
+    function renderPriceChangeBadge(card) {
+        const presentation = getPriceChangePresentation(card);
+        if (!presentation) return "";
+        return `<span class="price-change-badge is-${presentation.type}" ` +
+            `title="${escapeHtml(presentation.title)}">` +
+            `${escapeHtml(presentation.text)}</span>`;
     }
 
     function updateCsvDiffPanel(statusMessage = "") {
@@ -11521,6 +12623,7 @@
         const meta = document.getElementById("csvDiffMeta");
         const countMap = {
             diffPriceUpCount: csvDiffResults.priceUp.length,
+            diffPriceDownCount: csvDiffResults.priceDown.length,
             diffNewCount: csvDiffResults.newItems.length,
             diffStrengthenedCount: csvDiffResults.strengthened.length,
             diffAllCount: csvDiffResults.all.length
@@ -11533,19 +12636,27 @@
         if (status) {
             status.textContent = statusMessage || (
                 csvDiffResults.hasBaseline
-                    ? "前回CSVと比較できます"
-                    : "はじめてCSVを読み込むと、比較用データとして保存します"
+                    ? `${getOfficialCategoryLabel(csvDiffResults.category)}の正式価格と比較中`
+                    : `${getOfficialCategoryLabel(csvDiffResults.category)}の正式価格は未確定です`
             );
         }
 
         if (meta) {
             if (csvDiffResults.previousSavedAt) {
-                const savedAt = new Date(csvDiffResults.previousSavedAt);
-                meta.textContent = Number.isNaN(savedAt.getTime())
-                    ? "商品名・種別・画像URLを基準に比較"
-                    : `比較用データ：${savedAt.toLocaleString("ja-JP")}｜商品名・種別・画像URLを基準`;
+                meta.textContent =
+                    `${getOfficialCategoryLabel(csvDiffResults.category)}｜` +
+                    `正式確定 ${formatOfficialBaselineTime(
+                        csvDiffResults.previousSavedAt
+                    )}｜${Number(csvDiffResults.baselineCount || 0)
+                        .toLocaleString("ja-JP")}商品` +
+                    (csvDiffResults.confirmedBy
+                        ? `｜担当 ${csvDiffResults.confirmedBy}`
+                        : "") +
+                    "｜商品ID、またはカード名・種別・掲載グループで照合";
             } else {
-                meta.textContent = "商品名・種別・画像URLを基準に比較します";
+                meta.textContent =
+                    `${getOfficialCategoryLabel(csvDiffResults.category)}｜` +
+                    "「本日分として確定」を押すまで比較基準は更新されません";
             }
         }
     }
@@ -11563,64 +12674,64 @@
         }
     }
 
-    function resetCsvDiffBaseline() {
-        if (globalCardData.length === 0) {
-            alert("先にCSVを読み込んでください。");
-            return;
-        }
-        if (!saveCsvSnapshot(globalCardData)) {
-            alert("比較用データを保存できませんでした。ブラウザの保存設定をご確認ください。");
-            return;
-        }
-        csvDiffResults = {
-            hasBaseline: true,
-            previousSavedAt: new Date().toISOString(),
-            priceUp: [],
-            newItems: [],
-            strengthened: [],
-            all: []
-        };
-        updateCsvDiffPanel("今回のCSVを比較用データとして保存しました");
-        alert("今回のCSVを比較用データとして保存しました。");
-    }
-
-    function parseCSV(text) {
+    function parseCSV(text, sourceName = "") {
         const cleanText = String(text).replace(/^\uFEFF/, "");
-        const lines = cleanText.split(/\r?\n/);
+        const rows = parseCSVRows(cleanText);
         globalCardData = [];
         selectedSingleCardIds.clear();
         imagePromiseCache.clear();
+        imageLoadGeneration++;
+        imageLoadingTask = null;
+        cardEditorPage = 1;
+        singlePickerPage = 1;
+        cardEditHistory = [];
+        updateUndoButtonState();
+        csvImportReportState = createEmptyCsvImportReport(sourceName);
         updateImageStatus();
         renderSingleCardPicker();
         renderSingleAdPreviews();
 
         let headerIndex = -1;
-        const headerMap = {};
+        const headerColumns = [];
         const coreKeywords = [
             "カード名", "商品名", "強化買取金額", "買取金額",
             "掲載状況", "掲載グループ", "画像リンク", "画像URL",
-            "状態A-"
-        ];
+            "状態A-", "商品ID", "商品コード"
+        ].map(normalizeCsvHeaderName);
 
-        for (let i = 0; i < Math.min(lines.length, 15); i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-
-            const parts = parseCSVLine(line).map(part => part.trim());
+        for (let i = 0; i < Math.min(rows.length, 15); i++) {
+            const parts = rows[i].map(part => String(part).trim());
+            if (!parts.some(Boolean)) continue;
             const matchCount = parts.filter(part =>
-                coreKeywords.some(keyword => part.includes(keyword))
+                coreKeywords.some(keyword =>
+                    normalizeCsvHeaderName(part).includes(keyword)
+                )
             ).length;
 
             if (matchCount >= 2) {
                 headerIndex = i;
                 parts.forEach((columnName, index) => {
-                    if (columnName) headerMap[columnName] = index;
+                    if (columnName) {
+                        headerColumns.push({
+                            name: columnName,
+                            normalizedName: normalizeCsvHeaderName(columnName),
+                            index
+                        });
+                    }
                 });
                 break;
             }
         }
 
         if (headerIndex === -1) {
+            csvImportReportState.totalRows = rows.filter(row =>
+                row.some(value => String(value || "").trim())
+            ).length;
+            csvImportReportState.excluded = csvImportReportState.totalRows;
+            csvImportReportState.errorMessage =
+                "カード名・買取金額などの有効なヘッダー項目を確認できませんでした。";
+            renderCsvImportReport();
+            renderNoData();
             alert("CSV内に有効なヘッダー項目（カード名・買取金額など）が見つかりませんでした。");
             return;
         }
@@ -11631,12 +12742,13 @@
             columnFilter = () => true
         ) {
             for (const keyword of keywords) {
-                for (const columnName in headerMap) {
+                const normalizedKeyword = normalizeCsvHeaderName(keyword);
+                for (const column of headerColumns) {
                     if (
-                        columnFilter(columnName) &&
-                        columnName.includes(keyword)
+                        columnFilter(column.name) &&
+                        column.normalizedName.includes(normalizedKeyword)
                     ) {
-                        const index = headerMap[columnName];
+                        const index = column.index;
                         return index < parts.length ? String(parts[index]).trim() : "";
                     }
                 }
@@ -11645,9 +12757,9 @@
         }
 
         function getValueByHeaderMatcher(parts, matcher) {
-            for (const columnName in headerMap) {
-                if (!matcher(columnName)) continue;
-                const index = headerMap[columnName];
+            for (const column of headerColumns) {
+                if (!matcher(column.name)) continue;
+                const index = column.index;
                 return index < parts.length
                     ? String(parts[index]).trim()
                     : "";
@@ -11655,13 +12767,16 @@
             return "";
         }
 
-        for (let i = headerIndex + 1; i < lines.length; i++) {
-            const line = lines[i].trim();
-            if (!line) continue;
-
-            const parts = parseCSVLine(line);
+        for (let i = headerIndex + 1; i < rows.length; i++) {
+            const parts = rows[i];
+            if (!parts.some(value => String(value || "").trim())) continue;
+            const rowNumber = i + 1;
+            csvImportReportState.totalRows++;
             const status = getValueByKeywords(parts, ["掲載状況", "状況", "ステータス", "掲載"]);
             const group = getValueByKeywords(parts, ["掲載グループ", "グループ", "カテゴリ", "分類"]);
+            const productId = getValueByKeywords(parts, [
+                "商品ID", "商品コード", "管理番号", "管理ID", "JANコード", "JAN"
+            ]);
             const name = getValueByKeywords(parts, ["カード名", "商品名", "タイトル", "品名"]);
             const type = getValueByKeywords(parts, ["種別", "型番", "グレード", "タイプ", "区分"]);
             const imgUrl = getValueByKeywords(parts, ["画像リンク", "画像URL", "画像", "Image"]);
@@ -11676,15 +12791,73 @@
 
             price = price.replace(/"/g, "").trim();
 
-            if (status.includes("無効") || status.includes("非掲載")) continue;
-            if (!group || group === "NaN") continue;
-            if (!price || price === "-" || price === "終了" || price === "0" || price === "¥0") continue;
+            if (status.includes("無効") || status.includes("非掲載")) {
+                csvImportReportState.exclusions.notPublished++;
+                csvImportReportState.excluded++;
+                addCsvReportSample(
+                    csvImportReportState,
+                    rowNumber,
+                    `${name || "カード名なし"}：掲載状況が「${status}」`
+                );
+                continue;
+            }
+            if (!group || group === "NaN") {
+                csvImportReportState.exclusions.missingGroup++;
+                csvImportReportState.excluded++;
+                addCsvReportSample(
+                    csvImportReportState,
+                    rowNumber,
+                    `${name || "カード名なし"}：掲載グループが空欄`
+                );
+                continue;
+            }
+            const compactPrice = price.normalize("NFKC").replace(/[,\s]/g, "");
+            if (
+                !compactPrice ||
+                /^(?:-|−|―|ー|終了|0円?|[¥￥]0円?)$/.test(compactPrice)
+            ) {
+                csvImportReportState.exclusions.missingPrice++;
+                csvImportReportState.excluded++;
+                addCsvReportSample(
+                    csvImportReportState,
+                    rowNumber,
+                    `${name || "カード名なし"}：買取価格が「${price || "空欄"}」`
+                );
+                continue;
+            }
+
+            if (!name) {
+                csvImportReportState.warnings.missingName++;
+                addCsvReportSample(
+                    csvImportReportState,
+                    rowNumber,
+                    "カード名が空欄のまま採用"
+                );
+            }
+            if (!imgUrl) {
+                csvImportReportState.warnings.missingImage++;
+            }
+            const numericPrice = parsePriceNumber(price);
+            const numericAMinusPrice = parsePriceNumber(aMinusPrice);
+            if (
+                numericPrice > 0 &&
+                numericAMinusPrice > numericPrice
+            ) {
+                csvImportReportState.warnings.aMinusHigher++;
+                addCsvReportSample(
+                    csvImportReportState,
+                    rowNumber,
+                    `${name || "カード名なし"}：状態A-（${aMinusPrice}）が状態A（${price}）より高い`
+                );
+            }
 
             globalCardData.push({
                 id: globalCardData.length,
                 originalIndex: globalCardData.length,
+                sourceRow: rowNumber,
                 group,
                 status,
+                productId,
                 name,
                 type,
                 price,
@@ -11696,7 +12869,29 @@
             });
         }
 
-        computeCsvDiff(globalCardData);
+        const duplicateMap = new Map();
+        globalCardData.forEach(card => {
+            if (!String(card.name || "").trim()) return;
+            const key = officialCardKey(card);
+            if (!duplicateMap.has(key)) duplicateMap.set(key, []);
+            duplicateMap.get(key).push(card);
+        });
+        duplicateMap.forEach(cards => {
+            if (cards.length < 2) return;
+            csvImportReportState.warnings.duplicateRows += cards.length - 1;
+            addCsvReportSample(
+                csvImportReportState,
+                cards[1].sourceRow,
+                `${cards[0].name}：同じ掲載グループ・種別の商品が${cards.length}行あります`
+            );
+        });
+
+        csvImportReportState.accepted = globalCardData.length;
+        renderCsvImportReport();
+
+        computeOfficialPriceDifferences(globalCardData, {
+            autoSelect: true
+        });
         updateImageStatus();
         renderCardEditor();
         renderSingleCardPicker();
@@ -11713,26 +12908,31 @@
         return globalCardData.find(card => card.id === Number(cardId));
     }
 
-    function renderCardEditor() {
-        const list = document.getElementById("cardEditorList");
-        const count = document.getElementById("cardEditorCount");
-        if (!list || !count) return;
+    function updatePaginationControls(prefix, currentPage, totalPages) {
+        const container = document.getElementById(`${prefix}Pagination`);
+        const previousButton = document.getElementById(`${prefix}PrevButton`);
+        const nextButton = document.getElementById(`${prefix}NextButton`);
+        const status = document.getElementById(`${prefix}PageStatus`);
+        if (!container || !previousButton || !nextButton || !status) return;
 
-        const visibleCount = globalCardData.filter(card => !card.hidden).length;
-        count.textContent = globalCardData.length
-            ? `表示 ${visibleCount} / 全${globalCardData.length}件`
-            : "CSV未読込";
+        const normalizedTotal = Math.max(1, Number(totalPages) || 1);
+        const normalizedCurrent = Math.min(
+            normalizedTotal,
+            Math.max(1, Number(currentPage) || 1)
+        );
+        container.hidden = normalizedTotal <= 1;
+        previousButton.disabled = normalizedCurrent <= 1;
+        nextButton.disabled = normalizedCurrent >= normalizedTotal;
+        status.textContent =
+            `${normalizedCurrent.toLocaleString("ja-JP")} / ` +
+            `${normalizedTotal.toLocaleString("ja-JP")}ページ`;
+    }
 
-        if (globalCardData.length === 0) {
-            list.innerHTML =
-                '<div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>';
-            return;
-        }
-
+    function getFilteredCardEditorCards() {
         const query = String(
             document.getElementById("cardEditorSearchInput")?.value || ""
         ).trim().toLocaleLowerCase("ja");
-        const cards = [...globalCardData]
+        return [...globalCardData]
             .sort((a, b) => a.originalIndex - b.originalIndex)
             .filter(card => {
                 if (!query) return true;
@@ -11741,16 +12941,158 @@
                     card.group,
                     card.type,
                     card.price,
-                    card.aMinusPrice
-                ]
-                    .some(value =>
-                        String(value || "")
-                            .toLocaleLowerCase("ja")
-                            .includes(query)
-                    );
+                    card.aMinusPrice,
+                    card.productId
+                ].some(value =>
+                    String(value || "")
+                        .toLocaleLowerCase("ja")
+                        .includes(query)
+                );
             });
+    }
 
-        if (cards.length === 0) {
+    function changeCardEditorPage(direction) {
+        const cards = getFilteredCardEditorCards();
+        const totalPages = Math.max(
+            1,
+            Math.ceil(cards.length / CARD_EDITOR_PAGE_SIZE)
+        );
+        cardEditorPage = Math.min(
+            totalPages,
+            Math.max(1, cardEditorPage + Number(direction || 0))
+        );
+        renderCardEditor();
+        document.getElementById("cardEditorPanel")?.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    function changeSinglePickerPage(direction) {
+        const cards = getFilteredSingleCards();
+        const totalPages = Math.max(
+            1,
+            Math.ceil(cards.length / SINGLE_PICKER_PAGE_SIZE)
+        );
+        singlePickerPage = Math.min(
+            totalPages,
+            Math.max(1, singlePickerPage + Number(direction || 0))
+        );
+        renderSingleCardPicker();
+        document.getElementById("singlePickerPagination")?.scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+        });
+    }
+
+    function updateUndoButtonState() {
+        const button = document.getElementById("undoCardEditButton");
+        if (!button) return;
+        button.disabled = cardEditHistory.length === 0;
+        button.title = cardEditHistory.length
+            ? `${cardEditHistory.length}件前まで編集を戻せます`
+            : "元に戻せる商品編集はありません";
+    }
+
+    function rememberCardEdit(label, cardIds) {
+        const idSet = new Set(
+            (Array.isArray(cardIds) ? cardIds : [cardIds])
+                .map(Number)
+                .filter(Number.isFinite)
+        );
+        const changedCards = globalCardData
+            .filter(card => idSet.has(Number(card.id)))
+            .map(serializeCardForDraft);
+        if (changedCards.length === 0) return;
+        cardEditHistory.push({
+            label: String(label || "商品編集"),
+            cards: changedCards
+        });
+        if (cardEditHistory.length > MAX_CARD_EDIT_HISTORY) {
+            cardEditHistory.shift();
+        }
+        updateUndoButtonState();
+    }
+
+    function restoreCardEditSnapshot(snapshot) {
+        const cardLookup = new Map(
+            globalCardData.map(card => [Number(card.id), card])
+        );
+        (snapshot.cards || []).forEach(previousCard => {
+            const card = cardLookup.get(Number(previousCard.id));
+            if (!card) return;
+            card.originalIndex = Number.isFinite(Number(previousCard.originalIndex))
+                ? Number(previousCard.originalIndex)
+                : card.originalIndex;
+            card.group = String(previousCard.group || "");
+            card.status = String(previousCard.status || "");
+            card.name = String(previousCard.name || "");
+            card.type = String(previousCard.type || "");
+            card.price = String(previousCard.price || "");
+            card.aMinusPrice = normalizeOptionalAMinusPrice(
+                previousCard.aMinusPrice
+            );
+            card.hidden = Boolean(previousCard.hidden);
+        });
+    }
+
+    function undoLastCardEdit() {
+        const snapshot = cardEditHistory.pop();
+        if (!snapshot) return;
+        restoreCardEditSnapshot(snapshot);
+        updateUndoButtonState();
+        computeOfficialPriceDifferences(globalCardData, {
+            autoSelect: false
+        });
+        renderCardEditor();
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+        if (globalCardData.some(card => !card.hidden)) {
+            renderPages();
+        } else {
+            renderNoData();
+        }
+        saveWorkingDraftNow(`${snapshot.label}を元に戻しました`);
+    }
+
+    function renderCardEditor() {
+        const list = document.getElementById("cardEditorList");
+        const count = document.getElementById("cardEditorCount");
+        if (!list || !count) return;
+
+        const visibleCount = globalCardData.filter(card => !card.hidden).length;
+
+        if (globalCardData.length === 0) {
+            count.textContent = "CSV未読込";
+            list.innerHTML =
+                '<div class="card-editor-empty">CSVを読み込むと商品を編集できます</div>';
+            updatePaginationControls("cardEditor", 1, 1);
+            return;
+        }
+
+        const filteredCards = getFilteredCardEditorCards();
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredCards.length / CARD_EDITOR_PAGE_SIZE)
+        );
+        cardEditorPage = Math.min(totalPages, Math.max(1, cardEditorPage));
+        const pageStart = (cardEditorPage - 1) * CARD_EDITOR_PAGE_SIZE;
+        const cards = filteredCards.slice(
+            pageStart,
+            pageStart + CARD_EDITOR_PAGE_SIZE
+        );
+        count.textContent =
+            `表示 ${visibleCount} / 全${globalCardData.length}件` +
+            (filteredCards.length !== globalCardData.length
+                ? `｜検索結果 ${filteredCards.length}件`
+                : "");
+        updatePaginationControls(
+            "cardEditor",
+            cardEditorPage,
+            totalPages
+        );
+
+        if (filteredCards.length === 0) {
             list.innerHTML =
                 '<div class="card-editor-empty">検索条件に一致する商品がありません</div>';
             return;
@@ -11846,9 +13188,19 @@
         }).join("");
     }
 
-    function refreshOutputsAfterCardEdit(renderEditorToo = false) {
+    function refreshOutputsAfterCardEdit(
+        renderEditorToo = false,
+        recomputeOfficialDiff = false
+    ) {
         clearTimeout(cardEditRenderTimer);
         cardEditRenderTimer = setTimeout(() => {
+            if (recomputeOfficialDiff) {
+                computeOfficialPriceDifferences(globalCardData, {
+                    autoSelect: false
+                });
+            } else {
+                updateOfficialBaselinePanel();
+            }
             if (renderEditorToo) renderCardEditor();
             if (globalCardData.some(card => !card.hidden)) {
                 renderPages();
@@ -11858,7 +13210,7 @@
             renderSingleCardPicker();
             renderSingleAdPreviews();
             scheduleWorkspaceAutosave();
-        }, 120);
+        }, 180);
     }
 
     function updateCardField(cardId, field, value) {
@@ -11869,13 +13221,29 @@
         ) {
             return;
         }
-        card[field] = String(value || "").trim();
-        refreshOutputsAfterCardEdit(false);
+        const nextValue = String(value || "").trim();
+        if (String(card[field] || "") === nextValue) return;
+        const fieldLabels = {
+            name: "カード名の変更",
+            group: "掲載グループの変更",
+            type: "種別の変更",
+            price: "状態A価格の変更",
+            aMinusPrice: "状態A-価格の変更"
+        };
+        rememberCardEdit(
+            fieldLabels[field] || "商品データの変更",
+            card.id
+        );
+        card[field] = nextValue;
+        refreshOutputsAfterCardEdit(false, true);
     }
 
     function toggleCardStrengthened(cardId, strengthened) {
         const card = getCardById(cardId);
         if (!card) return;
+        const currentlyStrengthened = String(card.status || "").includes("強化");
+        if (currentlyStrengthened === Boolean(strengthened)) return;
+        rememberCardEdit("強化買取設定の変更", card.id);
         const withoutStrengthened = String(card.status || "")
             .replace(/強化買取/g, "")
             .replace(/強化/g, "")
@@ -11883,12 +13251,14 @@
         card.status = strengthened
             ? [withoutStrengthened, "強化"].filter(Boolean).join(" ")
             : withoutStrengthened;
-        refreshOutputsAfterCardEdit(true);
+        refreshOutputsAfterCardEdit(true, true);
     }
 
     function toggleCardVisibility(cardId, visible) {
         const card = getCardById(cardId);
         if (!card) return;
+        if (card.hidden === !Boolean(visible)) return;
+        rememberCardEdit("商品の表示設定変更", card.id);
         card.hidden = !visible;
         refreshOutputsAfterCardEdit(true);
     }
@@ -11904,6 +13274,7 @@
         if (index < 0 || swapIndex < 0 || swapIndex >= groupCards.length) return;
 
         const other = groupCards[swapIndex];
+        rememberCardEdit("商品の並び替え", [card.id, other.id]);
         const currentOrder = card.originalIndex;
         card.originalIndex = other.originalIndex;
         other.originalIndex = currentOrder;
@@ -11912,6 +13283,11 @@
     }
 
     function showAllCardsInBuylist() {
+        const hiddenCardIds = globalCardData
+            .filter(card => card.hidden)
+            .map(card => card.id);
+        if (hiddenCardIds.length === 0) return;
+        rememberCardEdit("全商品の再表示", hiddenCardIds);
         globalCardData.forEach(card => {
             card.hidden = false;
         });
@@ -11955,7 +13331,8 @@
                 card.type,
                 card.group,
                 card.price,
-                card.aMinusPrice
+                card.aMinusPrice,
+                card.productId
             ]
                 .some(value => String(value || "").toLocaleLowerCase("ja").includes(query))
         );
@@ -11966,22 +13343,43 @@
         const count = document.getElementById("singleSelectionCount");
         if (!picker || !count) return;
 
-        const cards = getFilteredSingleCards();
+        const filteredCards = getFilteredSingleCards();
         count.textContent =
             `${selectedSingleCardIds.size}件選択中` +
-            (globalCardData.length ? `｜全${globalCardData.length}件` : "");
+            (globalCardData.length ? `｜全${globalCardData.length}件` : "") +
+            (filteredCards.length !== globalCardData.length
+                ? `｜検索結果${filteredCards.length}件`
+                : "");
 
         if (globalCardData.length === 0) {
             picker.innerHTML =
                 '<div class="single-empty-picker">CSVを読み込むと商品を選択できます</div>';
+            updatePaginationControls("singlePicker", 1, 1);
             return;
         }
 
-        if (cards.length === 0) {
+        if (filteredCards.length === 0) {
             picker.innerHTML =
                 '<div class="single-empty-picker">検索条件に一致する商品がありません</div>';
+            updatePaginationControls("singlePicker", 1, 1);
             return;
         }
+
+        const totalPages = Math.max(
+            1,
+            Math.ceil(filteredCards.length / SINGLE_PICKER_PAGE_SIZE)
+        );
+        singlePickerPage = Math.min(totalPages, Math.max(1, singlePickerPage));
+        const pageStart = (singlePickerPage - 1) * SINGLE_PICKER_PAGE_SIZE;
+        const cards = filteredCards.slice(
+            pageStart,
+            pageStart + SINGLE_PICKER_PAGE_SIZE
+        );
+        updatePaginationControls(
+            "singlePicker",
+            singlePickerPage,
+            totalPages
+        );
 
         picker.innerHTML = cards.map(card => {
             const selected = selectedSingleCardIds.has(card.id);
@@ -11991,6 +13389,7 @@
             const group = escapeHtml(card.group || "");
             const price = escapeHtml(card.price || "");
             const imageUrl = escapeHtml(card.imgUrl || "");
+            const priceChangeBadge = renderPriceChangeBadge(card);
 
             return `
                 <label
@@ -12010,17 +13409,20 @@
                         alt="${name}"
                         crossorigin="anonymous"
                     >
-                    <span class="single-picker-copy">
-                        <span class="single-picker-name">${name}</span>
-                        <span class="single-picker-meta">${group}${type ? `｜${type}` : ""}</span>
-                        <span class="single-picker-price">${price}</span>
-                    </span>
+                        <span class="single-picker-copy">
+                            <span class="single-picker-name">${name}</span>
+                            <span class="single-picker-meta">${group}${type ? `｜${type}` : ""}</span>
+                            <span class="single-picker-price-line">
+                                <span class="single-picker-price">${price}</span>
+                                ${priceChangeBadge}
+                            </span>
+                        </span>
                 </label>
             `;
         }).join("");
 
         if (globalCardData.some(card => !card.resolvedImg && card.imgUrl)) {
-            imageLoadPromise = loadMissingImagesFast();
+            imageLoadPromise = queueMissingImagesLoad();
         }
     }
 
@@ -12083,10 +13485,17 @@
         );
         const price = escapeHtml(priceText);
         const priceLabel = escapeHtml(settings.priceLabel);
+        const priceChangeBadge = renderPriceChangeBadge(card);
+        const priceLabelMarkup = `
+            <div class="single-ad-price-label${priceChangeBadge ? " has-price-change" : ""}">
+                <span>${priceLabel}</span>
+                ${priceChangeBadge}
+            </div>
+        `;
 
         if (!aMinusPriceText) {
             return `
-                <div class="single-ad-price-label">${priceLabel}</div>
+                ${priceLabelMarkup}
                 <div class="single-ad-price">
                     <span class="single-ad-price-value">${price}</span>
                 </div>
@@ -12110,7 +13519,7 @@
         );
 
         return `
-            <div class="single-ad-price-label">${priceLabel}</div>
+            ${priceLabelMarkup}
             <div
                 class="single-ad-price is-dual"
                 aria-label="${ariaLabel}"
@@ -12537,7 +13946,7 @@
             adjustSingleAdPriceSizes();
             fitSinglePreviews();
             updateSingleAdLayoutStatus(container);
-            imageLoadPromise = loadMissingImagesFast().finally(() => {
+            imageLoadPromise = queueMissingImagesLoad().finally(() => {
                 requestAnimationFrame(() => {
                     adjustSingleAdPriceSizes(container);
                     updateSingleAdLayoutStatus(container);
@@ -12787,6 +14196,35 @@
         }
     }
 
+    async function fetchWithTimeout(
+        url,
+        options = {},
+        timeout = IMAGE_FETCH_TIMEOUT
+    ) {
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(
+            () => controller.abort(),
+            Math.max(1000, Number(timeout) || IMAGE_FETCH_TIMEOUT)
+        );
+        try {
+            return await fetch(url, {
+                ...options,
+                signal: controller.signal
+            });
+        } finally {
+            window.clearTimeout(timeoutId);
+        }
+    }
+
+    function isUsableImageBlob(blob) {
+        return Boolean(
+            blob &&
+            blob.size > 0 &&
+            blob.size <= MAX_IMAGE_BLOB_SIZE &&
+            String(blob.type || "").toLowerCase().includes("image")
+        );
+    }
+
     async function fetchImageBase64(imgUrl) {
         if (!imgUrl) return NO_IMAGE;
 
@@ -12801,10 +14239,13 @@
         }
 
         try {
-            const directResponse = await fetch(targetUrl, { mode: "cors" });
+            const directResponse = await fetchWithTimeout(targetUrl, {
+                mode: "cors",
+                cache: "force-cache"
+            });
             if (directResponse.ok) {
                 const blob = await directResponse.blob();
-                if (blob.type.includes("image")) return await blobToBase64(blob);
+                if (isUsableImageBlob(blob)) return await blobToBase64(blob);
             }
         } catch (error) {
             // CORS時は下記プロキシへフォールバック
@@ -12819,10 +14260,14 @@
 
         try {
             const blob = await Promise.any(proxyUrls.map(async proxyUrl => {
-                const response = await fetch(proxyUrl);
+                const response = await fetchWithTimeout(proxyUrl, {
+                    cache: "force-cache"
+                });
                 if (!response.ok) throw new Error("Fetch failed");
                 const imageBlob = await response.blob();
-                if (!imageBlob.type.includes("image")) throw new Error("Not an image");
+                if (!isUsableImageBlob(imageBlob)) {
+                    throw new Error("Not a usable image");
+                }
                 return imageBlob;
             }));
             return await blobToBase64(blob);
@@ -13049,6 +14494,7 @@
                     : "";
                 const aMinusPrice = escapeHtml(aMinusPriceText);
                 const imageUrl = escapeHtml(card.imgUrl);
+                const priceChangeBadge = renderPriceChangeBadge(card);
                 const dualPriceAria = escapeHtml(
                     `${priceCustomization.primaryLabel || "通常価格"} ` +
                     `${priceText}、` +
@@ -13085,6 +14531,7 @@
                                 alt="${name || "Card"}"
                                 crossorigin="anonymous"
                             >
+                            ${priceChangeBadge}
                         </div>
                         <div class="card-name" title="${name}">${name}</div>
                         <div class="card-meta">${gradeHtml}</div>
@@ -13137,7 +14584,7 @@
             adjustTitleSizes();
             adjustTextSize();
             fitPreviewPages();
-            imageLoadPromise = loadMissingImagesFast();
+            imageLoadPromise = queueMissingImagesLoad();
         });
     }
 
@@ -13261,37 +14708,72 @@
         updateWorkflowSummary();
     }
 
-    async function loadMissingImagesFast() {
-        const imageElements = Array.from(document.querySelectorAll(".dynamic-img"));
-        const cardLookup = new Map(globalCardData.map(card => [String(card.id), card]));
+    function syncResolvedImagesInDom() {
+        const cardLookup = new Map(
+            globalCardData.map(card => [String(card.id), card])
+        );
+        document.querySelectorAll(".dynamic-img").forEach(imageElement => {
+            const card = cardLookup.get(
+                String(imageElement.getAttribute("data-card-id") || "")
+            );
+            if (!card) {
+                imageElement.src = NO_IMAGE;
+                return;
+            }
+            if (card.resolvedImg) {
+                imageElement.src = card.resolvedImg;
+            } else if (!card.imgUrl) {
+                imageElement.src = NO_IMAGE;
+            }
+        });
+    }
+
+    function queueMissingImagesLoad() {
+        if (imageLoadingTask) {
+            imageLoadPromise = imageLoadingTask;
+            return imageLoadingTask;
+        }
+
+        const generation = imageLoadGeneration;
+        let task;
+        task = loadMissingImagesFast(generation).finally(() => {
+            if (imageLoadingTask === task) imageLoadingTask = null;
+            if (generation === imageLoadGeneration) {
+                syncResolvedImagesInDom();
+                updateImageStatus();
+                if (globalCardData.some(card =>
+                    card.imageState === "pending"
+                )) {
+                    queueMissingImagesLoad();
+                }
+            }
+        });
+        imageLoadingTask = task;
+        imageLoadPromise = task;
+        return task;
+    }
+
+    async function loadMissingImagesFast(generation = imageLoadGeneration) {
+        const cards = globalCardData.filter(card => {
+            if (!card.imgUrl) {
+                card.resolvedImg = NO_IMAGE;
+                card.imageState = "missing";
+                return false;
+            }
+            return !card.resolvedImg && card.imageState !== "error";
+        });
+        if (generation !== imageLoadGeneration) return;
         updateImageStatus();
 
-        const batchSize = 10;
-        for (let i = 0; i < imageElements.length; i += batchSize) {
-            const batch = imageElements.slice(i, i + batchSize);
+        let cursor = 0;
+        let completed = 0;
+        const worker = async () => {
+            while (cursor < cards.length) {
+                const index = cursor++;
+                const card = cards[index];
+                if (!card || generation !== imageLoadGeneration) return;
 
-            await Promise.all(batch.map(async imageElement => {
-                const originalUrl = imageElement.getAttribute("data-url");
-                const cardId = imageElement.getAttribute("data-card-id");
-                const card = cardLookup.get(cardId);
-
-                if (!card) {
-                    imageElement.src = NO_IMAGE;
-                    return;
-                }
-
-                if (!originalUrl) {
-                    card.resolvedImg = NO_IMAGE;
-                    card.imageState = "missing";
-                    imageElement.src = NO_IMAGE;
-                    return;
-                }
-
-                if (card.resolvedImg) {
-                    imageElement.src = card.resolvedImg;
-                    return;
-                }
-
+                const originalUrl = String(card.imgUrl || "");
                 card.imageState = "loading";
                 if (!imagePromiseCache.has(originalUrl)) {
                     imagePromiseCache.set(
@@ -13300,16 +14782,38 @@
                     );
                 }
 
-                const resolvedImage = await imagePromiseCache.get(originalUrl);
-                card.resolvedImg = resolvedImage || NO_IMAGE;
-                card.imageState = card.resolvedImg === NO_IMAGE ? "error" : "loaded";
-                imageElement.src = card.resolvedImg;
-            }));
+                let resolvedImage = NO_IMAGE;
+                try {
+                    resolvedImage =
+                        await imagePromiseCache.get(originalUrl) || NO_IMAGE;
+                } catch (error) {
+                    imagePromiseCache.delete(originalUrl);
+                }
+                if (generation !== imageLoadGeneration) return;
 
-            updateImageStatus();
-        }
+                card.resolvedImg = resolvedImage;
+                card.imageState = resolvedImage === NO_IMAGE
+                    ? "error"
+                    : "loaded";
+                completed++;
+                if (
+                    completed % IMAGE_LOAD_CONCURRENCY === 0 ||
+                    completed === cards.length
+                ) {
+                    syncResolvedImagesInDom();
+                    updateImageStatus();
+                    await new Promise(resolve => window.setTimeout(resolve, 0));
+                }
+            }
+        };
 
-        updateImageStatus();
+        const workerCount = Math.min(
+            IMAGE_LOAD_CONCURRENCY,
+            Math.max(1, cards.length)
+        );
+        await Promise.all(
+            Array.from({ length: workerCount }, () => worker())
+        );
     }
 
     function retryFailedImages() {
@@ -13342,11 +14846,11 @@
     }
 
     async function ensureImagesReadyForExport() {
-        const hasUnfinishedImages = globalCardData.some(card =>
+        while (globalCardData.some(card =>
             card.imageState === "pending" || card.imageState === "loading"
-        );
-        if (hasUnfinishedImages) {
-            imageLoadPromise = loadMissingImagesFast();
+        )) {
+            imageLoadPromise = queueMissingImagesLoad();
+            await imageLoadPromise;
         }
         await imageLoadPromise;
     }
