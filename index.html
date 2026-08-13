@@ -7955,6 +7955,76 @@
             box-shadow: 0 0 0 3px rgba(251,113,133,.1);
         }
 
+        .official-baseline-history {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 9px;
+            padding: 10px 11px;
+            border: 1px solid rgba(255,255,255,.07);
+            border-radius: 8px;
+            background: rgba(3,7,18,.22);
+        }
+
+        .official-baseline-history-label {
+            flex: 0 0 auto;
+            padding-top: 6px;
+            color: #aeb9c9;
+            font-size: 10px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        .official-baseline-history-list {
+            display: flex;
+            min-width: 0;
+            flex: 1;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .official-baseline-history-empty {
+            padding: 5px 0;
+            color: #708096;
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .official-baseline-history-chip {
+            min-height: 27px;
+            margin: 0;
+            padding: 5px 9px;
+            color: #d8e1ed;
+            border: 1px solid rgba(255,255,255,.13);
+            border-radius: 999px;
+            background: rgba(255,255,255,.045);
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+
+        .official-baseline-history-chip:hover {
+            color: #fff4c7;
+            border-color: rgba(217,173,74,.52);
+            background: rgba(217,173,74,.11);
+        }
+
+        .official-baseline-history-chip.is-selected {
+            color: #171207;
+            border-color: #ffe79a;
+            background: linear-gradient(135deg, #fff0aa, #d9ad4a);
+            box-shadow: 0 3px 10px rgba(217,173,74,.2);
+        }
+
+        .official-baseline-history-chip small {
+            margin-left: 4px;
+            font-size: 8px;
+            font-weight: 850;
+            opacity: .72;
+        }
+
         .official-baseline-help {
             margin: 8px 0 0;
             color: #7f8da1;
@@ -8207,8 +8277,18 @@
             data-state="idle"
             aria-live="polite"
         >CSVを読み込むと、選択区分の正式価格と比較します。</div>
+        <div class="official-baseline-history">
+            <span class="official-baseline-history-label">確定履歴</span>
+            <div
+                class="official-baseline-history-list"
+                id="officialBaselineHistoryList"
+                aria-live="polite"
+            >
+                <span class="official-baseline-history-empty">この区分の確定履歴はありません</span>
+            </div>
+        </div>
         <p class="official-baseline-help">
-            「更新日」に設定した日付分として保存します。同じ区分・同じ日付で再確定すると、その日付分だけを上書きします。
+            「更新日」に設定した日付分として保存します。同じ区分・同じ日付で再確定すると、その日付分だけを上書きします。確定履歴の日付を押すと、その日付へ切り替えて内容を確認できます。
         </p>
     </section>
 
@@ -9577,6 +9657,7 @@
             ...Object.keys(previousRegistry.stores || {}),
             ...nextStoreIds
         ]);
+        let mergedLocalOfficialHistory = false;
 
         sharedSyncApplyingRemote = true;
         try {
@@ -9584,6 +9665,40 @@
                 const remoteStore = normalized.stores[storeId];
                 SHARED_STORE_DATA_KEYS.forEach(baseKey => {
                     const storageKey = scopedStorageKey(baseKey, storeId);
+                    const localValue = localStorage.getItem(storageKey);
+
+                    // 正式価格の履歴だけは共有側で丸ごと置換しない。
+                    // 古いHTMLや同時操作の端末が持つ履歴とも日付単位で統合し、
+                    // 片方にしかない確定日を消さずに共有先へ戻す。
+                    if (baseKey === OFFICIAL_BASELINES_STORAGE_KEY) {
+                        const remoteValue =
+                            remoteStore &&
+                            hasOwn(remoteStore.data, baseKey)
+                                ? remoteStore.data[baseKey]
+                                : "{}";
+                        const remoteBaselines = normalizeOfficialBaselines(
+                            remoteValue
+                        );
+                        const mergedBaselines = mergeOfficialBaselines(
+                            localValue || "{}",
+                            remoteValue
+                        );
+                        const mergedValue = JSON.stringify(mergedBaselines);
+                        const normalizedRemoteValue = JSON.stringify(
+                            remoteBaselines
+                        );
+
+                        if (countOfficialBaselineRecords(mergedBaselines) > 0) {
+                            localStorage.setItem(storageKey, mergedValue);
+                        } else {
+                            localStorage.removeItem(storageKey);
+                        }
+                        if (mergedValue !== normalizedRemoteValue) {
+                            mergedLocalOfficialHistory = true;
+                        }
+                        return;
+                    }
+
                     if (
                         remoteStore &&
                         hasOwn(remoteStore.data, baseKey)
@@ -9619,9 +9734,11 @@
             );
             writeSharedSyncMeta({
                 version: sharedSyncRemoteVersion,
-                pending: false,
+                pending: mergedLocalOfficialHistory,
                 updatedAt: remoteMeta.updatedAt || "",
-                localChangedAt: "",
+                localChangedAt: mergedLocalOfficialHistory
+                    ? new Date().toISOString()
+                    : "",
                 lastMutationId: remoteMeta.mutationId || ""
             });
         } finally {
@@ -9764,9 +9881,12 @@
             throw new Error("共有設定の内容を取得できませんでした。");
         }
         applySharedSettingsState(response.state, response);
+        const historyMergePending = readSharedSyncMeta().pending;
         setSharedSyncStatus(
-            "synced",
-            message || "他の端末で更新された共有設定を反映しました"
+            historyMergePending ? "pending" : "synced",
+            historyMergePending
+                ? "端末と共有先の確定履歴を統合しました。共有先へ反映します"
+                : message || "他の端末で更新された共有設定を反映しました"
         );
 
         if (window.__KAITORI_DISABLE_SHARED_SYNC_RELOAD__) {
@@ -11239,6 +11359,7 @@
         renderStoreProfileSelect();
         refreshTemplateSelect();
         refreshSingleTemplateSelect();
+        recoverOfficialBaselineStorage();
         initializeOfficialBaselineControls();
         const restoredDraft = restoreWorkingDraft();
         if (restoredDraft) {
@@ -12273,6 +12394,101 @@
         };
     }
 
+    function officialBaselineRecordTimestamp(record) {
+        const timestamp = Date.parse(record?.confirmedAt || "");
+        return Number.isFinite(timestamp) ? timestamp : 0;
+    }
+
+    function setNewestOfficialBaselineRecord(recordMap, record) {
+        if (!record?.confirmedDate) return;
+        const existing = recordMap.get(record.confirmedDate);
+        if (!existing) {
+            recordMap.set(record.confirmedDate, record);
+            return;
+        }
+
+        const existingTime = officialBaselineRecordTimestamp(existing);
+        const nextTime = officialBaselineRecordTimestamp(record);
+        if (nextTime > existingTime) {
+            recordMap.set(record.confirmedDate, record);
+            return;
+        }
+        if (nextTime < existingTime) return;
+
+        // 同じ確定時刻、または時刻情報がない旧データ同士では、後から
+        // 読み込んだ側を採用する。旧形式からの移行時にもデータを落とさない。
+        recordMap.set(record.confirmedDate, record);
+    }
+
+    function collectOfficialBaselineCategorySources(source, category) {
+        if (!source || typeof source !== "object") return [];
+        const label = OFFICIAL_BASELINE_CATEGORIES[category];
+        const aliases = [
+            category,
+            label,
+            String(label || "").toLocaleLowerCase("ja")
+        ];
+        const containers = [
+            source,
+            source.baselines,
+            source.data?.categories,
+            source.categories
+        ].filter(
+            container =>
+                container &&
+                typeof container === "object" &&
+                !Array.isArray(container)
+        );
+        const results = [];
+        containers.forEach(container => {
+            aliases.forEach(alias => {
+                if (alias && hasOwn(container, alias)) {
+                    results.push(container[alias]);
+                }
+            });
+        });
+        return results;
+    }
+
+    function appendOfficialBaselineRecords(recordMap, categorySource) {
+        if (!categorySource || typeof categorySource !== "object") return;
+
+        const appendRecord = (rawRecord, fallbackDate = "") => {
+            const record = normalizeOfficialBaselineRecord(
+                rawRecord,
+                fallbackDate
+            );
+            if (record) setNewestOfficialBaselineRecord(recordMap, record);
+        };
+
+        if (Array.isArray(categorySource)) {
+            categorySource.forEach(rawRecord => appendRecord(rawRecord));
+            return;
+        }
+
+        [
+            categorySource.records,
+            categorySource.dates,
+            categorySource.history,
+            categorySource.snapshots
+        ].forEach(collection => {
+            if (Array.isArray(collection)) {
+                collection.forEach(rawRecord => appendRecord(rawRecord));
+                return;
+            }
+            if (collection && typeof collection === "object") {
+                Object.entries(collection).forEach(([dateKey, rawRecord]) => {
+                    appendRecord(rawRecord, dateKey);
+                });
+            }
+        });
+
+        // 旧形式（区分ごとに確定データを1件だけ保存）も引き継ぐ。
+        if (Array.isArray(categorySource.entries)) {
+            appendRecord(categorySource);
+        }
+    }
+
     function normalizeOfficialBaselines(value) {
         let source = value;
         if (typeof value === "string") {
@@ -12282,44 +12498,14 @@
                 source = {};
             }
         }
-        const sourceCategories =
-            source?.categories && typeof source.categories === "object"
-                ? source.categories
-                : {};
         const categories = {};
 
         Object.keys(OFFICIAL_BASELINE_CATEGORIES).forEach(category => {
-            const categorySource = sourceCategories[category];
-            if (!categorySource || typeof categorySource !== "object") return;
             const recordMap = new Map();
-            const sourceRecords =
-                categorySource.records &&
-                typeof categorySource.records === "object"
-                    ? categorySource.records
-                    : categorySource.dates &&
-                        typeof categorySource.dates === "object"
-                        ? categorySource.dates
-                        : null;
-
-            if (sourceRecords) {
-                Object.entries(sourceRecords).forEach(([dateKey, rawRecord]) => {
-                    const record = normalizeOfficialBaselineRecord(
-                        rawRecord,
-                        dateKey
-                    );
-                    if (record) recordMap.set(record.confirmedDate, record);
+            collectOfficialBaselineCategorySources(source, category)
+                .forEach(categorySource => {
+                    appendOfficialBaselineRecords(recordMap, categorySource);
                 });
-            }
-
-            // 旧形式（区分ごとに1件）も、その確定日の日付データとして引き継ぐ。
-            if (Array.isArray(categorySource.entries)) {
-                const legacyRecord = normalizeOfficialBaselineRecord(
-                    categorySource
-                );
-                if (legacyRecord) {
-                    recordMap.set(legacyRecord.confirmedDate, legacyRecord);
-                }
-            }
 
             if (recordMap.size === 0) return;
             const records = {};
@@ -12332,8 +12518,82 @@
         return { version: 2, categories };
     }
 
+    function mergeOfficialBaselines(...values) {
+        const categoryMaps = Object.fromEntries(
+            Object.keys(OFFICIAL_BASELINE_CATEGORIES)
+                .map(category => [category, new Map()])
+        );
+
+        values.forEach(value => {
+            const normalized = normalizeOfficialBaselines(value);
+            Object.keys(OFFICIAL_BASELINE_CATEGORIES).forEach(category => {
+                const records = normalized.categories[category]?.records || {};
+                Object.values(records).forEach(record => {
+                    setNewestOfficialBaselineRecord(
+                        categoryMaps[category],
+                        record
+                    );
+                });
+            });
+        });
+
+        const categories = {};
+        Object.entries(categoryMaps).forEach(([category, recordMap]) => {
+            if (recordMap.size === 0) return;
+            const records = {};
+            Array.from(recordMap.keys()).sort().forEach(dateKey => {
+                records[dateKey] = recordMap.get(dateKey);
+            });
+            categories[category] = { records };
+        });
+        return { version: 2, categories };
+    }
+
+    function countOfficialBaselineRecords(baselines) {
+        return Object.keys(OFFICIAL_BASELINE_CATEGORIES).reduce(
+            (total, category) =>
+                total + Object.keys(
+                    baselines?.categories?.[category]?.records || {}
+                ).length,
+            0
+        );
+    }
+
+    function recoverOfficialBaselineStorage() {
+        const storageKey = scopedStorageKey(
+            OFFICIAL_BASELINES_STORAGE_KEY,
+            activeStoreId
+        );
+        const scopedValue = localStorage.getItem(storageKey);
+        const legacyValue = localStorage.getItem(
+            OFFICIAL_BASELINES_STORAGE_KEY
+        );
+        const recovered = mergeOfficialBaselines(
+            legacyValue || "{}",
+            scopedValue || "{}"
+        );
+        if (countOfficialBaselineRecords(recovered) === 0) return false;
+
+        const serialized = JSON.stringify(recovered);
+        if (scopedValue === serialized) return false;
+        try {
+            localStorage.setItem(storageKey, serialized);
+            const meta = readSharedSyncMeta();
+            writeSharedSyncMeta({
+                ...meta,
+                pending: true,
+                localChangedAt: new Date().toISOString()
+            });
+            return true;
+        } catch (error) {
+            console.warn("確定履歴の移行保存に失敗しました。", error);
+            return false;
+        }
+    }
+
     function getOfficialBaselines() {
-        return normalizeOfficialBaselines(
+        return mergeOfficialBaselines(
+            localStorage.getItem(OFFICIAL_BASELINES_STORAGE_KEY) || "{}",
             getScopedItem(OFFICIAL_BASELINES_STORAGE_KEY) || "{}"
         );
     }
@@ -12372,6 +12632,69 @@
             .sort()
             .pop();
         return previousDate ? records[previousDate] : null;
+    }
+
+    function selectOfficialBaselineHistoryDate(dateValue) {
+        const normalizedDate = normalizeOfficialDateValue(dateValue);
+        const dateInput = document.getElementById("dateInput");
+        if (!normalizedDate || !dateInput) return;
+        dateInput.value = normalizedDate;
+        dateInput.dispatchEvent(new Event("change", { bubbles: true }));
+    }
+
+    function renderOfficialBaselineHistory(
+        category = getSelectedOfficialCategory(),
+        targetDate = getOfficialTargetDate(),
+        baselines = getOfficialBaselines()
+    ) {
+        const list = document.getElementById(
+            "officialBaselineHistoryList"
+        );
+        if (!list) return;
+
+        const records = getOfficialRecordsForCategory(
+            category,
+            baselines
+        );
+        const dates = Object.keys(records).sort().reverse();
+        list.replaceChildren();
+
+        if (dates.length === 0) {
+            const empty = document.createElement("span");
+            empty.className = "official-baseline-history-empty";
+            empty.textContent =
+                `${getOfficialCategoryLabel(category)}の確定履歴はありません`;
+            list.appendChild(empty);
+            return;
+        }
+
+        dates.forEach((dateValue, index) => {
+            const record = records[dateValue];
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "official-baseline-history-chip";
+            button.classList.toggle(
+                "is-selected",
+                dateValue === targetDate
+            );
+            const dateLabel = document.createElement("span");
+            dateLabel.textContent = formatOfficialDateLabel(dateValue, true);
+            const countLabel = document.createElement("small");
+            countLabel.textContent =
+                `${Number(record.count || record.entries?.length || 0)
+                    .toLocaleString("ja-JP")}件`;
+            button.append(dateLabel, countLabel);
+            button.title =
+                `${getOfficialCategoryLabel(category)} ` +
+                `${formatOfficialDateLabel(dateValue)}分｜` +
+                `確定操作 ${formatOfficialBaselineTime(record.confirmedAt)}` +
+                (record.confirmedBy ? `｜担当 ${record.confirmedBy}` : "") +
+                (index === 0 ? "｜最新の確定日" : "");
+            button.addEventListener("click", () => {
+                selectOfficialBaselineHistoryDate(dateValue);
+            });
+            list.appendChild(button);
+        });
     }
 
     function createOfficialBaselineEntries(cards) {
@@ -12550,6 +12873,11 @@
             baselines
         );
         const comparisonBaseline = getOfficialComparisonBaselineForDate(
+            category,
+            targetDate,
+            baselines
+        );
+        renderOfficialBaselineHistory(
             category,
             targetDate,
             baselines
