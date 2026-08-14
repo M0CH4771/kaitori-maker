@@ -9684,6 +9684,24 @@
             min-height: 320px;
         }
 
+        .single-maker {
+            --single-control-width: 590px;
+        }
+
+        .single-selection-toolbar > * {
+            min-width: 0;
+        }
+
+        .single-layout-resizer {
+            display: none;
+        }
+
+        html.is-resizing-single-layout,
+        html.is-resizing-single-layout * {
+            cursor: col-resize !important;
+            user-select: none !important;
+        }
+
         @media (min-width: 1320px) {
             #buylistControl,
             .single-maker .control-panel,
@@ -9722,6 +9740,110 @@
             .single-maker .control-panel .panel-actions button {
                 width: 100%;
                 min-width: 0;
+            }
+
+            .single-maker {
+                grid-template-columns:
+                    minmax(440px, var(--single-control-width))
+                    14px
+                    minmax(520px, 1fr);
+                column-gap: 9px;
+            }
+
+            .single-maker > .control-panel {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .single-maker > .single-preview-container {
+                grid-column: 3;
+                grid-row: 1;
+            }
+
+            .single-layout-resizer {
+                position: sticky;
+                z-index: 35;
+                top: 92px;
+                display: flex;
+                height: calc(100vh - 108px);
+                max-height: calc(100vh - 108px);
+                grid-column: 2;
+                grid-row: 1;
+                align-self: start;
+                align-items: center;
+                justify-content: center;
+                touch-action: none;
+                cursor: col-resize;
+            }
+
+            .single-layout-resizer::before {
+                width: 2px;
+                height: 100%;
+                border-radius: 999px;
+                content: "";
+                background: rgba(255,255,255,.09);
+                transition: background .16s ease, box-shadow .16s ease;
+            }
+
+            .single-layout-resizer span {
+                position: absolute;
+                display: grid;
+                width: 30px;
+                height: 54px;
+                place-items: center;
+                color: #f7dc82;
+                border: 1px solid #3b485b;
+                border-radius: 999px;
+                background: #111a27;
+                box-shadow: 0 8px 20px rgba(0,0,0,.34);
+                font-size: 15px;
+                font-weight: 900;
+                transition: border-color .16s ease, background .16s ease,
+                    transform .16s ease;
+            }
+
+            .single-layout-resizer:hover::before,
+            .single-layout-resizer:focus-visible::before,
+            html.is-resizing-single-layout .single-layout-resizer::before {
+                background: #e5bd58;
+                box-shadow: 0 0 0 3px rgba(229,189,88,.12);
+            }
+
+            .single-layout-resizer:hover span,
+            .single-layout-resizer:focus-visible span,
+            html.is-resizing-single-layout .single-layout-resizer span {
+                border-color: #e5bd58;
+                background: #192536;
+                transform: scale(1.05);
+            }
+
+            .single-layout-resizer:focus-visible {
+                outline: none;
+            }
+
+            .single-maker .single-selection-toolbar {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .single-maker .single-selection-toolbar input {
+                grid-column: 1 / -1;
+            }
+
+            .single-maker .single-selection-toolbar button {
+                width: 100%;
+                min-width: 0;
+                min-height: 52px;
+                padding-right: 9px;
+                padding-left: 9px;
+                white-space: normal;
+            }
+
+            .single-maker .single-card-picker {
+                grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+            }
+
+            .single-maker .single-picker-item {
+                min-height: 84px;
             }
         }
 
@@ -10399,7 +10521,7 @@
     </main>
 
     <section class="single-maker view-hidden" id="singleMakerView">
-        <aside class="control-panel" aria-label="単品告知画像の設定">
+        <aside class="control-panel" id="singleControl" aria-label="単品告知画像の設定">
             <div class="panel-heading">
                 <h2>単品告知画像</h2>
                 <p>1枚に<strong>1〜10商品</strong>を配置できます</p>
@@ -10809,6 +10931,20 @@
             </div>
         </aside>
 
+        <div
+            class="single-layout-resizer"
+            id="singleLayoutResizer"
+            role="separator"
+            tabindex="0"
+            aria-label="設定とプレビューの幅を調整"
+            aria-controls="singleControl singlePreviewContainer"
+            aria-orientation="vertical"
+            aria-valuemin="440"
+            aria-valuemax="900"
+            aria-valuenow="590"
+            title="左右にドラッグして幅を調整・ダブルクリックで元に戻す"
+        ><span aria-hidden="true">↔</span></div>
+
         <section
             class="single-preview-container"
             id="singlePreviewContainer"
@@ -11086,6 +11222,13 @@
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
+    const SINGLE_LAYOUT_WIDTH_STORAGE_KEY =
+        "kaitori_single_layout_width_v1";
+    const DEFAULT_SINGLE_CONTROL_WIDTH = 590;
+    const MIN_SINGLE_CONTROL_WIDTH = 440;
+    const MAX_SINGLE_CONTROL_WIDTH = 900;
+    const MIN_SINGLE_PREVIEW_WIDTH = 520;
+    const SINGLE_LAYOUT_CHROME_WIDTH = 32;
     const X_POST_TEMPLATE_STORAGE_KEY = "kaitori_xpost_templates_v1";
     const X_POST_TEMPLATE_EDITOR_STORAGE_KEY =
         "kaitori_xpost_template_editor_v1";
@@ -11199,6 +11342,8 @@
     let sharedSyncRemoteVersion = 0;
     let sharedSyncLastCheckAt = 0;
     let sharedSyncReloadScheduled = false;
+    let preferredSingleControlWidth = DEFAULT_SINGLE_CONTROL_WIDTH;
+    let singleLayoutFitFrame = 0;
 
     function normalizeSharedSyncApiUrl(value) {
         const rawValue = String(value || "").trim();
@@ -13046,6 +13191,180 @@
         alert(`テンプレート「${name}」を削除しました。`);
     }
 
+    function getSingleLayoutWidthBounds() {
+        const maker = document.getElementById("singleMakerView");
+        const makerWidth = maker?.getBoundingClientRect().width || 0;
+        const availableMaximum = makerWidth > 0
+            ? Math.floor(
+                makerWidth -
+                MIN_SINGLE_PREVIEW_WIDTH -
+                SINGLE_LAYOUT_CHROME_WIDTH
+            )
+            : MAX_SINGLE_CONTROL_WIDTH;
+
+        return {
+            min: MIN_SINGLE_CONTROL_WIDTH,
+            max: Math.max(
+                MIN_SINGLE_CONTROL_WIDTH,
+                Math.min(MAX_SINGLE_CONTROL_WIDTH, availableMaximum)
+            )
+        };
+    }
+
+    function scheduleSingleLayoutFit() {
+        cancelAnimationFrame(singleLayoutFitFrame);
+        singleLayoutFitFrame = requestAnimationFrame(() => {
+            fitSinglePreviews();
+            singleLayoutFitFrame = 0;
+        });
+    }
+
+    function renderSingleLayoutWidth() {
+        const maker = document.getElementById("singleMakerView");
+        const resizer = document.getElementById("singleLayoutResizer");
+        if (!maker || !resizer) return;
+
+        const bounds = getSingleLayoutWidthBounds();
+        const appliedWidth = Math.min(
+            bounds.max,
+            Math.max(bounds.min, preferredSingleControlWidth)
+        );
+
+        maker.style.setProperty(
+            "--single-control-width",
+            `${Math.round(appliedWidth)}px`
+        );
+        resizer.setAttribute("aria-valuemin", String(bounds.min));
+        resizer.setAttribute("aria-valuemax", String(bounds.max));
+        resizer.setAttribute("aria-valuenow", String(Math.round(appliedWidth)));
+        resizer.setAttribute(
+            "aria-valuetext",
+            `設定欄 ${Math.round(appliedWidth)}ピクセル`
+        );
+        scheduleSingleLayoutFit();
+    }
+
+    function setSingleControlWidth(value, persist = false) {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) return;
+
+        const bounds = getSingleLayoutWidthBounds();
+        preferredSingleControlWidth = Math.min(
+            bounds.max,
+            Math.max(bounds.min, numericValue)
+        );
+        renderSingleLayoutWidth();
+
+        if (persist) {
+            try {
+                localStorage.setItem(
+                    SINGLE_LAYOUT_WIDTH_STORAGE_KEY,
+                    String(Math.round(preferredSingleControlWidth))
+                );
+            } catch (error) {
+                console.warn("単品画面の幅設定を保存できませんでした。", error);
+            }
+        }
+    }
+
+    function syncSingleLayoutWidth() {
+        if (!window.matchMedia("(min-width: 1320px)").matches) return;
+        renderSingleLayoutWidth();
+    }
+
+    function initializeSingleLayoutResizer() {
+        const maker = document.getElementById("singleMakerView");
+        const control = document.getElementById("singleControl");
+        const resizer = document.getElementById("singleLayoutResizer");
+        if (!maker || !control || !resizer) return;
+
+        try {
+            const savedWidth = Number(
+                localStorage.getItem(SINGLE_LAYOUT_WIDTH_STORAGE_KEY)
+            );
+            if (Number.isFinite(savedWidth) && savedWidth > 0) {
+                preferredSingleControlWidth = Math.min(
+                    MAX_SINGLE_CONTROL_WIDTH,
+                    Math.max(MIN_SINGLE_CONTROL_WIDTH, savedWidth)
+                );
+            }
+        } catch (error) {
+            console.warn("単品画面の幅設定を読み込めませんでした。", error);
+        }
+        renderSingleLayoutWidth();
+
+        let dragState = null;
+
+        resizer.addEventListener("pointerdown", event => {
+            if (
+                event.button !== 0 ||
+                !window.matchMedia("(min-width: 1320px)").matches
+            ) {
+                return;
+            }
+
+            event.preventDefault();
+            dragState = {
+                pointerId: event.pointerId,
+                startX: event.clientX,
+                startWidth: control.getBoundingClientRect().width
+            };
+            resizer.setPointerCapture(event.pointerId);
+            document.documentElement.classList.add(
+                "is-resizing-single-layout"
+            );
+        });
+
+        resizer.addEventListener("pointermove", event => {
+            if (!dragState || event.pointerId !== dragState.pointerId) return;
+            event.preventDefault();
+            setSingleControlWidth(
+                dragState.startWidth + event.clientX - dragState.startX,
+                false
+            );
+        });
+
+        const finishDrag = event => {
+            if (!dragState || event.pointerId !== dragState.pointerId) return;
+            if (resizer.hasPointerCapture(event.pointerId)) {
+                resizer.releasePointerCapture(event.pointerId);
+            }
+            dragState = null;
+            document.documentElement.classList.remove(
+                "is-resizing-single-layout"
+            );
+            setSingleControlWidth(preferredSingleControlWidth, true);
+        };
+
+        resizer.addEventListener("pointerup", finishDrag);
+        resizer.addEventListener("pointercancel", finishDrag);
+
+        resizer.addEventListener("keydown", event => {
+            if (!window.matchMedia("(min-width: 1320px)").matches) return;
+
+            const currentWidth = control.getBoundingClientRect().width;
+            const step = event.shiftKey ? 48 : 24;
+            let nextWidth = null;
+            if (event.key === "ArrowLeft") nextWidth = currentWidth - step;
+            if (event.key === "ArrowRight") nextWidth = currentWidth + step;
+            if (event.key === "Home") {
+                nextWidth = DEFAULT_SINGLE_CONTROL_WIDTH;
+            }
+            if (event.key === "End") {
+                nextWidth = getSingleLayoutWidthBounds().max;
+            }
+            if (nextWidth === null) return;
+
+            event.preventDefault();
+            setSingleControlWidth(nextWidth, true);
+        });
+
+        resizer.addEventListener("dblclick", event => {
+            event.preventDefault();
+            setSingleControlWidth(DEFAULT_SINGLE_CONTROL_WIDTH, true);
+        });
+    }
+
     function switchAppView(view) {
         const isBuylist = view === "buylist";
         const isSingle = view === "single";
@@ -13064,6 +13383,7 @@
 
         requestAnimationFrame(() => {
             if (isSingle) {
+                syncSingleLayoutWidth();
                 fitSinglePreviews();
             } else if (isBuylist) {
                 fitPreviewPages();
@@ -13080,6 +13400,7 @@
         const mm = String(today.getMonth() + 1).padStart(2, "0");
         const dd = String(today.getDate()).padStart(2, "0");
         document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
+        initializeSingleLayoutResizer();
 
         const savedTitle = getScopedItem("kaitori_title");
         const savedDisclaimer = getScopedItem("kaitori_disclaimer");
@@ -18420,6 +18741,7 @@ BOXのお持ち込みお待ちしております！
     }
 
     window.addEventListener("resize", () => {
+        syncSingleLayoutWidth();
         adjustTitleSizes();
         adjustTextSize();
         fitPreviewPages();
