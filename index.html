@@ -9693,7 +9693,8 @@
         }
 
         .buylist-maker,
-        .single-maker {
+        .single-maker,
+        .x-post-maker {
             --panel-control-width: 590px;
         }
 
@@ -9752,7 +9753,8 @@
             }
 
             .buylist-maker,
-            .single-maker {
+            .single-maker,
+            .x-post-maker {
                 grid-template-columns:
                     minmax(440px, var(--panel-control-width))
                     14px
@@ -9777,6 +9779,16 @@
             }
 
             .single-maker > .single-preview-container {
+                grid-column: 3;
+                grid-row: 1;
+            }
+
+            .x-post-maker > #xPostControl {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .x-post-maker > .x-post-preview-container {
                 grid-column: 3;
                 grid-row: 1;
             }
@@ -9865,6 +9877,38 @@
 
             .single-maker .single-picker-item {
                 min-height: 84px;
+            }
+
+            /*
+             * PC版の縦移動はブラウザ全体へ一本化する。
+             * 商品一覧など用途が明確な内部スクロールだけを残す。
+             */
+            #buylistControl,
+            #pagesContainer,
+            .single-maker .control-panel,
+            .single-maker .single-preview-container,
+            #xPostControl,
+            .x-post-preview-container {
+                position: relative;
+                top: auto;
+                max-height: none;
+                overflow: visible;
+                overscroll-behavior: auto;
+                scrollbar-gutter: auto;
+            }
+
+            #buylistControl .panel-heading,
+            .single-maker .control-panel .panel-heading,
+            #xPostControl .panel-heading,
+            #buylistControl .panel-actions,
+            .single-maker .control-panel .panel-actions {
+                position: static;
+            }
+
+            .preview-container::before,
+            .single-preview-container::before {
+                position: static;
+                flex: 0 0 auto;
             }
         }
 
@@ -11078,7 +11122,25 @@
             </div>
         </aside>
 
-        <section class="x-post-preview-container" aria-label="X投稿文プレビュー">
+        <div
+            class="panel-layout-resizer x-post-layout-resizer"
+            id="xPostLayoutResizer"
+            role="separator"
+            tabindex="0"
+            aria-label="X投稿文の設定とプレビューの幅を調整"
+            aria-controls="xPostControl xPostPreviewContainer"
+            aria-orientation="vertical"
+            aria-valuemin="440"
+            aria-valuemax="900"
+            aria-valuenow="590"
+            title="左右にドラッグして幅を調整・ダブルクリックで元に戻す"
+        ><span aria-hidden="true">↔</span></div>
+
+        <section
+            class="x-post-preview-container"
+            id="xPostPreviewContainer"
+            aria-label="X投稿文プレビュー"
+        >
             <div class="x-post-preview-card">
                 <div class="single-x-post-heading">
                     <strong>生成されたX投稿文</strong>
@@ -11282,6 +11344,15 @@
             storageKey: "kaitori_single_layout_width_v1",
             defaultWidth: 590,
             fitPreview: () => fitSinglePreviews()
+        }),
+        xpost: Object.freeze({
+            label: "X投稿文",
+            rootId: "xPostMakerView",
+            controlId: "xPostControl",
+            resizerId: "xPostLayoutResizer",
+            storageKey: "kaitori_xpost_layout_width_v1",
+            defaultWidth: 590,
+            fitPreview: () => {}
         })
     });
     const X_POST_TEMPLATE_STORAGE_KEY = "kaitori_xpost_templates_v1";
@@ -11399,7 +11470,8 @@
     let sharedSyncReloadScheduled = false;
     const panelLayoutStates = {
         buylist: { preferredWidth: 590, fitFrame: 0 },
-        single: { preferredWidth: 590, fitFrame: 0 }
+        single: { preferredWidth: 590, fitFrame: 0 },
+        xpost: { preferredWidth: 590, fitFrame: 0 }
     };
 
     function normalizeSharedSyncApiUrl(value) {
@@ -13496,6 +13568,7 @@
                 syncPanelLayoutWidth("buylist");
                 fitPreviewPages();
             } else if (isXPost) {
+                syncPanelLayoutWidth("xpost");
                 syncSingleXPostDraft(false);
             }
         });
@@ -18851,6 +18924,7 @@ BOXのお持ち込みお待ちしております！
     window.addEventListener("resize", () => {
         syncPanelLayoutWidth("buylist");
         syncPanelLayoutWidth("single");
+        syncPanelLayoutWidth("xpost");
         adjustTitleSizes();
         adjustTextSize();
         fitPreviewPages();
