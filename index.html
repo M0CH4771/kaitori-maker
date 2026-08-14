@@ -650,6 +650,62 @@
             line-height: 1.5;
         }
 
+        .csv-file-status {
+            display: flex;
+            min-height: 28px;
+            align-items: center;
+            gap: 7px;
+            margin-top: 7px;
+            padding: 6px 9px;
+            color: #9ca8ba;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 7px;
+            background: rgba(3,7,18,.25);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.4;
+            overflow-wrap: anywhere;
+        }
+
+        .csv-file-status::before {
+            width: 7px;
+            height: 7px;
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: #64748b;
+            content: "";
+        }
+
+        .csv-file-status[data-state="loading"] {
+            color: #fde68a;
+            border-color: rgba(250,204,21,.2);
+        }
+
+        .csv-file-status[data-state="loading"]::before {
+            background: #facc15;
+        }
+
+        .csv-file-status[data-state="loaded"],
+        .csv-file-status[data-state="restored"] {
+            color: #bbf7d0;
+            border-color: rgba(74,222,128,.2);
+        }
+
+        .csv-file-status[data-state="loaded"]::before,
+        .csv-file-status[data-state="restored"]::before {
+            background: #4ade80;
+            box-shadow: 0 0 0 3px rgba(74,222,128,.1);
+        }
+
+        .csv-file-status[data-state="error"] {
+            color: #fecdd3;
+            border-color: rgba(251,113,133,.24);
+        }
+
+        .csv-file-status[data-state="error"]::before {
+            background: #fb7185;
+        }
+
         .panel-divider {
             display: none;
         }
@@ -3315,6 +3371,255 @@
         .diff-button[data-kind="newItems"] strong { color: #64d5ff; }
         .diff-button[data-kind="strengthened"] strong { color: #ffe27a; }
         .diff-button[data-kind="all"] strong { color: #8df0b7; }
+
+        .csv-diff-top-actions {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            margin-top: 9px;
+        }
+
+        .diff-top-button {
+            min-height: 54px;
+            margin: 0;
+            padding: 10px 12px;
+            color: #17120a;
+            border: 1px solid #ffe79a;
+            background:
+                linear-gradient(135deg, rgba(255,255,255,.38), transparent 38%),
+                linear-gradient(135deg, #fff0aa, #d9ad4a);
+            box-shadow: 0 5px 14px rgba(217,173,74,.16);
+            text-align: left;
+        }
+
+        .diff-top-button strong,
+        .diff-top-button span {
+            display: block;
+        }
+
+        .diff-top-button strong {
+            margin-bottom: 4px;
+            font-size: 14px;
+            font-weight: 1000;
+            line-height: 1;
+        }
+
+        .diff-top-button span {
+            color: #4d3a12;
+            font-size: 10px;
+            font-weight: 850;
+        }
+
+        .single-x-post-panel {
+            margin: 14px 24px 0;
+            padding: 15px;
+            color: #dce5f1;
+            border: 1px solid rgba(96,165,250,.24);
+            border-radius: 11px;
+            background: rgba(15,23,42,.58);
+        }
+
+        .single-x-post-heading {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .single-x-post-heading strong {
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .single-x-post-heading span {
+            color: #93a4ba;
+            font-size: 10px;
+        }
+
+        .single-x-post-panel textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .single-x-post-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 9px;
+            margin-top: 9px;
+        }
+
+        .single-x-post-actions button {
+            margin: 0;
+            padding: 10px 12px;
+            font-size: 11px;
+        }
+
+        .single-x-post-status {
+            margin-top: 8px;
+            color: #93a4ba;
+            font-size: 9px;
+            font-weight: 800;
+            text-align: right;
+        }
+
+        .x-post-maker {
+            display: grid;
+            grid-template-columns: minmax(380px, 520px) minmax(0, 1fr);
+            gap: 28px;
+            align-items: start;
+        }
+
+        .x-post-helper-note {
+            margin: 14px 24px 0;
+            padding: 14px 15px;
+            color: #dce5f1;
+            border: 1px dashed rgba(96,165,250,.28);
+            border-radius: 11px;
+            background: rgba(15,23,42,.35);
+        }
+
+        .x-post-helper-note strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .x-post-helper-note span {
+            display: block;
+            color: #9db0c9;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .x-post-helper-note button {
+            width: auto;
+            min-width: 0;
+            margin: 10px 0 0;
+            padding: 9px 12px;
+            font-size: 11px;
+        }
+
+        .x-post-template-panel,
+        .x-post-preview-card,
+        .x-post-selected-summary {
+            padding: 18px;
+            border: 1px solid rgba(96,165,250,.18);
+            border-radius: 14px;
+            background: rgba(15,23,42,.42);
+        }
+
+        .x-post-template-toolbar {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+            margin-top: 12px;
+        }
+
+        .x-post-template-toolbar button {
+            margin: 0;
+            padding: 10px 12px;
+            font-size: 11px;
+        }
+
+        .x-post-template-panel textarea,
+        .x-post-preview-card textarea {
+            min-height: 180px;
+            resize: vertical;
+            font-size: 13px;
+            line-height: 1.65;
+        }
+
+        .x-post-token-panel {
+            margin-top: 14px;
+        }
+
+        .x-post-token-panel strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .x-post-token-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .x-post-token-button {
+            width: auto;
+            min-width: 0;
+            margin: 0;
+            padding: 8px 10px;
+            color: #172033;
+            border: 1px solid #ffe79a;
+            background: linear-gradient(135deg, #fff3bf, #d9ad4a);
+            font-size: 11px;
+            font-weight: 800;
+            box-shadow: none;
+        }
+
+        .x-post-token-help {
+            margin-top: 8px;
+            color: #9db0c9;
+            font-size: 10px;
+            line-height: 1.6;
+        }
+
+        .x-post-preview-container {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .x-post-selected-summary-list {
+            display: grid;
+            gap: 9px;
+            margin-top: 12px;
+        }
+
+        .x-post-selected-item {
+            padding: 10px 12px;
+            border: 1px solid rgba(255,255,255,.08);
+            border-radius: 10px;
+            background: rgba(255,255,255,.04);
+        }
+
+        .x-post-selected-item strong {
+            display: block;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .x-post-selected-item span {
+            display: block;
+            margin-top: 4px;
+            color: #9db0c9;
+            font-size: 10px;
+            line-height: 1.5;
+        }
+
+        .x-post-selected-empty {
+            color: #9db0c9;
+            font-size: 11px;
+            line-height: 1.7;
+        }
+
+        .anomaly-report .csv-report-stats {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+        }
+
+        .anomaly-report .csv-report-stat.is-critical strong {
+            color: #ff9aaa;
+        }
+
+        .anomaly-report .csv-report-stat.is-warning strong {
+            color: #ffd76a;
+        }
 
         .csv-diff-footer {
             display: flex;
@@ -6640,8 +6945,13 @@
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
 
-            .csv-diff-actions {
+            .csv-diff-actions,
+            .csv-diff-top-actions {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .anomaly-report .csv-report-stats {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
 
             .single-selection-toolbar {
@@ -6738,7 +7048,8 @@
                 width: 100%;
             }
 
-            .single-selection {
+            .single-selection,
+            .single-x-post-panel {
                 margin-right: 16px;
                 margin-left: 16px;
             }
@@ -6748,7 +7059,13 @@
                 margin-left: 16px;
             }
 
-            .csv-diff-actions {
+            .csv-diff-actions,
+            .csv-diff-top-actions,
+            .single-x-post-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .anomaly-report .csv-report-stats {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
@@ -8105,18 +8422,24 @@
         }
 
         .single-ad-price-label .price-change-badge {
-            padding: 5px 10px;
-            font-size: 15px;
+            padding: 7px 13px;
+            font-size: 21px;
             letter-spacing: 0;
         }
 
         .single-ad.is-multi .single-ad-price-label.has-price-change {
-            gap: 5px;
+            gap: 6px;
         }
 
         .single-ad.is-multi .single-ad-price-label .price-change-badge {
-            padding: 3px 5px;
-            font-size: 9px;
+            padding: 4px 7px;
+            font-size: 11px;
+        }
+
+        .single-ad.is-multi[data-density="dense"]
+        .single-ad-price-label .price-change-badge {
+            padding: 3px 6px;
+            font-size: 10px;
         }
 
         .single-picker-price-line {
@@ -8188,6 +8511,12 @@
             type="button"
             onclick="switchAppView('single')"
         >単品告知画像</button>
+        <button
+            class="view-tab"
+            id="xPostTabButton"
+            type="button"
+            onclick="switchAppView('xpost')"
+        >X投稿テンプレート</button>
     </nav>
 
     <section class="store-profile-bar" aria-label="店舗プロフィール">
@@ -8321,6 +8650,12 @@
             <div class="control-group">
                 <label><span class="step">1</span>CSVファイルを読み込む</label>
                 <input type="file" id="csvInput" accept=".csv,text/csv">
+                <span
+                    class="csv-file-status"
+                    id="csvFileStatus"
+                    data-state="idle"
+                    aria-live="polite"
+                >CSVはまだ読み込まれていません</span>
                 <button
                     class="btn-csv-sample"
                     type="button"
@@ -8673,6 +9008,20 @@
             <div class="csv-report-body" id="csvReportBody"></div>
         </details>
 
+        <details
+            class="csv-import-report anomaly-report"
+            id="buylistAnomalyReport"
+            data-state="ready"
+            aria-live="polite"
+            hidden
+        >
+            <summary>
+                <span>異常価格・画像チェック</span>
+                <span class="csv-report-summary-counts" id="buylistAnomalySummary"></span>
+            </summary>
+            <div class="csv-report-body" id="buylistAnomalyBody"></div>
+        </details>
+
         <details class="card-editor-panel" id="cardEditorPanel">
             <summary>
                 <span>商品データを編集</span>
@@ -8790,6 +9139,12 @@
                 <div class="control-group">
                     <label><span class="step">1</span>CSVファイルを読み込む</label>
                     <input type="file" id="singleCsvInput" accept=".csv,text/csv">
+                    <span
+                        class="csv-file-status"
+                        id="singleCsvFileStatus"
+                        data-state="idle"
+                        aria-live="polite"
+                    >CSVはまだ読み込まれていません</span>
                     <button
                         class="btn-csv-sample"
                         type="button"
@@ -9089,12 +9444,38 @@
                         onclick="selectCsvDiffCards('all')"
                     ><strong id="diffAllCount">0</strong><span>変更商品をすべて選択</span></button>
                 </div>
+                <div class="csv-diff-top-actions">
+                    <button
+                        class="diff-top-button"
+                        type="button"
+                        onclick="selectPriceUpTop10('amount')"
+                    ><strong>値上がり額 TOP10</strong><span>＋金額が大きい順に10商品を選択</span></button>
+                    <button
+                        class="diff-top-button"
+                        type="button"
+                        onclick="selectPriceUpTop10('rate')"
+                    ><strong>値上がり率 TOP10</strong><span>前回比の上昇率が高い順に10商品を選択</span></button>
+                </div>
                 <div class="csv-diff-footer">
                     <div class="csv-diff-meta" id="csvDiffMeta">
                         商品ID、またはカード名・種別・掲載グループを基準に比較します
                     </div>
                 </div>
             </div>
+
+            <details
+                class="csv-import-report anomaly-report"
+                id="singleAnomalyReport"
+                data-state="ready"
+                aria-live="polite"
+                hidden
+            >
+                <summary>
+                    <span>異常価格・画像チェック</span>
+                    <span class="csv-report-summary-counts" id="singleAnomalySummary"></span>
+                </summary>
+                <div class="csv-report-body" id="singleAnomalyBody"></div>
+            </details>
 
             <div class="single-selection">
                 <div class="single-selection-toolbar">
@@ -9132,6 +9513,12 @@
                 </div>
             </div>
 
+            <div class="x-post-helper-note">
+                <strong>X投稿文は専用カテゴリで作成</strong>
+                <span>単品告知画像で選択した商品をもとに、PSA・BOX・素体それぞれの専用テンプレートから投稿文を生成・コピーできます。</span>
+                <button class="btn-template" type="button" onclick="switchAppView('xpost')">X投稿テンプレートを開く</button>
+            </div>
+
             <div class="panel-actions">
                 <div class="export-note">
                     PNGは画像ごとに保存されます。複数の画像を1ファイルにまとめる場合はZIPを選択してください。
@@ -9149,6 +9536,116 @@
             <div class="single-preview-empty">
                 <strong>商品を選択してください</strong>
                 <span>選択した商品のプレビューが表示されます</span>
+            </div>
+        </section>
+    </section>
+
+    <section class="x-post-maker view-hidden" id="xPostMakerView">
+        <aside class="control-panel" id="xPostControl" aria-label="X投稿テンプレートの設定">
+            <div class="panel-heading">
+                <div class="panel-heading-row">
+                    <h2>X投稿テンプレート</h2>
+                </div>
+                <p>単品告知画像で選択した商品をもとに、テンプレートから投稿文を生成します</p>
+            </div>
+
+            <div class="workflow-summary" aria-live="polite">
+                <div class="workflow-stat"><span>選択商品数</span><strong id="xPostSelectedCount">0件</strong></div>
+                <div class="workflow-stat"><span>選択区分</span><strong id="xPostDetectedKind">PSA</strong></div>
+                <div class="workflow-stat"><span>現在テンプレート</span><strong id="xPostCurrentTemplateName">未保存テンプレート</strong></div>
+                <div class="workflow-stat"><span>文字数</span><strong id="xPostCharacterCount">0文字</strong></div>
+            </div>
+
+            <div class="settings-section-label">
+                <strong>テンプレート設定</strong>
+                <span>投稿文の型を作って保存できます</span>
+            </div>
+
+            <div class="template-manager x-post-template-panel">
+                <div class="template-field">
+                    <label for="xPostTemplateNameInput">テンプレート名</label>
+                    <input type="text" id="xPostTemplateNameInput" placeholder="例：値上がり用・短文" oninput="persistXPostTemplateEditorState()">
+                </div>
+                <div class="template-field">
+                    <label for="xPostTemplateKindSelect">対象カテゴリ</label>
+                    <select id="xPostTemplateKindSelect" onchange="handleXPostTemplateEditorInput()">
+                        <option value="psa">PSA用</option>
+                        <option value="box">BOX用</option>
+                        <option value="sotai">素体用</option>
+                        <option value="other">その他・汎用</option>
+                    </select>
+                </div>
+                <div class="template-field">
+                    <label for="xPostTemplateSelect">保存済みテンプレート</label>
+                    <select id="xPostTemplateSelect" onchange="updateXPostTemplateStatus()">
+                        <option value="">テンプレートを選択</option>
+                    </select>
+                </div>
+                <div class="template-buttons">
+                    <button class="btn-template" type="button" onclick="saveXPostNamedTemplate()">名前をつけて保存</button>
+                    <button class="btn-load" type="button" onclick="loadXPostNamedTemplate()">適用</button>
+                    <button class="btn-delete" type="button" onclick="deleteXPostNamedTemplate()">削除</button>
+                </div>
+
+                <div class="x-post-template-toolbar">
+                    <button class="btn-soft" type="button" onclick="applyRecommendedXPostTemplate()">区分に合うテンプレートを適用</button>
+                    <button class="btn-muted" type="button" onclick="syncSingleXPostDraft(true)">テンプレートから再生成</button>
+                </div>
+
+                <div class="template-field" style="margin-top: 14px;">
+                    <label for="xPostTemplateBody">本文テンプレート</label>
+                    <textarea id="xPostTemplateBody" rows="12" placeholder="{見出し}
+
+{商品一覧}
+
+{更新情報}
+{ハッシュタグ}" oninput="handleXPostTemplateEditorInput()"></textarea>
+                </div>
+
+                <div class="x-post-token-panel">
+                    <strong>差し込み項目をクリックして挿入</strong>
+                    <div class="x-post-token-grid">
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{見出し}')">{見出し}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{商品一覧}')">{商品一覧}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{商品名}')">{商品名}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{グレード}')">{グレード}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{現在価格}')">{現在価格}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{前回価格}')">{前回価格}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{差額}')">{差額}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{差額率}')">{差額率}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{更新日}')">{更新日}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{更新情報}')">{更新情報}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{カテゴリ}')">{カテゴリ}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{商品数}')">{商品数}</button>
+                        <button class="x-post-token-button" type="button" onclick="insertXPostToken('{ハッシュタグ}')">{ハッシュタグ}</button>
+                    </div>
+                    <div class="x-post-token-help">※ {商品一覧} は選択商品の一覧、{商品名} などは先頭の商品を基準に差し込みます。複数選択時は {商品名} が「先頭商品名 ほか○商品」になります。</div>
+                </div>
+            </div>
+        </aside>
+
+        <section class="x-post-preview-container" aria-label="X投稿文プレビュー">
+            <div class="x-post-preview-card">
+                <div class="single-x-post-heading">
+                    <strong>生成されたX投稿文</strong>
+                    <span>選択商品・前回比・テンプレートから作成します</span>
+                </div>
+                <textarea id="singleXPostText" placeholder="単品告知画像で商品を選択すると投稿文を生成できます" oninput="updateSingleXPostCount()"></textarea>
+                <div class="single-x-post-actions">
+                    <button class="btn-muted" type="button" onclick="syncSingleXPostDraft(true)">テンプレートから再生成</button>
+                    <button class="btn-template" type="button" onclick="copySingleXPost()">X投稿文をコピー</button>
+                </div>
+                <div class="single-x-post-status" id="singleXPostStatus">0文字</div>
+            </div>
+
+            <div class="x-post-selected-summary">
+                <div class="single-x-post-heading">
+                    <strong>投稿対象の商品</strong>
+                    <span>単品告知画像で選択中の商品を使用します</span>
+                </div>
+                <div class="x-post-selected-summary-list" id="xPostSelectedItemsPreview">
+                    <div class="x-post-selected-empty">単品告知画像で商品を選択してください。</div>
+                </div>
             </div>
         </section>
     </section>
@@ -9308,6 +9805,9 @@
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
+    const X_POST_TEMPLATE_STORAGE_KEY = "kaitori_xpost_templates_v1";
+    const X_POST_TEMPLATE_EDITOR_STORAGE_KEY =
+        "kaitori_xpost_template_editor_v1";
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
     const OFFICIAL_BASELINES_STORAGE_KEY =
         "kaitori_official_price_baselines_v1";
@@ -9372,6 +9872,8 @@
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
+        X_POST_TEMPLATE_STORAGE_KEY,
+        X_POST_TEMPLATE_EDITOR_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
     ];
@@ -9387,6 +9889,8 @@
         TEMPLATE_STORAGE_KEY,
         SINGLE_SETTINGS_STORAGE_KEY,
         SINGLE_TEMPLATE_STORAGE_KEY,
+        X_POST_TEMPLATE_STORAGE_KEY,
+        X_POST_TEMPLATE_EDITOR_STORAGE_KEY,
         CSV_SNAPSHOT_STORAGE_KEY,
         OFFICIAL_BASELINES_STORAGE_KEY,
         WORKING_DRAFT_STORAGE_KEY
@@ -10475,6 +10979,8 @@
     };
     const imagePromiseCache = new Map();
     const selectedSingleCardIds = new Set();
+    let singleSelectionOrder = [];
+    let csvAnomalyState = createEmptyCsvAnomalyState();
 
     function createSvgDataUrl(svg) {
         return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg.trim())}`;
@@ -11260,19 +11766,24 @@
     }
 
     function switchAppView(view) {
+        const isBuylist = view === "buylist";
         const isSingle = view === "single";
-        const isBuylist = !isSingle;
+        const isXPost = view === "xpost";
         document.getElementById("buylistControl").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("pagesContainer").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("singleMakerView").classList.toggle("view-hidden", !isSingle);
+        document.getElementById("xPostMakerView").classList.toggle("view-hidden", !isXPost);
         document.getElementById("buylistTabButton").classList.toggle("is-active", isBuylist);
         document.getElementById("singleTabButton").classList.toggle("is-active", isSingle);
+        document.getElementById("xPostTabButton").classList.toggle("is-active", isXPost);
 
         requestAnimationFrame(() => {
             if (isSingle) {
                 fitSinglePreviews();
-            } else {
+            } else if (isBuylist) {
                 fitPreviewPages();
+            } else if (isXPost) {
+                syncSingleXPostDraft(false);
             }
         });
     }
@@ -11359,10 +11870,17 @@
         renderStoreProfileSelect();
         refreshTemplateSelect();
         refreshSingleTemplateSelect();
+        refreshXPostTemplateSelect();
+        restoreXPostTemplateEditorState();
         recoverOfficialBaselineStorage();
         initializeOfficialBaselineControls();
         const restoredDraft = restoreWorkingDraft();
         if (restoredDraft) {
+            updateCsvFileSelectionStatus(
+                "restored",
+                "",
+                globalCardData.length
+            );
             computeOfficialPriceDifferences(globalCardData, {
                 autoSelect: false
             });
@@ -11374,6 +11892,10 @@
         renderCardEditor();
         renderSingleCardPicker();
         renderSingleAdPreviews();
+        updateXPostSelectionPreview();
+        updateXPostTemplateStatus();
+        updateSingleXPostCount();
+        syncSingleXPostDraft(false);
         isRestoringWorkspace = false;
         setSaveState(
             "saved",
@@ -11494,7 +12016,8 @@
                 savedAt: new Date().toISOString(),
                 settings,
                 cards: globalCardData.map(serializeCardForDraft),
-                selectedSingleCardIds: Array.from(selectedSingleCardIds)
+                selectedSingleCardIds: Array.from(selectedSingleCardIds),
+                singleSelectionOrder: [...singleSelectionOrder]
             };
             setScopedItem(WORKING_DRAFT_STORAGE_KEY, JSON.stringify(draft));
             setSaveState("saved", message);
@@ -11547,6 +12070,10 @@
                     selectedSingleCardIds.add(Number(cardId));
                 }
             });
+            singleSelectionOrder = (draft.singleSelectionOrder || [])
+                .map(Number)
+                .filter(cardId => selectedSingleCardIds.has(cardId));
+            csvAnomalyState = createEmptyCsvAnomalyState();
             return globalCardData.length > 0;
         } catch (error) {
             console.warn("作業途中データを復元できませんでした。", error);
@@ -12060,28 +12587,64 @@
         event.target.value = "";
     });
 
-    document.getElementById("csvInput").addEventListener("change", event => {
-        const file = event.target.files[0];
-        if (!file) return;
+    function updateCsvFileSelectionStatus(
+        state = "idle",
+        fileName = "",
+        itemCount = 0
+    ) {
+        const safeName = String(fileName || "").trim();
+        const count = Math.max(0, Number(itemCount) || 0);
+        let message = "CSVはまだ読み込まれていません";
 
+        if (state === "loading") {
+            message = `読み込み中：${safeName || "CSVファイル"}`;
+        } else if (state === "loaded") {
+            message =
+                `読み込み済み：${safeName || "CSVファイル"}` +
+                `（${count.toLocaleString("ja-JP")}件）`;
+        } else if (state === "restored") {
+            message =
+                "前回の作業データを復元済み" +
+                `（${count.toLocaleString("ja-JP")}件）`;
+        } else if (state === "error") {
+            message =
+                `読み込み失敗：${safeName || "CSVファイル"}`;
+        }
+
+        ["csvFileStatus", "singleCsvFileStatus"].forEach(id => {
+            const status = document.getElementById(id);
+            if (!status) return;
+            status.dataset.state = state;
+            status.textContent = message;
+            status.title = safeName || message;
+        });
+    }
+
+    function readSelectedCsvFile(file) {
+        if (!file) return;
+        updateCsvFileSelectionStatus("loading", file.name);
         const reader = new FileReader();
         reader.onload = loadEvent => {
             parseCSV(loadEvent.target.result, file.name);
-            event.target.value = "";
+        };
+        reader.onerror = () => {
+            updateCsvFileSelectionStatus("error", file.name);
+            alert(`CSVファイル「${file.name}」を読み込めませんでした。`);
         };
         reader.readAsText(file);
-    });
+    }
 
-    document.getElementById("singleCsvInput").addEventListener("change", event => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = loadEvent => {
-            parseCSV(loadEvent.target.result, file.name);
-            event.target.value = "";
-        };
-        reader.readAsText(file);
+    ["csvInput", "singleCsvInput"].forEach(id => {
+        const input = document.getElementById(id);
+        input.addEventListener("click", event => {
+            // 同じファイルを続けて選んでもchangeイベントが発生するよう、
+            // ファイル選択画面を開く直前だけ前回値を解除する。
+            event.currentTarget.value = "";
+        });
+        input.addEventListener("change", event => {
+            readSelectedCsvFile(event.currentTarget.files?.[0]);
+            // 読込後は空に戻さず、ブラウザ上にも選択ファイル名を残す。
+        });
     });
 
     function downloadSampleCsv() {
@@ -12156,6 +12719,163 @@
             },
             samples: []
         };
+    }
+
+    function createEmptyCsvAnomalyState(sourceName = "") {
+        return {
+            sourceName: String(sourceName || ""),
+            zeroPrice: [],
+            suddenPrice: [],
+            aMinusHigher: [],
+            missingImage: [],
+            imageError: []
+        };
+    }
+
+    function formatAnomalyCardLabel(card) {
+        const name = String(card?.name || "カード名なし").trim() || "カード名なし";
+        const type = String(card?.type || "").trim();
+        return type ? `${name} ${type}` : name;
+    }
+
+    function isSuddenPriceChange(card) {
+        const previous = Number(card?.previousPrice || 0);
+        const current = parsePriceNumber(card?.price);
+        if (!(previous > 0) || !(current > 0)) return false;
+        const absoluteDifference = Math.abs(current - previous);
+        if (absoluteDifference < 1000) return false;
+        const ratio = current / previous;
+        return ratio >= 3 || ratio <= (1 / 3);
+    }
+
+    function refreshCsvAnomalyChecks() {
+        const preservedZeroPrice = Array.isArray(csvAnomalyState?.zeroPrice)
+            ? csvAnomalyState.zeroPrice
+            : [];
+        const sourceName = csvAnomalyState?.sourceName || csvImportReportState?.sourceName || "";
+        const next = createEmptyCsvAnomalyState(sourceName);
+        next.zeroPrice = preservedZeroPrice;
+
+        globalCardData.forEach(card => {
+            const current = parsePriceNumber(card.price);
+            const aMinus = parsePriceNumber(
+                normalizeOptionalAMinusPrice(card.aMinusPrice)
+            );
+            const label = formatAnomalyCardLabel(card);
+            const rowNumber = Number(card.sourceRow || 0);
+
+            if (isSuddenPriceChange(card)) {
+                const previous = Number(card.previousPrice || 0);
+                const ratio = previous > 0 ? current / previous : 0;
+                next.suddenPrice.push({
+                    cardId: card.id,
+                    rowNumber,
+                    message:
+                        `${label}：${previous.toLocaleString("ja-JP")}円 → ` +
+                        `${current.toLocaleString("ja-JP")}円（約${ratio.toFixed(1)}倍）`
+                });
+            }
+
+            if (current > 0 && aMinus > current) {
+                next.aMinusHigher.push({
+                    cardId: card.id,
+                    rowNumber,
+                    message:
+                        `${label}：状態A- ${aMinus.toLocaleString("ja-JP")}円 > ` +
+                        `状態A ${current.toLocaleString("ja-JP")}円`
+                });
+            }
+
+            if (!String(card.imgUrl || "").trim() || card.imageState === "missing") {
+                next.missingImage.push({
+                    cardId: card.id,
+                    rowNumber,
+                    message: `${label}：画像リンクがありません`
+                });
+            } else if (card.imageState === "error") {
+                next.imageError.push({
+                    cardId: card.id,
+                    rowNumber,
+                    message: `${label}：画像を取得できませんでした`
+                });
+            }
+        });
+
+        csvAnomalyState = next;
+        renderCsvAnomalyReports();
+        return next;
+    }
+
+    function getCsvAnomalyTotal(state = csvAnomalyState) {
+        return [
+            state.zeroPrice,
+            state.suddenPrice,
+            state.aMinusHigher,
+            state.missingImage,
+            state.imageError
+        ].reduce((sum, items) => sum + (Array.isArray(items) ? items.length : 0), 0);
+    }
+
+    function renderCsvAnomalyReports(state = csvAnomalyState) {
+        const targets = [
+            ["buylistAnomalyReport", "buylistAnomalySummary", "buylistAnomalyBody"],
+            ["singleAnomalyReport", "singleAnomalySummary", "singleAnomalyBody"]
+        ];
+        const total = getCsvAnomalyTotal(state);
+        const hasData = globalCardData.length > 0 || (state.zeroPrice || []).length > 0;
+        const definitions = [
+            ["zeroPrice", "0円・価格なし", "is-critical"],
+            ["suddenPrice", "前回比の急変", "is-critical"],
+            ["aMinusHigher", "状態A- > 状態A", "is-critical"],
+            ["missingImage", "画像リンクなし", "is-warning"],
+            ["imageError", "画像取得エラー", "is-warning"]
+        ];
+        const issueHtml = definitions
+            .filter(([key]) => (state[key] || []).length > 0)
+            .map(([key, label, type]) => `
+                <div class="csv-report-issue ${type === "is-critical" ? "is-error" : "is-warning"}">
+                    ${escapeHtml(label)}：${(state[key] || []).length.toLocaleString("ja-JP")}件
+                </div>
+            `).join("") || '<div class="csv-report-issue">要確認項目はありません。</div>';
+        const samples = definitions.flatMap(([key, label]) =>
+            (state[key] || []).slice(0, 4).map(item => ({
+                rowNumber: item.rowNumber,
+                message: `${label}｜${item.message}`
+            }))
+        ).slice(0, 16);
+        const sampleHtml = samples.length
+            ? `<ol class="csv-report-samples">${samples.map(sample => `
+                <li>${sample.rowNumber ? `${sample.rowNumber}行目：` : ""}${escapeHtml(sample.message)}</li>
+            `).join("")}</ol>`
+            : "";
+        const statsHtml = definitions.map(([key, label, type]) => `
+            <div class="csv-report-stat ${type}">
+                <span>${escapeHtml(label)}</span>
+                <strong>${(state[key] || []).length.toLocaleString("ja-JP")}</strong>
+            </div>
+        `).join("");
+        const bodyHtml = `
+            <div class="csv-report-stats">${statsHtml}</div>
+            <div class="csv-report-issues">${issueHtml}</div>
+            ${sampleHtml}
+            <div class="csv-diff-meta">
+                急変判定：前回正式価格の3倍以上または1/3以下、かつ差額1,000円以上。保存時にも選択商品を再確認します。
+            </div>
+        `;
+
+        targets.forEach(([panelId, summaryId, bodyId]) => {
+            const panel = document.getElementById(panelId);
+            const summary = document.getElementById(summaryId);
+            const body = document.getElementById(bodyId);
+            if (!panel || !summary || !body) return;
+            panel.hidden = !hasData;
+            panel.dataset.state = total > 0 ? "warning" : "ready";
+            panel.open = total > 0;
+            summary.textContent = total > 0
+                ? `${total.toLocaleString("ja-JP")}件 要確認`
+                : "問題なし";
+            body.innerHTML = bodyHtml;
+        });
     }
 
     function addCsvReportSample(report, rowNumber, message) {
@@ -12768,6 +13488,7 @@
             };
             updateCsvDiffPanel(statusMessage);
             updateOfficialBaselinePanel();
+            refreshCsvAnomalyChecks();
             return csvDiffResults;
         }
 
@@ -12834,6 +13555,7 @@
         }
         updateCsvDiffPanel(statusMessage);
         updateOfficialBaselinePanel();
+        refreshCsvAnomalyChecks();
         return csvDiffResults;
     }
 
@@ -13021,6 +13743,10 @@
         renderSingleAdPreviews();
         if (globalCardData.length > 0) renderPages();
         scheduleWorkspaceAutosave("比較区分を保存しました");
+        if (document.getElementById("xPostMakerView") &&
+            !document.getElementById("xPostMakerView").classList.contains("view-hidden")) {
+            applyRecommendedXPostTemplate();
+        }
     }
 
     function handlePriceChangeDisplayChange() {
@@ -13266,13 +13992,61 @@
         const ids = Array.isArray(csvDiffResults[kind])
             ? csvDiffResults[kind]
             : [];
+        singleSelectionOrder = [];
         ids.forEach(cardId => selectedSingleCardIds.add(cardId));
         document.getElementById("singleSearchInput").value = "";
         renderSingleCardPicker();
         renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
         if (ids.length === 0) {
             alert("この条件に該当する変更商品はありません。");
         }
+    }
+
+    function getPriceUpRanking(mode = "amount") {
+        const candidates = (csvDiffResults.priceUp || [])
+            .map(cardId => getCardById(cardId))
+            .filter(card => card && Number(card.priceDelta) > 0)
+            .map(card => ({
+                card,
+                amount: Number(card.priceDelta) || 0,
+                rate: Number(card.previousPrice) > 0
+                    ? (Number(card.priceDelta) / Number(card.previousPrice)) * 100
+                    : 0
+            }));
+
+        candidates.sort((a, b) => {
+            const primary = mode === "rate"
+                ? b.rate - a.rate
+                : b.amount - a.amount;
+            if (primary !== 0) return primary;
+            const secondary = mode === "rate"
+                ? b.amount - a.amount
+                : b.rate - a.rate;
+            if (secondary !== 0) return secondary;
+            return a.card.originalIndex - b.card.originalIndex;
+        });
+        return candidates;
+    }
+
+    function selectPriceUpTop10(mode = "amount") {
+        const ranking = getPriceUpRanking(mode).slice(0, 10);
+        if (ranking.length === 0) {
+            alert("値上がりした商品がありません。");
+            return;
+        }
+        selectedSingleCardIds.clear();
+        singleSelectionOrder = ranking.map(item => Number(item.card.id));
+        singleSelectionOrder.forEach(cardId => selectedSingleCardIds.add(cardId));
+        document.getElementById("singleSearchInput").value = "";
+        singlePickerPage = 1;
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+        scheduleWorkspaceAutosave(
+            mode === "rate"
+                ? "値上がり率TOPを選択しました"
+                : "値上がり額TOPを選択しました"
+        );
     }
 
     function parseCSV(text, sourceName = "") {
@@ -13280,6 +14054,9 @@
         const rows = parseCSVRows(cleanText);
         globalCardData = [];
         selectedSingleCardIds.clear();
+        singleSelectionOrder = [];
+        csvAnomalyState = createEmptyCsvAnomalyState(sourceName);
+        renderCsvAnomalyReports();
         imagePromiseCache.clear();
         imageLoadGeneration++;
         imageLoadingTask = null;
@@ -13331,6 +14108,7 @@
             csvImportReportState.excluded = csvImportReportState.totalRows;
             csvImportReportState.errorMessage =
                 "カード名・買取金額などの有効なヘッダー項目を確認できませんでした。";
+            updateCsvFileSelectionStatus("error", sourceName);
             renderCsvImportReport();
             renderNoData();
             alert("CSV内に有効なヘッダー項目（カード名・買取金額など）が見つかりませんでした。");
@@ -13419,6 +14197,11 @@
             ) {
                 csvImportReportState.exclusions.missingPrice++;
                 csvImportReportState.excluded++;
+                csvAnomalyState.zeroPrice.push({
+                    cardId: null,
+                    rowNumber,
+                    message: `${name || "カード名なし"}：買取価格が「${price || "空欄"}」のため除外`
+                });
                 addCsvReportSample(
                     csvImportReportState,
                     rowNumber,
@@ -13488,6 +14271,11 @@
         });
 
         csvImportReportState.accepted = globalCardData.length;
+        updateCsvFileSelectionStatus(
+            "loaded",
+            sourceName,
+            globalCardData.length
+        );
         renderCsvImportReport();
 
         computeOfficialPriceDifferences(globalCardData, {
@@ -13951,6 +14739,7 @@
             (filteredCards.length !== globalCardData.length
                 ? `｜検索結果${filteredCards.length}件`
                 : "");
+        updateXPostSelectionPreview();
 
         if (globalCardData.length === 0) {
             picker.innerHTML =
@@ -14028,6 +14817,7 @@
     }
 
     function toggleSingleCardSelection(cardId, checked) {
+        singleSelectionOrder = [];
         if (checked) {
             selectedSingleCardIds.add(Number(cardId));
         } else {
@@ -14039,6 +14829,7 @@
     }
 
     function selectVisibleSingleCards() {
+        singleSelectionOrder = [];
         getFilteredSingleCards().forEach(card => selectedSingleCardIds.add(card.id));
         renderSingleCardPicker();
         renderSingleAdPreviews();
@@ -14047,12 +14838,14 @@
 
     function clearSingleSelection() {
         selectedSingleCardIds.clear();
+        singleSelectionOrder = [];
         renderSingleCardPicker();
         renderSingleAdPreviews();
         scheduleWorkspaceAutosave();
     }
 
     function invertVisibleSingleCards() {
+        singleSelectionOrder = [];
         getFilteredSingleCards().forEach(card => {
             if (selectedSingleCardIds.has(card.id)) {
                 selectedSingleCardIds.delete(card.id);
@@ -14066,9 +14859,471 @@
     }
 
     function getSelectedSingleCards() {
+        const orderMap = new Map(
+            singleSelectionOrder.map((cardId, index) => [Number(cardId), index])
+        );
         return globalCardData
             .filter(card => selectedSingleCardIds.has(card.id))
-            .sort((a, b) => a.originalIndex - b.originalIndex);
+            .sort((a, b) => {
+                const aRank = orderMap.has(Number(a.id))
+                    ? orderMap.get(Number(a.id))
+                    : Number.POSITIVE_INFINITY;
+                const bRank = orderMap.has(Number(b.id))
+                    ? orderMap.get(Number(b.id))
+                    : Number.POSITIVE_INFINITY;
+                if (aRank !== bRank) return aRank - bRank;
+                return a.originalIndex - b.originalIndex;
+            });
+    }
+
+
+    const X_POST_TEMPLATE_KIND_LABELS = {
+        psa: "PSA用",
+        box: "BOX用",
+        sotai: "素体用",
+        other: "その他・汎用"
+    };
+
+    function normalizeXPostTemplateKind(kind) {
+        const normalized = String(kind || "").trim().toLowerCase();
+        if (hasOwn(X_POST_TEMPLATE_KIND_LABELS, normalized)) {
+            return normalized;
+        }
+        // 旧版テンプレート種別は汎用として残す
+        if (["price_up", "new_items", "standard"].includes(normalized)) {
+            return "other";
+        }
+        return "other";
+    }
+
+    function createDefaultXPostTemplates() {
+        return {
+            "PSA用｜伸ばしやすい標準": {
+                kind: "psa",
+                body: `🔥ポケモンカード PSA10 買取価格更新🔥
+
+{更新日}｜PSA10 強化買取
+
+{商品一覧}
+
+PSA10のお持ち込みお待ちしております！
+買取価格は相場・在庫状況により変動する場合がございます。
+
+{ハッシュタグ}`
+            },
+            "BOX用｜伸ばしやすい標準": {
+                kind: "box",
+                body: `📦ポケモンカード BOX 買取価格更新📦
+
+{更新日}｜未開封BOX 買取
+
+{商品一覧}
+
+BOXのお持ち込みお待ちしております！
+買取価格は相場・在庫状況により変動する場合がございます。
+
+{ハッシュタグ}`
+            },
+            "素体用｜伸ばしやすい標準": {
+                kind: "sotai",
+                body: `🔥ポケモンカード シングル買取価格更新🔥
+
+{更新日}｜SAR・SR・ARなど強化買取
+
+{商品一覧}
+
+気になるカードがございましたら、ぜひお持ち込みください！
+買取価格は相場・在庫状況により変動する場合がございます。
+
+{ハッシュタグ}`
+            }
+        };
+    }
+
+    function getXPostTemplates() {
+        let templates = {};
+        try {
+            templates = JSON.parse(
+                getScopedItem(X_POST_TEMPLATE_STORAGE_KEY) || "{}"
+            );
+        } catch (error) {
+            templates = {};
+        }
+        if (!templates || typeof templates !== "object") {
+            templates = {};
+        }
+
+        // アップデート後も既存のユーザーテンプレートを残しつつ、
+        // PSA / BOX / 素体の標準テンプレートを必ず追加する。
+        const defaults = createDefaultXPostTemplates();
+        let changed = false;
+        Object.entries(defaults).forEach(([name, template]) => {
+            if (!hasOwn(templates, name)) {
+                templates[name] = template;
+                changed = true;
+            }
+        });
+        if (changed || !getScopedItem(X_POST_TEMPLATE_STORAGE_KEY)) {
+            setScopedItem(
+                X_POST_TEMPLATE_STORAGE_KEY,
+                JSON.stringify(templates)
+            );
+        }
+        return templates;
+    }
+
+    function captureXPostTemplateEditorState() {
+        return {
+            name: String(document.getElementById("xPostTemplateNameInput")?.value || "").trim(),
+            kind: normalizeXPostTemplateKind(document.getElementById("xPostTemplateKindSelect")?.value),
+            body: String(document.getElementById("xPostTemplateBody")?.value || "")
+        };
+    }
+
+    function persistXPostTemplateEditorState() {
+        setScopedItem(
+            X_POST_TEMPLATE_EDITOR_STORAGE_KEY,
+            JSON.stringify(captureXPostTemplateEditorState())
+        );
+        updateXPostTemplateStatus();
+    }
+
+    function applyXPostTemplateEditorState(template, templateName = "") {
+        const nameInput = document.getElementById("xPostTemplateNameInput");
+        const kindSelect = document.getElementById("xPostTemplateKindSelect");
+        const bodyInput = document.getElementById("xPostTemplateBody");
+        if (nameInput) nameInput.value = templateName || "";
+        if (kindSelect) kindSelect.value = normalizeXPostTemplateKind(template?.kind);
+        if (bodyInput) bodyInput.value = String(template?.body || "");
+        persistXPostTemplateEditorState();
+    }
+
+    function restoreXPostTemplateEditorState() {
+        let saved = null;
+        try {
+            saved = JSON.parse(getScopedItem(X_POST_TEMPLATE_EDITOR_STORAGE_KEY) || "null");
+        } catch (error) {
+            saved = null;
+        }
+        if (saved && (saved.body || saved.name || saved.kind)) {
+            applyXPostTemplateEditorState(saved, saved.name || "");
+            return;
+        }
+        const templates = getXPostTemplates();
+        const targetKind = detectXPostTemplateKind();
+        const preferredEntry = Object.entries(templates).find(([, template]) =>
+            normalizeXPostTemplateKind(template.kind) === targetKind
+        ) || Object.entries(templates)[0];
+        if (preferredEntry) {
+            const [preferredName, preferredTemplate] = preferredEntry;
+            applyXPostTemplateEditorState(preferredTemplate, preferredName);
+        }
+    }
+
+    function refreshXPostTemplateSelect(selectedName = "") {
+        const select = document.getElementById("xPostTemplateSelect");
+        if (!select) return;
+        const templates = getXPostTemplates();
+        const currentValue = selectedName || select.value || "";
+        select.innerHTML = '<option value="">テンプレートを選択</option>';
+        Object.entries(templates).forEach(([name, template]) => {
+            const option = document.createElement("option");
+            option.value = name;
+            option.textContent = `【${X_POST_TEMPLATE_KIND_LABELS[normalizeXPostTemplateKind(template.kind)]}】${name}`;
+            select.appendChild(option);
+        });
+        if (currentValue && hasOwn(templates, currentValue)) {
+            select.value = currentValue;
+        }
+        updateXPostTemplateStatus();
+    }
+
+    function saveXPostNamedTemplate() {
+        const state = captureXPostTemplateEditorState();
+        const name = state.name;
+        if (!name) {
+            alert("テンプレート名を入力してください。");
+            document.getElementById("xPostTemplateNameInput")?.focus();
+            return;
+        }
+        if (!state.body.trim()) {
+            alert("テンプレート本文を入力してください。");
+            document.getElementById("xPostTemplateBody")?.focus();
+            return;
+        }
+        const templates = getXPostTemplates();
+        templates[name] = { kind: state.kind, body: state.body, updatedAt: new Date().toISOString() };
+        setScopedItem(X_POST_TEMPLATE_STORAGE_KEY, JSON.stringify(templates));
+        refreshXPostTemplateSelect(name);
+        persistXPostTemplateEditorState();
+        syncSingleXPostDraft(true);
+        alert(`テンプレート「${name}」を保存しました。`);
+    }
+
+    function loadXPostNamedTemplate() {
+        const name = document.getElementById("xPostTemplateSelect")?.value || "";
+        if (!name) {
+            alert("読み込むテンプレートを選択してください。");
+            return;
+        }
+        const templates = getXPostTemplates();
+        if (!hasOwn(templates, name)) {
+            alert("選択したテンプレートが見つかりません。");
+            refreshXPostTemplateSelect();
+            return;
+        }
+        applyXPostTemplateEditorState(templates[name], name);
+        refreshXPostTemplateSelect(name);
+        syncSingleXPostDraft(true);
+    }
+
+    function deleteXPostNamedTemplate() {
+        const select = document.getElementById("xPostTemplateSelect");
+        const name = select?.value || String(document.getElementById("xPostTemplateNameInput")?.value || "").trim();
+        if (!name) {
+            alert("削除するテンプレートを選択してください。");
+            return;
+        }
+        const templates = getXPostTemplates();
+        if (!hasOwn(templates, name)) {
+            alert("選択したテンプレートが見つかりません。");
+            return;
+        }
+        if (!confirm(`テンプレート「${name}」を削除しますか？`)) return;
+        delete templates[name];
+        setScopedItem(X_POST_TEMPLATE_STORAGE_KEY, JSON.stringify(templates));
+        document.getElementById("xPostTemplateNameInput").value = "";
+        refreshXPostTemplateSelect();
+        restoreXPostTemplateEditorState();
+        syncSingleXPostDraft(true);
+    }
+
+    function detectXPostTemplateKind() {
+        const category = String(
+            document.getElementById("officialBaselineCategorySelect")?.value || ""
+        ).trim().toLowerCase();
+        return hasOwn(X_POST_TEMPLATE_KIND_LABELS, category)
+            ? category
+            : "other";
+    }
+
+    function applyRecommendedXPostTemplate() {
+        const kind = detectXPostTemplateKind();
+        const templates = getXPostTemplates();
+        const entries = Object.entries(templates);
+        const target = entries.find(([, template]) =>
+            normalizeXPostTemplateKind(template.kind) === kind
+        ) || entries.find(([, template]) =>
+            normalizeXPostTemplateKind(template.kind) === "other"
+        ) || entries[0];
+        if (!target) {
+            alert("使えるテンプレートがありません。");
+            return;
+        }
+        const [name, template] = target;
+        applyXPostTemplateEditorState(template, name);
+        refreshXPostTemplateSelect(name);
+        syncSingleXPostDraft(true);
+    }
+
+    function handleXPostTemplateEditorInput() {
+        persistXPostTemplateEditorState();
+        syncSingleXPostDraft(true);
+    }
+
+    function insertXPostToken(token) {
+        const textarea = document.getElementById("xPostTemplateBody");
+        if (!textarea) return;
+        const start = textarea.selectionStart ?? textarea.value.length;
+        const end = textarea.selectionEnd ?? start;
+        textarea.setRangeText(token, start, end, "end");
+        textarea.focus();
+        handleXPostTemplateEditorInput();
+    }
+
+    function updateXPostTemplateStatus() {
+        const currentName = document.getElementById("xPostTemplateNameInput")?.value?.trim() || "";
+        const label = document.getElementById("xPostCurrentTemplateName");
+        if (label) label.textContent = currentName || "未保存テンプレート";
+    }
+
+    function buildXPostTokenContext(cards = getSelectedSingleCards()) {
+        const firstCard = cards[0] || {};
+        const firstLabel = cards.length > 1 ? `${formatAnomalyCardLabel(firstCard)} ほか${cards.length - 1}商品` : formatAnomalyCardLabel(firstCard) || "";
+        const firstCurrent = parsePriceNumber(firstCard.price);
+        const firstPrevious = Number(firstCard.previousPrice) || 0;
+        const rawDelta = Number(firstCard.priceDelta) || 0;
+        const absDelta = Math.abs(rawDelta);
+        const rate = firstPrevious > 0 && absDelta > 0 ? `${((absDelta / firstPrevious) * 100).toFixed(1)}%` : "";
+        const dateValue = document.getElementById("dateInput")?.value || "";
+        const categoryValue = document.getElementById("officialBaselineCategorySelect")?.value || "";
+        const categoryLabel = OFFICIAL_BASELINE_CATEGORIES[categoryValue] || "";
+        const kind = detectXPostTemplateKind();
+        const headingMap = {
+            psa: "🔥ポケモンカード PSA10 買取価格更新🔥",
+            box: "📦ポケモンカード BOX 買取価格更新📦",
+            sotai: "🔥ポケモンカード シングル買取価格更新🔥",
+            other: "🔥ポケモンカード 買取価格更新🔥"
+        };
+        const hashtagMap = {
+            psa: "#ポケカ #PSA10",
+            box: "#ポケカ #ポケモンカード",
+            sotai: "#ポケカ #ポケモンカード",
+            other: "#ポケカ #ポケモンカード"
+        };
+        const heading = headingMap[kind] || headingMap.other;
+        return {
+            見出し: heading,
+            商品一覧: cards.map(buildSingleXPostItemLine).join("\n"),
+            商品名: firstLabel,
+            グレード: String(firstCard.type || ""),
+            現在価格: firstCurrent > 0 ? `${firstCurrent.toLocaleString("ja-JP")}円` : formatXPostPrice(firstCard.price),
+            前回価格: firstPrevious > 0 ? `${firstPrevious.toLocaleString("ja-JP")}円` : "",
+            差額: absDelta > 0 ? `${rawDelta > 0 ? "＋" : rawDelta < 0 ? "－" : ""}${absDelta.toLocaleString("ja-JP")}円` : "",
+            差額率: rate,
+            更新日: dateValue ? formatOfficialDateLabel(dateValue, true) : "",
+            更新情報: dateValue ? `${formatOfficialDateLabel(dateValue, true)}更新` : "",
+            カテゴリ: categoryLabel,
+            商品数: String(cards.length),
+            ハッシュタグ: hashtagMap[kind] || hashtagMap.other
+        };
+    }
+
+    function renderXPostTemplate(templateBody, context) {
+        return String(templateBody || "")
+            .replace(/\{([^{}]+)\}/g, (match, tokenName) => {
+                const key = String(tokenName || "").trim();
+                return hasOwn(context, key) ? String(context[key] || "") : "";
+            })
+            .replace(/\n{3,}/g, "\n\n")
+            .trim();
+    }
+
+    function updateXPostSelectionPreview() {
+        const count = document.getElementById("xPostSelectedCount");
+        const kind = document.getElementById("xPostDetectedKind");
+        const list = document.getElementById("xPostSelectedItemsPreview");
+        const cards = getSelectedSingleCards();
+        if (count) count.textContent = `${cards.length.toLocaleString("ja-JP")}件`;
+        if (kind) kind.textContent = X_POST_TEMPLATE_KIND_LABELS[detectXPostTemplateKind()] || "その他・汎用";
+        if (!list) return;
+        if (!cards.length) {
+            list.innerHTML = '<div class="x-post-selected-empty">単品告知画像で商品を選択してください。</div>';
+            return;
+        }
+        list.innerHTML = cards.map(card => {
+            const label = escapeHtml(formatAnomalyCardLabel(card));
+            const priceLine = escapeHtml(buildSingleXPostItemLine(card).replace(/^・/, ""));
+            return `<div class="x-post-selected-item"><strong>${label}</strong><span>${priceLine}</span></div>`;
+        }).join("");
+    }
+
+    function formatXPostPrice(value) {
+        const number = parsePriceNumber(value);
+        return number > 0
+            ? `${number.toLocaleString("ja-JP")}円`
+            : String(value || "").trim();
+    }
+
+    function buildSingleXPostItemLine(card) {
+        const label = formatAnomalyCardLabel(card);
+        const current = parsePriceNumber(card.price);
+        if (card.priceChangeType === "up" && Number(card.previousPrice) > 0) {
+            const previous = Number(card.previousPrice);
+            const delta = Math.max(0, current - previous);
+            return `・${label} ${previous.toLocaleString("ja-JP")}円→` +
+                `${current.toLocaleString("ja-JP")}円（＋${delta.toLocaleString("ja-JP")}円）`;
+        }
+        if (card.priceChangeType === "new") {
+            return `・${label} ${formatXPostPrice(card.price)}【NEW】`;
+        }
+        return `・${label} ${formatXPostPrice(card.price)}`;
+    }
+
+    function buildSingleXPostText() {
+        const cards = getSelectedSingleCards();
+        if (cards.length === 0) return "";
+        const templateBody = String(document.getElementById("xPostTemplateBody")?.value || "").trim();
+        const context = buildXPostTokenContext(cards);
+        if (templateBody) {
+            return renderXPostTemplate(templateBody, context);
+        }
+        return renderXPostTemplate(
+            `{見出し}
+
+{商品一覧}
+
+{更新情報}
+{ハッシュタグ}`,
+            context
+        );
+    }
+
+    function updateSingleXPostCount() {
+        const textarea = document.getElementById("singleXPostText");
+        const status = document.getElementById("singleXPostStatus");
+        const countLabel = document.getElementById("xPostCharacterCount");
+        if (!textarea || !status) return;
+        const length = textarea.value.length;
+        const suffix = length > 280 ? "｜280文字超" : "";
+        status.textContent = `${length.toLocaleString("ja-JP")}文字${suffix}`;
+        if (countLabel) countLabel.textContent = `${length.toLocaleString("ja-JP")}文字`;
+    }
+
+    function getSingleXPostSignature() {
+        return getSelectedSingleCards().map(card => [
+            card.id,
+            card.name,
+            card.type,
+            card.price,
+            card.previousPrice,
+            card.priceDelta,
+            card.priceChangeType
+        ].join(":" )).join("|");
+    }
+
+    function syncSingleXPostDraft(force = false) {
+        const textarea = document.getElementById("singleXPostText");
+        updateXPostSelectionPreview();
+        updateXPostTemplateStatus();
+        if (!textarea) return;
+        const signature = getSingleXPostSignature();
+        if (!force && textarea.dataset.selectionSignature === signature) {
+            updateSingleXPostCount();
+            return;
+        }
+        textarea.value = buildSingleXPostText();
+        textarea.dataset.selectionSignature = signature;
+        updateSingleXPostCount();
+    }
+
+    async function copySingleXPost() {
+        const textarea = document.getElementById("singleXPostText");
+        if (!textarea) return;
+        if (!textarea.value.trim()) {
+            syncSingleXPostDraft(true);
+        }
+        const textValue = textarea.value.trim();
+        if (!textValue) {
+            alert("X投稿文を作る商品を選択してください。");
+            return;
+        }
+        try {
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(textValue);
+            } else {
+                textarea.focus();
+                textarea.select();
+                document.execCommand("copy");
+            }
+            const status = document.getElementById("singleXPostStatus");
+            if (status) status.textContent = `${textValue.length.toLocaleString("ja-JP")}文字｜コピーしました`;
+        } catch (error) {
+            console.error(error);
+            textarea.focus();
+            textarea.select();
+            alert("自動コピーできなかったため、投稿文を選択しました。Ctrl/Cmd+Cでコピーしてください。");
+        }
     }
 
     function normalizeSinglePriceDisplay(price) {
@@ -14423,6 +15678,7 @@
 
         const cards = getSelectedSingleCards();
         updateWorkflowSummary();
+        syncSingleXPostDraft(false);
         if (cards.length === 0) {
             container.innerHTML = `
                 <div class="single-preview-empty">
@@ -15307,6 +16563,7 @@
             `｜読み込み中 ${loading}件｜エラー ${failed}件｜画像なし ${missing}件`;
         if (retryButton) retryButton.hidden = failed === 0;
         updateWorkflowSummary();
+        refreshCsvAnomalyChecks();
     }
 
     function syncResolvedImagesInDom() {
@@ -15568,6 +16825,38 @@
             .slice(0, 70) || "商品";
     }
 
+    function getExportAnomalyCounts(cards) {
+        const cardIds = new Set((cards || []).map(card => Number(card.id)));
+        const within = items => (items || []).filter(item =>
+            item.cardId !== null && cardIds.has(Number(item.cardId))
+        ).length;
+        return {
+            suddenPrice: within(csvAnomalyState.suddenPrice),
+            aMinusHigher: within(csvAnomalyState.aMinusHigher),
+            missingImage: within(csvAnomalyState.missingImage),
+            imageError: within(csvAnomalyState.imageError)
+        };
+    }
+
+    function confirmExportAnomalies(cards, targetLabel = "出力対象") {
+        refreshCsvAnomalyChecks();
+        const counts = getExportAnomalyCounts(cards);
+        const issues = [
+            [counts.suddenPrice, "前回比の急変"],
+            [counts.aMinusHigher, "状態A- > 状態A"],
+            [counts.missingImage, "画像リンクなし"],
+            [counts.imageError, "画像取得エラー"]
+        ].filter(([count]) => count > 0);
+        if (issues.length === 0) return true;
+        const detail = issues
+            .map(([count, label]) => `${label}：${count}件`)
+            .join("\n");
+        return confirm(
+            `${targetLabel}に要確認の商品があります。\n\n${detail}` +
+            "\n\n内容を確認せず、このまま保存を続けますか？"
+        );
+    }
+
     async function exportToImage() {
         const areas = Array.from(
             document.querySelectorAll("#pagesContainer .exportArea")
@@ -15585,6 +16874,8 @@
         try {
             overlayText.textContent = "画像の読み込み完了を確認しています...";
             await ensureImagesReadyForExport();
+            const exportCards = globalCardData.filter(card => !card.hidden);
+            if (!confirmExportAnomalies(exportCards, "買取表の出力対象")) return;
 
             for (let i = 0; i < areas.length; i++) {
                 overlayText.textContent = `${i + 1}枚目を生成中...（${i + 1}/${areas.length}）`;
@@ -15625,6 +16916,8 @@
         try {
             overlayText.textContent = "画像の読み込み完了を確認しています...";
             await ensureImagesReadyForExport();
+            const exportCards = globalCardData.filter(card => !card.hidden);
+            if (!confirmExportAnomalies(exportCards, "買取表の出力対象")) return;
 
             const zip = new JSZip();
             for (let i = 0; i < areas.length; i++) {
@@ -15683,6 +16976,8 @@
         try {
             overlayText.textContent = "画像の読み込み完了を確認しています...";
             await ensureImagesReadyForExport();
+            const exportCards = globalCardData.filter(card => !card.hidden);
+            if (!confirmExportAnomalies(exportCards, "買取表の出力対象")) return;
 
             const pdf = new JsPdf({
                 orientation,
@@ -15751,6 +17046,7 @@
         try {
             overlayText.textContent = "商品画像の読み込み完了を確認しています...";
             await ensureImagesReadyForExport();
+            if (!confirmExportAnomalies(getSelectedSingleCards(), "単品告知の選択商品")) return;
 
             for (let i = 0; i < areas.length; i++) {
                 overlayText.textContent =
@@ -15797,6 +17093,7 @@
         try {
             overlayText.textContent = "商品画像の読み込み完了を確認しています...";
             await ensureImagesReadyForExport();
+            if (!confirmExportAnomalies(getSelectedSingleCards(), "単品告知の選択商品")) return;
 
             const zip = new JSZip();
             for (let i = 0; i < areas.length; i++) {
