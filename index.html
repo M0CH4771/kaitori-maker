@@ -9337,6 +9337,7 @@
             .app-container > .view-tabs,
             .app-container > .store-profile-bar,
             .app-container > .official-baseline-panel,
+            .app-container > .buylist-maker,
             .app-container > .single-maker,
             .app-container > .x-post-maker {
                 grid-column: 1 / -1;
@@ -9684,20 +9685,28 @@
             min-height: 320px;
         }
 
+        .buylist-maker {
+            display: grid;
+            min-width: 0;
+            grid-template-columns: minmax(0, 1fr);
+            gap: 14px;
+        }
+
+        .buylist-maker,
         .single-maker {
-            --single-control-width: 590px;
+            --panel-control-width: 590px;
         }
 
         .single-selection-toolbar > * {
             min-width: 0;
         }
 
-        .single-layout-resizer {
+        .panel-layout-resizer {
             display: none;
         }
 
-        html.is-resizing-single-layout,
-        html.is-resizing-single-layout * {
+        html.is-resizing-panel-layout,
+        html.is-resizing-panel-layout * {
             cursor: col-resize !important;
             user-select: none !important;
         }
@@ -9742,12 +9751,24 @@
                 min-width: 0;
             }
 
+            .buylist-maker,
             .single-maker {
                 grid-template-columns:
-                    minmax(440px, var(--single-control-width))
+                    minmax(440px, var(--panel-control-width))
                     14px
                     minmax(520px, 1fr);
                 column-gap: 9px;
+                align-items: start;
+            }
+
+            .buylist-maker > #buylistControl {
+                grid-column: 1;
+                grid-row: 1;
+            }
+
+            .buylist-maker > #pagesContainer {
+                grid-column: 3;
+                grid-row: 1;
             }
 
             .single-maker > .control-panel {
@@ -9760,7 +9781,7 @@
                 grid-row: 1;
             }
 
-            .single-layout-resizer {
+            .panel-layout-resizer {
                 position: sticky;
                 z-index: 35;
                 top: 92px;
@@ -9776,7 +9797,7 @@
                 cursor: col-resize;
             }
 
-            .single-layout-resizer::before {
+            .panel-layout-resizer::before {
                 width: 2px;
                 height: 100%;
                 border-radius: 999px;
@@ -9785,7 +9806,7 @@
                 transition: background .16s ease, box-shadow .16s ease;
             }
 
-            .single-layout-resizer span {
+            .panel-layout-resizer span {
                 position: absolute;
                 display: grid;
                 width: 30px;
@@ -9802,22 +9823,22 @@
                     transform .16s ease;
             }
 
-            .single-layout-resizer:hover::before,
-            .single-layout-resizer:focus-visible::before,
-            html.is-resizing-single-layout .single-layout-resizer::before {
+            .panel-layout-resizer:hover::before,
+            .panel-layout-resizer:focus-visible::before,
+            html.is-resizing-panel-layout .panel-layout-resizer::before {
                 background: #e5bd58;
                 box-shadow: 0 0 0 3px rgba(229,189,88,.12);
             }
 
-            .single-layout-resizer:hover span,
-            .single-layout-resizer:focus-visible span,
-            html.is-resizing-single-layout .single-layout-resizer span {
+            .panel-layout-resizer:hover span,
+            .panel-layout-resizer:focus-visible span,
+            html.is-resizing-panel-layout .panel-layout-resizer span {
                 border-color: #e5bd58;
                 background: #192536;
                 transform: scale(1.05);
             }
 
-            .single-layout-resizer:focus-visible {
+            .panel-layout-resizer:focus-visible {
                 outline: none;
             }
 
@@ -10024,6 +10045,7 @@
         </p>
     </section>
 
+    <section class="buylist-maker" id="buylistMakerView">
     <aside class="control-panel" id="buylistControl" aria-label="買取表の設定">
         <div class="panel-heading">
             <div class="panel-heading-row">
@@ -10482,6 +10504,20 @@
         </div>
     </aside>
 
+    <div
+        class="panel-layout-resizer buylist-layout-resizer"
+        id="buylistLayoutResizer"
+        role="separator"
+        tabindex="0"
+        aria-label="買取表の設定とプレビューの幅を調整"
+        aria-controls="buylistControl pagesContainer"
+        aria-orientation="vertical"
+        aria-valuemin="440"
+        aria-valuemax="900"
+        aria-valuenow="590"
+        title="左右にドラッグして幅を調整・ダブルクリックで元に戻す"
+    ><span aria-hidden="true">↔</span></div>
+
     <main class="preview-container" id="pagesContainer" aria-label="買取表プレビュー">
         <div class="preview-page">
             <div class="exportArea portrait" data-theme="signal" data-title-style="power">
@@ -10519,6 +10555,7 @@
             </div>
         </div>
     </main>
+    </section>
 
     <section class="single-maker view-hidden" id="singleMakerView">
         <aside class="control-panel" id="singleControl" aria-label="単品告知画像の設定">
@@ -10932,7 +10969,7 @@
         </aside>
 
         <div
-            class="single-layout-resizer"
+            class="panel-layout-resizer single-layout-resizer"
             id="singleLayoutResizer"
             role="separator"
             tabindex="0"
@@ -11222,13 +11259,31 @@
     const TEMPLATE_STORAGE_KEY = "kaitori_named_templates_v1";
     const SINGLE_SETTINGS_STORAGE_KEY = "kaitori_single_ad_settings_v1";
     const SINGLE_TEMPLATE_STORAGE_KEY = "kaitori_single_named_templates_v1";
-    const SINGLE_LAYOUT_WIDTH_STORAGE_KEY =
-        "kaitori_single_layout_width_v1";
-    const DEFAULT_SINGLE_CONTROL_WIDTH = 590;
-    const MIN_SINGLE_CONTROL_WIDTH = 440;
-    const MAX_SINGLE_CONTROL_WIDTH = 900;
-    const MIN_SINGLE_PREVIEW_WIDTH = 520;
-    const SINGLE_LAYOUT_CHROME_WIDTH = 32;
+    const PANEL_LAYOUT_BREAKPOINT = 1320;
+    const PANEL_LAYOUT_MIN_WIDTH = 440;
+    const PANEL_LAYOUT_MAX_WIDTH = 900;
+    const PANEL_LAYOUT_MIN_PREVIEW_WIDTH = 520;
+    const PANEL_LAYOUT_CHROME_WIDTH = 32;
+    const PANEL_LAYOUT_CONFIGS = Object.freeze({
+        buylist: Object.freeze({
+            label: "買取表",
+            rootId: "buylistMakerView",
+            controlId: "buylistControl",
+            resizerId: "buylistLayoutResizer",
+            storageKey: "kaitori_buylist_layout_width_v1",
+            defaultWidth: 590,
+            fitPreview: () => fitPreviewPages()
+        }),
+        single: Object.freeze({
+            label: "単品告知",
+            rootId: "singleMakerView",
+            controlId: "singleControl",
+            resizerId: "singleLayoutResizer",
+            storageKey: "kaitori_single_layout_width_v1",
+            defaultWidth: 590,
+            fitPreview: () => fitSinglePreviews()
+        })
+    });
     const X_POST_TEMPLATE_STORAGE_KEY = "kaitori_xpost_templates_v1";
     const X_POST_TEMPLATE_EDITOR_STORAGE_KEY =
         "kaitori_xpost_template_editor_v1";
@@ -11342,8 +11397,10 @@
     let sharedSyncRemoteVersion = 0;
     let sharedSyncLastCheckAt = 0;
     let sharedSyncReloadScheduled = false;
-    let preferredSingleControlWidth = DEFAULT_SINGLE_CONTROL_WIDTH;
-    let singleLayoutFitFrame = 0;
+    const panelLayoutStates = {
+        buylist: { preferredWidth: 590, fitFrame: 0 },
+        single: { preferredWidth: 590, fitFrame: 0 }
+    };
 
     function normalizeSharedSyncApiUrl(value) {
         const rawValue = String(value || "").trim();
@@ -13191,47 +13248,62 @@
         alert(`テンプレート「${name}」を削除しました。`);
     }
 
-    function getSingleLayoutWidthBounds() {
-        const maker = document.getElementById("singleMakerView");
-        const makerWidth = maker?.getBoundingClientRect().width || 0;
-        const availableMaximum = makerWidth > 0
+    function getPanelLayoutConfig(layoutName) {
+        return PANEL_LAYOUT_CONFIGS[layoutName] || null;
+    }
+
+    function getPanelLayoutWidthBounds(layoutName) {
+        const config = getPanelLayoutConfig(layoutName);
+        const root = config
+            ? document.getElementById(config.rootId)
+            : null;
+        const rootWidth = root?.getBoundingClientRect().width || 0;
+        const availableMaximum = rootWidth > 0
             ? Math.floor(
-                makerWidth -
-                MIN_SINGLE_PREVIEW_WIDTH -
-                SINGLE_LAYOUT_CHROME_WIDTH
+                rootWidth -
+                PANEL_LAYOUT_MIN_PREVIEW_WIDTH -
+                PANEL_LAYOUT_CHROME_WIDTH
             )
-            : MAX_SINGLE_CONTROL_WIDTH;
+            : PANEL_LAYOUT_MAX_WIDTH;
 
         return {
-            min: MIN_SINGLE_CONTROL_WIDTH,
+            min: PANEL_LAYOUT_MIN_WIDTH,
             max: Math.max(
-                MIN_SINGLE_CONTROL_WIDTH,
-                Math.min(MAX_SINGLE_CONTROL_WIDTH, availableMaximum)
+                PANEL_LAYOUT_MIN_WIDTH,
+                Math.min(PANEL_LAYOUT_MAX_WIDTH, availableMaximum)
             )
         };
     }
 
-    function scheduleSingleLayoutFit() {
-        cancelAnimationFrame(singleLayoutFitFrame);
-        singleLayoutFitFrame = requestAnimationFrame(() => {
-            fitSinglePreviews();
-            singleLayoutFitFrame = 0;
+    function schedulePanelLayoutFit(layoutName) {
+        const config = getPanelLayoutConfig(layoutName);
+        const state = panelLayoutStates[layoutName];
+        if (!config || !state) return;
+
+        cancelAnimationFrame(state.fitFrame);
+        state.fitFrame = requestAnimationFrame(() => {
+            config.fitPreview();
+            state.fitFrame = 0;
         });
     }
 
-    function renderSingleLayoutWidth() {
-        const maker = document.getElementById("singleMakerView");
-        const resizer = document.getElementById("singleLayoutResizer");
-        if (!maker || !resizer) return;
+    function renderPanelLayoutWidth(layoutName) {
+        const config = getPanelLayoutConfig(layoutName);
+        const state = panelLayoutStates[layoutName];
+        if (!config || !state) return;
 
-        const bounds = getSingleLayoutWidthBounds();
+        const root = document.getElementById(config.rootId);
+        const resizer = document.getElementById(config.resizerId);
+        if (!root || !resizer) return;
+
+        const bounds = getPanelLayoutWidthBounds(layoutName);
         const appliedWidth = Math.min(
             bounds.max,
-            Math.max(bounds.min, preferredSingleControlWidth)
+            Math.max(bounds.min, state.preferredWidth)
         );
 
-        maker.style.setProperty(
-            "--single-control-width",
+        root.style.setProperty(
+            "--panel-control-width",
             `${Math.round(appliedWidth)}px`
         );
         resizer.setAttribute("aria-valuemin", String(bounds.min));
@@ -13239,66 +13311,91 @@
         resizer.setAttribute("aria-valuenow", String(Math.round(appliedWidth)));
         resizer.setAttribute(
             "aria-valuetext",
-            `設定欄 ${Math.round(appliedWidth)}ピクセル`
+            `${config.label}の設定欄 ${Math.round(appliedWidth)}ピクセル`
         );
-        scheduleSingleLayoutFit();
+        schedulePanelLayoutFit(layoutName);
     }
 
-    function setSingleControlWidth(value, persist = false) {
+    function setPanelControlWidth(layoutName, value, persist = false) {
+        const config = getPanelLayoutConfig(layoutName);
+        const state = panelLayoutStates[layoutName];
         const numericValue = Number(value);
-        if (!Number.isFinite(numericValue)) return;
+        if (!config || !state || !Number.isFinite(numericValue)) return;
 
-        const bounds = getSingleLayoutWidthBounds();
-        preferredSingleControlWidth = Math.min(
+        const bounds = getPanelLayoutWidthBounds(layoutName);
+        state.preferredWidth = Math.min(
             bounds.max,
             Math.max(bounds.min, numericValue)
         );
-        renderSingleLayoutWidth();
+        renderPanelLayoutWidth(layoutName);
 
         if (persist) {
             try {
                 localStorage.setItem(
-                    SINGLE_LAYOUT_WIDTH_STORAGE_KEY,
-                    String(Math.round(preferredSingleControlWidth))
+                    config.storageKey,
+                    String(Math.round(state.preferredWidth))
                 );
             } catch (error) {
-                console.warn("単品画面の幅設定を保存できませんでした。", error);
+                console.warn(
+                    `${config.label}画面の幅設定を保存できませんでした。`,
+                    error
+                );
             }
         }
     }
 
-    function syncSingleLayoutWidth() {
-        if (!window.matchMedia("(min-width: 1320px)").matches) return;
-        renderSingleLayoutWidth();
+    function syncPanelLayoutWidth(layoutName) {
+        const config = getPanelLayoutConfig(layoutName);
+        const root = config
+            ? document.getElementById(config.rootId)
+            : null;
+        if (
+            !config ||
+            !root ||
+            root.classList.contains("view-hidden") ||
+            !window.matchMedia(
+                `(min-width: ${PANEL_LAYOUT_BREAKPOINT}px)`
+            ).matches
+        ) {
+            return;
+        }
+        renderPanelLayoutWidth(layoutName);
     }
 
-    function initializeSingleLayoutResizer() {
-        const maker = document.getElementById("singleMakerView");
-        const control = document.getElementById("singleControl");
-        const resizer = document.getElementById("singleLayoutResizer");
-        if (!maker || !control || !resizer) return;
+    function initializePanelLayoutResizer(layoutName) {
+        const config = getPanelLayoutConfig(layoutName);
+        const state = panelLayoutStates[layoutName];
+        if (!config || !state) return;
 
+        const control = document.getElementById(config.controlId);
+        const resizer = document.getElementById(config.resizerId);
+        if (!control || !resizer) return;
+
+        state.preferredWidth = config.defaultWidth;
         try {
-            const savedWidth = Number(
-                localStorage.getItem(SINGLE_LAYOUT_WIDTH_STORAGE_KEY)
-            );
+            const savedWidth = Number(localStorage.getItem(config.storageKey));
             if (Number.isFinite(savedWidth) && savedWidth > 0) {
-                preferredSingleControlWidth = Math.min(
-                    MAX_SINGLE_CONTROL_WIDTH,
-                    Math.max(MIN_SINGLE_CONTROL_WIDTH, savedWidth)
+                state.preferredWidth = Math.min(
+                    PANEL_LAYOUT_MAX_WIDTH,
+                    Math.max(PANEL_LAYOUT_MIN_WIDTH, savedWidth)
                 );
             }
         } catch (error) {
-            console.warn("単品画面の幅設定を読み込めませんでした。", error);
+            console.warn(
+                `${config.label}画面の幅設定を読み込めませんでした。`,
+                error
+            );
         }
-        renderSingleLayoutWidth();
+        renderPanelLayoutWidth(layoutName);
 
         let dragState = null;
 
         resizer.addEventListener("pointerdown", event => {
             if (
                 event.button !== 0 ||
-                !window.matchMedia("(min-width: 1320px)").matches
+                !window.matchMedia(
+                    `(min-width: ${PANEL_LAYOUT_BREAKPOINT}px)`
+                ).matches
             ) {
                 return;
             }
@@ -13311,14 +13408,15 @@
             };
             resizer.setPointerCapture(event.pointerId);
             document.documentElement.classList.add(
-                "is-resizing-single-layout"
+                "is-resizing-panel-layout"
             );
         });
 
         resizer.addEventListener("pointermove", event => {
             if (!dragState || event.pointerId !== dragState.pointerId) return;
             event.preventDefault();
-            setSingleControlWidth(
+            setPanelControlWidth(
+                layoutName,
                 dragState.startWidth + event.clientX - dragState.startX,
                 false
             );
@@ -13331,38 +13429,46 @@
             }
             dragState = null;
             document.documentElement.classList.remove(
-                "is-resizing-single-layout"
+                "is-resizing-panel-layout"
             );
-            setSingleControlWidth(preferredSingleControlWidth, true);
+            setPanelControlWidth(layoutName, state.preferredWidth, true);
         };
 
         resizer.addEventListener("pointerup", finishDrag);
         resizer.addEventListener("pointercancel", finishDrag);
 
         resizer.addEventListener("keydown", event => {
-            if (!window.matchMedia("(min-width: 1320px)").matches) return;
+            if (!window.matchMedia(
+                `(min-width: ${PANEL_LAYOUT_BREAKPOINT}px)`
+            ).matches) {
+                return;
+            }
 
             const currentWidth = control.getBoundingClientRect().width;
             const step = event.shiftKey ? 48 : 24;
             let nextWidth = null;
             if (event.key === "ArrowLeft") nextWidth = currentWidth - step;
             if (event.key === "ArrowRight") nextWidth = currentWidth + step;
-            if (event.key === "Home") {
-                nextWidth = DEFAULT_SINGLE_CONTROL_WIDTH;
-            }
+            if (event.key === "Home") nextWidth = config.defaultWidth;
             if (event.key === "End") {
-                nextWidth = getSingleLayoutWidthBounds().max;
+                nextWidth = getPanelLayoutWidthBounds(layoutName).max;
             }
             if (nextWidth === null) return;
 
             event.preventDefault();
-            setSingleControlWidth(nextWidth, true);
+            setPanelControlWidth(layoutName, nextWidth, true);
         });
 
         resizer.addEventListener("dblclick", event => {
             event.preventDefault();
-            setSingleControlWidth(DEFAULT_SINGLE_CONTROL_WIDTH, true);
+            setPanelControlWidth(layoutName, config.defaultWidth, true);
         });
+    }
+
+    function initializePanelLayoutResizers() {
+        Object.keys(PANEL_LAYOUT_CONFIGS).forEach(
+            initializePanelLayoutResizer
+        );
     }
 
     function switchAppView(view) {
@@ -13370,6 +13476,7 @@
         const isSingle = view === "single";
         const isXPost = view === "xpost";
         document.body.dataset.appView = view;
+        document.getElementById("buylistMakerView").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("buylistControl").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("pagesContainer").classList.toggle("view-hidden", !isBuylist);
         document.getElementById("singleMakerView").classList.toggle("view-hidden", !isSingle);
@@ -13383,9 +13490,10 @@
 
         requestAnimationFrame(() => {
             if (isSingle) {
-                syncSingleLayoutWidth();
+                syncPanelLayoutWidth("single");
                 fitSinglePreviews();
             } else if (isBuylist) {
+                syncPanelLayoutWidth("buylist");
                 fitPreviewPages();
             } else if (isXPost) {
                 syncSingleXPostDraft(false);
@@ -13400,7 +13508,7 @@
         const mm = String(today.getMonth() + 1).padStart(2, "0");
         const dd = String(today.getDate()).padStart(2, "0");
         document.getElementById("dateInput").value = `${yyyy}-${mm}-${dd}`;
-        initializeSingleLayoutResizer();
+        initializePanelLayoutResizers();
 
         const savedTitle = getScopedItem("kaitori_title");
         const savedDisclaimer = getScopedItem("kaitori_disclaimer");
@@ -18741,7 +18849,8 @@ BOXのお持ち込みお待ちしております！
     }
 
     window.addEventListener("resize", () => {
-        syncSingleLayoutWidth();
+        syncPanelLayoutWidth("buylist");
+        syncPanelLayoutWidth("single");
         adjustTitleSizes();
         adjustTextSize();
         fitPreviewPages();
