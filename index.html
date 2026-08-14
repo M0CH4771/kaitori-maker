@@ -11361,6 +11361,8 @@
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
     const OFFICIAL_BASELINES_STORAGE_KEY =
         "kaitori_official_price_baselines_v1";
+    const OFFICIAL_BASELINE_LEGACY_OWNER_KEY =
+        "kaitori_official_baseline_legacy_owner_v1";
     const OFFICIAL_CATEGORY_STORAGE_KEY =
         "kaitori_official_baseline_category_v1";
     const OFFICIAL_OPERATOR_STORAGE_KEY =
@@ -13569,7 +13571,9 @@
                 fitPreviewPages();
             } else if (isXPost) {
                 syncPanelLayoutWidth("xpost");
-                syncSingleXPostDraft(false);
+                if (!syncDefaultXPostTemplateForCategory()) {
+                    syncSingleXPostDraft(false);
+                }
             }
         });
     }
@@ -14407,30 +14411,74 @@
         });
     }
 
-    function readSelectedCsvFile(file) {
+    function readFileAsTextFallback(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = event => resolve(String(event.target?.result || ""));
+            reader.onerror = () => reject(
+                reader.error || new Error("CSVファイルを読み込めませんでした。")
+            );
+            reader.readAsText(file);
+        });
+    }
+
+    async function readCsvFileText(file) {
+        if (
+            typeof file?.arrayBuffer !== "function" ||
+            typeof TextDecoder !== "function"
+        ) {
+            return readFileAsTextFallback(file);
+        }
+
+        const buffer = await file.arrayBuffer();
+        const bytes = new Uint8Array(buffer);
+        if (bytes[0] === 0xff && bytes[1] === 0xfe) {
+            return new TextDecoder("utf-16le").decode(bytes.subarray(2));
+        }
+        if (bytes[0] === 0xfe && bytes[1] === 0xff) {
+            return new TextDecoder("utf-16be").decode(bytes.subarray(2));
+        }
+        if (
+            bytes[0] === 0xef &&
+            bytes[1] === 0xbb &&
+            bytes[2] === 0xbf
+        ) {
+            return new TextDecoder("utf-8").decode(bytes.subarray(3));
+        }
+
+        try {
+            return new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+        } catch (utf8Error) {
+            try {
+                return new TextDecoder("shift_jis", { fatal: true }).decode(bytes);
+            } catch (shiftJisError) {
+                throw new Error(
+                    "文字コードを判別できませんでした。UTF-8またはShift_JISのCSVを選択してください。"
+                );
+            }
+        }
+    }
+
+    async function readSelectedCsvFile(file) {
         if (!file) return;
         updateCsvFileSelectionStatus("loading", file.name);
-        const reader = new FileReader();
-        reader.onload = loadEvent => {
-            parseCSV(loadEvent.target.result, file.name);
-        };
-        reader.onerror = () => {
+        try {
+            const text = await readCsvFileText(file);
+            parseCSV(text, file.name);
+        } catch (error) {
+            console.error("CSVファイルの読み込みに失敗しました。", error);
             updateCsvFileSelectionStatus("error", file.name);
-            alert(`CSVファイル「${file.name}」を読み込めませんでした。`);
-        };
-        reader.readAsText(file);
+            alert(
+                `CSVファイル「${file.name}」を読み込めませんでした。\n` +
+                (error?.message || "ファイルの内容を確認してください。")
+            );
+        }
     }
 
     ["csvInput", "singleCsvInput"].forEach(id => {
         const input = document.getElementById(id);
-        input.addEventListener("click", event => {
-            // 同じファイルを続けて選んでもchangeイベントが発生するよう、
-            // ファイル選択画面を開く直前だけ前回値を解除する。
-            event.currentTarget.value = "";
-        });
         input.addEventListener("change", event => {
             readSelectedCsvFile(event.currentTarget.files?.[0]);
-            // 読込後は空に戻さず、ブラウザ上にも選択ファイル名を残す。
         });
     });
 
@@ -15075,16 +15123,40 @@
         const legacyValue = localStorage.getItem(
             OFFICIAL_BASELINES_STORAGE_KEY
         );
+        const legacyOwner = localStorage.getItem(
+            OFFICIAL_BASELINE_LEGACY_OWNER_KEY
+        );
+        const legacyBaselines = normalizeOfficialBaselines(
+            legacyValue || "{}"
+        );
+        const hasLegacyRecords =
+            countOfficialBaselineRecords(legacyBaselines) > 0;
+        const canUseLegacy =
+            !legacyOwner || legacyOwner === activeStoreId;
         const recovered = mergeOfficialBaselines(
-            legacyValue || "{}",
+            canUseLegacy ? legacyBaselines : {},
             scopedValue || "{}"
         );
         if (countOfficialBaselineRecords(recovered) === 0) return false;
 
         const serialized = JSON.stringify(recovered);
-        if (scopedValue === serialized) return false;
+        if (scopedValue === serialized) {
+            if (hasLegacyRecords && !legacyOwner) {
+                localStorage.setItem(
+                    OFFICIAL_BASELINE_LEGACY_OWNER_KEY,
+                    activeStoreId
+                );
+            }
+            return false;
+        }
         try {
             localStorage.setItem(storageKey, serialized);
+            if (hasLegacyRecords && canUseLegacy) {
+                localStorage.setItem(
+                    OFFICIAL_BASELINE_LEGACY_OWNER_KEY,
+                    activeStoreId
+                );
+            }
             const meta = readSharedSyncMeta();
             writeSharedSyncMeta({
                 ...meta,
@@ -15099,8 +15171,15 @@
     }
 
     function getOfficialBaselines() {
+        const legacyOwner = localStorage.getItem(
+            OFFICIAL_BASELINE_LEGACY_OWNER_KEY
+        );
+        const includeLegacy =
+            !legacyOwner || legacyOwner === activeStoreId;
         return mergeOfficialBaselines(
-            localStorage.getItem(OFFICIAL_BASELINES_STORAGE_KEY) || "{}",
+            includeLegacy
+                ? localStorage.getItem(OFFICIAL_BASELINES_STORAGE_KEY) || "{}"
+                : "{}",
             getScopedItem(OFFICIAL_BASELINES_STORAGE_KEY) || "{}"
         );
     }
@@ -15532,7 +15611,9 @@
         scheduleWorkspaceAutosave("比較区分を保存しました");
         if (document.getElementById("xPostMakerView") &&
             !document.getElementById("xPostMakerView").classList.contains("view-hidden")) {
-            applyRecommendedXPostTemplate();
+            if (!syncDefaultXPostTemplateForCategory()) {
+                syncSingleXPostDraft(false);
+            }
         }
     }
 
@@ -15779,15 +15860,20 @@
         const ids = Array.isArray(csvDiffResults[kind])
             ? csvDiffResults[kind]
             : [];
-        singleSelectionOrder = [];
-        ids.forEach(cardId => selectedSingleCardIds.add(cardId));
+        if (ids.length === 0) {
+            alert("この条件に該当する変更商品はありません。");
+            return;
+        }
+        selectedSingleCardIds.clear();
+        singleSelectionOrder = ids.map(Number);
+        singleSelectionOrder.forEach(cardId =>
+            selectedSingleCardIds.add(cardId)
+        );
         document.getElementById("singleSearchInput").value = "";
+        singlePickerPage = 1;
         renderSingleCardPicker();
         renderSingleAdPreviews();
         scheduleWorkspaceAutosave();
-        if (ids.length === 0) {
-            alert("この条件に該当する変更商品はありません。");
-        }
     }
 
     function getPriceUpRanking(mode = "amount") {
@@ -16369,24 +16455,23 @@
         recomputeOfficialDiff = false
     ) {
         clearTimeout(cardEditRenderTimer);
-        cardEditRenderTimer = setTimeout(() => {
-            if (recomputeOfficialDiff) {
-                computeOfficialPriceDifferences(globalCardData, {
-                    autoSelect: false
-                });
-            } else {
-                updateOfficialBaselinePanel();
-            }
-            if (renderEditorToo) renderCardEditor();
-            if (globalCardData.some(card => !card.hidden)) {
-                renderPages();
-            } else {
-                renderNoData();
-            }
-            renderSingleCardPicker();
-            renderSingleAdPreviews();
-            scheduleWorkspaceAutosave();
-        }, 180);
+        cardEditRenderTimer = null;
+        if (recomputeOfficialDiff) {
+            computeOfficialPriceDifferences(globalCardData, {
+                autoSelect: false
+            });
+        } else {
+            updateOfficialBaselinePanel();
+        }
+        if (renderEditorToo) renderCardEditor();
+        if (globalCardData.some(card => !card.hidden)) {
+            renderPages();
+        } else {
+            renderNoData();
+        }
+        renderSingleCardPicker();
+        renderSingleAdPreviews();
+        scheduleWorkspaceAutosave();
     }
 
     function updateCardField(cardId, field, value) {
@@ -16727,6 +16812,18 @@ BOXのお持ち込みお待ちしております！
         };
     }
 
+    function getDefaultXPostTemplateName(kind) {
+        const normalizedKind = normalizeXPostTemplateKind(kind);
+        return Object.entries(createDefaultXPostTemplates())
+            .find(([, template]) =>
+                normalizeXPostTemplateKind(template.kind) === normalizedKind
+            )?.[0] || "";
+    }
+
+    function isDefaultXPostTemplateName(name) {
+        return hasOwn(createDefaultXPostTemplates(), name);
+    }
+
     function getXPostTemplates() {
         let templates = {};
         try {
@@ -16876,13 +16973,19 @@ BOXのお持ち込みお待ちしております！
             alert("選択したテンプレートが見つかりません。");
             return;
         }
+        if (isDefaultXPostTemplateName(name)) {
+            alert(
+                "標準テンプレートは削除できません。内容を変更して別名で保存できます。"
+            );
+            return;
+        }
         if (!confirm(`テンプレート「${name}」を削除しますか？`)) return;
         delete templates[name];
         setScopedItem(X_POST_TEMPLATE_STORAGE_KEY, JSON.stringify(templates));
-        document.getElementById("xPostTemplateNameInput").value = "";
+        setScopedItem(X_POST_TEMPLATE_EDITOR_STORAGE_KEY, "{}");
         refreshXPostTemplateSelect();
-        restoreXPostTemplateEditorState();
-        syncSingleXPostDraft(true);
+        applyRecommendedXPostTemplate();
+        alert(`テンプレート「${name}」を削除しました。`);
     }
 
     function detectXPostTemplateKind() {
@@ -16898,7 +17001,10 @@ BOXのお持ち込みお待ちしております！
         const kind = detectXPostTemplateKind();
         const templates = getXPostTemplates();
         const entries = Object.entries(templates);
-        const target = entries.find(([, template]) =>
+        const defaultName = getDefaultXPostTemplateName(kind);
+        const target = defaultName && hasOwn(templates, defaultName)
+            ? [defaultName, templates[defaultName]]
+            : entries.find(([, template]) =>
             normalizeXPostTemplateKind(template.kind) === kind
         ) || entries.find(([, template]) =>
             normalizeXPostTemplateKind(template.kind) === "other"
@@ -16911,6 +17017,26 @@ BOXのお持ち込みお待ちしております！
         applyXPostTemplateEditorState(template, name);
         refreshXPostTemplateSelect(name);
         syncSingleXPostDraft(true);
+    }
+
+    function syncDefaultXPostTemplateForCategory() {
+        const currentName = String(
+            document.getElementById("xPostTemplateNameInput")?.value || ""
+        ).trim();
+        if (currentName && !isDefaultXPostTemplateName(currentName)) {
+            return false;
+        }
+
+        const kind = detectXPostTemplateKind();
+        const defaultName = getDefaultXPostTemplateName(kind);
+        const templates = getXPostTemplates();
+        if (!defaultName || !hasOwn(templates, defaultName)) return false;
+        if (currentName === defaultName) return false;
+
+        applyXPostTemplateEditorState(templates[defaultName], defaultName);
+        refreshXPostTemplateSelect(defaultName);
+        syncSingleXPostDraft(true);
+        return true;
     }
 
     function handleXPostTemplateEditorInput() {
@@ -17058,7 +17184,14 @@ BOXのお持ち込みお待ちしております！
     }
 
     function getSingleXPostSignature() {
-        return getSelectedSingleCards().map(card => [
+        const contextSignature = [
+            document.getElementById("dateInput")?.value || "",
+            document.getElementById("officialBaselineCategorySelect")?.value || "",
+            document.getElementById("xPostTemplateKindSelect")?.value || "",
+            document.getElementById("xPostTemplateNameInput")?.value || "",
+            document.getElementById("xPostTemplateBody")?.value || ""
+        ].join(":" );
+        const cardSignature = getSelectedSingleCards().map(card => [
             card.id,
             card.name,
             card.type,
@@ -17067,6 +17200,7 @@ BOXのお持ち込みお待ちしております！
             card.priceDelta,
             card.priceChangeType
         ].join(":" )).join("|");
+        return `${contextSignature}::${cardSignature}`;
     }
 
     function syncSingleXPostDraft(force = false) {
@@ -18060,7 +18194,7 @@ BOXのお持ち込みお待ちしております！
         return pages;
     }
 
-    async function renderPages() {
+    function renderPages() {
         const layoutConfig = getSelectedLayoutConfig();
         const cols = layoutConfig.cols;
         const rows = layoutConfig.rows;
@@ -18282,9 +18416,9 @@ BOXのお持ち込みお待ちしております！
                         1,
                         availableHeight / textHeight
                     );
-                    if (widthScale < 1 || heightScale < 1) {
-                        textElement.style.transform =
-                            `scale(${widthScale}, ${heightScale})`;
+                    const finalScale = Math.min(widthScale, heightScale);
+                    if (finalScale < 1) {
+                        textElement.style.transform = `scale(${finalScale})`;
                     }
                 });
                 return;
