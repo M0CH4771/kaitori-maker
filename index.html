@@ -9644,6 +9644,94 @@
             }
         }
 
+        /* Narrow control panels: keep template editing and export actions in-bounds. */
+        .template-manager > *,
+        .panel-actions > * {
+            min-width: 0;
+        }
+
+        .x-post-template-panel {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            align-items: start;
+        }
+
+        .x-post-template-panel > .x-post-saved-field,
+        .x-post-template-panel > .template-buttons,
+        .x-post-template-panel > .x-post-template-toolbar,
+        .x-post-template-panel > .x-post-body-field,
+        .x-post-template-panel > .x-post-token-panel {
+            grid-column: 1 / -1;
+        }
+
+        .x-post-template-panel > .template-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .x-post-template-panel > .template-buttons button {
+            width: 100%;
+            min-width: 0;
+            white-space: normal;
+        }
+
+        .x-post-template-panel > .x-post-template-toolbar,
+        .x-post-body-field {
+            margin-top: 0;
+        }
+
+        #xPostTemplateBody {
+            width: 100%;
+            min-height: 320px;
+        }
+
+        @media (min-width: 1320px) {
+            #buylistControl,
+            .single-maker .control-panel,
+            #xPostControl {
+                overflow-x: hidden;
+            }
+
+            #buylistControl .template-manager,
+            .single-maker .control-panel .template-manager {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            #buylistControl .template-buttons,
+            .single-maker .control-panel .template-buttons {
+                display: grid;
+                grid-column: 1 / -1;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            #buylistControl .template-buttons button,
+            .single-maker .control-panel .template-buttons button {
+                width: 100%;
+                min-width: 0;
+                white-space: normal;
+            }
+
+            #buylistControl .panel-actions {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            #buylistControl .panel-actions .btn-pdf {
+                grid-column: 1 / -1;
+            }
+
+            #buylistControl .panel-actions button,
+            .single-maker .control-panel .panel-actions button {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 680px) {
+            .x-post-template-panel,
+            .x-post-template-panel > .template-buttons {
+                grid-template-columns: minmax(0, 1fr);
+            }
+        }
+
         @media (prefers-reduced-motion: reduce) {
             *,
             *::before,
@@ -10768,7 +10856,7 @@
                         <option value="other">その他・汎用</option>
                     </select>
                 </div>
-                <div class="template-field">
+                <div class="template-field x-post-saved-field">
                     <label for="xPostTemplateSelect">保存済みテンプレート</label>
                     <select id="xPostTemplateSelect" onchange="updateXPostTemplateStatus()">
                         <option value="">テンプレートを選択</option>
@@ -10785,7 +10873,7 @@
                     <button class="btn-muted" type="button" onclick="syncSingleXPostDraft(true)">テンプレートから再生成</button>
                 </div>
 
-                <div class="template-field" style="margin-top: 14px;">
+                <div class="template-field x-post-body-field">
                     <label for="xPostTemplateBody">本文テンプレート</label>
                     <textarea id="xPostTemplateBody" rows="12" placeholder="{見出し}
 
