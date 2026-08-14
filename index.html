@@ -707,6 +707,38 @@
             background: #fb7185;
         }
 
+        .csv-file-controls {
+            display: grid;
+            grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+            gap: 7px;
+        }
+
+        .csv-file-input-hidden {
+            display: none !important;
+        }
+
+        .csv-file-controls button {
+            min-height: 38px;
+            padding: 9px 10px;
+            color: #eef2f8;
+            border: 1px solid rgba(255,255,255,.14);
+            background: #172131;
+            box-shadow: none;
+            font-size: 11px;
+            letter-spacing: 0;
+        }
+
+        .csv-file-controls .btn-csv-choose {
+            color: #fff4c2;
+            border-color: rgba(227,186,87,.46);
+            background: rgba(227,186,87,.12);
+        }
+
+        .csv-file-controls button:hover:not(:disabled) {
+            border-color: rgba(227,186,87,.7);
+            background: rgba(227,186,87,.18);
+        }
+
         .panel-divider {
             display: none;
         }
@@ -10118,7 +10150,27 @@
         <div class="settings-grid">
             <div class="control-group">
                 <label><span class="step">1</span>CSVファイルを読み込む</label>
-                <input type="file" id="csvInput" accept=".csv,text/csv">
+                <input
+                    class="csv-file-input-hidden"
+                    type="file"
+                    id="csvInput"
+                    accept=".csv,text/csv"
+                    aria-label="買取表で使用するCSVファイル"
+                >
+                <div class="csv-file-controls">
+                    <button
+                        class="btn-csv-choose"
+                        id="csvChooseButton"
+                        type="button"
+                        onclick="openCsvFilePicker('csvInput')"
+                    >CSVを選択・変更</button>
+                    <button
+                        id="csvReloadButton"
+                        type="button"
+                        onclick="reloadLastSelectedCsvFile()"
+                        disabled
+                    >同じCSVを再読込</button>
+                </div>
                 <span
                     class="csv-file-status"
                     id="csvFileStatus"
@@ -10542,9 +10594,9 @@
             <div class="export-note">
                 画像の読み込み完了後に保存してください。PNGはページごと、ZIPとPDFは1ファイルで保存されます。
             </div>
-            <button class="btn-export" type="button" onclick="exportToImage()">PNGを個別に保存</button>
-            <button class="btn-zip" type="button" onclick="exportToZip()">ZIPでまとめて保存</button>
-            <button class="btn-pdf" type="button" onclick="exportToPdf()">PDFで保存</button>
+            <button class="btn-export" data-export-action type="button" onclick="exportToImage()">PNGを個別に保存</button>
+            <button class="btn-zip" data-export-action type="button" onclick="exportToZip()">ZIPでまとめて保存</button>
+            <button class="btn-pdf" data-export-action type="button" onclick="exportToPdf()">PDFで保存</button>
         </div>
     </aside>
 
@@ -10622,7 +10674,27 @@
             <div class="settings-grid">
                 <div class="control-group">
                     <label><span class="step">1</span>CSVファイルを読み込む</label>
-                    <input type="file" id="singleCsvInput" accept=".csv,text/csv">
+                    <input
+                        class="csv-file-input-hidden"
+                        type="file"
+                        id="singleCsvInput"
+                        accept=".csv,text/csv"
+                        aria-label="単品告知で使用するCSVファイル"
+                    >
+                    <div class="csv-file-controls">
+                        <button
+                            class="btn-csv-choose"
+                            id="singleCsvChooseButton"
+                            type="button"
+                            onclick="openCsvFilePicker('singleCsvInput')"
+                        >CSVを選択・変更</button>
+                        <button
+                            id="singleCsvReloadButton"
+                            type="button"
+                            onclick="reloadLastSelectedCsvFile()"
+                            disabled
+                        >同じCSVを再読込</button>
+                    </div>
                     <span
                         class="csv-file-status"
                         id="singleCsvFileStatus"
@@ -11007,8 +11079,8 @@
                 <div class="export-note">
                     PNGは画像ごとに保存されます。複数の画像を1ファイルにまとめる場合はZIPを選択してください。
                 </div>
-                <button class="btn-export" type="button" onclick="exportSingleImages()">PNGを個別に保存</button>
-                <button class="btn-zip" type="button" onclick="exportSingleZip()">ZIPでまとめて保存</button>
+                <button class="btn-export" data-export-action type="button" onclick="exportSingleImages()">PNGを個別に保存</button>
+                <button class="btn-zip" data-export-action type="button" onclick="exportSingleZip()">ZIPでまとめて保存</button>
             </div>
         </aside>
 
@@ -12517,6 +12589,9 @@
     let imageLoadGeneration = 0;
     let workspaceAutosaveTimer = null;
     let cardEditRenderTimer = null;
+    let csvReadGeneration = 0;
+    let lastSelectedCsvFile = null;
+    let activeExportTask = "";
     let isRestoringWorkspace = false;
     let cardEditorPage = 1;
     let singlePickerPage = 1;
@@ -14459,19 +14534,61 @@
         }
     }
 
+    function updateCsvReadControls(isLoading = false) {
+        ["csvReloadButton", "singleCsvReloadButton"].forEach(id => {
+            const button = document.getElementById(id);
+            if (!button) return;
+            button.disabled = isLoading || !lastSelectedCsvFile;
+            button.textContent = isLoading
+                ? "読み込み中…"
+                : "同じCSVを再読込";
+        });
+        ["csvChooseButton", "singleCsvChooseButton"].forEach(id => {
+            const button = document.getElementById(id);
+            if (!button) return;
+            button.disabled = isLoading;
+        });
+    }
+
+    function openCsvFilePicker(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        // 選択値だけを直前に解除することで、同じファイルも再選択できる。
+        // キャンセル時は作業データと独自のファイル名表示をそのまま残す。
+        input.value = "";
+        input.click();
+    }
+
+    function reloadLastSelectedCsvFile() {
+        if (!lastSelectedCsvFile) {
+            alert("先にCSVファイルを選択してください。");
+            return;
+        }
+        readSelectedCsvFile(lastSelectedCsvFile);
+    }
+
     async function readSelectedCsvFile(file) {
         if (!file) return;
+        const readGeneration = ++csvReadGeneration;
+        lastSelectedCsvFile = file;
+        updateCsvReadControls(true);
         updateCsvFileSelectionStatus("loading", file.name);
         try {
             const text = await readCsvFileText(file);
+            if (readGeneration !== csvReadGeneration) return;
             parseCSV(text, file.name);
         } catch (error) {
+            if (readGeneration !== csvReadGeneration) return;
             console.error("CSVファイルの読み込みに失敗しました。", error);
             updateCsvFileSelectionStatus("error", file.name);
             alert(
                 `CSVファイル「${file.name}」を読み込めませんでした。\n` +
                 (error?.message || "ファイルの内容を確認してください。")
             );
+        } finally {
+            if (readGeneration === csvReadGeneration) {
+                updateCsvReadControls(false);
+            }
         }
     }
 
@@ -18778,6 +18895,31 @@ BOXのお持ち込みお待ちしております！
         );
     }
 
+    function setExportControlsBusy(isBusy) {
+        document.querySelectorAll("[data-export-action]").forEach(button => {
+            button.disabled = isBusy;
+            button.setAttribute("aria-busy", String(isBusy));
+        });
+        document.body.dataset.exportBusy = isBusy ? "true" : "false";
+    }
+
+    function beginExportTask(taskLabel) {
+        if (activeExportTask) {
+            alert(
+                `「${activeExportTask}」を処理中です。完了してからもう一度お試しください。`
+            );
+            return false;
+        }
+        activeExportTask = String(taskLabel || "保存処理");
+        setExportControlsBusy(true);
+        return true;
+    }
+
+    function finishExportTask() {
+        activeExportTask = "";
+        setExportControlsBusy(false);
+    }
+
     async function exportToImage() {
         const areas = Array.from(
             document.querySelectorAll("#pagesContainer .exportArea")
@@ -18787,6 +18929,7 @@ BOXのお持ち込みお待ちしております！
             alert("画像保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
             return;
         }
+        if (!beginExportTask("買取表PNGの保存")) return;
 
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
@@ -18816,6 +18959,7 @@ BOXのお持ち込みお待ちしております！
         } finally {
             overlay.style.display = "none";
             overlayText.textContent = "画像を生成中です...";
+            finishExportTask();
         }
     }
 
@@ -18828,6 +18972,7 @@ BOXのお持ち込みお待ちしております！
             alert("ZIP保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
             return;
         }
+        if (!beginExportTask("買取表ZIPの保存")) return;
 
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
@@ -18871,6 +19016,7 @@ BOXのお持ち込みお待ちしております！
         } finally {
             overlay.style.display = "none";
             overlayText.textContent = "画像を生成中です...";
+            finishExportTask();
         }
     }
 
@@ -18885,6 +19031,7 @@ BOXのお持ち込みお待ちしております！
             alert("PDF保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
             return;
         }
+        if (!beginExportTask("買取表PDFの保存")) return;
 
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
@@ -18943,6 +19090,7 @@ BOXのお持ち込みお待ちしております！
         } finally {
             overlay.style.display = "none";
             overlayText.textContent = "画像を生成中です...";
+            finishExportTask();
         }
     }
 
@@ -18958,6 +19106,7 @@ BOXのお持ち込みお待ちしております！
             alert("画像保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
             return;
         }
+        if (!beginExportTask("単品告知PNGの保存")) return;
 
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
@@ -18990,6 +19139,7 @@ BOXのお持ち込みお待ちしております！
         } finally {
             overlay.style.display = "none";
             overlayText.textContent = "画像を生成中です...";
+            finishExportTask();
         }
     }
 
@@ -19005,6 +19155,7 @@ BOXのお持ち込みお待ちしております！
             alert("ZIP保存機能を利用できません。ページを再読み込みして、もう一度お試しください。");
             return;
         }
+        if (!beginExportTask("単品告知ZIPの保存")) return;
 
         const overlay = document.getElementById("loadingOverlay");
         const overlayText = document.getElementById("loadingText");
@@ -19052,6 +19203,7 @@ BOXのお持ち込みお待ちしております！
         } finally {
             overlay.style.display = "none";
             overlayText.textContent = "画像を生成中です...";
+            finishExportTask();
         }
     }
 
