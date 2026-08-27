@@ -10113,6 +10113,59 @@
                 transition-duration: .01ms !important;
             }
         }
+
+        /* ===== 単品告知：11〜30商品用 ===== */
+        .single-ad.is-multi[data-density="ultra"] { padding:22px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-header { min-height:52px; padding-bottom:5px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-logo-box { width:190px; height:52px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-logo { max-height:50px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-date { font-size:11px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-heading { margin-top:6px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-products { margin-top:7px; padding:1px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card { padding:1px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-info { margin-top:3px; padding:3px 4px 4px; border-width:1px !important; border-radius:7px; box-shadow:0 2px 0 rgba(0,0,0,.16) !important; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-card-name { line-height:1.08; -webkit-line-clamp:1; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-grade { margin-top:2px; padding:1px 5px; font-size:8px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-price-label { margin-top:2px; font-size:8px; letter-spacing:.03em; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-price { min-height:32px; margin-top:2px; padding:2px 3px; border-width:1px; border-radius:5px; box-shadow:0 2px 0 rgba(0,0,0,.2); }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-price.is-dual { min-height:38px; padding:1px 2px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-price-row { gap:2px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-state-label { max-width:38px; font-size:8px; }
+        .single-ad.is-multi[data-density="ultra"] .single-ad-price-label .price-change-badge { padding:2px 4px; font-size:8px; }
+        .single-ad.is-multi.hide-card-name[data-density="ultra"] .single-ad-product-card .single-ad-price { min-height:38px; margin-top:3px; }
+        .single-ad.is-multi.hide-card-name[data-density="ultra"] .single-ad-product-card .single-ad-price.is-dual { min-height:46px; }
+
+        .single-ad.is-multi[data-density="micro"] { padding:14px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-header { min-height:42px; padding-bottom:3px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-logo-box { width:150px; height:42px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-logo { max-height:40px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-date { font-size:9px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-heading { margin-top:3px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-products { margin-top:4px; padding:0; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card { padding:0; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-image-stage { padding:0 1px 1px !important; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-info { margin-top:2px; padding:2px 2px 3px; border-width:1px !important; border-radius:5px; box-shadow:0 1px 0 rgba(0,0,0,.16) !important; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-card-name { line-height:1.02; -webkit-line-clamp:1; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-grade { margin-top:1px; padding:1px 3px; font-size:7px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-price-label { margin-top:1px; font-size:7px; letter-spacing:0; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-price { min-height:24px; margin-top:1px; padding:1px 2px; border-width:1px; border-radius:4px; box-shadow:0 1px 0 rgba(0,0,0,.2); }
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-price.is-dual { min-height:30px; padding:1px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-price-row { gap:1px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-state-label { max-width:30px; font-size:7px; }
+        .single-ad.is-multi[data-density="micro"] .single-ad-price-label .price-change-badge { padding:1px 3px; font-size:7px; }
+        .single-ad.is-multi.hide-card-name[data-density="micro"] .single-ad-product-card .single-ad-price { min-height:27px; margin-top:2px; }
+        .single-ad.is-multi.hide-card-name[data-density="micro"] .single-ad-product-card .single-ad-price.is-dual { min-height:34px; }
+
+        .single-maker .single-selection-toolbar { grid-template-columns:repeat(6,minmax(0,1fr)); }
+        .single-maker #singleSearchInput { grid-column:1 / 5; }
+        .single-maker #singleStatusFilterSelect { grid-column:5 / 7; width:100%; min-width:0; }
+        .single-maker .single-selection-toolbar button { grid-column:span 2; width:100%; min-width:0; }
+        @media (max-width:680px) {
+            .single-maker #singleSearchInput,
+            .single-maker #singleStatusFilterSelect,
+            .single-maker .single-selection-toolbar button { grid-column:1 / -1; width:100%; }
+        }
+
     </style>
 </head>
 <body data-app-view="buylist">
@@ -10159,7 +10212,7 @@
             aria-selected="false"
             aria-controls="singleMakerView"
             onclick="switchAppView('single')"
-        ><span class="view-tab-index">02</span><span class="view-tab-copy"><strong>単品告知画像</strong><small>1〜10商品</small></span></button>
+        ><span class="view-tab-index">02</span><span class="view-tab-copy"><strong>単品告知画像</strong><small>1〜30商品</small></span></button>
         <button
             class="view-tab"
             id="xPostTabButton"
@@ -10809,7 +10862,7 @@
         <aside class="control-panel" id="singleControl" aria-label="単品告知画像の設定">
             <div class="panel-heading">
                 <h2>単品告知画像</h2>
-                <p>1枚に<strong>1〜10商品</strong>を配置できます</p>
+                <p>1枚に<strong>1〜30商品</strong>を配置できます</p>
             </div>
 
             <div class="workflow-summary" aria-live="polite">
@@ -10960,6 +11013,28 @@
                             <option value="8">8商品</option>
                             <option value="9">9商品</option>
                             <option value="10">10商品</option>
+                            <optgroup label="高密度レイアウト">
+                                <option value="11">11商品</option>
+                                <option value="12">12商品</option>
+                                <option value="13">13商品</option>
+                                <option value="14">14商品</option>
+                                <option value="15">15商品</option>
+                                <option value="16">16商品</option>
+                                <option value="17">17商品</option>
+                                <option value="18">18商品</option>
+                                <option value="19">19商品</option>
+                                <option value="20">20商品</option>
+                                <option value="21">21商品</option>
+                                <option value="22">22商品</option>
+                                <option value="23">23商品</option>
+                                <option value="24">24商品</option>
+                                <option value="25">25商品</option>
+                                <option value="26">26商品</option>
+                                <option value="27">27商品</option>
+                                <option value="28">28商品</option>
+                                <option value="29">29商品</option>
+                                <option value="30">30商品</option>
+                            </optgroup>
                         </select>
                         <small class="help">選択した順に、設定した商品数ごとに画像を作成します。</small>
                     </div>
@@ -11199,9 +11274,14 @@
                     <input
                         type="text"
                         id="singleSearchInput"
-                        placeholder="カード名・種別・掲載グループで検索"
+                        placeholder="カード名・種別・掲載グループ・掲載状況で検索"
                         aria-label="単品告知に使用する商品を検索"
                     >
+                    <select id="singleStatusFilterSelect" aria-label="掲載状況で絞り込み">
+                        <option value="all">掲載状況：すべて</option>
+                        <option value="strengthened">強化のみ</option>
+                        <option value="not-strengthened">強化以外</option>
+                    </select>
                     <button class="btn-soft" type="button" onclick="selectVisibleSingleCards()">表示中の商品を選択</button>
                     <button class="btn-muted" type="button" onclick="clearSingleSelection()">すべて選択解除</button>
                     <button class="btn-muted" type="button" onclick="invertVisibleSingleCards()">選択を反転</button>
@@ -11542,6 +11622,7 @@
         sunset: "redimpact"
     };
     const SINGLE_SIZES = ["square", "portrait", "landscape"];
+    const MAX_SINGLE_ITEMS_PER_IMAGE = 30;
     const DEFAULT_SINGLE_HEADLINE_SCALE = 100;
     const DEFAULT_SINGLE_NAME_SCALE = 100;
     const DEFAULT_SINGLE_PRICE_SCALE = 100;
@@ -13291,7 +13372,7 @@
         const design = document.getElementById("singleDesignSelect")?.value;
         const size = document.getElementById("singleSizeSelect")?.value;
         const itemsPerImage = Math.min(
-            10,
+            MAX_SINGLE_ITEMS_PER_IMAGE,
             Math.max(1, Number(document.getElementById("singleItemsPerImageSelect")?.value) || 1)
         );
         const headlineScale = clampTitleNumber(
@@ -13367,7 +13448,7 @@
             document.getElementById("singleSizeSelect").value = settings.size;
         }
         document.getElementById("singleItemsPerImageSelect").value =
-            String(Math.min(10, Math.max(1, Number(settings.itemsPerImage) || 1)));
+            String(Math.min(MAX_SINGLE_ITEMS_PER_IMAGE, Math.max(1, Number(settings.itemsPerImage) || 1)));
         document.getElementById("singleLogoAlignSelect").value =
             normalizeSingleLogoAlignment(settings.logoAlign);
         if (typeof settings.headline === "string") {
@@ -14470,6 +14551,12 @@
 
     document.getElementById("singleSearchInput")
         .addEventListener("input", () => {
+            singlePickerPage = 1;
+            renderSingleCardPicker();
+        });
+
+    document.getElementById("singleStatusFilterSelect")
+        .addEventListener("change", () => {
             singlePickerPage = 1;
             renderSingleCardPicker();
         });
@@ -16867,23 +16954,28 @@
         requestAnimationFrame(fitPreviewPages);
     }
 
-    function getFilteredSingleCards() {
-        const query = String(document.getElementById("singleSearchInput")?.value || "")
-            .trim()
-            .toLocaleLowerCase("ja");
-        if (!query) return globalCardData;
+    function refreshSingleStatusFilterOptions() {
+        const select = document.getElementById("singleStatusFilterSelect");
+        if (!select) return;
+        const currentValue = select.value || "all";
+        const statuses = Array.from(new Set(globalCardData.map(card => String(card.status || "").trim()).filter(Boolean))).sort((a,b) => a.localeCompare(b, "ja", {numeric:true, sensitivity:"base"}));
+        const options = [["all","掲載状況：すべて"],["strengthened","強化のみ"],["not-strengthened","強化以外"], ...statuses.map(status => [`status:${status}`, `掲載「${status}」だけ`])];
+        if (globalCardData.some(card => !String(card.status || "").trim())) options.push(["status:","掲載状況：空欄だけ"]);
+        select.innerHTML = "";
+        options.forEach(([value,label]) => { const option = document.createElement("option"); option.value = value; option.textContent = label; select.appendChild(option); });
+        select.value = options.some(([value]) => value === currentValue) ? currentValue : "all";
+    }
 
-        return globalCardData.filter(card =>
-            [
-                card.name,
-                card.type,
-                card.group,
-                card.price,
-                card.aMinusPrice,
-                card.productId
-            ]
-                .some(value => String(value || "").toLocaleLowerCase("ja").includes(query))
-        );
+    function getFilteredSingleCards() {
+        const query = String(document.getElementById("singleSearchInput")?.value || "").trim().toLocaleLowerCase("ja");
+        const statusFilter = String(document.getElementById("singleStatusFilterSelect")?.value || "all");
+        return globalCardData.filter(card => {
+            const status = String(card.status || "").trim();
+            const matchesStatus = statusFilter === "all" ? true : statusFilter === "strengthened" ? status.includes("強化") : statusFilter === "not-strengthened" ? !status.includes("強化") : statusFilter.startsWith("status:") ? status === statusFilter.slice(7) : true;
+            if (!matchesStatus) return false;
+            if (!query) return true;
+            return [card.name, card.type, card.group, card.status, card.price, card.aMinusPrice, card.productId].some(value => String(value || "").toLocaleLowerCase("ja").includes(query));
+        });
     }
 
     function renderSingleCardPicker() {
@@ -16891,6 +16983,7 @@
         const count = document.getElementById("singleSelectionCount");
         if (!picker || !count) return;
 
+        refreshSingleStatusFilterOptions();
         const filteredCards = getFilteredSingleCards();
         count.textContent =
             `${selectedSingleCardIds.size}件選択中` +
@@ -17626,7 +17719,7 @@ BOXのお持ち込みお待ちしております！
         ).length;
         const selected = getSelectedSingleCards().length;
         const perImage = Math.min(
-            10,
+            MAX_SINGLE_ITEMS_PER_IMAGE,
             Math.max(1, Number(document.getElementById("singleItemsPerImageSelect")?.value) || 1)
         );
         const values = {
@@ -17676,39 +17769,43 @@ BOXのお持ち込みお待ちしております！
     }
 
     function getSingleMultiLayout(size, count) {
-        const safeCount = Math.min(10, Math.max(2, Number(count) || 2));
-        const layoutMap = {
-            square: {
-                2: [2, 1], 3: [3, 1], 4: [2, 2], 5: [3, 2],
-                6: [3, 2], 7: [4, 2], 8: [4, 2], 9: [5, 2], 10: [5, 2]
-            },
-            portrait: {
-                2: [2, 1], 3: [3, 1], 4: [2, 2], 5: [3, 2],
-                6: [3, 2], 7: [4, 2], 8: [4, 2], 9: [5, 2], 10: [5, 2]
-            },
-            landscape: {
-                2: [2, 1], 3: [3, 1], 4: [4, 1], 5: [5, 1],
-                6: [3, 2], 7: [4, 2], 8: [4, 2], 9: [5, 2], 10: [5, 2]
-            }
+        const safeCount = Math.min(MAX_SINGLE_ITEMS_PER_IMAGE, Math.max(2, Number(count) || 2));
+        const legacyLayoutMap = {
+            square: {2:[2,1],3:[3,1],4:[2,2],5:[3,2],6:[3,2],7:[4,2],8:[4,2],9:[5,2],10:[5,2]},
+            portrait: {2:[2,1],3:[3,1],4:[2,2],5:[3,2],6:[3,2],7:[4,2],8:[4,2],9:[5,2],10:[5,2]},
+            landscape: {2:[2,1],3:[3,1],4:[4,1],5:[5,1],6:[3,2],7:[4,2],8:[4,2],9:[5,2],10:[5,2]}
         };
         const normalizedSize = SINGLE_SIZES.includes(size) ? size : "square";
-        const [columns, rows] = layoutMap[normalizedSize][safeCount];
-        const density = safeCount >= 9
-            ? "dense"
-            : safeCount >= 7 || (normalizedSize === "landscape" && safeCount >= 4)
-                ? "compact"
-                : "comfortable";
-        const gap = density === "dense" ? 12 : density === "compact" ? 14 : 18;
+        let columns, rows;
+        if (safeCount <= 10) {
+            [columns, rows] = legacyLayoutMap[normalizedSize][safeCount];
+        } else if (normalizedSize === "portrait") {
+            if (safeCount <= 12) [columns, rows] = [3,4];
+            else if (safeCount <= 15) [columns, rows] = [3,5];
+            else if (safeCount <= 20) [columns, rows] = [4,5];
+            else if (safeCount <= 24) [columns, rows] = [4,6];
+            else [columns, rows] = [5,6];
+        } else if (normalizedSize === "landscape") {
+            if (safeCount <= 12) [columns, rows] = [6,2];
+            else if (safeCount <= 15) [columns, rows] = [5,3];
+            else if (safeCount <= 18) [columns, rows] = [6,3];
+            else if (safeCount <= 20) [columns, rows] = [5,4];
+            else if (safeCount <= 24) [columns, rows] = [6,4];
+            else if (safeCount === 25) [columns, rows] = [5,5];
+            else [columns, rows] = [6,5];
+        } else {
+            if (safeCount <= 12) [columns, rows] = [4,3];
+            else if (safeCount <= 15) [columns, rows] = [5,3];
+            else if (safeCount === 16) [columns, rows] = [4,4];
+            else if (safeCount <= 20) [columns, rows] = [5,4];
+            else if (safeCount <= 24) [columns, rows] = [6,4];
+            else if (safeCount === 25) [columns, rows] = [5,5];
+            else [columns, rows] = [6,5];
+        }
+        const density = safeCount >= 21 ? "micro" : safeCount >= 13 ? "ultra" : safeCount >= 9 ? "dense" : safeCount >= 7 || (normalizedSize === "landscape" && safeCount >= 4) ? "compact" : "comfortable";
+        const gap = density === "micro" ? 5 : density === "ultra" ? 8 : density === "dense" ? 12 : density === "compact" ? 14 : 18;
         const totalColumnGap = Math.max(0, columns - 1) * gap;
-
-        return {
-            columns,
-            rows,
-            density,
-            gap,
-            rowGap: gap,
-            cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})`
-        };
+        return { columns, rows, density, gap, rowGap: gap, cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})` };
     }
 
     function renderSingleProductRows(cards, settings, layout) {
@@ -17729,68 +17826,23 @@ BOXのお持ち込みお待ちしております！
 
     function getSingleHeadlineSize(settings, isMulti, density) {
         let baseSize = settings.design === "mono" ? 64 : 57;
-        if (isMulti) {
-            baseSize = density === "dense"
-                ? 34
-                : density === "compact"
-                    ? 38
-                    : 42;
-        }
-        const scale = clampTitleNumber(
-            settings.headlineScale,
-            60,
-            160,
-            DEFAULT_SINGLE_HEADLINE_SCALE
-        );
+        if (isMulti) baseSize = density === "micro" ? 22 : density === "ultra" ? 28 : density === "dense" ? 34 : density === "compact" ? 38 : 42;
+        const scale = clampTitleNumber(settings.headlineScale, 60, 160, DEFAULT_SINGLE_HEADLINE_SCALE);
         return Math.round(baseSize * scale) / 100;
     }
 
     function getSingleProductNameSize(settings, isMulti, density, size) {
         let baseSize = size === "portrait" ? 34 : 39;
-        if (isMulti) {
-            baseSize = density === "dense"
-                ? 16
-                : density === "compact"
-                    ? 18
-                    : 21;
-        }
-        const scale = clampTitleNumber(
-            settings.nameScale,
-            60,
-            160,
-            DEFAULT_SINGLE_NAME_SCALE
-        );
+        if (isMulti) baseSize = density === "micro" ? 10 : density === "ultra" ? 13 : density === "dense" ? 16 : density === "compact" ? 18 : 21;
+        const scale = clampTitleNumber(settings.nameScale, 60, 160, DEFAULT_SINGLE_NAME_SCALE);
         return Math.round(baseSize * scale) / 100;
     }
 
     function getSinglePriceSize(settings, isMulti, density, size) {
-        let baseSize = size === "portrait"
-            ? 61
-            : settings.design === "redimpact"
-                ? 78
-                : 72;
-        if (isMulti) {
-            baseSize = density === "dense"
-                ? 24
-                : density === "compact"
-                    ? 27
-                    : 31;
-        }
-        const scale = clampTitleNumber(
-            settings.priceScale,
-            60,
-            160,
-            DEFAULT_SINGLE_PRICE_SCALE
-        );
-        const hiddenNameBoost = settings.nameDisplay === "hide"
-            ? isMulti
-                ? density === "dense"
-                    ? 1.22
-                    : density === "compact"
-                        ? 1.28
-                        : 1.34
-                : 1.4
-            : 1;
+        let baseSize = size === "portrait" ? 61 : settings.design === "redimpact" ? 78 : 72;
+        if (isMulti) baseSize = density === "micro" ? 14 : density === "ultra" ? 18 : density === "dense" ? 24 : density === "compact" ? 27 : 31;
+        const scale = clampTitleNumber(settings.priceScale, 60, 160, DEFAULT_SINGLE_PRICE_SCALE);
+        const hiddenNameBoost = settings.nameDisplay === "hide" ? (isMulti ? (density === "micro" ? 1.06 : density === "ultra" ? 1.12 : density === "dense" ? 1.22 : density === "compact" ? 1.28 : 1.34) : 1.4) : 1;
         return Math.round(baseSize * scale * hiddenNameBoost) / 100;
     }
 
