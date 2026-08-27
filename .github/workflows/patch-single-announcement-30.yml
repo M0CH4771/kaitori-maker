@@ -1,44 +1,13 @@
-name: Patch single announcement to 30 items
+name: Single announcement maintenance
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/patch-single-announcement-30.yml"
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  patch:
+  note:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Apply patch
-        run: python .github/patch-single-announcement-30.py
-
-      - name: Validate
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import re
-          text = Path('index.html').read_text(encoding='utf-8')
-          scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, flags=re.S | re.I)
-          inline = [script for script in scripts if script.strip()]
-          if not inline:
-              raise SystemExit('No inline JavaScript found')
-          Path('/tmp/kaitori-maker-inline.js').write_text(inline[-1], encoding='utf-8')
-          PY
-          node --check /tmp/kaitori-maker-inline.js
-          git diff --check
-
-      - name: Commit and push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
-          git commit -m "Expand single announcements to 30 items"
-          git push
+      - run: echo "One-time single announcement migration completed."
