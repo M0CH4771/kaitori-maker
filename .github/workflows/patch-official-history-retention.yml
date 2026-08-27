@@ -1,0 +1,149 @@
+name: Patch official price history retention
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/patch-official-history-retention.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patch
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+
+          path = Path("index.html")
+          text = path.read_text(encoding="utf-8")
+
+          def replace_once(old, new, label):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected 1 match, got {count}")
+              text = text.replace(old, new, 1)
+
+          # 直近3世代（最新・1回前・2回前）だけ保持する上限。
+          replace_once(
+              '''    const OFFICIAL_BASELINES_STORAGE_KEY =\n        "kaitori_official_price_baselines_v1";\n    const OFFICIAL_BASELINE_LEGACY_OWNER_KEY =''',
+              '''    const OFFICIAL_BASELINES_STORAGE_KEY =\n        "kaitori_official_price_baselines_v1";\n    const OFFICIAL_BASELINE_HISTORY_LIMIT = 3;\n    const OFFICIAL_BASELINE_LEGACY_OWNER_KEY =''',
+              "official history limit constant"
+          )
+
+          # 履歴一覧は画面上では不要なので非表示にする。
+          replace_once(
+              '''    </style>\n</head>''',
+              '''        /* 確定履歴は内部比較用として保持し、通常画面には表示しない */\n        .official-baseline-history {\n            display: none !important;\n        }\n\n    </style>\n</head>''',
+              "hide official history"
+          )
+
+          # 説明文を現在の保持仕様へ更新。
+          replace_once(
+              '''            「更新日」に設定した日付分として保存します。同じ区分・同じ日付で再確定すると、その日付分だけを上書きします。確定履歴の日付を押すと、その日付へ切り替えて内容を確認できます。''',
+              '''            「更新日」に設定した日付分として保存します。同じ区分・同じ日付は上書きし、確定データは最新・1回前・2回前の3世代だけ保持します。''',
+              "official history help"
+          )
+
+          # normalizeOfficialBaselines の直後に保持数整理関数を追加する。
+          marker = '''    function countOfficialBaselineRecords(baselines) {'''
+          if text.count(marker) != 1:
+              raise SystemExit(f"countOfficialBaselineRecords marker: expected 1 match, got {text.count(marker)}")
+
+          trim_function = '''    function trimOfficialBaselineHistory(\n        baselines,\n        limit = OFFICIAL_BASELINE_HISTORY_LIMIT\n    ) {\n        const safeLimit = Math.max(1, Number(limit) || 1);\n        const normalized = baselines && typeof baselines === "object"\n            ? baselines\n            : { version: 2, categories: {} };\n        if (!normalized.categories || typeof normalized.categories !== "object") {\n            normalized.categories = {};\n        }\n\n        Object.keys(OFFICIAL_BASELINE_CATEGORIES).forEach(category => {\n            const categoryData = normalized.categories[category];\n            const records =\n                categoryData?.records && typeof categoryData.records === "object"\n                    ? categoryData.records\n                    : {};\n            const keepDates = Object.keys(records)\n                .filter(Boolean)\n                .sort((a, b) => b.localeCompare(a))\n                .slice(0, safeLimit);\n            const trimmedRecords = {};\n            keepDates.forEach(dateValue => {\n                trimmedRecords[dateValue] = records[dateValue];\n            });\n            normalized.categories[category] = { records: trimmedRecords };\n        });\n\n        normalized.version = 2;\n        return normalized;\n    }\n\n'''
+          text = text.replace(marker, trim_function + marker, 1)
+
+          # 正規化結果もマージ結果も必ず3世代へ丸める。
+          normalize_pattern = re.compile(
+              r'(function normalizeOfficialBaselines\(value\) \{.*?)(\n        return \{ version: 2, categories \};\n    \}\n\n    function mergeOfficialBaselines)',
+              re.S
+          )
+          text, count = normalize_pattern.subn(
+              lambda m: m.group(1) + '\n        return trimOfficialBaselineHistory({ version: 2, categories });\n    }\n\n    function mergeOfficialBaselines',
+              text,
+              count=1
+          )
+          if count != 1:
+              raise SystemExit(f"normalizeOfficialBaselines return: expected 1 match, got {count}")
+
+          merge_pattern = re.compile(
+              r'(function mergeOfficialBaselines\(\.\.\.values\) \{.*?)(\n        return \{ version: 2, categories \};\n    \}\n\n    function trimOfficialBaselineHistory)',
+              re.S
+          )
+          # trim関数は countOfficialBaselineRecords の直前へ挿入したため、merge の次は trim になる。
+          text, count = merge_pattern.subn(
+              lambda m: m.group(1) + '\n        return trimOfficialBaselineHistory({ version: 2, categories });\n    }\n\n    function trimOfficialBaselineHistory',
+              text,
+              count=1
+          )
+          if count != 1:
+              # 元の関数順で merge -> count の場合に対応。
+              merge_pattern_fallback = re.compile(
+                  r'(function mergeOfficialBaselines\(\.\.\.values\) \{.*?)(\n        return \{ version: 2, categories \};\n    \}\n\n    function countOfficialBaselineRecords)',
+                  re.S
+              )
+              text, count = merge_pattern_fallback.subn(
+                  lambda m: m.group(1) + '\n        return trimOfficialBaselineHistory({ version: 2, categories });\n    }\n\n    function countOfficialBaselineRecords',
+                  text,
+                  count=1
+              )
+          if count != 1:
+              raise SystemExit("mergeOfficialBaselines return: expected 1 match")
+
+          # 新規確定・同日上書き時も書き込み前に即時整理する。
+          replace_once(
+              '''        baselines.categories[category].records[targetDate] = baseline;\n\n        try {''',
+              '''        baselines.categories[category].records[targetDate] = baseline;\n        trimOfficialBaselineHistory(baselines);\n\n        try {''',
+              "trim after confirm"
+          )
+
+          required = [
+              'const OFFICIAL_BASELINE_HISTORY_LIMIT = 3;',
+              'function trimOfficialBaselineHistory(',
+              'return trimOfficialBaselineHistory({ version: 2, categories });',
+              'trimOfficialBaselineHistory(baselines);',
+              '.official-baseline-history {',
+              '最新・1回前・2回前の3世代だけ保持します。'
+          ]
+          for needle in required:
+              if needle not in text:
+                  raise SystemExit(f"validation missing: {needle}")
+
+          if text.count('return trimOfficialBaselineHistory({ version: 2, categories });') < 2:
+              raise SystemExit("normalize/merge retention validation failed")
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Validate
+        shell: bash
+        run: |
+          python <<'PY'
+          from pathlib import Path
+          import re
+          text = Path("index.html").read_text(encoding="utf-8")
+          scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, flags=re.S | re.I)
+          inline = [script for script in scripts if script.strip()]
+          if not inline:
+              raise SystemExit("No inline script found")
+          Path("/tmp/kaitori-maker-inline.js").write_text(inline[-1], encoding="utf-8")
+          PY
+          node --check /tmp/kaitori-maker-inline.js
+          git diff --check
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Limit official price history to three generations"
+          git push
