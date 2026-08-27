@@ -10166,6 +10166,11 @@
             .single-maker .single-selection-toolbar button { grid-column:1 / -1; width:100%; }
         }
 
+        /* 確定履歴は内部比較用として保持し、通常画面には表示しない */
+        .official-baseline-history {
+            display: none !important;
+        }
+
     </style>
 </head>
 <body data-app-view="buylist">
@@ -10322,7 +10327,7 @@
             </div>
         </div>
         <p class="official-baseline-help">
-            「更新日」に設定した日付分として保存します。同じ区分・同じ日付で再確定すると、その日付分だけを上書きします。確定履歴の日付を押すと、その日付へ切り替えて内容を確認できます。
+            「更新日」に設定した日付分として保存します。同じ区分・同じ日付は上書きし、確定データは最新・1回前・2回前の3世代だけ保持します。
         </p>
     </section>
 
@@ -11675,6 +11680,7 @@
     const CSV_SNAPSHOT_STORAGE_KEY = "kaitori_previous_csv_snapshot_v1";
     const OFFICIAL_BASELINES_STORAGE_KEY =
         "kaitori_official_price_baselines_v1";
+    const OFFICIAL_BASELINE_HISTORY_LIMIT = 3;
     const OFFICIAL_BASELINE_LEGACY_OWNER_KEY =
         "kaitori_official_baseline_legacy_owner_v1";
     const OFFICIAL_CATEGORY_STORAGE_KEY =
@@ -15444,7 +15450,7 @@
             categories[category] = { records };
         });
 
-        return { version: 2, categories };
+        return trimOfficialBaselineHistory({ version: 2, categories });
     }
 
     function mergeOfficialBaselines(...values) {
@@ -15475,7 +15481,40 @@
             });
             categories[category] = { records };
         });
-        return { version: 2, categories };
+        return trimOfficialBaselineHistory({ version: 2, categories });
+    }
+
+    function trimOfficialBaselineHistory(
+        baselines,
+        limit = OFFICIAL_BASELINE_HISTORY_LIMIT
+    ) {
+        const safeLimit = Math.max(1, Number(limit) || 1);
+        const normalized = baselines && typeof baselines === "object"
+            ? baselines
+            : { version: 2, categories: {} };
+        if (!normalized.categories || typeof normalized.categories !== "object") {
+            normalized.categories = {};
+        }
+
+        Object.keys(OFFICIAL_BASELINE_CATEGORIES).forEach(category => {
+            const categoryData = normalized.categories[category];
+            const records =
+                categoryData?.records && typeof categoryData.records === "object"
+                    ? categoryData.records
+                    : {};
+            const keepDates = Object.keys(records)
+                .filter(Boolean)
+                .sort((a, b) => b.localeCompare(a))
+                .slice(0, safeLimit);
+            const trimmedRecords = {};
+            keepDates.forEach(dateValue => {
+                trimmedRecords[dateValue] = records[dateValue];
+            });
+            normalized.categories[category] = { records: trimmedRecords };
+        });
+
+        normalized.version = 2;
+        return normalized;
     }
 
     function countOfficialBaselineRecords(baselines) {
@@ -16105,6 +16144,7 @@
             baselines.categories[category] = { records: {} };
         }
         baselines.categories[category].records[targetDate] = baseline;
+        trimOfficialBaselineHistory(baselines);
 
         try {
             setScopedItem(
