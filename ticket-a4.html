@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>A4引換券・9枚面付け</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #64748b;
+      --line: #d9dee8;
+      --panel: #ffffff;
+      --canvas: #e9edf3;
+      --brand: #a90018;
+      --brand-dark: #760011;
+      --gold: #d2a83e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 12% 8%, rgba(210,168,62,.14), transparent 27%),
+        #f3f5f8;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans JP", "Yu Gothic", sans-serif;
+    }
+    button, input { font: inherit; }
+    .app {
+      width: min(1320px, calc(100% - 32px));
+      margin: 24px auto 56px;
+    }
+    .header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 6px;
+      color: var(--brand);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: .08em;
+    }
+    .eyebrow::before {
+      width: 20px;
+      height: 3px;
+      content: "";
+      border-radius: 999px;
+      background: var(--gold);
+    }
+    h1 {
+      margin: 0;
+      color: #101827;
+      font-size: clamp(24px, 3vw, 38px);
+      line-height: 1.15;
+      letter-spacing: -.03em;
+    }
+    .lead {
+      max-width: 760px;
+      margin: 9px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1.7;
+    }
+    .back {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      color: #334155;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255,255,255,.82);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
+      gap: 22px;
+      align-items: start;
+    }
+    .panel {
+      overflow: hidden;
+      border: 1px solid rgba(15,23,42,.12);
+      border-radius: 16px;
+      background: var(--panel);
+      box-shadow: 0 16px 40px rgba(15,23,42,.08);
+    }
+    .panel-head {
+      padding: 18px 20px 16px;
+      border-bottom: 1px solid #e7eaf0;
+    }
+    .panel-head strong {
+      display: block;
+      font-size: 17px;
+      font-weight: 950;
+    }
+    .panel-head span {
+      display: block;
+      margin-top: 4px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      line-height: 1.55;
+    }
+    .controls { padding: 18px 20px 20px; }
+    .drop-zone {
+      display: grid;
+      min-height: 210px;
+      place-items: center;
+      padding: 24px;
+      text-align: center;
+      border: 2px dashed #b8c0cf;
+      border-radius: 14px;
+      background: #f8fafc;
+      cursor: pointer;
+      transition: .16s ease;
+    }
+    .drop-zone:hover,
+    .drop-zone.is-dragging {
+      border-color: var(--brand);
+      background: #fff7f8;
+      transform: translateY(-1px);
+    }
+    .drop-icon {
+      display: grid;
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 12px;
+      place-items: center;
+      color: #fff;
+      border-radius: 14px;
+      background: linear-gradient(145deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 8px 18px rgba(169,0,24,.2);
+      font-size: 25px;
+      font-weight: 900;
+    }
+    .drop-zone strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 950;
+    }
+    .drop-zone small {
+      display: block;
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+    #ticketFile { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    .file-state {
+      min-height: 46px;
+      margin-top: 12px;
+      padding: 10px 12px;
+      color: var(--muted);
+      border: 1px solid #e2e6ed;
+      border-radius: 10px;
+      background: #fbfcfe;
+      font-size: 12px;
+      font-weight: 750;
+      line-height: 1.45;
+    }
+    .file-state.is-ready {
+      color: #166534;
+      border-color: #bbddc6;
+      background: #f2fbf5;
+    }
+    .specs {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap: 8px;
+      margin: 14px 0;
+    }
+    .spec {
+      padding: 10px 11px;
+      border: 1px solid #e4e8ef;
+      border-radius: 10px;
+      background: #fff;
+    }
+    .spec small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .spec b {
+      display: block;
+      margin-top: 2px;
+      font-size: 13px;
+      font-weight: 950;
+    }
+    .primary {
+      width: 100%;
+      min-height: 52px;
+      color: #fff;
+      border: 0;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-dark));
+      box-shadow: 0 10px 20px rgba(169,0,24,.2);
+      font-weight: 950;
+      cursor: pointer;
+    }
+    .primary:disabled {
+      color: #8b95a5;
+      background: #dfe3ea;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+    .print-note {
+      margin: 12px 0 0;
+      padding: 11px 12px;
+      color: #5c470c;
+      border-left: 4px solid var(--gold);
+      border-radius: 7px;
+      background: #fff8df;
+      font-size: 11px;
+      font-weight: 750;
+      line-height: 1.65;
+    }
+    .preview-panel { padding-bottom: 20px; }
+    .preview-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 15px 18px;
+    }
+    .preview-head strong { font-size: 14px; font-weight: 950; }
+    .preview-head span { color: var(--muted); font-size: 10px; font-weight: 750; }
+    .preview-stage {
+      display: grid;
+      min-height: 690px;
+      place-items: center;
+      padding: 22px;
+      background:
+        linear-gradient(45deg, rgba(255,255,255,.16) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.16) 75%),
+        linear-gradient(45deg, rgba(255,255,255,.16) 25%, transparent 25%, transparent 75%, rgba(255,255,255,.16) 75%),
+        var(--canvas);
+      background-position: 0 0, 10px 10px;
+      background-size: 20px 20px;
+    }
+    .sheet {
+      position: relative;
+      width: min(100%, 596px);
+      aspect-ratio: 210 / 297;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 16px 42px rgba(15,23,42,.2);
+    }
+    .card {
+      position: absolute;
+      overflow: hidden;
+      border: 1px solid #cbd1db;
+      background: #f7f8fa;
+    }
+    .card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+    .card-placeholder {
+      display: grid;
+      width: 100%;
+      height: 100%;
+      place-items: center;
+      color: #94a0b2;
+      background:
+        linear-gradient(135deg, transparent 49.6%, #e0e4ea 49.8%, #e0e4ea 50.2%, transparent 50.4%);
+      font-size: clamp(8px, 1.1vw, 12px);
+      font-weight: 900;
+      text-align: center;
+    }
+    .status-error { color: #b42318; }
+    @media (max-width: 900px) {
+      .header { display: block; }
+      .back { display: inline-flex; margin-top: 14px; }
+      .layout { grid-template-columns: 1fr; }
+      .preview-stage { min-height: 0; }
+    }
+    @media (max-width: 520px) {
+      .app { width: min(100% - 20px, 1320px); margin-top: 14px; }
+      .controls, .panel-head { padding-left: 14px; padding-right: 14px; }
+      .preview-stage { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="header">
+      <div>
+        <span class="eyebrow">PRINT LAYOUT</span>
+        <h1>A4引換券・9枚面付け</h1>
+        <p class="lead">作成済みの引換券PNGを、63×88mmの実寸でA4縦へ3列×3段に配置します。9枚すべて同じシリアルのまま、裁断目印付きPDFとして保存できます。</p>
+      </div>
+      <a class="back" href="./index.html">← 作成ツールへ戻る</a>
+    </header>
+
+    <div class="layout">
+      <section class="panel" aria-label="A4出力設定">
+        <div class="panel-head">
+          <strong>引換券PNGを選択</strong>
+          <span>既存の「引換券PNGを保存」で作成した画像を使用してください。</span>
+        </div>
+        <div class="controls">
+          <label class="drop-zone" id="dropZone" for="ticketFile">
+            <span>
+              <span class="drop-icon">＋</span>
+              <strong>クリックまたはドロップ</strong>
+              <small>PNG・JPEG対応<br>推奨：744×1039px</small>
+            </span>
+          </label>
+          <input id="ticketFile" type="file" accept="image/png,image/jpeg">
+
+          <div class="file-state" id="fileState" role="status">画像を選択すると、右側に9枚の配置を表示します。</div>
+
+          <div class="specs" aria-label="出力仕様">
+            <div class="spec"><small>用紙</small><b>A4縦</b></div>
+            <div class="spec"><small>配置</small><b>3列×3段</b></div>
+            <div class="spec"><small>券サイズ</small><b>63×88mm</b></div>
+            <div class="spec"><small>カード間隔</small><b>2mm</b></div>
+          </div>
+
+          <button class="primary" id="savePdfButton" type="button" disabled>A4・9枚PDFを保存</button>
+          <p class="print-note">印刷時は「実際のサイズ」または「倍率100%」を選択してください。「用紙に合わせる」は使わないでください。</p>
+        </div>
+      </section>
+
+      <section class="panel preview-panel" aria-label="A4仕上がりプレビュー">
+        <div class="preview-head">
+          <strong>A4仕上がりプレビュー</strong>
+          <span>左右8.5mm・上下14.5mm</span>
+        </div>
+        <div class="preview-stage">
+          <div class="sheet" id="sheet" aria-label="A4用紙"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const PAGE_WIDTH = 210;
+    const PAGE_HEIGHT = 297;
+    const CARD_WIDTH = 63;
+    const CARD_HEIGHT = 88;
+    const GAP = 2;
+    const START_X = (PAGE_WIDTH - (CARD_WIDTH * 3 + GAP * 2)) / 2;
+    const START_Y = (PAGE_HEIGHT - (CARD_HEIGHT * 3 + GAP * 2)) / 2;
+
+    const sheet = document.getElementById("sheet");
+    const fileInput = document.getElementById("ticketFile");
+    const dropZone = document.getElementById("dropZone");
+    const fileState = document.getElementById("fileState");
+    const saveButton = document.getElementById("savePdfButton");
+    let imageData = "";
+    let imageFormat = "PNG";
+    let sourceName = "引換券";
+
+    function buildPreview() {
+      sheet.innerHTML = "";
+      for (let row = 0; row < 3; row += 1) {
+        for (let column = 0; column < 3; column += 1) {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.style.left = ((START_X + column * (CARD_WIDTH + GAP)) / PAGE_WIDTH * 100) + "%";
+          card.style.top = ((START_Y + row * (CARD_HEIGHT + GAP)) / PAGE_HEIGHT * 100) + "%";
+          card.style.width = (CARD_WIDTH / PAGE_WIDTH * 100) + "%";
+          card.style.height = (CARD_HEIGHT / PAGE_HEIGHT * 100) + "%";
+
+          if (imageData) {
+            const image = document.createElement("img");
+            image.src = imageData;
+            image.alt = "";
+            card.appendChild(image);
+          } else {
+            const placeholder = document.createElement("div");
+            placeholder.className = "card-placeholder";
+            placeholder.textContent = "引換券PNG";
+            card.appendChild(placeholder);
+          }
+          sheet.appendChild(card);
+        }
+      }
+    }
+
+    function setStatus(message, type = "") {
+      fileState.textContent = message;
+      fileState.className = "file-state" + (type ? " " + type : "");
+    }
+
+    function cleanFilename(value) {
+      return String(value || "引換券")
+        .replace(/\.[^.]+$/, "")
+        .replace(/[\\/:*?"<>|]/g, "_")
+        .trim()
+        .slice(0, 70) || "引換券";
+    }
+
+    function loadTicketFile(file) {
+      if (!file) return;
+      if (!["image/png", "image/jpeg"].includes(file.type)) {
+        imageData = "";
+        saveButton.disabled = true;
+        buildPreview();
+        setStatus("PNGまたはJPEG画像を選択してください。", "status-error");
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const candidate = String(reader.result || "");
+        const tester = new Image();
+        tester.onload = () => {
+          imageData = candidate;
+          imageFormat = file.type === "image/jpeg" ? "JPEG" : "PNG";
+          sourceName = cleanFilename(file.name);
+          saveButton.disabled = false;
+          buildPreview();
+
+          const ratio = tester.naturalWidth / tester.naturalHeight;
+          const expected = CARD_WIDTH / CARD_HEIGHT;
+          const sizeText = tester.naturalWidth + "×" + tester.naturalHeight + "px";
+          if (Math.abs(ratio - expected) > 0.015) {
+            setStatus(file.name + "（" + sizeText + "）を読み込みました。縦横比が63×88mmと異なるため、出力時に券全体へ合わせます。", "is-ready");
+          } else {
+            setStatus(file.name + "（" + sizeText + "）を読み込みました。9枚とも同じ画像・シリアルで出力します。", "is-ready");
+          }
+        };
+        tester.onerror = () => {
+          imageData = "";
+          saveButton.disabled = true;
+          buildPreview();
+          setStatus("画像を読み込めませんでした。別のファイルを選択してください。", "status-error");
+        };
+        tester.src = candidate;
+      };
+      reader.onerror = () => setStatus("ファイルを読み込めませんでした。", "status-error");
+      reader.readAsDataURL(file);
+    }
+
+    function drawCropMarks(pdf, x, y) {
+      const right = x + CARD_WIDTH;
+      const bottom = y + CARD_HEIGHT;
+      const length = 0.7;
+      const offset = 0.25;
+
+      pdf.line(x - offset - length, y, x - offset, y);
+      pdf.line(right + offset, y, right + offset + length, y);
+      pdf.line(x - offset - length, bottom, x - offset, bottom);
+      pdf.line(right + offset, bottom, right + offset + length, bottom);
+
+      pdf.line(x, y - offset - length, x, y - offset);
+      pdf.line(right, y - offset - length, right, y - offset);
+      pdf.line(x, bottom + offset, x, bottom + offset + length);
+      pdf.line(right, bottom + offset, right, bottom + offset + length);
+    }
+
+    async function saveA4Pdf() {
+      if (!imageData || !window.jspdf?.jsPDF) return;
+      const originalLabel = saveButton.textContent;
+      saveButton.disabled = true;
+      saveButton.textContent = "A4 PDFを作成中…";
+
+      try {
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4",
+          compress: true
+        });
+        pdf.setDrawColor(145, 145, 145);
+        pdf.setLineWidth(0.12);
+
+        for (let row = 0; row < 3; row += 1) {
+          for (let column = 0; column < 3; column += 1) {
+            const x = START_X + column * (CARD_WIDTH + GAP);
+            const y = START_Y + row * (CARD_HEIGHT + GAP);
+            pdf.addImage(imageData, imageFormat, x, y, CARD_WIDTH, CARD_HEIGHT, "ticket-image", "FAST");
+            drawCropMarks(pdf, x, y);
+          }
+        }
+
+        pdf.setProperties({
+          title: "商品引換券 A4 9枚",
+          subject: "63×88mm・3列×3段・裁断目印付き",
+          creator: "A4引換券・9枚面付け"
+        });
+        pdf.save("商品引換券_A4_9枚_" + sourceName + ".pdf");
+        setStatus("A4・9枚PDFを保存しました。印刷は倍率100%で行ってください。", "is-ready");
+      } catch (error) {
+        console.error(error);
+        setStatus("PDFを作成できませんでした：" + (error.message || error), "status-error");
+      } finally {
+        saveButton.disabled = false;
+        saveButton.textContent = originalLabel;
+      }
+    }
+
+    fileInput.addEventListener("change", event => loadTicketFile(event.target.files?.[0]));
+    saveButton.addEventListener("click", saveA4Pdf);
+
+    ["dragenter", "dragover"].forEach(type => {
+      dropZone.addEventListener(type, event => {
+        event.preventDefault();
+        dropZone.classList.add("is-dragging");
+      });
+    });
+    ["dragleave", "drop"].forEach(type => {
+      dropZone.addEventListener(type, event => {
+        event.preventDefault();
+        dropZone.classList.remove("is-dragging");
+      });
+    });
+    dropZone.addEventListener("drop", event => loadTicketFile(event.dataTransfer?.files?.[0]));
+
+    buildPreview();
+  </script>
+</body>
+</html>
