@@ -10754,6 +10754,11 @@
             background: radial-gradient(circle, rgba(217,173,74,.08), transparent 62%);
         }
 
+        .ticket-product-image[hidden],
+        .ticket-image-placeholder[hidden] {
+            display: none !important;
+        }
+
         .ticket-product-image {
             display: block;
             width: 100%;
@@ -14884,7 +14889,14 @@
                 backgroundColor: null,
                 width: 744,
                 height: 1039,
-                logging: false
+                logging: false,
+                onclone: clonedDocument => {
+                    const clonedTicket = clonedDocument.getElementById("prizeTicket");
+                    if (clonedTicket) {
+                        clonedTicket.style.transform = "none";
+                        clonedTicket.style.transformOrigin = "top left";
+                    }
+                }
             });
             const blob = await new Promise(resolve => canvas.toBlob(resolve, "image/png"));
             if (!blob) throw new Error("PNGを作成できませんでした。");
