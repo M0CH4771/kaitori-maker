@@ -51,3 +51,5 @@ jobs:
           git add index.html
           git commit -m "Add prize exchange ticket maker"
           git push
+
+# Uses declaration-scoped storage-key patching.
