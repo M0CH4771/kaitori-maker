@@ -472,9 +472,11 @@ textarea:focus {
 .pagination span { color: var(--muted); font-size: 10px; font-weight: 900; }
 
 .settings-panel,
-.layout-panel { overflow: hidden; }
+.layout-panel,
+.template-panel { overflow: hidden; }
 .settings-panel > summary,
-.layout-panel > summary {
+.layout-panel > summary,
+.template-panel > summary {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -486,15 +488,20 @@ textarea:focus {
 
 .settings-panel > summary::-webkit-details-marker,
 .layout-panel > summary::-webkit-details-marker,
+.template-panel > summary::-webkit-details-marker,
 .layout-group > summary::-webkit-details-marker { display: none; }
 .settings-panel > summary > span,
-.layout-panel > summary > span { display: grid; gap: 2px; }
+.layout-panel > summary > span,
+.template-panel > summary > span { display: grid; gap: 2px; }
 .settings-panel > summary strong,
-.layout-panel > summary strong { font-size: 13px; font-weight: 900; }
+.layout-panel > summary strong,
+.template-panel > summary strong { font-size: 13px; font-weight: 900; }
 .settings-panel > summary small,
-.layout-panel > summary small { color: var(--muted); font-size: 9px; font-weight: 800; }
+.layout-panel > summary small,
+.template-panel > summary small { color: var(--muted); font-size: 9px; font-weight: 800; }
 .settings-panel[open] > summary,
-.layout-panel[open] > summary { border-bottom: 1px solid var(--soft-line); }
+.layout-panel[open] > summary,
+.template-panel[open] > summary { border-bottom: 1px solid var(--soft-line); }
 
 .settings-body { display: grid; gap: 11px; padding: 15px 18px 18px; }
 .settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
@@ -586,6 +593,31 @@ textarea:focus {
   font-weight: 900;
 }
 .layout-number-wrap small { color: #8590a1; font-size: 8px; font-weight: 800; }
+
+.template-body { display: grid; gap: 10px; padding: 14px 16px 16px; }
+.template-body label { display: grid; min-width: 0; gap: 5px; color: #4c596e; font-size: 9px; font-weight: 900; }
+.template-name-field > div { display: grid; grid-template-columns: minmax(0,1fr) 76px; gap: 7px; }
+.template-name-field input { min-height: 38px; padding: 7px 9px; font-size: 10px; font-weight: 800; }
+.template-name-field button,
+.template-load-row > button {
+  min-height: 38px;
+  padding: 6px 9px;
+  color: #fff;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand);
+  font-size: 9px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.template-load-row { display: grid; grid-template-columns: minmax(0,1fr) 76px 54px; gap: 7px; align-items: end; }
+.template-load-row select { min-height: 38px; padding: 7px 9px; font-size: 10px; font-weight: 800; }
+.template-load-row > button:disabled { opacity: .4; cursor: not-allowed; }
+.template-load-row > .template-delete-button { color: var(--danger); border: 1px solid #edc5c0; background: #fff5f3; }
+.template-status { padding: 7px 9px; color: var(--muted); border-radius: 7px; background: #f7f8fa; font-size: 9px; font-weight: 750; }
+.template-status.is-ready { color: var(--success); background: #effaf3; }
+.template-status.is-error { color: var(--danger); background: #fff2f0; }
 
 .export-panel {
   position: sticky;
@@ -883,6 +915,7 @@ textarea:focus {
   .product-panel { grid-row: span 3; }
   .settings-panel,
   .layout-panel,
+  .template-panel,
   .export-panel { grid-column: 1; }
   .preview-column { position: static; }
   .preview-stage { max-height: none; }
@@ -896,6 +929,7 @@ textarea:focus {
   .product-panel { grid-row: auto; }
   .settings-panel,
   .layout-panel,
+  .template-panel,
   .export-panel { grid-column: auto; }
   .product-list { max-height: 520px; }
 }
@@ -912,6 +946,8 @@ textarea:focus {
   .product-thumb { width: 50px; height: 64px; }
   .ticket-row-controls { grid-template-columns: 68px minmax(0,1fr) 30px; }
   .layout-control-row { grid-template-columns: 88px minmax(70px,1fr) 82px; gap: 5px; }
+  .template-load-row { grid-template-columns: 1fr 1fr; }
+  .template-load-row label { grid-column: 1 / -1; }
   .preview-toolbar { padding: 13px 14px 10px; }
   .preview-meta { padding: 8px 12px; }
   .preview-stage { display: block; padding: 12px; overflow-x: auto; }
