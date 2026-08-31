@@ -8,6 +8,8 @@ const TICKET_HEIGHT_PX = 1039;
 const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
 const TICKET_SETTINGS_KEY = "kaitori_prize_ticket_settings_v1";
 const TICKET_LAYOUT_KEY = "kaitori_prize_ticket_layout_v3";
+const TICKET_TEMPLATES_KEY = "kaitori_prize_ticket_templates_v1";
+const MAX_TEMPLATES = 20;
 const DEFAULT_NOTES = "【注意事項】\n※本券は、自販機から排出後に店内で開封した場合のみ有効です。\n※開封前・開封後を問わず、店外へ持ち出した場合は無効です。\n※本券が入っていた場合は、そのまま受付までお持ちください。\n※後日のお引換えはできません。\n※引換時に本券を回収いたします。\n※複製・改ざん・無効なシリアルの券は使用できません。";
 
 const DEFAULT_SETTINGS = Object.freeze({
@@ -189,6 +191,7 @@ const state = {
   previewPage: 1,
   settings: { ...DEFAULT_SETTINGS },
   layout: { ...DEFAULT_LAYOUT_SETTINGS },
+  templates: [],
   logoDataUrl: DEFAULT_LOGO_DATA_URL,
   sourceName: "",
   exporting: false
@@ -224,6 +227,12 @@ const elements = {
   cropMarksCheckbox: document.getElementById("cropMarksCheckbox"),
   resetLayoutButton: document.getElementById("resetLayoutButton"),
   layoutWarning: document.getElementById("layoutWarning"),
+  templateNameInput: document.getElementById("templateNameInput"),
+  templateSelect: document.getElementById("templateSelect"),
+  saveTemplateButton: document.getElementById("saveTemplateButton"),
+  loadTemplateButton: document.getElementById("loadTemplateButton"),
+  deleteTemplateButton: document.getElementById("deleteTemplateButton"),
+  templateStatus: document.getElementById("templateStatus"),
   exportSummary: document.getElementById("exportSummary"),
   exportDetail: document.getElementById("exportDetail"),
   exportPdfButton: document.getElementById("exportPdfButton"),
@@ -363,6 +372,123 @@ function persistLayoutSettings() {
   } catch (error) {
     // 保存容量が不足しても、その場の調整値は引き続き使用する。
   }
+}
+
+function normalizeTemplate(candidate = {}) {
+  const name = String(candidate.name || "").trim().slice(0, 40);
+  if (!name) return null;
+  return {
+    id: String(candidate.id || `template-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+    name,
+    settings: normalizeSettings(candidate.settings),
+    layout: normalizeLayoutSettings(candidate.layout),
+    logoDataUrl: /^data:image\//.test(String(candidate.logoDataUrl || "")) ? String(candidate.logoDataUrl) : "",
+    updatedAt: String(candidate.updatedAt || new Date().toISOString())
+  };
+}
+
+function persistTemplates() {
+  try {
+    setScopedItem(TICKET_TEMPLATES_KEY, JSON.stringify(state.templates));
+    return true;
+  } catch (error) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = "保存容量が不足しています。大きなロゴを外すか、不要なテンプレートを削除してください。";
+    return false;
+  }
+}
+
+function renderTemplateSelect(selectedId = "") {
+  elements.templateSelect.innerHTML = state.templates.length
+    ? state.templates.map(template => `<option value="${escapeHtml(template.id)}">${escapeHtml(template.name)}</option>`).join("")
+    : '<option value="">保存済みテンプレートなし</option>';
+  if (selectedId && state.templates.some(template => template.id === selectedId)) {
+    elements.templateSelect.value = selectedId;
+  }
+  const hasTemplates = state.templates.length > 0;
+  elements.templateSelect.disabled = !hasTemplates;
+  elements.loadTemplateButton.disabled = !hasTemplates;
+  elements.deleteTemplateButton.disabled = !hasTemplates;
+}
+
+function loadStoredTemplates() {
+  try {
+    const parsed = JSON.parse(getScopedItem(TICKET_TEMPLATES_KEY) || "[]");
+    state.templates = Array.isArray(parsed)
+      ? parsed.map(normalizeTemplate).filter(Boolean).slice(0, MAX_TEMPLATES)
+      : [];
+  } catch (error) {
+    state.templates = [];
+  }
+  renderTemplateSelect();
+}
+
+function saveCurrentTemplate() {
+  const name = elements.templateNameInput.value.trim().slice(0, 40);
+  if (!name) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = "テンプレート名を入力してください。";
+    elements.templateNameInput.focus();
+    return;
+  }
+  state.settings = normalizeSettings({
+    title: elements.ticketTitleInput.value,
+    subtitle: elements.ticketSubtitleInput.value,
+    notes: elements.ticketNotesInput.value
+  });
+  const existing = state.templates.find(template => template.name.localeCompare(name, "ja", { sensitivity: "base" }) === 0);
+  if (!existing && state.templates.length >= MAX_TEMPLATES) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = `保存できるテンプレートは最大${MAX_TEMPLATES}件です。`;
+    return;
+  }
+  const template = normalizeTemplate({
+    id: existing?.id,
+    name,
+    settings: state.settings,
+    layout: state.layout,
+    logoDataUrl: state.logoDataUrl,
+    updatedAt: new Date().toISOString()
+  });
+  if (existing) Object.assign(existing, template);
+  else state.templates.unshift(template);
+  if (!persistTemplates()) return;
+  renderTemplateSelect(template.id);
+  elements.templateNameInput.value = "";
+  elements.templateStatus.className = "template-status is-ready";
+  elements.templateStatus.textContent = existing ? `「${name}」を上書き保存しました。` : `「${name}」を保存しました。`;
+}
+
+function loadSelectedTemplate() {
+  const template = state.templates.find(item => item.id === elements.templateSelect.value);
+  if (!template) return;
+  state.settings = normalizeSettings(template.settings);
+  state.layout = normalizeLayoutSettings(template.layout);
+  if (template.logoDataUrl) state.logoDataUrl = template.logoDataUrl;
+  elements.ticketTitleInput.value = state.settings.title;
+  elements.ticketSubtitleInput.value = state.settings.subtitle;
+  elements.ticketNotesInput.value = state.settings.notes;
+  elements.logoStatus.textContent = template.logoDataUrl
+    ? `テンプレート「${template.name}」のロゴを使用中です。`
+    : "テンプレートの設定を読み込みました。ロゴは現在のものを使用します。";
+  renderLayoutControls();
+  imageElementCache.clear();
+  setScopedItem(TICKET_SETTINGS_KEY, JSON.stringify(state.settings));
+  persistLayoutSettings();
+  updateSelectionSummary();
+  elements.templateStatus.className = "template-status is-ready";
+  elements.templateStatus.textContent = `「${template.name}」を読み込みました。`;
+}
+
+function deleteSelectedTemplate() {
+  const template = state.templates.find(item => item.id === elements.templateSelect.value);
+  if (!template) return;
+  if (!window.confirm(`テンプレート「${template.name}」を削除しますか？`)) return;
+  state.templates = state.templates.filter(item => item.id !== template.id);
+  if (!persistTemplates()) return;
+  renderTemplateSelect();
+  elements.templateStatus.className = "template-status";
+  elements.templateStatus.textContent = `「${template.name}」を削除しました。`;
 }
 
 function updatePreviewMeta() {
@@ -1360,6 +1486,12 @@ function attachEvents() {
     persistLayoutSettings();
     updateSelectionSummary();
   });
+  elements.saveTemplateButton.addEventListener("click", saveCurrentTemplate);
+  elements.loadTemplateButton.addEventListener("click", loadSelectedTemplate);
+  elements.deleteTemplateButton.addEventListener("click", deleteSelectedTemplate);
+  elements.templateNameInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") saveCurrentTemplate();
+  });
   elements.previewPrevButton.addEventListener("click", () => {
     state.previewPage -= 1;
     renderA4Preview();
@@ -1372,6 +1504,7 @@ function attachEvents() {
 }
 
 loadStoredSettings();
+loadStoredTemplates();
 attachEvents();
 renderGroupFilter();
 renderProductList();
