@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;800;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./ticket-a4.css?v=20260831-2">
+  <link rel="stylesheet" href="./ticket-a4.css?v=20260831-4">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -101,10 +101,25 @@
           </div>
         </details>
 
+        <details class="panel layout-panel" open>
+          <summary>
+            <span><span class="step-label">LAYOUT</span><strong>間隔・券面レイアウト調整</strong></span>
+            <small>すべて個別に変更</small>
+          </summary>
+          <div class="layout-body">
+            <div class="layout-toolbar">
+              <label class="compact-check"><input id="cropMarksCheckbox" type="checkbox" checked> 裁断目印を付ける</label>
+              <button class="reset-button" id="resetLayoutButton" type="button">おすすめ値に戻す</button>
+            </div>
+            <div class="layout-warning" id="layoutWarning" role="alert" hidden></div>
+            <div class="layout-controls" id="layoutControls"></div>
+          </div>
+        </details>
+
         <article class="panel export-panel">
           <div class="export-summary">
             <strong id="exportSummary">商品を選択してください</strong>
-            <span id="exportDetail">1商品につき初期9枚・同じシリアルで複製</span>
+            <span id="exportDetail">選択時は1商品1枚／全券に別シリアル</span>
           </div>
           <div class="progress-track" id="exportProgressTrack" hidden><span id="exportProgressBar"></span></div>
           <button class="primary-button" id="exportPdfButton" type="button" disabled>A4・引換券PDFを一括保存</button>
@@ -122,7 +137,7 @@
           </div>
         </div>
         <div class="preview-meta">
-          <span>カード：63×88mm</span><span>配置：3列×3段</span><span>間隔：2mm</span><span>余白：左右8.5mm・上下14.5mm</span>
+          <span id="previewCardMeta">カード：63×88mm</span><span id="previewGridMeta">配置：3列×3段</span><span id="previewGapMeta">間隔：横2mm・縦2mm</span><span id="previewMarginMeta">余白：左右8.5mm・上下14.5mm</span>
         </div>
         <div class="preview-stage">
           <div class="a4-sheet" id="a4Sheet" aria-label="A4用紙プレビュー"></div>
@@ -132,6 +147,6 @@
     </div>
   </main>
 
-  <script src="./ticket-a4.js?v=20260831-3"></script>
+  <script src="./ticket-a4.js?v=20260831-4"></script>
 </body>
 </html>
