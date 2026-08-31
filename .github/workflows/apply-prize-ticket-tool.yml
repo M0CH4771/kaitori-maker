@@ -17,31 +17,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Apply patch
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          patch_path = Path('.github/patch-prize-ticket-tool.py')
-          source = patch_path.read_text(encoding='utf-8')
-          old = """# 4タブ化
-replace_once(
-    'grid-template-columns: repeat(3, minmax(0, 1fr));',
-    'grid-template-columns: repeat(4, minmax(0, 1fr));',
-    'view tabs columns',
-)"""
-          new = """# 4タブ化
-if 'grid-template-columns: repeat(3, minmax(0, 1fr));' not in text:
-    raise SystemExit('view tabs grid marker missing')
-text = text.replace(
-    'grid-template-columns: repeat(3, minmax(0, 1fr));',
-    'grid-template-columns: repeat(4, minmax(0, 1fr));',
-    1,
-)"""
-          if old not in source:
-              raise SystemExit('Could not locate view-tabs patch block')
-          source = source.replace(old, new, 1)
-          exec(compile(source, str(patch_path), 'exec'))
-          PY
+        run: python .github/run-prize-ticket-patch.py
 
       - name: Validate JavaScript
         shell: bash
