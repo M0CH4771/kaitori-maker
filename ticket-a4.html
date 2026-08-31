@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;800;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./ticket-a4.css?v=20260831-4">
+  <link rel="stylesheet" href="./ticket-a4.css?v=20260831-5">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -116,6 +116,25 @@
           </div>
         </details>
 
+        <details class="panel template-panel">
+          <summary>
+            <span><span class="step-label">TEMPLATE</span><strong>テンプレート保存</strong></span>
+            <small>デザイン・ロゴ・全調整値</small>
+          </summary>
+          <div class="template-body">
+            <label class="template-name-field">
+              <span>現在の設定を名前付きで保存</span>
+              <div><input id="templateNameInput" type="text" maxlength="40" placeholder="例：BOX引換券 標準"><button id="saveTemplateButton" type="button">保存</button></div>
+            </label>
+            <div class="template-load-row">
+              <label><span>保存済みテンプレート</span><select id="templateSelect" disabled><option value="">保存済みテンプレートなし</option></select></label>
+              <button id="loadTemplateButton" type="button" disabled>読み込む</button>
+              <button class="template-delete-button" id="deleteTemplateButton" type="button" disabled>削除</button>
+            </div>
+            <div class="template-status" id="templateStatus">商品・枚数・シリアルは保存されません。</div>
+          </div>
+        </details>
+
         <article class="panel export-panel">
           <div class="export-summary">
             <strong id="exportSummary">商品を選択してください</strong>
@@ -147,6 +166,6 @@
     </div>
   </main>
 
-  <script src="./ticket-a4.js?v=20260831-5"></script>
+  <script src="./ticket-a4.js?v=20260831-6"></script>
 </body>
 </html>
