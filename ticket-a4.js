@@ -894,6 +894,17 @@ function handleProductListChange(event) {
   }
 }
 
+function handleProductListInput(event) {
+  if (event.target.dataset.action !== "quantity") return;
+  const row = event.target.closest(".product-row");
+  const product = state.products.find(item => item.id === Number(row?.dataset.productId));
+  if (!product) return;
+  const numericValue = Number(event.target.value);
+  if (!Number.isFinite(numericValue) || numericValue < 1) return;
+  product.quantity = clamp(numericValue, 1, 99);
+  updateSelectionSummary();
+}
+
 function handleProductListClick(event) {
   const button = event.target.closest('[data-action="refresh-serial"]');
   if (!button) return;
@@ -961,6 +972,7 @@ function attachEvents() {
     updateSelectionSummary();
   });
   elements.productList.addEventListener("change", handleProductListChange);
+  elements.productList.addEventListener("input", handleProductListInput);
   elements.productList.addEventListener("click", handleProductListClick);
   [elements.ticketTitleInput, elements.ticketSubtitleInput, elements.ticketNotesInput]
     .forEach(input => input.addEventListener("input", saveSettingsFromInputs));
