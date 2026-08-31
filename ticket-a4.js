@@ -7,7 +7,7 @@ const TICKET_WIDTH_PX = 744;
 const TICKET_HEIGHT_PX = 1039;
 const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
 const TICKET_SETTINGS_KEY = "kaitori_prize_ticket_settings_v1";
-const TICKET_LAYOUT_KEY = "kaitori_prize_ticket_layout_v2";
+const TICKET_LAYOUT_KEY = "kaitori_prize_ticket_layout_v3";
 const DEFAULT_NOTES = "【注意事項】\n※本券は、自販機から排出後に店内で開封した場合のみ有効です。\n※開封前・開封後を問わず、店外へ持ち出した場合は無効です。\n※本券が入っていた場合は、そのまま受付までお持ちください。\n※後日のお引換えはできません。\n※引換時に本券を回収いたします。\n※複製・改ざん・無効なシリアルの券は使用できません。";
 
 const DEFAULT_SETTINGS = Object.freeze({
@@ -27,38 +27,38 @@ const DEFAULT_LAYOUT_SETTINGS = Object.freeze({
   borderWidth: 14,
   innerInset: 23,
   edgeHeight: 16,
-  logoX: 157,
+  logoOffsetX: 0,
   logoY: 43,
   logoWidth: 430,
   logoHeight: 108,
-  titleX: 372,
+  titleOffsetX: 0,
   titleY: 194,
   titleSize: 40,
-  subtitleX: 372,
+  subtitleOffsetX: 0,
   subtitleY: 224,
   subtitleSize: 21,
-  imageX: 72,
+  imageStageOffsetX: 0,
   imageY: 238,
   imageWidth: 600,
   imageHeight: 386,
   imageZoom: 1.25,
   imageOffsetX: 0,
   imageOffsetY: 0,
-  bannerX: 77,
+  bannerOffsetX: 0,
   bannerY: 634,
   bannerWidth: 590,
   bannerHeight: 76,
   bannerSize: 28,
-  serialLabelX: 372,
+  serialLabelOffsetX: 0,
   serialLabelY: 754,
   serialLabelSize: 30,
-  serialBoxX: 142,
+  serialBoxOffsetX: 0,
   serialBoxY: 771,
   serialBoxWidth: 460,
   serialBoxHeight: 64,
   serialSize: 31,
   dividerY: 854,
-  notesX: 65,
+  notesOffsetX: 0,
   notesY: 869,
   notesWidth: 614,
   notesSize: 15,
@@ -92,7 +92,7 @@ const LAYOUT_CONTROL_GROUPS = Object.freeze([
     title: "店舗ロゴ",
     description: "左・上位置と表示領域",
     fields: [
-      { key: "logoX", label: "左位置", min: 20, max: 500, step: 1, unit: "px" },
+      { key: "logoOffsetX", label: "左右位置（中央0）", min: -260, max: 260, step: 1, unit: "px" },
       { key: "logoY", label: "上位置", min: 20, max: 220, step: 1, unit: "px" },
       { key: "logoWidth", label: "横幅", min: 160, max: 650, step: 2, unit: "px" },
       { key: "logoHeight", label: "高さ", min: 45, max: 180, step: 1, unit: "px" }
@@ -102,10 +102,10 @@ const LAYOUT_CONTROL_GROUPS = Object.freeze([
     title: "タイトル・英字",
     description: "文字の中心位置と大きさ",
     fields: [
-      { key: "titleX", label: "タイトル左右", min: 80, max: 664, step: 1, unit: "px" },
+      { key: "titleOffsetX", label: "タイトル左右（中央0）", min: -300, max: 300, step: 1, unit: "px" },
       { key: "titleY", label: "タイトル上下", min: 90, max: 340, step: 1, unit: "px" },
       { key: "titleSize", label: "タイトル文字", min: 20, max: 64, step: 1, unit: "px" },
-      { key: "subtitleX", label: "英字左右", min: 80, max: 664, step: 1, unit: "px" },
+      { key: "subtitleOffsetX", label: "英字左右（中央0）", min: -300, max: 300, step: 1, unit: "px" },
       { key: "subtitleY", label: "英字上下", min: 110, max: 380, step: 1, unit: "px" },
       { key: "subtitleSize", label: "英字文字", min: 11, max: 38, step: 1, unit: "px" }
     ]
@@ -114,7 +114,7 @@ const LAYOUT_CONTROL_GROUPS = Object.freeze([
     title: "商品画像",
     description: "画像領域・拡大率・領域内の位置",
     fields: [
-      { key: "imageX", label: "左位置", min: 20, max: 450, step: 1, unit: "px" },
+      { key: "imageStageOffsetX", label: "領域の左右（中央0）", min: -260, max: 260, step: 1, unit: "px" },
       { key: "imageY", label: "上位置", min: 160, max: 620, step: 1, unit: "px" },
       { key: "imageWidth", label: "横幅", min: 180, max: 700, step: 2, unit: "px" },
       { key: "imageHeight", label: "高さ", min: 120, max: 520, step: 2, unit: "px" },
@@ -127,7 +127,7 @@ const LAYOUT_CONTROL_GROUPS = Object.freeze([
     title: "商品名",
     description: "金色の商品名帯",
     fields: [
-      { key: "bannerX", label: "左位置", min: 20, max: 400, step: 1, unit: "px" },
+      { key: "bannerOffsetX", label: "左右位置（中央0）", min: -260, max: 260, step: 1, unit: "px" },
       { key: "bannerY", label: "上位置", min: 420, max: 820, step: 1, unit: "px" },
       { key: "bannerWidth", label: "横幅", min: 260, max: 700, step: 2, unit: "px" },
       { key: "bannerHeight", label: "高さ", min: 44, max: 130, step: 1, unit: "px" },
@@ -138,10 +138,10 @@ const LAYOUT_CONTROL_GROUPS = Object.freeze([
     title: "シリアル",
     description: "見出しと番号枠の位置・大きさ",
     fields: [
-      { key: "serialLabelX", label: "見出し左右", min: 80, max: 664, step: 1, unit: "px" },
+      { key: "serialLabelOffsetX", label: "見出し左右（中央0）", min: -300, max: 300, step: 1, unit: "px" },
       { key: "serialLabelY", label: "見出し上下", min: 560, max: 910, step: 1, unit: "px" },
       { key: "serialLabelSize", label: "見出し文字", min: 15, max: 50, step: 1, unit: "px" },
-      { key: "serialBoxX", label: "番号枠の左位置", min: 30, max: 480, step: 1, unit: "px" },
+      { key: "serialBoxOffsetX", label: "番号枠左右（中央0）", min: -260, max: 260, step: 1, unit: "px" },
       { key: "serialBoxY", label: "番号枠の上位置", min: 590, max: 930, step: 1, unit: "px" },
       { key: "serialBoxWidth", label: "番号枠の横幅", min: 220, max: 670, step: 2, unit: "px" },
       { key: "serialBoxHeight", label: "番号枠の高さ", min: 38, max: 100, step: 1, unit: "px" },
@@ -153,7 +153,7 @@ const LAYOUT_CONTROL_GROUPS = Object.freeze([
     description: "区切り線と本文領域",
     fields: [
       { key: "dividerY", label: "区切り線の上下", min: 700, max: 980, step: 1, unit: "px" },
-      { key: "notesX", label: "本文の左位置", min: 30, max: 250, step: 1, unit: "px" },
+      { key: "notesOffsetX", label: "本文左右（中央0）", min: -260, max: 260, step: 1, unit: "px" },
       { key: "notesY", label: "本文の上位置", min: 720, max: 990, step: 1, unit: "px" },
       { key: "notesWidth", label: "本文の横幅", min: 280, max: 670, step: 2, unit: "px" },
       { key: "notesSize", label: "本文文字", min: 9, max: 26, step: 1, unit: "px" },
@@ -755,25 +755,33 @@ function yPercent(value) {
   return `${Number(value) / TICKET_HEIGHT_PX * 100}%`;
 }
 
+function centeredLeft(width, offset = 0) {
+  return (TICKET_WIDTH_PX - Number(width)) / 2 + Number(offset || 0);
+}
+
+function centeredX(offset = 0) {
+  return TICKET_WIDTH_PX / 2 + Number(offset || 0);
+}
+
 function miniTicketHtml(ticket) {
   const product = ticket.product;
   const layout = state.layout;
   const imageSource = normalizeImageUrl(product.imageUrl);
   return `
     <div class="mini-ticket" style="--ticket-border:${layout.borderWidth / TICKET_WIDTH_PX * 100}cqw;--inner-inset-x:${xPercent(layout.innerInset)};--inner-inset-y:${yPercent(layout.innerInset)};--edge-height:${yPercent(layout.edgeHeight)}">
-      <img class="mini-logo" src="${escapeHtml(state.logoDataUrl)}" alt="" style="left:${xPercent(layout.logoX)};top:${yPercent(layout.logoY)};width:${xPercent(layout.logoWidth)};height:${yPercent(layout.logoHeight)}">
-      <div class="mini-title" style="left:${xPercent(layout.titleX)};top:${yPercent(layout.titleY - layout.titleSize * 1.05)};font-size:${layout.titleSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(state.settings.title)}</div>
-      <div class="mini-subtitle" style="left:${xPercent(layout.subtitleX)};top:${yPercent(layout.subtitleY - layout.subtitleSize * 1.05)};font-size:${layout.subtitleSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(state.settings.subtitle)}</div>
-      <div class="mini-image-stage" style="left:${xPercent(layout.imageX)};top:${yPercent(layout.imageY)};width:${xPercent(layout.imageWidth)};height:${yPercent(layout.imageHeight)}">
+      <img class="mini-logo" src="${escapeHtml(state.logoDataUrl)}" alt="" style="left:${xPercent(centeredLeft(layout.logoWidth, layout.logoOffsetX))};top:${yPercent(layout.logoY)};width:${xPercent(layout.logoWidth)};height:${yPercent(layout.logoHeight)}">
+      <div class="mini-title" style="left:${xPercent(centeredX(layout.titleOffsetX))};top:${yPercent(layout.titleY - layout.titleSize * 1.05)};font-size:${layout.titleSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(state.settings.title)}</div>
+      <div class="mini-subtitle" style="left:${xPercent(centeredX(layout.subtitleOffsetX))};top:${yPercent(layout.subtitleY - layout.subtitleSize * 1.05)};font-size:${layout.subtitleSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(state.settings.subtitle)}</div>
+      <div class="mini-image-stage" style="left:${xPercent(centeredLeft(layout.imageWidth, layout.imageStageOffsetX))};top:${yPercent(layout.imageY)};width:${xPercent(layout.imageWidth)};height:${yPercent(layout.imageHeight)}">
         ${imageSource
           ? `<img src="${escapeHtml(imageSource)}" alt="" referrerpolicy="no-referrer" style="transform:translate(${layout.imageOffsetX / TICKET_WIDTH_PX * 100}cqw,${layout.imageOffsetY / TICKET_WIDTH_PX * 100}cqw) scale(${layout.imageZoom})" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mini-no-image',textContent:'NO IMAGE'}))">`
           : '<span class="mini-no-image">NO IMAGE</span>'}
       </div>
-      <div class="mini-prize-name" style="left:${xPercent(layout.bannerX)};top:${yPercent(layout.bannerY)};width:${xPercent(layout.bannerWidth)};height:${yPercent(layout.bannerHeight)};font-size:${layout.bannerSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(product.name)}${product.type ? `<br><small>${escapeHtml(product.type)}</small>` : ""}</div>
-      <div class="mini-serial-label" style="left:${xPercent(layout.serialLabelX)};top:${yPercent(layout.serialLabelY - layout.serialLabelSize)};font-size:${layout.serialLabelSize / TICKET_WIDTH_PX * 100}cqw">SERIAL No.</div>
-      <div class="mini-serial" style="left:${xPercent(layout.serialBoxX)};top:${yPercent(layout.serialBoxY)};width:${xPercent(layout.serialBoxWidth)};height:${yPercent(layout.serialBoxHeight)};font-size:${layout.serialSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(ticket.serial)}</div>
-      <div class="mini-divider" style="left:${xPercent(layout.notesX)};top:${yPercent(layout.dividerY)};width:${xPercent(layout.notesWidth)}"></div>
-      <div class="mini-notes" style="left:${xPercent(layout.notesX)};top:${yPercent(layout.notesY)};width:${xPercent(layout.notesWidth)};font-size:${layout.notesSize / TICKET_WIDTH_PX * 100}cqw;line-height:${layout.notesLineHeight / layout.notesSize};--notes-lines:${layout.notesMaxLines}">${escapeHtml(state.settings.notes)}</div>
+      <div class="mini-prize-name" style="left:${xPercent(centeredLeft(layout.bannerWidth, layout.bannerOffsetX))};top:${yPercent(layout.bannerY)};width:${xPercent(layout.bannerWidth)};height:${yPercent(layout.bannerHeight)};font-size:${layout.bannerSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(product.name)}${product.type ? `<br><small>${escapeHtml(product.type)}</small>` : ""}</div>
+      <div class="mini-serial-label" style="left:${xPercent(centeredX(layout.serialLabelOffsetX))};top:${yPercent(layout.serialLabelY - layout.serialLabelSize)};font-size:${layout.serialLabelSize / TICKET_WIDTH_PX * 100}cqw">SERIAL No.</div>
+      <div class="mini-serial" style="left:${xPercent(centeredLeft(layout.serialBoxWidth, layout.serialBoxOffsetX))};top:${yPercent(layout.serialBoxY)};width:${xPercent(layout.serialBoxWidth)};height:${yPercent(layout.serialBoxHeight)};font-size:${layout.serialSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(ticket.serial)}</div>
+      <div class="mini-divider" style="left:${xPercent(centeredLeft(layout.notesWidth, layout.notesOffsetX))};top:${yPercent(layout.dividerY)};width:${xPercent(layout.notesWidth)}"></div>
+      <div class="mini-notes" style="left:${xPercent(centeredLeft(layout.notesWidth, layout.notesOffsetX))};top:${yPercent(layout.notesY)};width:${xPercent(layout.notesWidth)};font-size:${layout.notesSize / TICKET_WIDTH_PX * 100}cqw;line-height:${layout.notesLineHeight / layout.notesSize};--notes-lines:${layout.notesMaxLines}">${escapeHtml(state.settings.notes)}</div>
     </div>
   `;
 }
@@ -951,7 +959,7 @@ function wrapCanvasText(context, text, maxWidth) {
 }
 
 function drawPrizeBanner(context, name, type, layout) {
-  const x = layout.bannerX;
+  const x = centeredLeft(layout.bannerWidth, layout.bannerOffsetX);
   const y = layout.bannerY;
   const width = layout.bannerWidth;
   const height = layout.bannerHeight;
@@ -1027,15 +1035,15 @@ async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, 
   context.fillRect(0, 0, TICKET_WIDTH_PX, layout.edgeHeight);
   context.fillRect(0, TICKET_HEIGHT_PX - layout.edgeHeight, TICKET_WIDTH_PX, layout.edgeHeight);
 
-  drawContainedImage(context, logoImage, layout.logoX, layout.logoY, layout.logoWidth, layout.logoHeight, 2);
+  drawContainedImage(context, logoImage, centeredLeft(layout.logoWidth, layout.logoOffsetX), layout.logoY, layout.logoWidth, layout.logoHeight, 2);
 
   context.fillStyle = "#111111";
   context.textAlign = "center";
   context.textBaseline = "alphabetic";
   fitCanvasFont(context, settings.title, TICKET_WIDTH_PX - 80, layout.titleSize, Math.max(16, layout.titleSize * .55), '"Noto Sans JP", "Yu Gothic", sans-serif');
-  context.fillText(settings.title, layout.titleX, layout.titleY);
+  context.fillText(settings.title, centeredX(layout.titleOffsetX), layout.titleY);
   fitCanvasFont(context, settings.subtitle, TICKET_WIDTH_PX - 90, layout.subtitleSize, Math.max(9, layout.subtitleSize * .55), 'Oswald, "Arial Narrow", sans-serif');
-  context.fillText(settings.subtitle, layout.subtitleX, layout.subtitleY);
+  context.fillText(settings.subtitle, centeredX(layout.subtitleOffsetX), layout.subtitleY);
 
   context.save();
   context.shadowColor = "rgba(0,0,0,.18)";
@@ -1044,7 +1052,7 @@ async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, 
   drawContainedImage(
     context,
     productImage,
-    layout.imageX,
+    centeredLeft(layout.imageWidth, layout.imageStageOffsetX),
     layout.imageY,
     layout.imageWidth,
     layout.imageHeight,
@@ -1059,9 +1067,10 @@ async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, 
   context.font = `900 ${layout.serialLabelSize}px Oswald, "Arial Narrow", sans-serif`;
   context.textAlign = "center";
   context.textBaseline = "alphabetic";
-  context.fillText("SERIAL No.", layout.serialLabelX, layout.serialLabelY);
+  context.fillText("SERIAL No.", centeredX(layout.serialLabelOffsetX), layout.serialLabelY);
 
-  pathRoundedRect(context, layout.serialBoxX, layout.serialBoxY, layout.serialBoxWidth, layout.serialBoxHeight, 7);
+  const serialBoxX = centeredLeft(layout.serialBoxWidth, layout.serialBoxOffsetX);
+  pathRoundedRect(context, serialBoxX, layout.serialBoxY, layout.serialBoxWidth, layout.serialBoxHeight, 7);
   context.fillStyle = "#111318";
   context.fill();
   context.lineWidth = 3;
@@ -1070,14 +1079,15 @@ async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, 
   context.fillStyle = "#ffffff";
   fitCanvasFont(context, ticket.serial, layout.serialBoxWidth - 44, layout.serialSize, Math.max(14, layout.serialSize * .58), 'Oswald, "Arial Narrow", monospace');
   context.textBaseline = "middle";
-  context.fillText(ticket.serial, layout.serialBoxX + layout.serialBoxWidth / 2, layout.serialBoxY + layout.serialBoxHeight / 2 + 1);
+  context.fillText(ticket.serial, serialBoxX + layout.serialBoxWidth / 2, layout.serialBoxY + layout.serialBoxHeight / 2 + 1);
 
   context.setLineDash([5, 6]);
   context.strokeStyle = "#caa33c";
   context.lineWidth = 3;
   context.beginPath();
-  context.moveTo(layout.notesX, layout.dividerY);
-  context.lineTo(layout.notesX + layout.notesWidth, layout.dividerY);
+  const notesX = centeredLeft(layout.notesWidth, layout.notesOffsetX);
+  context.moveTo(notesX, layout.dividerY);
+  context.lineTo(notesX + layout.notesWidth, layout.dividerY);
   context.stroke();
   context.setLineDash([]);
 
@@ -1086,7 +1096,7 @@ async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, 
   context.textBaseline = "top";
   context.font = `700 ${layout.notesSize}px "Noto Sans JP", "Yu Gothic", sans-serif`;
   const noteLines = wrapCanvasText(context, settings.notes, layout.notesWidth).slice(0, layout.notesMaxLines);
-  noteLines.forEach((line, index) => context.fillText(line, layout.notesX, layout.notesY + index * layout.notesLineHeight));
+  noteLines.forEach((line, index) => context.fillText(line, notesX, layout.notesY + index * layout.notesLineHeight));
 
   return canvas.toDataURL("image/png");
 }
@@ -1326,10 +1336,18 @@ function attachEvents() {
     .forEach(input => input.addEventListener("input", saveSettingsFromInputs));
   elements.ticketLogoInput.addEventListener("change", event => handleLogoFile(event.target.files?.[0]));
   elements.layoutControls.addEventListener("input", event => {
-    if (event.target.dataset.layoutKey) updateLayoutFromControl(event.target);
+    if (event.target.dataset.layoutKey && event.target.dataset.layoutKind === "range") {
+      updateLayoutFromControl(event.target);
+    }
   });
   elements.layoutControls.addEventListener("change", event => {
     if (event.target.dataset.layoutKey) updateLayoutFromControl(event.target);
+  });
+  elements.layoutControls.addEventListener("focusin", event => {
+    if (event.target.dataset.layoutKind === "number") event.target.select();
+  });
+  elements.layoutControls.addEventListener("keydown", event => {
+    if (event.target.dataset.layoutKind === "number" && event.key === "Enter") event.target.blur();
   });
   elements.cropMarksCheckbox.addEventListener("change", event => {
     state.layout.cropMarks = event.target.checked;
