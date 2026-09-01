@@ -1615,12 +1615,6 @@ function attachEvents() {
     if (event.target.dataset.setAction === "name") {
       set.name = event.target.value.slice(0, 40);
       renderA4Preview();
-    } else if (event.target.dataset.setAction === "quantity") {
-      const value = Number(event.target.value);
-      if (!Number.isFinite(value) || value < 1) return;
-      set.quantity = clamp(value, 1, 99);
-      syncOwnerSerials(set);
-      updateSelectionSummary();
     }
   });
   elements.setList.addEventListener("change", event => {
