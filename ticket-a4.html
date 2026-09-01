@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;800;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./ticket-a4.css?v=20260831-5">
+  <link rel="stylesheet" href="./ticket-a4.css?v=20260901-1">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -46,11 +46,11 @@
               <span class="step-label">STEP 2</span>
               <h2>商品と枚数を選ぶ</h2>
             </div>
-            <button class="text-button danger-text" id="clearSelectionButton" type="button" disabled>選択解除</button>
+            <button class="text-button danger-text" id="clearSelectionButton" type="button" disabled>すべて解除</button>
           </div>
 
           <div class="selection-stats" aria-label="選択状況">
-            <div><small>商品</small><strong id="selectedProductCount">0</strong><span>件</span></div>
+            <div><small>券種</small><strong id="selectedProductCount">0</strong><span>件</span></div>
             <div><small>引換券</small><strong id="selectedTicketCount">0</strong><span>枚</span></div>
             <div><small>A4</small><strong id="selectedPageCount">0</strong><span>頁</span></div>
           </div>
@@ -80,6 +80,14 @@
             <span id="productPageLabel">1 / 1</span>
             <button id="productNextButton" type="button">次へ →</button>
           </div>
+
+          <section class="set-builder" aria-label="セット券作成">
+            <div class="set-create-bar">
+              <div><strong>セット券</strong><small id="setCreateHint">商品を2〜4件選ぶと、1枚のセット券にまとめられます。</small></div>
+              <button id="createSetButton" type="button" disabled>選択商品でセット作成</button>
+            </div>
+            <div class="set-list" id="setList"><div class="set-empty">作成済みセットはありません</div></div>
+          </section>
         </article>
 
         <details class="panel settings-panel">
@@ -166,6 +174,6 @@
     </div>
   </main>
 
-  <script src="./ticket-a4.js?v=20260831-6"></script>
+  <script src="./ticket-a4.js?v=20260901-1"></script>
 </body>
 </html>
