@@ -186,6 +186,7 @@ const DEFAULT_LOGO_DATA_URL = createSvgDataUrl(`
 
 const state = {
   products: [],
+  sets: [],
   selectedOrder: [],
   productPage: 1,
   previewPage: 1,
@@ -215,6 +216,9 @@ const elements = {
   productPrevButton: document.getElementById("productPrevButton"),
   productNextButton: document.getElementById("productNextButton"),
   productPageLabel: document.getElementById("productPageLabel"),
+  createSetButton: document.getElementById("createSetButton"),
+  setCreateHint: document.getElementById("setCreateHint"),
+  setList: document.getElementById("setList"),
   selectedProductCount: document.getElementById("selectedProductCount"),
   selectedTicketCount: document.getElementById("selectedTicketCount"),
   selectedPageCount: document.getElementById("selectedPageCount"),
@@ -564,11 +568,15 @@ function randomTicketSerial() {
   return Array.from({ length: 12 }, () => Math.floor(Math.random() * 10)).join("").match(/.{1,4}/g).join("-");
 }
 
-function getAssignedSerials(exceptProduct = null) {
+function getAssignedSerials(exceptOwner = null) {
   const assigned = new Set();
   state.products.forEach(product => {
-    if (product === exceptProduct) return;
+    if (product === exceptOwner) return;
     (product.serials || []).forEach(serial => assigned.add(serial));
+  });
+  state.sets.forEach(set => {
+    if (set === exceptOwner) return;
+    (set.serials || []).forEach(serial => assigned.add(serial));
   });
   return assigned;
 }
@@ -580,14 +588,18 @@ function createUniqueSerial(assigned) {
   return serial;
 }
 
-function syncProductSerials(product, regenerate = false) {
-  if (!product) return;
-  const quantity = clamp(product.quantity, 1, 99);
-  const assigned = getAssignedSerials(product);
-  const current = regenerate ? [] : (Array.isArray(product.serials) ? product.serials.slice(0, quantity) : []);
+function syncOwnerSerials(owner, regenerate = false) {
+  if (!owner) return;
+  const quantity = clamp(owner.quantity, 1, 99);
+  const assigned = getAssignedSerials(owner);
+  const current = regenerate ? [] : (Array.isArray(owner.serials) ? owner.serials.slice(0, quantity) : []);
   current.forEach(serial => assigned.add(serial));
   while (current.length < quantity) current.push(createUniqueSerial(assigned));
-  product.serials = current;
+  owner.serials = current;
+}
+
+function syncProductSerials(product, regenerate = false) {
+  syncOwnerSerials(product, regenerate);
 }
 
 function normalizeSerial(value) {
@@ -717,6 +729,7 @@ async function handleCsvFile(file) {
     const text = await readCsvFileText(file);
     const result = parseProductsFromCsv(text);
     state.products = result.products;
+    state.sets = [];
     state.selectedOrder = [];
     state.sourceName = file.name;
     state.productPage = 1;
@@ -734,6 +747,7 @@ async function handleCsvFile(file) {
   } catch (error) {
     console.error(error);
     state.products = [];
+    state.sets = [];
     state.selectedOrder = [];
     renderGroupFilter();
     renderProductList();
@@ -786,7 +800,7 @@ function renderProductList() {
   const pageProducts = filtered.slice(pageStart, pageStart + PRODUCT_PAGE_SIZE);
 
   elements.selectPageButton.disabled = pageProducts.length === 0;
-  elements.clearSelectionButton.disabled = state.selectedOrder.length === 0;
+  elements.clearSelectionButton.disabled = state.selectedOrder.length === 0 && state.sets.length === 0;
   elements.productPagination.hidden = filtered.length <= PRODUCT_PAGE_SIZE;
   elements.productPageLabel.textContent = `${state.productPage} / ${totalPages}`;
   elements.productPrevButton.disabled = state.productPage <= 1;
@@ -841,13 +855,78 @@ function getSelectedProducts() {
   return state.selectedOrder.map(id => lookup.get(id)).filter(Boolean);
 }
 
+function getSetProducts(set) {
+  const lookup = new Map(state.products.map(product => [product.id, product]));
+  return (set?.productIds || []).map(id => lookup.get(id)).filter(Boolean);
+}
+
+function createSetFromSelection() {
+  const products = getSelectedProducts();
+  if (products.length < 2 || products.length > 4) return;
+  const set = {
+    id: `set-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+    name: `${products.length}商品セット`,
+    productIds: products.map(product => product.id),
+    quantity: 1,
+    serials: []
+  };
+  syncOwnerSerials(set);
+  state.sets.push(set);
+  products.forEach(product => { product.selected = false; });
+  state.selectedOrder = [];
+  renderProductList();
+  updateSelectionSummary();
+}
+
+function renderSetList() {
+  const selectedCount = getSelectedProducts().length;
+  elements.createSetButton.disabled = selectedCount < 2 || selectedCount > 4;
+  elements.setCreateHint.textContent = selectedCount >= 2 && selectedCount <= 4
+    ? `${selectedCount}商品を1枚のセット券にまとめられます。`
+    : selectedCount > 4
+      ? "セット券にできるのは2〜4商品です。選択を4件以下にしてください。"
+      : "商品を2〜4件選ぶと、1枚のセット券にまとめられます。";
+
+  if (!state.sets.length) {
+    elements.setList.innerHTML = '<div class="set-empty">作成済みセットはありません</div>';
+    return;
+  }
+
+  elements.setList.innerHTML = state.sets.map(set => {
+    const products = getSetProducts(set);
+    return `
+      <div class="set-card" data-set-id="${escapeHtml(set.id)}">
+        <div class="set-card-head">
+          <input class="set-name-input" data-set-action="name" type="text" maxlength="40" value="${escapeHtml(set.name)}" aria-label="セット名">
+          <button class="set-delete-button" data-set-action="delete" type="button" title="セットを解除">×</button>
+        </div>
+        <div class="set-products">${products.map(product => `<span>${escapeHtml(product.name)}</span>`).join("")}</div>
+        <div class="set-controls">
+          <label>セット枚数<input class="ticket-quantity" data-set-action="quantity" type="number" min="1" max="99" value="${set.quantity}"></label>
+          <div class="set-serial-summary"><span>シリアル</span><strong>1枚ごとに自動発番</strong><small>${escapeHtml(set.serials?.[0] || "作成時に生成")}${set.quantity > 1 ? ` ほか${set.quantity - 1}件` : ""}</small></div>
+          <button class="set-serial-refresh" data-set-action="refresh" type="button" title="このセットの全シリアルを再生成">↻</button>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
 function buildTicketQueue() {
   const queue = [];
   getSelectedProducts().forEach(product => {
     const quantity = clamp(product.quantity, 1, 99);
     syncProductSerials(product);
     for (let index = 0; index < quantity; index += 1) {
-      queue.push({ product, serial: product.serials[index], copyIndex: index });
+      queue.push({ kind: "single", product, products: [product], serial: product.serials[index], copyIndex: index });
+    }
+  });
+  state.sets.forEach(set => {
+    const products = getSetProducts(set);
+    if (products.length < 2) return;
+    const quantity = clamp(set.quantity, 1, 99);
+    syncOwnerSerials(set);
+    for (let index = 0; index < quantity; index += 1) {
+      queue.push({ kind: "set", set, products, serial: set.serials[index], copyIndex: index });
     }
   });
   return queue;
@@ -855,20 +934,24 @@ function buildTicketQueue() {
 
 function updateSelectionSummary() {
   const selectedProducts = getSelectedProducts();
-  const ticketTotal = selectedProducts.reduce((total, product) => total + clamp(product.quantity, 1, 99), 0);
+  const activeSets = state.sets.filter(set => getSetProducts(set).length >= 2);
+  const ticketTypeCount = selectedProducts.length + activeSets.length;
+  const ticketTotal = selectedProducts.reduce((total, product) => total + clamp(product.quantity, 1, 99), 0) +
+    activeSets.reduce((total, set) => total + clamp(set.quantity, 1, 99), 0);
   const pageTotal = ticketTotal ? Math.ceil(ticketTotal / 9) : 0;
   const layoutValid = getLayoutIssues().length === 0;
-  elements.selectedProductCount.textContent = selectedProducts.length;
+  elements.selectedProductCount.textContent = ticketTypeCount;
   elements.selectedTicketCount.textContent = ticketTotal;
   elements.selectedPageCount.textContent = pageTotal;
-  elements.clearSelectionButton.disabled = selectedProducts.length === 0;
-  elements.exportPdfButton.disabled = selectedProducts.length === 0 || state.exporting || !layoutValid;
-  elements.exportSummary.textContent = selectedProducts.length
-    ? `${selectedProducts.length}商品・${ticketTotal}枚を一括作成`
+  elements.clearSelectionButton.disabled = ticketTypeCount === 0;
+  elements.exportPdfButton.disabled = ticketTypeCount === 0 || state.exporting || !layoutValid;
+  elements.exportSummary.textContent = ticketTypeCount
+    ? `${ticketTypeCount}券種・${ticketTotal}枚を一括作成`
     : "商品を選択してください";
-  elements.exportDetail.textContent = selectedProducts.length
+  elements.exportDetail.textContent = ticketTypeCount
     ? `A4 ${pageTotal}ページ／全券に別シリアルを自動発番`
     : "選択時は1商品1枚／全券に別シリアル";
+  renderSetList();
   updatePreviewMeta();
   renderA4Preview();
 }
@@ -890,20 +973,34 @@ function centeredX(offset = 0) {
 }
 
 function miniTicketHtml(ticket) {
-  const product = ticket.product;
+  const products = ticket.products || (ticket.product ? [ticket.product] : []);
+  const product = products[0];
   const layout = state.layout;
-  const imageSource = normalizeImageUrl(product.imageUrl);
+  const isSet = ticket.kind === "set";
+  const imageContent = isSet
+    ? `<div class="mini-set-grid count-${products.length}">${products.map(item => {
+        const source = normalizeImageUrl(item.imageUrl);
+        return `<div class="mini-set-item">${source
+          ? `<img src="${escapeHtml(source)}" alt="" referrerpolicy="no-referrer" style="transform:translate(${layout.imageOffsetX / TICKET_WIDTH_PX * 100}cqw,${layout.imageOffsetY / TICKET_WIDTH_PX * 100}cqw) scale(${layout.imageZoom})" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mini-no-image',textContent:'NO IMAGE'}))">`
+          : '<span class="mini-no-image">NO IMAGE</span>'}<strong>${escapeHtml(item.name)}</strong></div>`;
+      }).join("")}</div>`
+    : (() => {
+        const source = normalizeImageUrl(product.imageUrl);
+        return source
+          ? `<img src="${escapeHtml(source)}" alt="" referrerpolicy="no-referrer" style="transform:translate(${layout.imageOffsetX / TICKET_WIDTH_PX * 100}cqw,${layout.imageOffsetY / TICKET_WIDTH_PX * 100}cqw) scale(${layout.imageZoom})" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mini-no-image',textContent:'NO IMAGE'}))">`
+          : '<span class="mini-no-image">NO IMAGE</span>';
+      })();
+  const bannerName = isSet ? ticket.set.name : product.name;
+  const bannerType = isSet ? `${products.length} ITEM SET` : product.type;
   return `
     <div class="mini-ticket" style="--ticket-border:${layout.borderWidth / TICKET_WIDTH_PX * 100}cqw;--inner-inset-x:${xPercent(layout.innerInset)};--inner-inset-y:${yPercent(layout.innerInset)};--edge-height:${yPercent(layout.edgeHeight)}">
       <img class="mini-logo" src="${escapeHtml(state.logoDataUrl)}" alt="" style="left:${xPercent(centeredLeft(layout.logoWidth, layout.logoOffsetX))};top:${yPercent(layout.logoY)};width:${xPercent(layout.logoWidth)};height:${yPercent(layout.logoHeight)}">
       <div class="mini-title" style="left:${xPercent(centeredX(layout.titleOffsetX))};top:${yPercent(layout.titleY - layout.titleSize * 1.05)};font-size:${layout.titleSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(state.settings.title)}</div>
       <div class="mini-subtitle" style="left:${xPercent(centeredX(layout.subtitleOffsetX))};top:${yPercent(layout.subtitleY - layout.subtitleSize * 1.05)};font-size:${layout.subtitleSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(state.settings.subtitle)}</div>
       <div class="mini-image-stage" style="left:${xPercent(centeredLeft(layout.imageWidth, layout.imageStageOffsetX))};top:${yPercent(layout.imageY)};width:${xPercent(layout.imageWidth)};height:${yPercent(layout.imageHeight)}">
-        ${imageSource
-          ? `<img src="${escapeHtml(imageSource)}" alt="" referrerpolicy="no-referrer" style="transform:translate(${layout.imageOffsetX / TICKET_WIDTH_PX * 100}cqw,${layout.imageOffsetY / TICKET_WIDTH_PX * 100}cqw) scale(${layout.imageZoom})" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'mini-no-image',textContent:'NO IMAGE'}))">`
-          : '<span class="mini-no-image">NO IMAGE</span>'}
+        ${imageContent}
       </div>
-      <div class="mini-prize-name" style="left:${xPercent(centeredLeft(layout.bannerWidth, layout.bannerOffsetX))};top:${yPercent(layout.bannerY)};width:${xPercent(layout.bannerWidth)};height:${yPercent(layout.bannerHeight)};font-size:${layout.bannerSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(product.name)}${product.type ? `<br><small>${escapeHtml(product.type)}</small>` : ""}</div>
+      <div class="mini-prize-name" style="left:${xPercent(centeredLeft(layout.bannerWidth, layout.bannerOffsetX))};top:${yPercent(layout.bannerY)};width:${xPercent(layout.bannerWidth)};height:${yPercent(layout.bannerHeight)};font-size:${layout.bannerSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(bannerName)}${bannerType ? `<br><small>${escapeHtml(bannerType)}</small>` : ""}</div>
       <div class="mini-serial-label" style="left:${xPercent(centeredX(layout.serialLabelOffsetX))};top:${yPercent(layout.serialLabelY - layout.serialLabelSize)};font-size:${layout.serialLabelSize / TICKET_WIDTH_PX * 100}cqw">SERIAL No.</div>
       <div class="mini-serial" style="left:${xPercent(centeredLeft(layout.serialBoxWidth, layout.serialBoxOffsetX))};top:${yPercent(layout.serialBoxY)};width:${xPercent(layout.serialBoxWidth)};height:${yPercent(layout.serialBoxHeight)};font-size:${layout.serialSize / TICKET_WIDTH_PX * 100}cqw">${escapeHtml(ticket.serial)}</div>
       <div class="mini-divider" style="left:${xPercent(centeredLeft(layout.notesWidth, layout.notesOffsetX))};top:${yPercent(layout.dividerY)};width:${xPercent(layout.notesWidth)}"></div>
@@ -1124,12 +1221,55 @@ function drawPrizeBanner(context, name, type, layout) {
   }
 }
 
-async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, layout) {
-  const product = ticket.product;
-  const [productImage, logoImage] = await Promise.all([
-    loadImageElement(imageDataUrl).catch(() => loadImageElement(NO_IMAGE_DATA_URL)),
-    loadImageElement(logoDataUrl).catch(() => loadImageElement(DEFAULT_LOGO_DATA_URL))
-  ]);
+function getSetCells(count, x, y, width, height) {
+  const gap = 12;
+  const halfWidth = (width - gap) / 2;
+  const halfHeight = (height - gap) / 2;
+  if (count === 2) return [
+    { x, y, width: halfWidth, height },
+    { x: x + halfWidth + gap, y, width: halfWidth, height }
+  ];
+  if (count === 3) return [
+    { x: x + width * .25, y, width: width * .5, height: halfHeight },
+    { x, y: y + halfHeight + gap, width: halfWidth, height: halfHeight },
+    { x: x + halfWidth + gap, y: y + halfHeight + gap, width: halfWidth, height: halfHeight }
+  ];
+  return [
+    { x, y, width: halfWidth, height: halfHeight },
+    { x: x + halfWidth + gap, y, width: halfWidth, height: halfHeight },
+    { x, y: y + halfHeight + gap, width: halfWidth, height: halfHeight },
+    { x: x + halfWidth + gap, y: y + halfHeight + gap, width: halfWidth, height: halfHeight }
+  ];
+}
+
+function drawSetProductCell(context, image, product, cell, layout) {
+  const labelHeight = Math.min(28, Math.max(20, cell.height * .2));
+  context.save();
+  pathRoundedRect(context, cell.x, cell.y, cell.width, cell.height, 7);
+  context.fillStyle = "rgba(255,255,255,.8)";
+  context.fill();
+  context.clip();
+  drawContainedImage(context, image, cell.x, cell.y, cell.width, cell.height - labelHeight, 5, {
+    zoom: layout.imageZoom,
+    offsetX: layout.imageOffsetX * .45,
+    offsetY: layout.imageOffsetY * .45
+  });
+  context.fillStyle = "rgba(17,19,24,.92)";
+  context.fillRect(cell.x, cell.y + cell.height - labelHeight, cell.width, labelHeight);
+  context.fillStyle = "#ffffff";
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  fitCanvasFont(context, product.name, cell.width - 10, Math.min(14, labelHeight * .5), 8, '"Noto Sans JP", "Yu Gothic", sans-serif', 800);
+  context.fillText(product.name, cell.x + cell.width / 2, cell.y + cell.height - labelHeight / 2);
+  context.restore();
+}
+
+async function renderTicketDataUrl(ticket, imageByProductId, logoDataUrl, settings, layout) {
+  const products = ticket.products || (ticket.product ? [ticket.product] : []);
+  const productImages = await Promise.all(products.map(product =>
+    loadImageElement(imageByProductId.get(product.id) || NO_IMAGE_DATA_URL).catch(() => loadImageElement(NO_IMAGE_DATA_URL))
+  ));
+  const logoImage = await loadImageElement(logoDataUrl).catch(() => loadImageElement(DEFAULT_LOGO_DATA_URL));
   const canvas = document.createElement("canvas");
   canvas.width = TICKET_WIDTH_PX;
   canvas.height = TICKET_HEIGHT_PX;
@@ -1175,19 +1315,23 @@ async function renderTicketDataUrl(ticket, imageDataUrl, logoDataUrl, settings, 
   context.shadowColor = "rgba(0,0,0,.18)";
   context.shadowBlur = 14;
   context.shadowOffsetY = 8;
-  drawContainedImage(
-    context,
-    productImage,
-    centeredLeft(layout.imageWidth, layout.imageStageOffsetX),
-    layout.imageY,
-    layout.imageWidth,
-    layout.imageHeight,
-    8,
-    { zoom: layout.imageZoom, offsetX: layout.imageOffsetX, offsetY: layout.imageOffsetY }
-  );
+  const stageX = centeredLeft(layout.imageWidth, layout.imageStageOffsetX);
+  if (ticket.kind === "set") {
+    const cells = getSetCells(products.length, stageX, layout.imageY, layout.imageWidth, layout.imageHeight);
+    products.forEach((product, index) => drawSetProductCell(context, productImages[index], product, cells[index], layout));
+  } else {
+    drawContainedImage(context, productImages[0], stageX, layout.imageY, layout.imageWidth, layout.imageHeight, 8, {
+      zoom: layout.imageZoom, offsetX: layout.imageOffsetX, offsetY: layout.imageOffsetY
+    });
+  }
   context.restore();
 
-  drawPrizeBanner(context, product.name, product.type, layout);
+  drawPrizeBanner(
+    context,
+    ticket.kind === "set" ? ticket.set.name : products[0].name,
+    ticket.kind === "set" ? `${products.length} ITEM SET` : products[0].type,
+    layout
+  );
 
   context.fillStyle = "#111111";
   context.font = `900 ${layout.serialLabelSize}px Oswald, "Arial Narrow", sans-serif`;
@@ -1272,8 +1416,8 @@ function safeFilename(value) {
 }
 
 async function exportBatchPdf() {
-  const selectedProducts = getSelectedProducts();
-  if (!selectedProducts.length || state.exporting) return;
+  const queue = buildTicketQueue();
+  if (!queue.length || state.exporting) return;
   const layoutIssues = getLayoutIssues();
   if (layoutIssues.length) {
     elements.exportSummary.textContent = layoutIssues.join("／");
@@ -1287,8 +1431,11 @@ async function exportBatchPdf() {
   state.exporting = true;
   elements.exportPdfButton.disabled = true;
   elements.exportPdfButton.textContent = "A4 PDFを作成中…";
-  const ticketTotal = selectedProducts.reduce((total, product) => total + clamp(product.quantity, 1, 99), 0);
-  const queue = buildTicketQueue();
+  const selectedProducts = getSelectedProducts();
+  const activeSets = state.sets.filter(set => getSetProducts(set).length >= 2);
+  const ticketTypeCount = selectedProducts.length + activeSets.length;
+  const ticketTotal = queue.length;
+  const referencedProducts = [...new Map(queue.flatMap(ticket => ticket.products).map(product => [product.id, product])).values()];
   const layoutSnapshot = normalizeLayoutSettings(state.layout);
   const settingsSnapshot = { ...state.settings };
   const geometry = getGridGeometry(layoutSnapshot);
@@ -1296,20 +1443,20 @@ async function exportBatchPdf() {
   try {
     if (document.fonts?.ready) await document.fonts.ready;
     let completed = 0;
-    const fetchedImages = await mapWithConcurrency(selectedProducts, 3, async product => {
+    const fetchedImages = await mapWithConcurrency(referencedProducts, 3, async product => {
       const result = await fetchImageDataUrl(product.imageUrl);
       completed += 1;
-      setExportProgress(5 + completed / selectedProducts.length * 35, `商品画像を準備中 ${completed}/${selectedProducts.length}`);
+      setExportProgress(5 + completed / referencedProducts.length * 35, `商品画像を準備中 ${completed}/${referencedProducts.length}`);
       return result;
     });
 
-    const imageByProductId = new Map(selectedProducts.map((product, index) => [product.id, fetchedImages[index]]));
+    const imageByProductId = new Map(referencedProducts.map((product, index) => [product.id, fetchedImages[index]]));
     const ticketData = [];
     for (let index = 0; index < queue.length; index += 1) {
       const ticket = queue[index];
       ticketData.push(await renderTicketDataUrl(
         ticket,
-        imageByProductId.get(ticket.product.id),
+        imageByProductId,
         state.logoDataUrl,
         settingsSnapshot,
         layoutSnapshot
@@ -1330,7 +1477,8 @@ async function exportBatchPdf() {
       const x = geometry.startX + column * (layoutSnapshot.cardWidthMm + layoutSnapshot.gapXMm);
       const y = geometry.startY + row * (layoutSnapshot.cardHeightMm + layoutSnapshot.gapYMm);
       const ticket = queue[index];
-      const alias = `ticket-${ticket.product.id}-${String(ticket.serial).replace(/\D/g, "")}`;
+      const ownerId = ticket.kind === "set" ? ticket.set.id : ticket.product.id;
+      const alias = `ticket-${ticket.kind}-${ownerId}-${String(ticket.serial).replace(/\D/g, "")}`;
       pdf.addImage(ticketData[index], "PNG", x, y, layoutSnapshot.cardWidthMm, layoutSnapshot.cardHeightMm, alias, "FAST");
       if (layoutSnapshot.cropMarks) drawCropMarks(pdf, x, y, layoutSnapshot.cardWidthMm, layoutSnapshot.cardHeightMm);
       if (index % 9 === 8 || index === queue.length - 1) {
@@ -1339,13 +1487,13 @@ async function exportBatchPdf() {
     }
 
     pdf.setProperties({
-      title: `商品引換券 ${selectedProducts.length}商品 ${ticketTotal}枚`,
+      title: `商品引換券 ${ticketTypeCount}券種 ${ticketTotal}枚`,
       subject: `${layoutSnapshot.cardWidthMm}×${layoutSnapshot.cardHeightMm}mm・3列×3段${layoutSnapshot.cropMarks ? "・裁断目印付き" : ""}`,
       creator: "商品引換券・一括作成"
     });
     const source = safeFilename(state.sourceName || "買取CSV");
-    pdf.save(`商品引換券_A4_${selectedProducts.length}商品_${ticketTotal}枚_${source}.pdf`);
-    setExportProgress(100, `${selectedProducts.length}商品・${ticketTotal}枚のPDFを保存しました`);
+    pdf.save(`商品引換券_A4_${ticketTypeCount}券種_${ticketTotal}枚_${source}.pdf`);
+    setExportProgress(100, `${ticketTypeCount}券種・${ticketTotal}枚のPDFを保存しました`);
     elements.exportDetail.textContent = `A4 ${Math.ceil(ticketTotal / 9)}ページ／全券別シリアル／印刷は倍率100%`;
   } catch (error) {
     console.error(error);
@@ -1354,7 +1502,7 @@ async function exportBatchPdf() {
     elements.exportProgressTrack.hidden = true;
   } finally {
     state.exporting = false;
-    elements.exportPdfButton.disabled = !state.selectedOrder.length || getLayoutIssues().length > 0;
+    elements.exportPdfButton.disabled = buildTicketQueue().length === 0 || getLayoutIssues().length > 0;
     elements.exportPdfButton.textContent = "A4・引換券PDFを一括保存";
   }
 }
@@ -1451,6 +1599,7 @@ function attachEvents() {
   elements.clearSelectionButton.addEventListener("click", () => {
     state.products.forEach(product => { product.selected = false; });
     state.selectedOrder = [];
+    state.sets = [];
     state.previewPage = 1;
     renderProductList();
     updateSelectionSummary();
@@ -1458,6 +1607,42 @@ function attachEvents() {
   elements.productList.addEventListener("change", handleProductListChange);
   elements.productList.addEventListener("input", handleProductListInput);
   elements.productList.addEventListener("click", handleProductListClick);
+  elements.createSetButton.addEventListener("click", createSetFromSelection);
+  elements.setList.addEventListener("input", event => {
+    const card = event.target.closest(".set-card");
+    const set = state.sets.find(item => item.id === card?.dataset.setId);
+    if (!set) return;
+    if (event.target.dataset.setAction === "name") {
+      set.name = event.target.value.slice(0, 40);
+      renderA4Preview();
+    } else if (event.target.dataset.setAction === "quantity") {
+      const value = Number(event.target.value);
+      if (!Number.isFinite(value) || value < 1) return;
+      set.quantity = clamp(value, 1, 99);
+      syncOwnerSerials(set);
+      updateSelectionSummary();
+    }
+  });
+  elements.setList.addEventListener("change", event => {
+    if (event.target.dataset.setAction !== "quantity") return;
+    const card = event.target.closest(".set-card");
+    const set = state.sets.find(item => item.id === card?.dataset.setId);
+    if (!set) return;
+    set.quantity = clamp(event.target.value, 1, 99);
+    syncOwnerSerials(set);
+    event.target.value = set.quantity;
+    updateSelectionSummary();
+  });
+  elements.setList.addEventListener("click", event => {
+    const button = event.target.closest("button[data-set-action]");
+    if (!button) return;
+    const card = button.closest(".set-card");
+    const set = state.sets.find(item => item.id === card?.dataset.setId);
+    if (!set) return;
+    if (button.dataset.setAction === "delete") state.sets = state.sets.filter(item => item !== set);
+    if (button.dataset.setAction === "refresh") syncOwnerSerials(set, true);
+    updateSelectionSummary();
+  });
   [elements.ticketTitleInput, elements.ticketSubtitleInput, elements.ticketNotesInput]
     .forEach(input => input.addEventListener("input", saveSettingsFromInputs));
   elements.ticketLogoInput.addEventListener("change", event => handleLogoFile(event.target.files?.[0]));
