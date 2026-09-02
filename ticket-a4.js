@@ -9,6 +9,7 @@ const ACTIVE_STORE_KEY = "kaitori_active_store_v1";
 const TICKET_SETTINGS_KEY = "kaitori_prize_ticket_settings_v1";
 const TICKET_LAYOUT_KEY = "kaitori_prize_ticket_layout_v3";
 const TICKET_TEMPLATES_KEY = "kaitori_prize_ticket_templates_v1";
+const SHARED_TEMPLATE_CONFIG_KEY = "kaitori_prize_ticket_shared_config_v1";
 const MAX_TEMPLATES = 20;
 const DEFAULT_NOTES = "【注意事項】\n※本券は、自販機から排出後に店内で開封した場合のみ有効です。\n※開封前・開封後を問わず、店外へ持ち出した場合は無効です。\n※本券が入っていた場合は、そのまま受付までお持ちください。\n※後日のお引換えはできません。\n※引換時に本券を回収いたします。\n※複製・改ざん・無効なシリアルの券は使用できません。";
 
@@ -193,6 +194,7 @@ const state = {
   settings: { ...DEFAULT_SETTINGS },
   layout: { ...DEFAULT_LAYOUT_SETTINGS },
   templates: [],
+  sharedTemplates: [],
   logoDataUrl: DEFAULT_LOGO_DATA_URL,
   sourceName: "",
   exporting: false
@@ -234,6 +236,11 @@ const elements = {
   templateNameInput: document.getElementById("templateNameInput"),
   templateSelect: document.getElementById("templateSelect"),
   saveTemplateButton: document.getElementById("saveTemplateButton"),
+  saveSharedTemplateButton: document.getElementById("saveSharedTemplateButton"),
+  syncSharedTemplatesButton: document.getElementById("syncSharedTemplatesButton"),
+  sharedTemplateApiUrl: document.getElementById("sharedTemplateApiUrl"),
+  sharedTemplateAdminKey: document.getElementById("sharedTemplateAdminKey"),
+  saveSharedTemplateConfigButton: document.getElementById("saveSharedTemplateConfigButton"),
   loadTemplateButton: document.getElementById("loadTemplateButton"),
   deleteTemplateButton: document.getElementById("deleteTemplateButton"),
   templateStatus: document.getElementById("templateStatus"),
@@ -403,16 +410,120 @@ function persistTemplates() {
 }
 
 function renderTemplateSelect(selectedId = "") {
-  elements.templateSelect.innerHTML = state.templates.length
-    ? state.templates.map(template => `<option value="${escapeHtml(template.id)}">${escapeHtml(template.name)}</option>`).join("")
+  const allTemplates = [...state.sharedTemplates, ...state.templates];
+  elements.templateSelect.innerHTML = allTemplates.length
+    ? allTemplates.map(template => `<option value="${escapeHtml(template.id)}">${template.shared ? "【共有】" : "【端末】"}${escapeHtml(template.name)}</option>`).join("")
     : '<option value="">保存済みテンプレートなし</option>';
-  if (selectedId && state.templates.some(template => template.id === selectedId)) {
+  if (selectedId && allTemplates.some(template => template.id === selectedId)) {
     elements.templateSelect.value = selectedId;
   }
-  const hasTemplates = state.templates.length > 0;
+  const hasTemplates = allTemplates.length > 0;
   elements.templateSelect.disabled = !hasTemplates;
   elements.loadTemplateButton.disabled = !hasTemplates;
   elements.deleteTemplateButton.disabled = !hasTemplates;
+}
+
+function getSharedConfig() {
+  try { return JSON.parse(localStorage.getItem(SHARED_TEMPLATE_CONFIG_KEY) || "{}"); }
+  catch (error) { return {}; }
+}
+
+function loadSharedTemplateConfig() {
+  const config = getSharedConfig();
+  elements.sharedTemplateApiUrl.value = config.url || "";
+  elements.sharedTemplateAdminKey.value = config.adminKey || "";
+  if (config.url) loadSharedTemplates();
+}
+
+function saveSharedTemplateConfig() {
+  const url = elements.sharedTemplateApiUrl.value.trim();
+  const adminKey = elements.sharedTemplateAdminKey.value.trim();
+  if (url && !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec(?:\?.*)?$/.test(url)) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = "Apps ScriptのウェブアプリURLを確認してください。";
+    return;
+  }
+  localStorage.setItem(SHARED_TEMPLATE_CONFIG_KEY, JSON.stringify({ url, adminKey }));
+  elements.templateStatus.className = "template-status is-ready";
+  elements.templateStatus.textContent = url ? "共有テンプレートの接続設定を保存しました。" : "共有設定を解除しました。";
+  if (url) loadSharedTemplates();
+}
+
+function jsonp(url) {
+  return new Promise((resolve, reject) => {
+    const callback = `ticketTemplateCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const script = document.createElement("script");
+    const timer = window.setTimeout(() => finish(new Error("timeout")), 12000);
+    function finish(error, value) {
+      window.clearTimeout(timer);
+      delete window[callback];
+      script.remove();
+      error ? reject(error) : resolve(value);
+    }
+    window[callback] = value => finish(null, value);
+    script.onerror = () => finish(new Error("network"));
+    script.src = `${url}${url.includes("?") ? "&" : "?"}action=list&callback=${encodeURIComponent(callback)}&_=${Date.now()}`;
+    document.head.appendChild(script);
+  });
+}
+
+async function loadSharedTemplates(selectedId = "") {
+  const { url } = getSharedConfig();
+  if (!url) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = "先に共有保存のApps Script URLを設定してください。";
+    return;
+  }
+  elements.syncSharedTemplatesButton.disabled = true;
+  try {
+    const response = await jsonp(url);
+    if (!response?.ok) throw new Error(response?.error || "取得できませんでした");
+    state.sharedTemplates = (response.templates || []).map(item => normalizeTemplate({ ...item, id: `shared:${item.id}` })).filter(Boolean).map(item => ({ ...item, shared: true }));
+    renderTemplateSelect(selectedId);
+    elements.templateStatus.className = "template-status is-ready";
+    elements.templateStatus.textContent = `共有テンプレート ${state.sharedTemplates.length}件を読み込みました。`;
+  } catch (error) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = "共有テンプレートへ接続できません。URLと公開設定を確認してください。";
+  } finally {
+    elements.syncSharedTemplatesButton.disabled = false;
+  }
+}
+
+async function postSharedTemplate(action, template) {
+  const { url, adminKey } = getSharedConfig();
+  if (!url || !adminKey) throw new Error("共有URLと管理キーを設定してください。");
+  const body = new URLSearchParams({ action, adminKey, payload: JSON.stringify(template || {}) });
+  await fetch(url, { method: "POST", mode: "no-cors", headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" }, body });
+  await new Promise(resolve => window.setTimeout(resolve, 900));
+}
+
+async function saveCurrentTemplateShared() {
+  const name = elements.templateNameInput.value.trim().slice(0, 40);
+  if (!name) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = "テンプレート名を入力してください。";
+    elements.templateNameInput.focus();
+    return;
+  }
+  const template = normalizeTemplate({
+    id: state.sharedTemplates.find(item => item.name.localeCompare(name, "ja", { sensitivity: "base" }) === 0)?.id.replace(/^shared:/, ""),
+    name,
+    settings: { title: elements.ticketTitleInput.value, subtitle: elements.ticketSubtitleInput.value, notes: elements.ticketNotesInput.value },
+    layout: state.layout,
+    logoDataUrl: state.logoDataUrl,
+    updatedAt: new Date().toISOString()
+  });
+  elements.saveSharedTemplateButton.disabled = true;
+  try {
+    await postSharedTemplate("save", template);
+    elements.templateNameInput.value = "";
+    await loadSharedTemplates(`shared:${template.id}`);
+    elements.templateStatus.textContent = `「${name}」を全端末共有で保存しました。`;
+  } catch (error) {
+    elements.templateStatus.className = "template-status is-error";
+    elements.templateStatus.textContent = error.message;
+  } finally { elements.saveSharedTemplateButton.disabled = false; }
 }
 
 function loadStoredTemplates() {
@@ -464,7 +575,7 @@ function saveCurrentTemplate() {
 }
 
 function loadSelectedTemplate() {
-  const template = state.templates.find(item => item.id === elements.templateSelect.value);
+  const template = [...state.sharedTemplates, ...state.templates].find(item => item.id === elements.templateSelect.value);
   if (!template) return;
   state.settings = normalizeSettings(template.settings);
   state.layout = normalizeLayoutSettings(template.layout);
@@ -484,10 +595,21 @@ function loadSelectedTemplate() {
   elements.templateStatus.textContent = `「${template.name}」を読み込みました。`;
 }
 
-function deleteSelectedTemplate() {
-  const template = state.templates.find(item => item.id === elements.templateSelect.value);
+async function deleteSelectedTemplate() {
+  const template = [...state.sharedTemplates, ...state.templates].find(item => item.id === elements.templateSelect.value);
   if (!template) return;
   if (!window.confirm(`テンプレート「${template.name}」を削除しますか？`)) return;
+  if (template.shared) {
+    try {
+      await postSharedTemplate("delete", { id: template.id.replace(/^shared:/, "") });
+      await loadSharedTemplates();
+      elements.templateStatus.textContent = `共有テンプレート「${template.name}」を削除しました。`;
+    } catch (error) {
+      elements.templateStatus.className = "template-status is-error";
+      elements.templateStatus.textContent = error.message;
+    }
+    return;
+  }
   state.templates = state.templates.filter(item => item.id !== template.id);
   if (!persistTemplates()) return;
   renderTemplateSelect();
@@ -1666,6 +1788,9 @@ function attachEvents() {
     updateSelectionSummary();
   });
   elements.saveTemplateButton.addEventListener("click", saveCurrentTemplate);
+  elements.saveSharedTemplateButton.addEventListener("click", saveCurrentTemplateShared);
+  elements.syncSharedTemplatesButton.addEventListener("click", () => loadSharedTemplates());
+  elements.saveSharedTemplateConfigButton.addEventListener("click", saveSharedTemplateConfig);
   elements.loadTemplateButton.addEventListener("click", loadSelectedTemplate);
   elements.deleteTemplateButton.addEventListener("click", deleteSelectedTemplate);
   elements.templateNameInput.addEventListener("keydown", event => {
@@ -1684,6 +1809,7 @@ function attachEvents() {
 
 loadStoredSettings();
 loadStoredTemplates();
+loadSharedTemplateConfig();
 attachEvents();
 renderGroupFilter();
 renderProductList();
