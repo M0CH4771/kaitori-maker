@@ -707,6 +707,15 @@ textarea:focus {
 .template-status { padding: 7px 9px; color: var(--muted); border-radius: 7px; background: #f7f8fa; font-size: 9px; font-weight: 750; }
 .template-status.is-ready { color: var(--success); background: #effaf3; }
 .template-status.is-error { color: var(--danger); background: #fff2f0; }
+.shared-template-actions { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 7px; }
+.shared-template-actions button,
+.shared-template-setup button { min-height: 38px; padding: 6px 9px; border: 0; border-radius: 8px; color: #fff; background: #263b5a; font-size: 9px; font-weight: 900; cursor: pointer; }
+.shared-template-actions button:disabled { opacity: .42; cursor: not-allowed; }
+.shared-template-setup { border: 1px solid #e0e5ec; border-radius: 9px; background: #fafbfc; }
+.shared-template-setup summary { padding: 9px 10px; color: #526078; font-size: 9px; font-weight: 900; cursor: pointer; }
+.shared-template-setup > div { display: grid; gap: 8px; padding: 0 10px 10px; }
+.shared-template-setup label { display: grid; gap: 4px; color: #657187; font-size: 8px; font-weight: 850; }
+.shared-template-setup input { min-height: 36px; padding: 7px 9px; font-size: 9px; }
 
 .export-panel {
   position: sticky;
