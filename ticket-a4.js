@@ -10,6 +10,7 @@ const TICKET_SETTINGS_KEY = "kaitori_prize_ticket_settings_v1";
 const TICKET_LAYOUT_KEY = "kaitori_prize_ticket_layout_v3";
 const TICKET_TEMPLATES_KEY = "kaitori_prize_ticket_templates_v1";
 const SHARED_TEMPLATE_CONFIG_KEY = "kaitori_prize_ticket_shared_config_v1";
+const DEFAULT_SHARED_TEMPLATE_API_URL = "https://script.google.com/macros/s/AKfycbxf0VKYNBsHGcnvClviqVc36ecr07-0MyV2nsjXrq2MmeE0E1R0rKrq0wnupHXq3fxZjg/exec";
 const MAX_TEMPLATES = 20;
 const DEFAULT_NOTES = "【注意事項】\n※本券は、自販機から排出後に店内で開封した場合のみ有効です。\n※開封前・開封後を問わず、店外へ持ち出した場合は無効です。\n※本券が入っていた場合は、そのまま受付までお持ちください。\n※後日のお引換えはできません。\n※引換時に本券を回収いたします。\n※複製・改ざん・無効なシリアルの券は使用できません。";
 
@@ -424,8 +425,12 @@ function renderTemplateSelect(selectedId = "") {
 }
 
 function getSharedConfig() {
-  try { return JSON.parse(localStorage.getItem(SHARED_TEMPLATE_CONFIG_KEY) || "{}"); }
-  catch (error) { return {}; }
+  try {
+    const config = JSON.parse(localStorage.getItem(SHARED_TEMPLATE_CONFIG_KEY) || "{}");
+    return { ...config, url: config.url || DEFAULT_SHARED_TEMPLATE_API_URL };
+  } catch (error) {
+    return { url: DEFAULT_SHARED_TEMPLATE_API_URL, adminKey: "" };
+  }
 }
 
 function loadSharedTemplateConfig() {
