@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;800;900&family=Oswald:wght@700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./ticket-a4.css?v=20260901-1">
+  <link rel="stylesheet" href="./ticket-a4.css?v=20260902-1">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
@@ -132,14 +132,26 @@
           <div class="template-body">
             <label class="template-name-field">
               <span>現在の設定を名前付きで保存</span>
-              <div><input id="templateNameInput" type="text" maxlength="40" placeholder="例：BOX引換券 標準"><button id="saveTemplateButton" type="button">保存</button></div>
+              <div><input id="templateNameInput" type="text" maxlength="40" placeholder="例：BOX引換券 標準"><button id="saveTemplateButton" type="button">端末保存</button></div>
             </label>
+            <div class="shared-template-actions">
+              <button id="saveSharedTemplateButton" type="button">全端末共有で保存</button>
+              <button id="syncSharedTemplatesButton" type="button">共有一覧を更新</button>
+            </div>
             <div class="template-load-row">
               <label><span>保存済みテンプレート</span><select id="templateSelect" disabled><option value="">保存済みテンプレートなし</option></select></label>
               <button id="loadTemplateButton" type="button" disabled>読み込む</button>
               <button class="template-delete-button" id="deleteTemplateButton" type="button" disabled>削除</button>
             </div>
             <div class="template-status" id="templateStatus">商品・枚数・シリアルは保存されません。</div>
+            <details class="shared-template-setup">
+              <summary>共有保存の初期設定</summary>
+              <div>
+                <label><span>Apps Script 公開URL</span><input id="sharedTemplateApiUrl" type="text" placeholder="https://script.google.com/macros/s/.../exec"></label>
+                <label><span>管理キー</span><input id="sharedTemplateAdminKey" type="password" autocomplete="off" placeholder="Apps Scriptで設定したキー"></label>
+                <button id="saveSharedTemplateConfigButton" type="button">接続設定を保存</button>
+              </div>
+            </details>
           </div>
         </details>
 
@@ -174,6 +186,6 @@
     </div>
   </main>
 
-  <script src="./ticket-a4.js?v=20260901-1"></script>
+  <script src="./ticket-a4.js?v=20260902-1"></script>
 </body>
 </html>
