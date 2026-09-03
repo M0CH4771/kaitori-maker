@@ -64,8 +64,18 @@ with sync_playwright() as p:
   page=browser.new_page(viewport={'width':2200,'height':1800})
   page.goto('http://127.0.0.1:8765/index.html',wait_until='domcontentloaded',timeout=60000)
   page.wait_for_function("typeof renderPages==='function'&&typeof renderSingleAdPreviews==='function'&&typeof switchAppView==='function'",timeout=60000)
+  try:
+    page.evaluate("() => document.fonts.ready")
+  except Exception:
+    pass
+  # The app performs one initial refresh shortly after startup. Let it finish first.
+  page.wait_for_timeout(6500)
+  try:
+    page.wait_for_load_state('domcontentloaded',timeout=10000)
+  except Exception:
+    pass
+  page.wait_for_function("typeof renderPages==='function'&&typeof renderSingleAdPreviews==='function'&&typeof switchAppView==='function'",timeout=60000)
   page.evaluate("()=>{window.alert=()=>{};window.confirm=()=>true}")
-  page.wait_for_timeout(500)
 
   for theme in THEMES:
     for layout,count in LAYOUTS.items():
