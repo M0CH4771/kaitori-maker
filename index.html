@@ -10530,6 +10530,30 @@
         }
 
     </style>
+
+    <style id="single-layout-auto-optimizer">
+        /* 単品告知：商品数・画像比率別の自動最適化 */
+        .single-ad.is-multi .single-ad-product-card .single-ad-image-stage {
+            padding-bottom: 0 !important;
+        }
+
+        .single-ad.is-multi .single-ad-product-card .single-ad-info {
+            margin-top: 0 !important;
+        }
+
+        .single-ad.is-multi.hide-card-name .single-ad-product-card .single-ad-info {
+            margin-top: 0 !important;
+        }
+
+        .single-ad.is-multi.hide-card-name .single-ad-product-card .single-ad-price {
+            margin-top: 0 !important;
+        }
+
+        .single-ad.is-multi[data-density="ultra"] .single-ad-product-card .single-ad-image-stage,
+        .single-ad.is-multi[data-density="micro"] .single-ad-product-card .single-ad-image-stage {
+            padding-bottom: 0 !important;
+        }
+    </style>
 </head>
 <body data-app-view="buylist">
 
@@ -18180,56 +18204,115 @@ BOXのお持ち込みお待ちしております！
         `;
     }
 
-    function getSingleMultiLayout(size, count) {
-        const safeCount = Math.min(MAX_SINGLE_ITEMS_PER_IMAGE, Math.max(2, Number(count) || 2));
-        const legacyLayoutMap = {
-            square: {2:[2,1],3:[3,1],4:[2,2],5:[3,2],6:[3,2],7:[4,2],8:[4,2],9:[5,2],10:[5,2]},
-            portrait: {2:[2,1],3:[3,1],4:[2,2],5:[3,2],6:[3,2],7:[4,2],8:[4,2],9:[5,2],10:[5,2]},
-            landscape: {2:[2,1],3:[3,1],4:[4,1],5:[5,1],6:[3,2],7:[4,2],8:[4,2],9:[5,2],10:[5,2]}
+    function getBalancedSingleRowCounts(count, rows, columns) {
+        const safeRows = Math.max(1, Number(rows) || 1);
+        const safeColumns = Math.max(1, Number(columns) || 1);
+        const safeCount = Math.max(1, Number(count) || 1);
+        const base = Math.floor(safeCount / safeRows);
+        const remainder = safeCount - (base * safeRows);
+        const counts = Array(safeRows).fill(base);
+
+        const balancedPriority = {
+            1: {0: []},
+            2: {0: [], 1: [0]},
+            3: {0: [], 1: [1], 2: [0, 2]},
+            4: {0: [], 1: [1], 2: [1, 2], 3: [0, 1, 3]},
+            5: {0: [], 1: [2], 2: [1, 3], 3: [1, 2, 3], 4: [0, 1, 3, 4]}
         };
+        const fallback = Array.from({length: safeRows}, (_, index) => index);
+        const priority = balancedPriority[safeRows]?.[remainder] || fallback;
+        priority.slice(0, remainder).forEach(index => {
+            counts[index] += 1;
+        });
+
+        return counts
+            .map(value => Math.min(safeColumns, value))
+            .filter(value => value > 0);
+    }
+
+    function getSingleMultiLayout(size, count) {
+        const safeCount = Math.min(
+            MAX_SINGLE_ITEMS_PER_IMAGE,
+            Math.max(2, Number(count) || 2)
+        );
         const normalizedSize = SINGLE_SIZES.includes(size) ? size : "square";
-        let columns, rows;
-        if (safeCount <= 10) {
-            [columns, rows] = legacyLayoutMap[normalizedSize][safeCount];
-        } else if (normalizedSize === "portrait") {
-            if (safeCount <= 12) [columns, rows] = [3,4];
-            else if (safeCount <= 15) [columns, rows] = [3,5];
-            else if (safeCount <= 20) [columns, rows] = [4,5];
-            else if (safeCount <= 24) [columns, rows] = [4,6];
-            else [columns, rows] = [5,6];
-        } else if (normalizedSize === "landscape") {
-            if (safeCount <= 12) [columns, rows] = [6,2];
-            else if (safeCount <= 15) [columns, rows] = [5,3];
-            else if (safeCount <= 18) [columns, rows] = [6,3];
-            else if (safeCount <= 20) [columns, rows] = [5,4];
-            else if (safeCount <= 24) [columns, rows] = [6,4];
-            else if (safeCount === 25) [columns, rows] = [5,5];
-            else [columns, rows] = [6,5];
-        } else {
-            if (safeCount <= 12) [columns, rows] = [4,3];
-            else if (safeCount <= 15) [columns, rows] = [5,3];
-            else if (safeCount === 16) [columns, rows] = [4,4];
-            else if (safeCount <= 20) [columns, rows] = [5,4];
-            else if (safeCount <= 24) [columns, rows] = [6,4];
-            else if (safeCount === 25) [columns, rows] = [5,5];
-            else [columns, rows] = [6,5];
-        }
-        if (safeCount >= 11) {
-            columns = 6;
-            rows = Math.ceil(safeCount / 6);
-        }
-        const density = safeCount >= 21 ? "micro" : safeCount >= 13 ? "ultra" : safeCount >= 9 ? "dense" : safeCount >= 7 || (normalizedSize === "landscape" && safeCount >= 4) ? "compact" : "comfortable";
-        const gap = density === "micro" ? 10 : density === "ultra" ? 11 : density === "dense" ? 12 : density === "compact" ? 14 : 18;
+
+        const layoutMap = {
+            portrait: {
+                2:[2,1], 3:[3,1], 4:[2,2], 5:[3,2], 6:[3,2],
+                7:[4,2], 8:[4,2], 9:[3,3], 10:[4,3], 11:[4,3], 12:[4,3],
+                13:[5,3], 14:[5,3], 15:[5,3], 16:[4,4],
+                17:[5,4], 18:[5,4], 19:[5,4], 20:[5,4],
+                21:[6,4], 22:[6,4], 23:[6,4], 24:[6,4], 25:[5,5],
+                26:[6,5], 27:[6,5], 28:[6,5], 29:[6,5], 30:[6,5]
+            },
+            square: {
+                2:[2,1], 3:[3,1], 4:[2,2], 5:[3,2], 6:[3,2],
+                7:[4,2], 8:[4,2], 9:[5,2], 10:[5,2],
+                11:[4,3], 12:[4,3], 13:[5,3], 14:[5,3], 15:[5,3],
+                16:[6,3], 17:[6,3], 18:[6,3], 19:[7,3], 20:[7,3], 21:[7,3],
+                22:[6,4], 23:[6,4], 24:[6,4],
+                25:[7,4], 26:[7,4], 27:[7,4], 28:[7,4], 29:[8,4], 30:[8,4]
+            },
+            landscape: {
+                2:[2,1], 3:[3,1], 4:[4,1], 5:[5,1],
+                6:[3,2], 7:[4,2], 8:[4,2], 9:[5,2], 10:[5,2],
+                11:[6,2], 12:[6,2], 13:[7,2], 14:[7,2], 15:[8,2], 16:[8,2],
+                17:[6,3], 18:[6,3], 19:[7,3], 20:[7,3], 21:[7,3],
+                22:[8,3], 23:[8,3], 24:[8,3],
+                25:[9,3], 26:[9,3], 27:[9,3], 28:[10,3], 29:[10,3], 30:[10,3]
+            }
+        };
+
+        const [columns, rows] = layoutMap[normalizedSize][safeCount];
+        const density = safeCount >= 21
+            ? "micro"
+            : safeCount >= 13
+                ? "ultra"
+                : safeCount >= 9
+                    ? "dense"
+                    : safeCount >= 7 || (normalizedSize === "landscape" && safeCount >= 4)
+                        ? "compact"
+                        : "comfortable";
+        const gap = density === "micro"
+            ? (columns >= 9 ? 8 : 10)
+            : density === "ultra"
+                ? (columns >= 7 ? 9 : 11)
+                : density === "dense"
+                    ? 12
+                    : density === "compact"
+                        ? 14
+                        : 18;
         const rowGap = density === "micro" ? 7 : density === "ultra" ? 9 : gap;
         const totalColumnGap = Math.max(0, columns - 1) * gap;
-        return { columns, rows, density, gap, rowGap, cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})` };
+        const rowCounts = getBalancedSingleRowCounts(safeCount, rows, columns);
+
+        return {
+            columns,
+            rows,
+            rowCounts,
+            density,
+            gap,
+            rowGap,
+            cardWidth: `calc((100% - ${totalColumnGap}px) / ${columns})`
+        };
     }
 
     function renderSingleProductRows(cards, settings, layout) {
         const rows = [];
-        for (let index = 0; index < cards.length; index += layout.columns) {
-            rows.push(cards.slice(index, index + layout.columns));
+        const rowCounts = Array.isArray(layout.rowCounts) && layout.rowCounts.length
+            ? layout.rowCounts
+            : [layout.columns];
+        let offset = 0;
+        rowCounts.forEach(rowCount => {
+            if (offset >= cards.length) return;
+            rows.push(cards.slice(offset, offset + rowCount));
+            offset += rowCount;
+        });
+        if (offset < cards.length) {
+            rows.push(cards.slice(offset));
         }
+
         return rows.map((row, rowIndex) => `
             <div
                 class="single-ad-products-row"
