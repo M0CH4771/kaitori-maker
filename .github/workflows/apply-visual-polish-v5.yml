@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/apply-visual-polish-v5.yml"
+      - ".github/quick-geometry-audit.py"
+      - ".github/patch-visual-polish-v5b.py"
 
 permissions:
   contents: write
