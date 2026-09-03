@@ -11641,10 +11641,11 @@
                         aria-label="単品告知に使用する商品を検索"
                     >
                     <select id="singleStatusFilterSelect" aria-label="掲載状況で絞り込み">
-                        <option value="all">掲載状況：すべて</option>
-                        <option value="strengthened">強化のみ</option>
-                        <option value="not-strengthened">強化以外</option>
-                    </select>
+                            <option value="all">掲載状況：すべて</option>
+                            <option value="strengthened">強化</option>
+                            <option value="super-strengthened">超強化</option>
+                            <option value="listed">掲載</option>
+                        </select>
                     <button class="btn-soft" type="button" onclick="selectVisibleSingleCards()">表示中の商品を選択</button>
                     <button class="btn-muted" type="button" onclick="clearSingleSelection()">すべて選択解除</button>
                     <button class="btn-muted" type="button" onclick="invertVisibleSingleCards()">選択を反転</button>
@@ -17356,8 +17357,21 @@
         const select = document.getElementById("singleStatusFilterSelect");
         if (!select) return;
         const currentValue = select.value || "all";
-        const statuses = Array.from(new Set(globalCardData.map(card => String(card.status || "").trim()).filter(Boolean))).sort((a,b) => a.localeCompare(b, "ja", {numeric:true, sensitivity:"base"}));
-        const options = [["all","掲載状況：すべて"],["strengthened","強化のみ"],["not-strengthened","強化以外"], ...statuses.map(status => [`status:${status}`, `掲載「${status}」だけ`])];
+        const fixedStatuses = new Set(["強化", "超強化", "掲載"]);
+        const statuses = Array.from(
+            new Set(
+                globalCardData
+                    .map(card => String(card.status || "").trim())
+                    .filter(status => status && !fixedStatuses.has(status))
+            )
+        ).sort((a,b) => a.localeCompare(b, "ja", {numeric:true, sensitivity:"base"}));
+        const options = [
+            ["all", "掲載状況：すべて"],
+            ["strengthened", "強化"],
+            ["super-strengthened", "超強化"],
+            ["listed", "掲載"],
+            ...statuses.map(status => [`status:${status}`, `掲載「${status}」だけ`])
+        ];
         if (globalCardData.some(card => !String(card.status || "").trim())) options.push(["status:","掲載状況：空欄だけ"]);
         select.innerHTML = "";
         options.forEach(([value,label]) => { const option = document.createElement("option"); option.value = value; option.textContent = label; select.appendChild(option); });
@@ -17369,7 +17383,7 @@
         const statusFilter = String(document.getElementById("singleStatusFilterSelect")?.value || "all");
         return globalCardData.filter(card => {
             const status = String(card.status || "").trim();
-            const matchesStatus = statusFilter === "all" ? true : statusFilter === "strengthened" ? status.includes("強化") : statusFilter === "not-strengthened" ? !status.includes("強化") : statusFilter.startsWith("status:") ? status === statusFilter.slice(7) : true;
+            const matchesStatus = statusFilter === "all" ? true : statusFilter === "strengthened" ? status === "強化" : statusFilter === "super-strengthened" ? status === "超強化" : statusFilter === "listed" ? status === "掲載" : statusFilter.startsWith("status:") ? status === statusFilter.slice(7) : true;
             if (!matchesStatus) return false;
             if (!query) return true;
             return [card.name, card.type, card.group, card.status, card.price, card.aMinusPrice, card.productId].some(value => String(value || "").toLocaleLowerCase("ja").includes(query));
