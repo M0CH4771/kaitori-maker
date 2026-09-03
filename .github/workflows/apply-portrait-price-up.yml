@@ -1,0 +1,48 @@
+name: Apply portrait price-up layout
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/apply-portrait-price-up.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply patch
+        run: python .github/patch-portrait-price-up.py
+
+      - name: Validate
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          text = Path('index.html').read_text(encoding='utf-8')
+          scripts = re.findall(r'<script(?:\s[^>]*)?>(.*?)</script>', text, flags=re.S | re.I)
+          inline = [script for script in scripts if script.strip()]
+          if not inline:
+              raise SystemExit('No inline script found')
+          Path('/tmp/kaitori-inline.js').write_text(inline[-1], encoding='utf-8')
+          PY
+          node --check /tmp/kaitori-inline.js
+          grep -q 'grid-template-rows: auto auto !important;' index.html
+          grep -q 'align-items: center !important;' index.html
+          ! grep -q 'single-portrait-tight-product-stack.*align-items: flex-end' index.html
+          git diff --check
+
+      - name: Commit and push
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "Move portrait prices up to card images"
+          git push
