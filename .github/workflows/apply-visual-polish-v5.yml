@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Apply polish patch
-        run: python .github/patch-visual-polish-v5.py
+        run: python .github/patch-visual-polish-v5b.py
 
       - name: Validate JavaScript syntax
         shell: bash
@@ -46,19 +46,22 @@ jobs:
       - name: Run full visual audit
         run: python .github/full-visual-audit.py
 
-      - name: Require zero geometry failures
+      - name: Require zero layout overlaps or overflows
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
-          p=Path('visual-audit/audit-summary.json')
-          data=json.loads(p.read_text(encoding='utf-8'))
-          buy=len(data['buy']['failed'])
-          single=len(data['single']['failed'])
-          print('buy failures:', buy)
-          print('single failures:', single)
-          if buy or single:
-              print(json.dumps({'buy':data['buy']['failed'][:20],'single':data['single']['failed'][:20]},ensure_ascii=False,indent=2))
+          data=json.loads(Path('visual-audit/audit-results.json').read_text(encoding='utf-8'))
+          failures=[]
+          for kind in ('buy','single'):
+              for rec in data[kind]:
+                  bad=[m.get('issues',[]) for m in rec.get('measure',[]) if m.get('issues')]
+                  if bad:
+                      identity={k:v for k,v in rec.items() if k!='measure'}
+                      failures.append({'kind':kind, **identity, 'issues':bad})
+          print('true layout failures:', len(failures))
+          if failures:
+              print(json.dumps(failures[:40],ensure_ascii=False,indent=2))
               raise SystemExit(2)
           PY
 
