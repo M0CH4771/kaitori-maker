@@ -1,5 +1,5 @@
 from pathlib import Path
-import math, urllib.parse
+import base64, math, urllib.parse
 from playwright.sync_api import sync_playwright
 from PIL import Image, ImageDraw
 
@@ -21,32 +21,48 @@ def sheet(items,out,cols,w=210,label_h=22):
     for i,c in enumerate(cells): canvas.paste(c,((i%cols)*w,(i//cols)*ch))
     canvas.save(out,quality=88)
 
-def capture(page, selector, path):
-    box=page.locator(selector).first.bounding_box()
-    if not box or box['width'] < 2 or box['height'] < 2:
-        raise RuntimeError(f'no capture box for {selector}')
-    clip={
-        'x':max(0,box['x']), 'y':max(0,box['y']),
-        'width':box['width'], 'height':box['height']
-    }
-    page.screenshot(path=str(path),clip=clip,animations='disabled',timeout=10000)
+def capture(page, cdp, selector, path):
+    dims=page.evaluate(r'''sel => {
+        document.getElementById('__visual_audit_host')?.remove();
+        const src=document.querySelector(sel);
+        if(!src) throw new Error('missing '+sel);
+        const host=document.createElement('div'); host.id='__visual_audit_host';
+        host.style.cssText='position:fixed!important;left:0!important;top:0!important;z-index:2147483647!important;margin:0!important;padding:0!important;transform:none!important;overflow:visible!important;';
+        const clone=src.cloneNode(true);
+        clone.removeAttribute('id');
+        clone.style.setProperty('transform','none','important');
+        clone.style.setProperty('transform-origin','top left','important');
+        clone.style.setProperty('position','relative','important');
+        clone.style.setProperty('left','0','important'); clone.style.setProperty('top','0','important');
+        clone.style.setProperty('margin','0','important');
+        host.appendChild(clone); document.body.appendChild(host);
+        const r=clone.getBoundingClientRect();
+        return {width:Math.ceil(r.width),height:Math.ceil(r.height)};
+    }''', selector)
+    if dims['width'] < 2 or dims['height'] < 2: raise RuntimeError(f'bad capture dimensions {selector}: {dims}')
+    shot=cdp.send('Page.captureScreenshot',{
+        'format':'png','fromSurface':True,'captureBeyondViewport':True,
+        'clip':{'x':0,'y':0,'width':dims['width'],'height':dims['height'],'scale':1}
+    })
+    Path(path).write_bytes(base64.b64decode(shot['data']))
+    page.evaluate("()=>document.getElementById('__visual_audit_host')?.remove()")
 
 with sync_playwright() as p:
-    b=p.chromium.launch(headless=True,args=['--no-sandbox']); page=b.new_page(viewport={'width':2400,'height':2000})
+    b=p.chromium.launch(headless=True,args=['--no-sandbox']); page=b.new_page(viewport={'width':2400,'height':2000}); cdp=page.context.new_cdp_session(page)
     page.goto('http://127.0.0.1:8765/index.html',wait_until='domcontentloaded',timeout=60000); page.wait_for_function("typeof renderPages==='function' && typeof renderSingleAdPreviews==='function'")
     page.evaluate("()=>{window.alert=()=>{};window.confirm=()=>true;}"); page.add_style_tag(content='*,*::before,*::after{animation:none!important;transition:none!important;}'); page.wait_for_timeout(250)
     for layout,count in [('portrait_6x5',30),('landscape_10x3',30),('portrait_10x6',60),('landscape_15x4',60)]:
         items=[]
         for theme in THEMES:
             page.evaluate(BUY,{'theme':theme,'layout':layout,'count':count,'img':IMG}); page.wait_for_timeout(8)
-            path=SHOT/f'buy-{layout}-{theme}.png'; capture(page,'#pagesContainer .exportArea',path); items.append((theme,path))
+            path=SHOT/f'buy-{layout}-{theme}.png'; capture(page,cdp,'#pagesContainer .exportArea',path); items.append((theme,path))
         sheet(items,OUT/f'buy-{layout}.jpg',5,210)
     for size in SIZES:
         items=[]
         for design in DESIGNS:
             for count in COUNTS:
                 page.evaluate(SINGLE,{'design':design,'size':size,'count':count,'img':IMG}); page.wait_for_timeout(8)
-                path=SHOT/f'single-{size}-{design}-{count}.png'; capture(page,'#singlePreviewContainer .single-ad',path); items.append((f'{design}/{count}',path))
+                path=SHOT/f'single-{size}-{design}-{count}.png'; capture(page,cdp,'#singlePreviewContainer .single-ad',path); items.append((f'{design}/{count}',path))
         sheet(items,OUT/f'single-{size}.jpg',5,190)
     b.close()
 print('contact sheets ready')
