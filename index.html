@@ -10554,22 +10554,45 @@
             padding-bottom: 0 !important;
         }
     </style>
-
     <style id="single-portrait-tight-product-stack">
-        /* 単品告知：縦長の低枚数はカード画像の直下に価格を置く */
+        /* 単品告知：縦長の低枚数は画像を下げず、価格を画像直下へ持ち上げる */
         .single-ad.single-portrait:not(.is-multi) .single-ad-product {
+            grid-template-rows: auto auto !important;
+            align-content: center !important;
             gap: 0 !important;
         }
 
         .single-ad.single-portrait:not(.is-multi) .single-ad-image-stage {
-            align-items: flex-end !important;
+            height: auto !important;
+            min-height: 0 !important;
+            align-items: center !important;
             padding-bottom: 0 !important;
+        }
+
+        .single-ad.single-portrait:not(.is-multi) .single-ad-info {
+            margin-top: 0 !important;
+        }
+
+        .single-ad.is-multi.single-portrait[data-density="comfortable"] .single-ad-products-row,
+        .single-ad.is-multi.single-portrait[data-density="compact"] .single-ad-products-row,
+        .single-ad.is-multi.single-portrait[data-density="dense"] .single-ad-products-row {
+            align-items: center !important;
+        }
+
+        .single-ad.is-multi.single-portrait[data-density="comfortable"] .single-ad-product-card,
+        .single-ad.is-multi.single-portrait[data-density="compact"] .single-ad-product-card,
+        .single-ad.is-multi.single-portrait[data-density="dense"] .single-ad-product-card {
+            height: auto !important;
+            align-self: center !important;
+            grid-template-rows: auto auto !important;
         }
 
         .single-ad.is-multi.single-portrait[data-density="comfortable"] .single-ad-product-card .single-ad-image-stage,
         .single-ad.is-multi.single-portrait[data-density="compact"] .single-ad-product-card .single-ad-image-stage,
         .single-ad.is-multi.single-portrait[data-density="dense"] .single-ad-product-card .single-ad-image-stage {
-            align-items: flex-end !important;
+            height: auto !important;
+            min-height: 0 !important;
+            align-items: center !important;
             padding-bottom: 0 !important;
         }
 
