@@ -24,4 +24,4 @@ jobs:
           name: visual-contact-audit
           path: visual-contact
           if-no-files-found: error
-# Chrome DevTools capture v3
+# Chrome DevTools capture v4
