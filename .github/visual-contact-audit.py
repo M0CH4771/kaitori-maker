@@ -21,22 +21,32 @@ def sheet(items,out,cols,w=210,label_h=22):
     for i,c in enumerate(cells): canvas.paste(c,((i%cols)*w,(i//cols)*ch))
     canvas.save(out,quality=88)
 
+def capture(page, selector, path):
+    box=page.locator(selector).first.bounding_box()
+    if not box or box['width'] < 2 or box['height'] < 2:
+        raise RuntimeError(f'no capture box for {selector}')
+    clip={
+        'x':max(0,box['x']), 'y':max(0,box['y']),
+        'width':box['width'], 'height':box['height']
+    }
+    page.screenshot(path=str(path),clip=clip,animations='disabled',timeout=10000)
+
 with sync_playwright() as p:
-    b=p.chromium.launch(headless=True,args=['--no-sandbox']); page=b.new_page(viewport={'width':2200,'height':1800})
+    b=p.chromium.launch(headless=True,args=['--no-sandbox']); page=b.new_page(viewport={'width':2400,'height':2000})
     page.goto('http://127.0.0.1:8765/index.html',wait_until='domcontentloaded',timeout=60000); page.wait_for_function("typeof renderPages==='function' && typeof renderSingleAdPreviews==='function'")
-    page.evaluate("()=>{window.alert=()=>{};window.confirm=()=>true;}"); page.wait_for_timeout(300)
+    page.evaluate("()=>{window.alert=()=>{};window.confirm=()=>true;}"); page.add_style_tag(content='*,*::before,*::after{animation:none!important;transition:none!important;}'); page.wait_for_timeout(250)
     for layout,count in [('portrait_6x5',30),('landscape_10x3',30),('portrait_10x6',60),('landscape_15x4',60)]:
         items=[]
         for theme in THEMES:
-            page.evaluate(BUY,{'theme':theme,'layout':layout,'count':count,'img':IMG}); page.wait_for_timeout(5)
-            loc=page.locator('#pagesContainer .exportArea').first; path=SHOT/f'buy-{layout}-{theme}.png'; loc.screenshot(path=str(path),animations='disabled'); items.append((theme,path))
+            page.evaluate(BUY,{'theme':theme,'layout':layout,'count':count,'img':IMG}); page.wait_for_timeout(8)
+            path=SHOT/f'buy-{layout}-{theme}.png'; capture(page,'#pagesContainer .exportArea',path); items.append((theme,path))
         sheet(items,OUT/f'buy-{layout}.jpg',5,210)
     for size in SIZES:
         items=[]
         for design in DESIGNS:
             for count in COUNTS:
-                page.evaluate(SINGLE,{'design':design,'size':size,'count':count,'img':IMG}); page.wait_for_timeout(5)
-                loc=page.locator('#singlePreviewContainer .single-ad').first; path=SHOT/f'single-{size}-{design}-{count}.png'; loc.screenshot(path=str(path),animations='disabled'); items.append((f'{design}/{count}',path))
+                page.evaluate(SINGLE,{'design':design,'size':size,'count':count,'img':IMG}); page.wait_for_timeout(8)
+                path=SHOT/f'single-{size}-{design}-{count}.png'; capture(page,'#singlePreviewContainer .single-ad',path); items.append((f'{design}/{count}',path))
         sheet(items,OUT/f'single-{size}.jpg',5,190)
     b.close()
 print('contact sheets ready')
