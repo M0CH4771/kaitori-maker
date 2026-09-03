@@ -1,0 +1,32 @@
+name: Full visual audit
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/full-visual-audit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install audit dependencies
+        run: |
+          python -m pip install --quiet playwright pillow
+          python -m playwright install chromium
+      - name: Start local server
+        run: |
+          python -m http.server 8765 --bind 127.0.0.1 >/tmp/visual-audit-http.log 2>&1 &
+      - name: Run full visual audit
+        run: python .github/full-visual-audit.py
+      - name: Upload audit package
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-visual-audit
+          path: visual-audit
+          if-no-files-found: error
