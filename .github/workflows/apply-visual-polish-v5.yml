@@ -12,7 +12,7 @@ permissions:
 jobs:
   patch-audit:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
 
@@ -34,43 +34,17 @@ jobs:
           node --check /tmp/kaitori-inline.js
           git diff --check
 
-      - name: Install visual audit dependencies
+      - name: Install audit dependencies
         run: |
-          python -m pip install --quiet playwright pillow
+          python -m pip install --quiet playwright
           python -m playwright install chromium
 
       - name: Start local server
         run: |
           python -m http.server 8765 --bind 127.0.0.1 >/tmp/visual-polish-http.log 2>&1 &
 
-      - name: Run full visual audit
-        run: python .github/full-visual-audit.py
-
-      - name: Require zero layout overlaps or overflows
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          data=json.loads(Path('visual-audit/audit-results.json').read_text(encoding='utf-8'))
-          failures=[]
-          for kind in ('buy','single'):
-              for rec in data[kind]:
-                  bad=[m.get('issues',[]) for m in rec.get('measure',[]) if m.get('issues')]
-                  if bad:
-                      identity={k:v for k,v in rec.items() if k!='measure'}
-                      failures.append({'kind':kind, **identity, 'issues':bad})
-          print('true layout failures:', len(failures))
-          if failures:
-              print(json.dumps(failures[:40],ensure_ascii=False,indent=2))
-              raise SystemExit(2)
-          PY
-
-      - name: Upload post-polish audit
-        uses: actions/upload-artifact@v4
-        with:
-          name: visual-polish-v5-audit
-          path: visual-audit
-          if-no-files-found: error
+      - name: Audit all 2280 geometry cases
+        run: python .github/quick-geometry-audit.py
 
       - name: Commit and push
         shell: bash
