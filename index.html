@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#090c12">
     <meta name="kaitori-shared-sync-api-url" content="https://script.google.com/macros/s/AKfycbyAPnu-UiVREKtUCUi9B4wubH2NPvRGyRmxxVBo5j8n7wG2ERPQ2K9j3i5w-a0TtaomeQ/exec">
-    <meta name="kaitori-shared-sync-token" content="e27f0b965e15287ef2b6ab350ef54f62650a11e7f1f42eda">
+    <meta name="kaitori-shared-sync-token" content="">
     <title>買取表・告知画像作成ツール</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -10839,6 +10839,13 @@
             transform: none !important;
         }
     </style>
+<style id="single-one-item-overflow-fit">
+.single-ad.single-portrait:not(.is-multi) .single-ad-product{grid-template-rows:minmax(0,1fr) auto!important;align-content:stretch!important;overflow:hidden!important}
+.single-ad.single-portrait:not(.is-multi) .single-ad-image-stage{width:100%!important;height:100%!important;min-height:0!important;max-height:100%!important;align-self:stretch!important;padding-bottom:24px!important;overflow:hidden!important}
+.single-ad.single-portrait:not(.is-multi) .single-ad-product-image{display:block;width:100%!important;height:100%!important;min-height:0!important;object-fit:contain!important}
+.single-ad.single-portrait:not(.is-multi) .single-ad-info,.single-ad.single-portrait:not(.is-multi) .single-ad-price,.single-ad.single-portrait:not(.is-multi) .single-ad-price-row{min-width:0!important;max-width:100%!important;box-sizing:border-box!important;overflow:hidden!important}
+.single-ad.single-portrait:not(.is-multi) .single-ad-price-value{max-width:100%;transform-origin:center center}
+</style>
 </head>
 <body data-app-view="buylist">
 
@@ -18744,6 +18751,8 @@ BOXのお持ち込みお待ちしております！
                 }
             });
         });
+    
+        scheduleSingleOneItemOverflowFit(root);
     }
 
     function renderSingleAdPreviews() {
@@ -20270,6 +20279,14 @@ BOXのお持ち込みお待ちしております！
         clearTimeout(workspaceAutosaveTimer);
         saveWorkingDraftNow();
     });
+</script>
+<script id="single-one-item-overflow-fit-script">
+(function(){
+ function fitElementWidth(el,width,min){if(!el||width<=0)return;el.style.removeProperty("font-size");const measured=el.scrollWidth;if(!measured||measured<=width)return;const current=parseFloat(getComputedStyle(el).fontSize)||min;el.style.setProperty("font-size",Math.max(min,current*(width/measured)*.96).toFixed(2)+"px","important")}
+ window.fitSingleOneItemOverflow=function(root=document){const areas=root instanceof Element&&root.matches(".single-ad")?[root]:Array.from(root?.querySelectorAll?.(".single-ad")||[]);areas.filter(a=>a.classList.contains("single-portrait")&&!a.classList.contains("is-multi")).forEach(area=>{const heading=area.querySelector(".single-ad-heading h2");if(heading)fitElementWidth(heading,heading.parentElement.clientWidth,34);area.querySelectorAll(".single-ad-price-row").forEach(row=>{const value=row.querySelector(".single-ad-price-value"),label=row.querySelector(".single-ad-state-label"),style=getComputedStyle(row),gap=parseFloat(style.columnGap||style.gap)||0;fitElementWidth(value,row.clientWidth-(label?.offsetWidth||0)-gap-10,34)});area.querySelectorAll(".single-ad-price:not(.is-dual) .single-ad-price-value").forEach(value=>fitElementWidth(value,value.parentElement.clientWidth-36,38))})};
+ window.scheduleSingleOneItemOverflowFit=function(root=document){requestAnimationFrame(()=>requestAnimationFrame(()=>fitSingleOneItemOverflow(root)))};
+ document.addEventListener("DOMContentLoaded",()=>{scheduleSingleOneItemOverflowFit(document);document.fonts?.ready.then(()=>scheduleSingleOneItemOverflowFit(document))});
+})();
 </script>
 </body>
 </html>
