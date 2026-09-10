@@ -16,12 +16,12 @@ const products=[];
 const getRows=()=>page.getByRole('heading',{name:'Recent transactions',exact:true}).locator('..').locator('..');
 async function snapshot(){return page.evaluate(()=>{
   const main=document.querySelector('main');
-  const heading=Array.from(main?.querySelectorAll('h3')||[]).find(el=>el.textContent.trim()==='Recent transactions');
+  const heading=Array.from(document.querySelectorAll('h1,h2,h3,h4,[role=heading]')).find(el=>el.textContent.trim()==='Recent transactions');
   const section=heading?.parentElement.parentElement;
   return {title:main?.querySelector('h2')?.textContent,grade:main?.innerText.match(/\bPSA\s+(\d+(?:\.\d+)?)/)?.[1],imageUrl:main?.querySelector('button[aria-label="Open image modal"] img')?.src,rows:Array.from(section?.querySelectorAll('a')||[]).map(a=>({text:a.innerText,source:a.querySelector('img')?.alt,url:a.href})),empty:section?.textContent.includes('There are no recent transactions for this asset.')};
 });}
 async function waitForRows(){await page.waitForFunction(()=>{
-  const h=Array.from(document.querySelectorAll('main h3')).find(el=>el.textContent.trim()==='Recent transactions');
+  const h=Array.from(document.querySelectorAll('h1,h2,h3,h4,[role=heading]')).find(el=>el.textContent.trim()==='Recent transactions');
   const s=h?.parentElement.parentElement;
   return s&&(Array.from(s.querySelectorAll('a')).some(a=>/\$[\d,.]+/.test(a.innerText))||s.textContent.includes('There are no recent transactions for this asset.'));
 },undefined,{timeout:45000});}
@@ -45,7 +45,7 @@ try{
         await choice.click();
         // Fail closed when a switch cannot be distinguished from the prior history.
         await page.waitForFunction(previous=>{
-          const h=Array.from(document.querySelectorAll('main h3')).find(el=>el.textContent.trim()==='Recent transactions');
+          const h=Array.from(document.querySelectorAll('h1,h2,h3,h4,[role=heading]')).find(el=>el.textContent.trim()==='Recent transactions');
           const s=h?.parentElement.parentElement;return s&&s.innerText!==previous;
         },before,{timeout:30000});
         await waitForRows();selectedGrade=grade;
