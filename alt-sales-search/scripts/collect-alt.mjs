@@ -62,5 +62,10 @@ try{
   const data=validateDataset({schemaVersion:1,mode:'public-pages',asOf,notice:`ALT公開ページから取得：${products.length}商品・${count}件の履歴。最終取得：${asOf.replace('T',' ').slice(0,16)} UTC。登録商品のみが対象です。`,products});
   const output=path.join(root,'dist/data.json'),temporary=output+'.tmp';
   await writeFile(temporary,JSON.stringify(data,null,2)+'\n');await rename(temporary,output);
-}catch(error){console.error('Collection failed. Existing data.json has not been overwritten. '+error.message);process.exitCode=1;}
+}catch(error){
+  console.error('Collection failed. Existing data.json has not been overwritten. '+error.message);
+  console.error('Page URL:',page.url());
+  console.error('Visible public content:',await page.getByRole('main').innerText({timeout:3000}).then(t=>t.slice(0,4500)).catch(()=>'(unavailable)'));
+  process.exitCode=1;
+}
 finally{await context.close();await browser.close();}
