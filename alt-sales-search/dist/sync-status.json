@@ -1,5 +1,15 @@
 {
-  "state": "scheduled",
-  "dataAsOf": "2026-09-10T03:46:00.196Z",
-  "message": "ブラウザで確認した履歴を表示しています。定期更新を待機中です。"
+  "state": "partial",
+  "completedAt": "2026-09-10T05:32:08.183Z",
+  "dataAsOf": "2026-09-10T05:32:08.183Z",
+  "coverage": {
+    "catalogCards": 605,
+    "checkedPsa8": 192,
+    "pricedPsa8": 182,
+    "publicNoSalesPsa8": 10,
+    "pendingPsa8": 413,
+    "updatedThisRun": 192
+  },
+  "message": "確認できた成約履歴を反映。各カードの確認日時を参照してください。",
+  "startedAt": "2026-09-10T04:51:10.827Z"
 }

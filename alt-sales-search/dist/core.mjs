@@ -1,4 +1,4 @@
-export const CSV_COLUMNS = ['product_id','name','name_en','number','set','set_code','year','rarity','grader','grade','language','image_url','alt_url','provenance','sale_id','date','price','currency','source','type'];
+export const CSV_COLUMNS = ['product_id','name','name_en','number','set','set_code','year','rarity','grader','grade','language','image_url','alt_url','provenance','catalog_id','check_state','checked_at','sale_id','date','price','currency','source','type'];
 
 export function normalize(value) {
   return String(value ?? '').normalize('NFKC').toLowerCase()
@@ -42,28 +42,32 @@ export function validateDataset(input) {
       if (!source) throw new Error(`${name}：取引元が必要です。`);
       return {id:sid,date,price,currency,source,type:str(s.type || '成約')};
     }).sort((a,b) => b.date.localeCompare(a.date));
-    return {id,name,nameEn:str(p.nameEn),number:str(p.number),set:str(p.set),setCode:str(p.setCode),year:str(p.year,4),rarity:str(p.rarity).toUpperCase()||'不明',grader,grade,language:str(p.language),imageUrl:safeUrl(str(p.imageUrl,2000)),url:safeUrl(str(p.url,2000),{altOnly:true}),provenance:str(p.provenance)||'取込データ',sales};
+    const checkState = ['verified','no_sales','pending','error','unavailable'].includes(p.checkState) ? p.checkState : sales.length ? 'verified' : 'pending';
+    return {id,name,nameEn:str(p.nameEn),number:str(p.number),set:str(p.set),setCode:str(p.setCode),year:str(p.year,4),rarity:str(p.rarity).toUpperCase()||'不明',grader,grade,language:str(p.language),imageUrl:safeUrl(str(p.imageUrl,2000)),url:safeUrl(str(p.url,2000),{altOnly:true}),provenance:str(p.provenance)||'取込データ',catalogId:str(p.catalogId),checkState,checkedAt:Number.isFinite(Date.parse(p.checkedAt))?str(p.checkedAt):'',sales};
   });
   return {schemaVersion:1,mode:str(input.mode)||'import',asOf:str(input.asOf),notice:str(input.notice,500),products};
 }
 
 export function filterProducts(products, filters = {}) {
-  const {query='',grade='all',rarity='all',source='all',sort='recent'} = filters;
+  const {query='',grade='all',rarity='all',source='all',sort='recent',availability='priced',setCode='all'} = filters;
   const q = normalize(query), terms = q.split(/\s+/).filter(Boolean);
   const found = products.flatMap(p => {
     if (grade !== 'all' && p.grade !== grade || rarity !== 'all' && p.rarity !== rarity) return [];
+    if (setCode !== 'all' && p.setCode !== setCode) return [];
     const haystack = normalize([p.name,p.nameEn,p.number,p.set,p.setCode,p.rarity,p.year,p.language,`PSA${p.grade}`].join(' '));
     if (!terms.every(t => haystack.includes(t))) return [];
     const sales = p.sales.filter(s => source === 'all' || s.source === source).slice().sort((a,b) => b.date.localeCompare(a.date));
-    if (!sales.length) return [];
+    if (!sales.length && (availability === 'priced' || source !== 'all')) return [];
+    if (availability === 'unpriced' && sales.length) return [];
     const exact = q && (normalize(p.name)===q || normalize(p.number)===q) ? 1 : 0;
     return [{...p,sales,latest:sales[0],exact}];
   });
   return found.sort((a,b) => {
-    if (sort==='high') return b.latest.price-a.latest.price || a.name.localeCompare(b.name,'ja');
-    if (sort==='low') return a.latest.price-b.latest.price || a.name.localeCompare(b.name,'ja');
+    if (!!a.latest !== !!b.latest && sort !== 'name') return a.latest ? -1 : 1;
+    if (sort==='high') return (b.latest?.price??0)-(a.latest?.price??0) || a.name.localeCompare(b.name,'ja');
+    if (sort==='low') return (a.latest?.price??0)-(b.latest?.price??0) || a.name.localeCompare(b.name,'ja');
     if (sort==='name') return a.name.localeCompare(b.name,'ja',{numeric:true});
-    return b.exact-a.exact || b.latest.date.localeCompare(a.latest.date) || a.name.localeCompare(b.name,'ja');
+    return b.exact-a.exact || (b.latest?.date??'').localeCompare(a.latest?.date??'') || a.name.localeCompare(b.name,'ja');
   });
 }
 
@@ -76,7 +80,7 @@ function csvCell(v) {
 
 export function exportCsv(products) {
   const rows = [CSV_COLUMNS];
-  for (const p of products) for (const s of p.sales) rows.push([p.id,p.name,p.nameEn,p.number,p.set,p.setCode,p.year,p.rarity,p.grader,p.grade,p.language,p.imageUrl,p.url,p.provenance,s.id,s.date,s.price,s.currency,s.source,s.type]);
+  for (const p of products) for (const s of p.sales) rows.push([p.id,p.name,p.nameEn,p.number,p.set,p.setCode,p.year,p.rarity,p.grader,p.grade,p.language,p.imageUrl,p.url,p.provenance,p.catalogId,p.checkState,p.checkedAt,s.id,s.date,s.price,s.currency,s.source,s.type]);
   return '\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n')+'\r\n';
 }
 
@@ -106,7 +110,7 @@ export function datasetFromCsv(text) {
   rows.forEach((r,i)=>{
     if(r.length!==headers.length)throw new Error(`CSV ${i+2}行目の列数が合いません。`);
     const d=Object.fromEntries(headers.map((k,j)=>[k,r[j]]));
-    const fields={id:d.product_id,name:d.name,nameEn:d.name_en,number:d.number,set:d.set,setCode:d.set_code,year:d.year,rarity:d.rarity,grader:d.grader,grade:d.grade,language:d.language,imageUrl:d.image_url,url:d.alt_url,provenance:d.provenance};
+    const fields={id:d.product_id,name:d.name,nameEn:d.name_en,number:d.number,set:d.set,setCode:d.set_code,year:d.year,rarity:d.rarity,grader:d.grader,grade:d.grade,language:d.language,imageUrl:d.image_url,url:d.alt_url,provenance:d.provenance,catalogId:d.catalog_id,checkState:d.check_state,checkedAt:d.checked_at};
     let p=map.get(d.product_id);
     if(!p){p={...fields,sales:[]};map.set(p.id,p);}
     else if(Object.keys(fields).some(k=>String(p[k]??'').trim()!==String(fields[k]??'').trim()))throw new Error(`CSV ${i+2}行目：同じ商品IDに異なる商品情報・鑑定グレードが混在しています。`);

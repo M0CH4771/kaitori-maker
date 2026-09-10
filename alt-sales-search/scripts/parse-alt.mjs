@@ -24,12 +24,19 @@ export function parseAltRow(row,index){
 }
 
 export function recordFromAlt(raw,target,grade,asOf){
-  if(!raw.title||!raw.title.includes(target.nameEn)||!raw.title.includes('Art Rare')||raw.title.includes('Special Art Rare'))throw new Error('商品名・レアリティが対象と一致しません。');
+  if(raw.url&&new URL(raw.url).href!==new URL(target.url).href)throw new Error('取得した商品URLが対象と一致しません。');
+  const normalized=v=>String(v||'').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]/g,'');
+  const rarityText=[raw.title,target.listingTitle||''].join(' ');
+  const contradictory=/Special Art Rare|Special Illustration Rare|Character Super Rare|\bSAR\b|\bCSR\b/i.test(raw.title);
+  const rarityOk=!contradictory&&(target.rarity==='AR'?/\bArt Rare\b|\bAR\b/i.test(rarityText)&&!/\bCharacter (?:Holo )?Rare\b|\bCHR\b/i.test(raw.title):target.rarity==='CHR'?/\bCharacter (?:Holo )?Rare\b|\bCHR\b/i.test(rarityText):false);
+  if(!raw.title||!target.nameEn||!normalized(raw.title).includes(normalized(target.nameEn))||!rarityOk||!/Japanese/i.test(raw.title))throw new Error('商品名・言語・レアリティが対象と一致しません。');
   const observedNo=raw.title.match(/#([0-9]+)/)?.[1];
   if(!observedNo||Number(observedNo)!==Number(target.number.split('/')[0]))throw new Error('商品番号が対象と一致しません。');
   const itemId=new URL(target.url).pathname.split('/')[2];
+  if(String(raw.selectedGrade??raw.grade)!==String(grade))throw new Error('選択したPSAグレードを確認できません。');
+  if(!raw.rows.length&&!raw.noSales)throw new Error('履歴が空ですが、履歴なしの表示は未確認です。');
   const sales=raw.rows.map(parseAltRow);
   // A listing image can retain the default grade after selecting another population grade.
   const imageUrl=raw.grade===grade?safeUrl(raw.imageUrl):'';
-  return {id:`${itemId}-psa${grade}`,name:target.name,nameEn:target.nameEn,number:target.number,set:target.set||'',setCode:target.setCode||'',year:raw.title.match(/^\d{4}/)?.[0]||'',rarity:target.rarity,grader:'PSA',grade,language:'日本語',imageUrl,url:target.url,provenance:`ALT公開商品ページ／${asOf}確認`,sales};
+  return {id:target.catalogId?`${target.catalogId}-psa${grade}`:`${itemId}-psa${grade}`,catalogId:target.catalogId||'',name:target.name,nameEn:target.nameEn,number:target.number,set:target.set||'',setCode:target.setCode||'',year:raw.title.match(/^\d{4}/)?.[0]||'',rarity:target.rarity,grader:'PSA',grade,language:'日本語',imageUrl,url:target.url,provenance:`ALT公開商品ページ／${asOf}確認`,checkedAt:asOf,checkState:sales.length?'verified':'no_sales',sales};
 }
