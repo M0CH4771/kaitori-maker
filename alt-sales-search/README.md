@@ -8,7 +8,7 @@ ALTの商品ページに表示される「Recent transactions」を、PSAグレ�
 - PSA8とPSA9を別商品として扱い、取引元の絞り込み後に直近価格を計算
 - 最近の取引・成約日・取引方法を表示し、該当履歴をCSV出力
 - JSON／CSVを画面に読み込み。これはその画面限りの置換で、共通データへは保存しません
-- 5分ごと／画面に戻ったときに `dist/data.json` を再読込
+- 毎日12:17ごろ（日本時間）にALTから取得。サイトは5分ごと／画面に戻ったときにGitHub上の最新JSONを再読込。手動取得は「ALTから更新」→ GitHubの「Run workflow」で実行
 
 ## データの範囲
 
@@ -49,4 +49,4 @@ Node.js 22以降。Playwrightで公開ページを通常表示して読み取り
 
 ## 配置上の注意
 
-Sites版は確認時点のデータを含む独立した配置です。GitHub Actionsが更新するのはGitHubの `alt-sales-search/dist/data.json` であり、Sites版へは自動反映されません。継続運用にはGitHub Pages版を使ってください。
+Sites版とGitHub Pages版は `dist/sync-config.mjs` で指定したGitHub mainブランチの最新データを取得します。Actionsの自動コミットはGitHub Pagesの再構築を起動しないため、表示データは公開JSONから直接読みます。取得失敗時は直前／同梱の履歴を保持し、画面に失敗状態を表示します。手動取得ボタンはGitHubの実行画面を開きます。認証トークンを公開HTMLに埋め込まない構成です。

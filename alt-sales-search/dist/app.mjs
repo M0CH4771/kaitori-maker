@@ -1,3 +1,4 @@
+import {syncConfig} from './sync-config.mjs';
 import {validateDataset, filterProducts, exportCsv, datasetFromCsv, safeUrl} from './core.mjs';
 
 const $=id=>document.getElementById(id);
@@ -5,6 +6,7 @@ const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<
 const money=n=>'$'+new Intl.NumberFormat('en-US',{minimumFractionDigits:Number.isInteger(n)?0:2,maximumFractionDigits:2}).format(n);
 const date=d=>d.replaceAll('-','/');
 let dataset={products:[]}, selectedId='', visible=[], loadSequence=0, imported=false;
+let latestRun=null, remoteAvailable=false, watchUntil=0, runStatusKnown=false;
 const controls=['grade','rarity','source','sort'];
 const params=new URLSearchParams(location.search);
 $('search').value=params.get('q')||'';
@@ -39,24 +41,57 @@ function renderDetail(p){
 }
 
 function clearFilters(){ $('search').value='';$('grade').value='all';$('rarity').value='all';$('source').value='all';render();}
+const formatAsOf=value=>{const d=new Date(value);return Number.isNaN(d.valueOf())?'未確認':new Intl.DateTimeFormat('ja-JP',{timeZone:'Asia/Tokyo',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}).format(d);};
+function showSyncState(){
+  $('sync-schedule').textContent='自動取得：'+syncConfig.scheduleLabel;
+  const status=$('sync-state');status.className='';
+  const last='最終取得 '+formatAsOf(dataset.asOf)+'（日本時間）';
+  if(!remoteAvailable){status.textContent='最新データを確認できません / '+last;status.className='failed';}
+  else if(!runStatusKnown){status.textContent=last+' / 実行状況は未確認';}
+  else if(latestRun&&latestRun.status!=='completed'){status.textContent='ALTから取得中 / '+last;status.className='running';}
+  else if(latestRun&&latestRun.conclusion!=='success'){status.textContent='直近の取得に失敗 / '+last;status.className='failed';}
+  else if(latestRun&&Date.parse(dataset.asOf)<Date.parse(latestRun.run_started_at||latestRun.created_at)){status.textContent='取得完了・データ反映待ち / '+last;status.className='running';}
+  else{status.textContent=last+(latestRun?' / 更新完了':'');status.className=latestRun?'complete':'';}
+  $('sync-modal-status').textContent=status.textContent;
+}
+async function checkRun(){
+  try{const response=await fetch(syncConfig.statusUrl,{cache:'no-store',headers:{Accept:'application/vnd.github+json'},signal:AbortSignal.timeout(10000)});if(!response.ok)throw new Error('Status unavailable');const value=await response.json();latestRun=value.workflow_runs?.[0]||null;runStatusKnown=true;showSyncState();}catch{runStatusKnown=false;showSyncState();}
+}
+function showDataNotice(){
+  const count=dataset.products.reduce((n,p)=>n+p.sales.length,0);
+  $('notice').textContent=`${dataset.products.length}商品・${count}件の成約履歴。登録商品のRecent transactions欄が対象です。`;
+  $('notice').className='notice';
+}
 async function loadData({silent=false}={}){
   const seq=++loadSequence;$('reload').disabled=true;
   try {
-    const response=await fetch('./data.json',{cache:'no-store',signal:AbortSignal.timeout(15000)});
-    if(!response.ok)throw new Error('データの読み込みに失敗しました。');
-    const next=validateDataset(await response.json());if(seq!==loadSequence)return;
-    dataset=next;imported=false;populateOptions();$('notice').className='notice';
-    $('notice').textContent=dataset.notice||`${dataset.products.length.toLocaleString()}商品の登録データを表示しています。${dataset.asOf?' 確認日：'+dataset.asOf:''}`;
-    render();if(!silent)toast('登録データを読み込みました');
-  }catch(error){if(seq!==loadSequence)return;$('notice').className='notice error';$('notice').textContent=(dataset.products.length?'再読込に失敗しました。直前のデータを表示しています。':'データを読み込めませんでした。「データ再読込」から再試行してください。');if(!dataset.products.length)render();}
+    const endpoint=new URL(syncConfig.dataUrl);endpoint.searchParams.set('v',String(Math.floor(Date.now()/60000)));
+    const response=await fetch(endpoint,{cache:'no-store',signal:AbortSignal.timeout(15000)});
+    if(!response.ok)throw new Error('共通データを読み込めません。');
+    const next=validateDataset(await response.json());if(!Number.isFinite(Date.parse(next.asOf)))throw new Error('取得時刻が不明です。');if(seq!==loadSequence)return;
+    remoteAvailable=true;
+    if(!dataset.asOf||Date.parse(next.asOf)>=Date.parse(dataset.asOf)||imported)dataset=next;
+    imported=false;populateOptions();showDataNotice();render();showSyncState();
+    if(!silent)toast('取得済みの最新データを表示しました');
+    await checkRun();
+  }catch(error){if(seq!==loadSequence)return;remoteAvailable=false;$('notice').className='notice error';$('notice').textContent=dataset.products.length?'最新データを確認できません。保存済みの成約履歴を表示しています。':'データを読み込めませんでした。しばらくして再試行してください。';if(!dataset.products.length)render();showSyncState();}
   finally{if(seq===loadSequence)$('reload').disabled=false;}
 }
+async function boot(){
+  try{const response=await fetch('./data.json',{cache:'no-store'});if(response.ok){dataset=validateDataset(await response.json());populateOptions();render();$('notice').textContent='保存済みデータを表示し、最新の取得結果を確認しています。';}}
+  catch{}
+  await loadData({silent:true});
+}
+$('sync-execute').href=syncConfig.workflowUrl;
+$('sync-open').addEventListener('click',()=>{$('sync-dialog').showModal();checkRun();});
+$('sync-execute').addEventListener('click',()=>{watchUntil=Date.now()+10*60*1000;$('sync-modal-status').textContent='GitHubで実行後、この画面に戻ってください。';});
+setInterval(()=>{if(Date.now()<watchUntil&&!document.hidden&&!imported)loadData({silent:true});},30000);
 
 $('search-form').addEventListener('submit',e=>e.preventDefault());$('search').addEventListener('input',render);
 for(const id of controls)$(id).addEventListener('change',render);
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{$('grade').value=b.dataset.preset;$('rarity').value='AR';render();}));
 $('clear').addEventListener('click',clearFilters);$('reload').addEventListener('click',()=>loadData());
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('import-dialog').open){e.preventDefault();$('search').focus();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('import-dialog').open&&!$('sync-dialog').open){e.preventDefault();$('search').focus();}});
 $('export').addEventListener('click',()=>{const blob=new Blob([exportCsv(visible)],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='alt-sales-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(`${visible.length}商品の履歴を書き出しました`);});
 $('import-open').addEventListener('click',()=>{$('import-error').textContent='';$('import-file').value='';$('import-dialog').showModal();});
 $('import-file').addEventListener('change',async e=>{
@@ -71,4 +106,4 @@ if(document.modelContext?.registerTool){
   Promise.resolve(document.modelContext.registerTool({name:'search_recorded_card_sales',title:'登録済み成約履歴を検索',description:'登録済み商品の検索条件を変更して画面に反映する。ALTへの新規取得は行わない。',inputSchema:{type:'object',properties:{query:{type:'string',maxLength:300},grade:{type:'string'},rarity:{type:'string'},source:{type:'string'}},additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:true},execute(input){if(!input||typeof input!=='object'||Array.isArray(input))throw new Error('検索条件を指定してください。');for(const key of Object.keys(input))if(!['query','grade','rarity','source'].includes(key)||typeof input[key]!=='string')throw new Error('無効な検索条件です。');if((input.query?.length||0)>300)throw new Error('検索語が長すぎます。');for(const id of ['grade','rarity','source'])if(input[id]&&!([...$(id).options].some(o=>o.value===input[id])))throw new Error('選択できない条件です：'+id);if(input.query!==undefined)$('search').value=input.query;for(const id of ['grade','rarity','source'])if(input[id]!==undefined)$(id).value=input[id];render();return{count:visible.length,products:visible.slice(0,50).map(p=>({id:p.id,name:p.name,number:p.number,grade:p.grade,rarity:p.rarity,latest:p.latest})),truncated:visible.length>50};}},{signal:lifecycle.signal})).catch(()=>{});
   addEventListener('pagehide',()=>lifecycle.abort(),{once:true});
 }
-loadData({silent:true});
+boot();
