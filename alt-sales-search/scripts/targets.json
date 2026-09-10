@@ -1,0 +1,84 @@
+{
+  "description": "ALTの公開ページで確認した商品。PSA8 ARを中心に、提供画像のPSA9も対象に含めます。",
+  "products": [
+    {
+      "url": "https://alt.xyz/itm/eb74c4d7-1c23-4773-8f7c-883a50b0c504/external",
+      "name": "ユキワラシ",
+      "nameEn": "Snorunt",
+      "number": "200/193",
+      "set": "メガドリームex",
+      "setCode": "M2a",
+      "rarity": "AR",
+      "grades": [
+        "9",
+        "8"
+      ]
+    },
+    {
+      "url": "https://alt.xyz/itm/ce8836ee-ff37-4ed1-b20e-db14d5fe640f/external",
+      "name": "カイロス",
+      "nameEn": "Pinsir",
+      "number": "67",
+      "set": "クリムゾンヘイズ",
+      "rarity": "AR",
+      "grades": [
+        "8"
+      ]
+    },
+    {
+      "url": "https://alt.xyz/itm/f3093db5-1981-430b-8b1d-53396681ebcd/external",
+      "name": "ランプラー",
+      "nameEn": "Lampent",
+      "number": "101",
+      "set": "ブラックボルト",
+      "rarity": "AR",
+      "grades": [
+        "8"
+      ]
+    },
+    {
+      "url": "https://alt.xyz/itm/9215a6bb-a455-4d7a-82c3-3abf4d3f40c8/external",
+      "name": "ワンパチ",
+      "nameEn": "Yamper",
+      "number": "086",
+      "set": "インフェルノX",
+      "rarity": "AR",
+      "grades": [
+        "8"
+      ]
+    },
+    {
+      "url": "https://alt.xyz/itm/67e8fdc1-c222-4839-b80d-501a54ff2ce5/external",
+      "name": "ポッチャマ",
+      "nameEn": "Piplup",
+      "number": "085",
+      "set": "インフェルノX",
+      "rarity": "AR",
+      "grades": [
+        "8"
+      ]
+    },
+    {
+      "url": "https://alt.xyz/itm/967d96a1-c2c2-4735-a236-40f3015d58a4/external",
+      "name": "ケケンカニ",
+      "nameEn": "Crabominable",
+      "number": "107",
+      "set": "ステラミラクル",
+      "rarity": "AR",
+      "grades": [
+        "8"
+      ]
+    },
+    {
+      "url": "https://alt.xyz/itm/84aa8365-6e90-4f3d-af16-5b664eb71da6/external",
+      "name": "ドクケイル",
+      "nameEn": "Dustox",
+      "number": "195",
+      "set": "メガドリームex",
+      "rarity": "AR",
+      "grades": [
+        "8"
+      ]
+    }
+  ]
+}

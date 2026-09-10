@@ -1,0 +1,367 @@
+{
+  "schemaVersion": 1,
+  "mode": "public-pages",
+  "asOf": "2026-09-10T03:46:00.196Z",
+  "notice": "ALT公開ページで確認した8商品・27件の履歴です。確認：2026-09-10。自動更新は準備中です。",
+  "products": [
+    {
+      "id": "ce8836ee-ff37-4ed1-b20e-db14d5fe640f-psa8",
+      "name": "カイロス",
+      "nameEn": "Pinsir",
+      "number": "67",
+      "set": "クリムゾンヘイズ",
+      "setCode": "",
+      "year": "2024",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/178479802368_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/ce8836ee-ff37-4ed1-b20e-db14d5fe640f/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.ebay.com/itm/127600682337",
+          "date": "2026-01-13",
+          "price": 16,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/297450834124",
+          "date": "2025-10-04",
+          "price": 7,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "ベストオファー"
+        },
+        {
+          "id": "https://www.ebay.com/itm/406083920518",
+          "date": "2025-08-03",
+          "price": 9,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/306379938504",
+          "date": "2025-07-11",
+          "price": 8,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        }
+      ]
+    },
+    {
+      "id": "f3093db5-1981-430b-8b1d-53396681ebcd-psa8",
+      "name": "ランプラー",
+      "nameEn": "Lampent",
+      "number": "101",
+      "set": "ブラックボルト",
+      "setCode": "",
+      "year": "2025",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/406522795558_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/f3093db5-1981-430b-8b1d-53396681ebcd/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": []
+    },
+    {
+      "id": "9215a6bb-a455-4d7a-82c3-3abf4d3f40c8-psa8",
+      "name": "ワンパチ",
+      "nameEn": "Yamper",
+      "number": "086",
+      "set": "インフェルノX",
+      "setCode": "",
+      "year": "2025",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/366384686156_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/9215a6bb-a455-4d7a-82c3-3abf4d3f40c8/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.fanaticscollect.com/buy-now/2e11fa5c-b70a-48ec-95d6-1fb82fbd6809",
+          "date": "2026-08-27",
+          "price": 24,
+          "currency": "USD",
+          "source": "Fanatics Collect",
+          "type": "ベストオファー"
+        },
+        {
+          "id": "https://www.ebay.com/itm/147393145589",
+          "date": "2026-06-28",
+          "price": 17,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/116970727591",
+          "date": "2026-06-22",
+          "price": 20,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "ベストオファー"
+        },
+        {
+          "id": "https://www.ebay.com/itm/137227526580",
+          "date": "2026-06-05",
+          "price": 46,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "即決"
+        }
+      ]
+    },
+    {
+      "id": "67e8fdc1-c222-4839-b80d-501a54ff2ce5-psa8",
+      "name": "ポッチャマ",
+      "nameEn": "Piplup",
+      "number": "085",
+      "set": "インフェルノX",
+      "setCode": "",
+      "year": "2025",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/168629285282_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/67e8fdc1-c222-4839-b80d-501a54ff2ce5/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.ebay.com/itm/147497784036",
+          "date": "2026-08-16",
+          "price": 24,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/147482584788",
+          "date": "2026-08-09",
+          "price": 35,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/800413495079",
+          "date": "2026-07-31",
+          "price": 13,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/307074390535",
+          "date": "2026-07-28",
+          "price": 25,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        }
+      ]
+    },
+    {
+      "id": "84aa8365-6e90-4f3d-af16-5b664eb71da6-psa8",
+      "name": "ドクケイル",
+      "nameEn": "Dustox",
+      "number": "195",
+      "set": "メガドリームex",
+      "setCode": "",
+      "year": "2025",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/117341167077_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/84aa8365-6e90-4f3d-af16-5b664eb71da6/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.ebay.com/itm/298615441609",
+          "date": "2026-09-02",
+          "price": 15,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/147406995011",
+          "date": "2026-07-05",
+          "price": 19,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/287404329519",
+          "date": "2026-06-25",
+          "price": 4,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/267621347439",
+          "date": "2026-04-01",
+          "price": 9,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "即決"
+        }
+      ]
+    },
+    {
+      "id": "967d96a1-c2c2-4735-a236-40f3015d58a4-psa8",
+      "name": "ケケンカニ",
+      "nameEn": "Crabominable",
+      "number": "107",
+      "set": "ステラミラクル",
+      "setCode": "",
+      "year": "2024",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/128042979315_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/967d96a1-c2c2-4735-a236-40f3015d58a4/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.ebay.com/itm/128042979315",
+          "date": "2026-08-27",
+          "price": 15,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "即決"
+        },
+        {
+          "id": "https://www.ebay.com/itm/306803445520",
+          "date": "2026-03-12",
+          "price": 8,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.fanaticscollect.com/weekly/3ac5561e-9c85-11ef-b897-0a58a9feac02",
+          "date": "2024-11-17",
+          "price": 7,
+          "currency": "USD",
+          "source": "Fanatics Collect",
+          "type": "オークション"
+        }
+      ]
+    },
+    {
+      "id": "eb74c4d7-1c23-4773-8f7c-883a50b0c504-psa9",
+      "name": "ユキワラシ",
+      "nameEn": "Snorunt",
+      "number": "200/193",
+      "set": "メガドリームex",
+      "setCode": "M2a",
+      "year": "2025",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "9",
+      "language": "日本語",
+      "imageUrl": "https://alt-images.b-cdn.net/external/ebay/live/147501854910_0.jpg?height=531&width=324&quality=50",
+      "url": "https://alt.xyz/itm/eb74c4d7-1c23-4773-8f7c-883a50b0c504/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.ebay.com/itm/158243871272",
+          "date": "2026-09-07",
+          "price": 10,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/298619811687",
+          "date": "2026-09-03",
+          "price": 18,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/117340053120",
+          "date": "2026-08-25",
+          "price": 125,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "ベストオファー"
+        },
+        {
+          "id": "https://www.ebay.com/itm/298587756295",
+          "date": "2026-08-25",
+          "price": 20,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "ベストオファー"
+        }
+      ]
+    },
+    {
+      "id": "eb74c4d7-1c23-4773-8f7c-883a50b0c504-psa8",
+      "name": "ユキワラシ",
+      "nameEn": "Snorunt",
+      "number": "200/193",
+      "set": "メガドリームex",
+      "setCode": "M2a",
+      "year": "2025",
+      "rarity": "AR",
+      "grader": "PSA",
+      "grade": "8",
+      "language": "日本語",
+      "imageUrl": "",
+      "url": "https://alt.xyz/itm/eb74c4d7-1c23-4773-8f7c-883a50b0c504/external",
+      "provenance": "ALT公開商品ページ／2026-09-10T03:46:00.196Z確認",
+      "sales": [
+        {
+          "id": "https://www.ebay.com/itm/800413143241",
+          "date": "2026-07-31",
+          "price": 7,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/307063552783",
+          "date": "2026-07-22",
+          "price": 13,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/298399365880",
+          "date": "2026-06-21",
+          "price": 13,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        },
+        {
+          "id": "https://www.ebay.com/itm/800133737150",
+          "date": "2026-06-13",
+          "price": 3,
+          "currency": "USD",
+          "source": "eBay",
+          "type": "オークション"
+        }
+      ]
+    }
+  ]
+}
