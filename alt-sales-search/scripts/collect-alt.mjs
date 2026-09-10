@@ -34,6 +34,7 @@ try{
     const visible=await page.locator('body').innerText();
     if(/verify you are human|checking your browser|unusual traffic|automated traffic/i.test(visible)||new URL(page.url()).pathname==='/login')throw new Error('ALT requires sign-in or verification; data retained without bypass.');
     await page.getByRole('heading',{name:'Recent transactions',exact:true}).waitFor({state:'visible'});
+    await page.getByRole('heading',{name:'Recent transactions',exact:true}).scrollIntoViewIfNeeded();
     await waitForRows();
     let selectedGrade=(await snapshot()).grade;
     for(const grade of target.grades){
@@ -43,6 +44,7 @@ try{
         const choice=population.getByRole('button',{name:new RegExp('^'+grade.replace('.','\\.')+'\\s+[\\d,]+$')});
         if(await choice.count()!==1)throw new Error('Could not identify exactly one PSA grade button.');
         await choice.click();
+        await page.getByRole('heading',{name:'Recent transactions',exact:true}).scrollIntoViewIfNeeded();
         // Fail closed when a switch cannot be distinguished from the prior history.
         await page.waitForFunction(previous=>{
           const h=Array.from(document.querySelectorAll('h1,h2,h3,h4,[role=heading]')).find(el=>el.textContent.trim()==='Recent transactions');
@@ -65,7 +67,7 @@ try{
 }catch(error){
   console.error('Collection failed. Existing data.json has not been overwritten. '+error.message);
   console.error('Page URL:',page.url());
-  console.error('Visible public content:',await page.getByRole('main').innerText({timeout:3000}).then(t=>t.slice(0,4500)).catch(()=>'(unavailable)'));
+  console.error('Visible public content:',await page.locator('body').innerText({timeout:3000}).then(t=>t.slice(0,7500)).catch(()=>'(unavailable)'));
   process.exitCode=1;
 }
 finally{await context.close();await browser.close();}
