@@ -3,8 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test scripts/core.test.mjs",
-    "collect": "node scripts/collect-alt.mjs"
-  },
-  "devDependencies": {"playwright": "1.62.1"}
+    "test": "node --test scripts/core.test.mjs"
+  }
 }

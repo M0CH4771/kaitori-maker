@@ -10,7 +10,7 @@
   <script type="module" src="./app.mjs"></script>
 </head>
 <body>
-  <header class="topbar"><a class="brand" href="./"><span class="brand-icon" aria-hidden="true">T</span><span>トレカ成約価格検索<small>SALES EXPLORER</small></span></a><div class="header-right"><span class="top-label">ALT掲載の取引履歴</span><button id="reload" class="button subtle">最新データを確認</button><button id="sync-open" class="button primary">ALTから更新</button></div></header>
+  <header class="topbar"><a class="brand" href="./"><span class="brand-icon" aria-hidden="true">T</span><span>トレカ成約価格検索<small>SALES EXPLORER</small></span></a><div class="header-right"><span class="top-label">ALT掲載の取引履歴</span><button id="reload" class="button subtle">最新データを表示</button></div></header>
   <main>
     <section class="search-area" aria-labelledby="page-title">
       <div class="section-heading"><div><p class="eyebrow">CARD RESEARCH</p><h1 id="page-title">あのカード、いくらで売れた？</h1></div><button class="button" id="export" disabled>履歴CSV出力 <span aria-hidden="true">↓</span></button></div>
@@ -25,7 +25,6 @@
     <footer><span>価格は米ドル（USD）。出品中の最低価格は含みません。</span><button class="text-button" id="import-open">データを読み込む</button></footer>
   </main>
   <dialog id="import-dialog" aria-labelledby="import-title"><form method="dialog" class="dialog-header"><h2 id="import-title">成約データを読み込む</h2><button class="close-button" aria-label="閉じる">×</button></form><p>JSONまたは履歴CSVを読み込むと、この画面のデータを置き換えます。再読込すると共通データに戻ります。</p><label class="file-label">ファイルを選択<input id="import-file" type="file" accept=".json,.csv,application/json,text/csv"></label><p id="import-error" class="error" role="alert"></p><details><summary>CSVの列名</summary><code>product_id,name,name_en,number,set,set_code,year,rarity,grader,grade,language,image_url,alt_url,provenance,sale_id,date,price,currency,source,type</code><p>1行につき1件の取引。dateはYYYY-MM-DD、priceはUSDの数値。同じ商品の鑑定グレードごとに異なるproduct_idを使ってください。</p></details></dialog>
-  <dialog id="sync-dialog" aria-labelledby="sync-title"><form method="dialog" class="dialog-header"><h2 id="sync-title">ALTから最新の履歴を取得</h2><button class="close-button" aria-label="閉じる">×</button></form><p>GitHubの更新画面で <strong>Run workflow</strong> を押すと取得を開始します。通常、完了まで数分かかります。</p><p>このサイトは定期的に完了を確認し、新しいデータを表示します。毎日の自動取得では操作は不要です。</p><a id="sync-execute" class="button primary" target="_blank" rel="noopener noreferrer">GitHubの更新画面を開く ↗</a><p id="sync-modal-status" role="status"></p></dialog>
   <div id="toast" role="status" class="toast" hidden></div>
 </body>
 </html>

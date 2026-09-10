@@ -6,7 +6,7 @@ const escapeHtml=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<
 const money=n=>'$'+new Intl.NumberFormat('en-US',{minimumFractionDigits:Number.isInteger(n)?0:2,maximumFractionDigits:2}).format(n);
 const date=d=>d.replaceAll('-','/');
 let dataset={products:[]}, selectedId='', visible=[], loadSequence=0, imported=false;
-let latestRun=null, remoteAvailable=false, watchUntil=0, runStatusKnown=false;
+let latestRun=null, remoteAvailable=false, runStatusKnown=false;
 const controls=['grade','rarity','source','sort'];
 const params=new URLSearchParams(location.search);
 $('search').value=params.get('q')||'';
@@ -48,14 +48,13 @@ function showSyncState(){
   const last='最終取得 '+formatAsOf(dataset.asOf)+'（日本時間）';
   if(!remoteAvailable){status.textContent='最新データを確認できません / '+last;status.className='failed';}
   else if(!runStatusKnown){status.textContent=last+' / 実行状況は未確認';}
-  else if(latestRun&&latestRun.status!=='completed'){status.textContent='ALTから取得中 / '+last;status.className='running';}
-  else if(latestRun&&latestRun.conclusion!=='success'){status.textContent='直近の取得に失敗 / '+last;status.className='failed';}
-  else if(latestRun&&Date.parse(dataset.asOf)<Date.parse(latestRun.run_started_at||latestRun.created_at)){status.textContent='取得完了・データ反映待ち / '+last;status.className='running';}
-  else{status.textContent=last+(latestRun?' / 更新完了':'');status.className=latestRun?'complete':'';}
-  $('sync-modal-status').textContent=status.textContent;
+  else if(latestRun&&latestRun.state==='running'){status.textContent='ALTから取得中 / '+last;status.className='running';}
+  else if(latestRun&&latestRun.state==='failed'){status.textContent='直近の取得に失敗 / '+last;status.className='failed';}
+  else if(latestRun&&latestRun.state==='succeeded'&&Date.parse(dataset.asOf)<Date.parse(latestRun.dataAsOf)){status.textContent='取得完了・データ反映待ち / '+last;status.className='running';}
+  else{status.textContent=last+(latestRun?.state==='succeeded'?' / 更新完了':' / 定期更新を待機中');status.className=latestRun?.state==='succeeded'?'complete':'';}
 }
 async function checkRun(){
-  try{const response=await fetch(syncConfig.statusUrl,{cache:'no-store',headers:{Accept:'application/vnd.github+json'},signal:AbortSignal.timeout(10000)});if(!response.ok)throw new Error('Status unavailable');const value=await response.json();latestRun=value.workflow_runs?.[0]||null;runStatusKnown=true;showSyncState();}catch{runStatusKnown=false;showSyncState();}
+  try{const response=await fetch(syncConfig.statusUrl+'?v='+Math.floor(Date.now()/60000),{cache:'no-store',signal:AbortSignal.timeout(10000)});if(!response.ok)throw new Error('Status unavailable');const value=await response.json();if(!['scheduled','running','succeeded','failed'].includes(value.state))throw new Error('Invalid status');latestRun=value;runStatusKnown=true;showSyncState();}catch{runStatusKnown=false;showSyncState();}
 }
 function showDataNotice(){
   const count=dataset.products.reduce((n,p)=>n+p.sales.length,0);
@@ -82,16 +81,11 @@ async function boot(){
   catch{}
   await loadData({silent:true});
 }
-$('sync-execute').href=syncConfig.workflowUrl;
-$('sync-open').addEventListener('click',()=>{$('sync-dialog').showModal();checkRun();});
-$('sync-execute').addEventListener('click',()=>{watchUntil=Date.now()+10*60*1000;$('sync-modal-status').textContent='GitHubで実行後、この画面に戻ってください。';});
-setInterval(()=>{if(Date.now()<watchUntil&&!document.hidden&&!imported)loadData({silent:true});},30000);
-
 $('search-form').addEventListener('submit',e=>e.preventDefault());$('search').addEventListener('input',render);
 for(const id of controls)$(id).addEventListener('change',render);
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{$('grade').value=b.dataset.preset;$('rarity').value='AR';render();}));
 $('clear').addEventListener('click',clearFilters);$('reload').addEventListener('click',()=>loadData());
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('import-dialog').open&&!$('sync-dialog').open){e.preventDefault();$('search').focus();}});
+document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!$('import-dialog').open){e.preventDefault();$('search').focus();}});
 $('export').addEventListener('click',()=>{const blob=new Blob([exportCsv(visible)],{type:'text/csv;charset=utf-8;'});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='alt-sales-'+new Date().toISOString().slice(0,10)+'.csv';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);toast(`${visible.length}商品の履歴を書き出しました`);});
 $('import-open').addEventListener('click',()=>{$('import-error').textContent='';$('import-file').value='';$('import-dialog').showModal();});
 $('import-file').addEventListener('change',async e=>{
