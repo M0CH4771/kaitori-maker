@@ -25,7 +25,7 @@ SETUP=r'''({count,size,design,img})=>{
   globalCardData=Array.from({length:count},(_,i)=>({
     id:i+1,originalIndex:i,name:'比率テスト '+i,type:'SAR',
     group:'掲載',status:'掲載',price:String(1000+i*100),
-    aMinusPrice:'',imgUrl:'',resolvedImg:img,productId:'R'+i,hidden:false
+    aMinusPrice:'',imgUrl:img,resolvedImg:img,productId:'R'+i,hidden:false
   }));
   selectedSingleCardIds.clear();singleSelectionOrder=[];
   globalCardData.forEach(c=>{selectedSingleCardIds.add(c.id);singleSelectionOrder.push(c.id);});
