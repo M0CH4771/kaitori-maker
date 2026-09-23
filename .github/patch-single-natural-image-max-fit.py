@@ -67,20 +67,21 @@ script = r'''
 
     function contentBoxSize(stage) {
         const style = getComputedStyle(stage);
-        const horizontal =
+        const horizontalPadding =
             (parseFloat(style.paddingLeft) || 0) +
-            (parseFloat(style.paddingRight) || 0) +
-            (parseFloat(style.borderLeftWidth) || 0) +
-            (parseFloat(style.borderRightWidth) || 0);
-        const vertical =
+            (parseFloat(style.paddingRight) || 0);
+        const verticalPadding =
             (parseFloat(style.paddingTop) || 0) +
-            (parseFloat(style.paddingBottom) || 0) +
-            (parseFloat(style.borderTopWidth) || 0) +
-            (parseFloat(style.borderBottomWidth) || 0);
+            (parseFloat(style.paddingBottom) || 0);
 
+        /*
+         * width/height の代入先はCSSレイアウト座標なので、
+         * transform後の getBoundingClientRect() ではなく clientWidth/clientHeight を使う。
+         * これで scale/transform があるデザインでも数px小さくならない。
+         */
         return {
-            width: Math.max(0, stage.getBoundingClientRect().width - horizontal),
-            height: Math.max(0, stage.getBoundingClientRect().height - vertical)
+            width: Math.max(0, stage.clientWidth - horizontalPadding),
+            height: Math.max(0, stage.clientHeight - verticalPadding)
         };
     }
 
