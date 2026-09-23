@@ -41,6 +41,8 @@ script = r'''
 <script id="single-natural-aspect-max-fit-script">
 (function () {
     let rafId = 0;
+    let scheduledPasses = 0;
+    const pendingAreas = new Set();
     const observedStages = new WeakSet();
     const resizeObserver = typeof ResizeObserver === "function"
         ? new ResizeObserver(entries => {
@@ -125,16 +127,36 @@ script = r'''
     }
 
     window.fitSingleNaturalImages = function (root = document) {
-        getAreas(root).forEach(fitArea);
+        const areas = getAreas(root);
+        areas.forEach(fitArea);
+        return areas;
     };
 
+    function runScheduledFit() {
+        rafId = 0;
+        const areas = Array.from(pendingAreas);
+        pendingAreas.clear();
+        areas.forEach(fitArea);
+
+        scheduledPasses -= 1;
+        if (scheduledPasses > 0) {
+            areas.forEach(area => pendingAreas.add(area));
+            rafId = requestAnimationFrame(runScheduledFit);
+            return;
+        }
+
+        if (pendingAreas.size) {
+            scheduledPasses = 2;
+            rafId = requestAnimationFrame(runScheduledFit);
+        }
+    }
+
     window.scheduleSingleNaturalImageFit = function (root = document) {
-        const areas = getAreas(root);
-        cancelAnimationFrame(rafId);
+        getAreas(root).forEach(area => pendingAreas.add(area));
+        scheduledPasses = Math.max(scheduledPasses, 4);
+        if (rafId) return;
         rafId = requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                areas.forEach(fitArea);
-            });
+            rafId = requestAnimationFrame(runScheduledFit);
         });
     };
 
