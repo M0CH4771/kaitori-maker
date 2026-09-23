@@ -41,8 +41,12 @@ MEASURE=r'''()=>{
      const stage=img.closest('.single-ad-image-stage');
      const r=img.getBoundingClientRect(), s=stage.getBoundingClientRect();
      const cs=getComputedStyle(stage);
-     const aw=s.width-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0)-(parseFloat(cs.borderLeftWidth)||0)-(parseFloat(cs.borderRightWidth)||0);
-     const ah=s.height-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0)-(parseFloat(cs.borderTopWidth)||0)-(parseFloat(cs.borderBottomWidth)||0);
+     const sx=stage.offsetWidth ? s.width/stage.offsetWidth : 1;
+     const sy=stage.offsetHeight ? s.height/stage.offsetHeight : 1;
+     const contentW=Math.max(0,stage.clientWidth-(parseFloat(cs.paddingLeft)||0)-(parseFloat(cs.paddingRight)||0));
+     const contentH=Math.max(0,stage.clientHeight-(parseFloat(cs.paddingTop)||0)-(parseFloat(cs.paddingBottom)||0));
+     const aw=contentW*sx;
+     const ah=contentH*sy;
      const natural=img.naturalWidth/img.naturalHeight;
      const rendered=r.width/r.height;
      const ratioError=Math.abs(rendered-natural)/natural;
