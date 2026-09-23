@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/apply-single-natural-image-max-fit.yml"
+      - ".github/patch-single-natural-image-max-fit.py"
+      - ".github/test-single-natural-image-max-fit.py"
 
 permissions:
   contents: write
