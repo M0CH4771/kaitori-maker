@@ -1085,6 +1085,14 @@
             display: none !important;
         }
 
+        .theme-picker-label {
+            display: block;
+            margin-bottom: 7px;
+            color: #e8edf7;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
         .theme-picker-gallery {
             display: grid;
             gap: 14px;
@@ -1123,6 +1131,11 @@
         .theme-picker-option:hover {
             border-color: rgba(217,173,74,0.72);
             background: rgba(255,255,255,0.075);
+        }
+
+        .theme-picker-option:focus-visible {
+            outline: 2px solid #f3c75f;
+            outline-offset: 2px;
         }
 
         .theme-picker-option-name {
@@ -1312,6 +1325,22 @@
         @media (max-width: 540px) {
             .theme-picker-option-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .preview-page-navigation {
+                flex-wrap: wrap;
+                gap: 6px;
+                padding: 6px;
+            }
+
+            .preview-page-nav-label > span,
+            .preview-page-nav-count {
+                display: none;
+            }
+
+            .preview-page-nav-button {
+                padding: 6px 8px;
+                font-size: 10px;
             }
         }
 
@@ -11676,7 +11705,7 @@
             </summary>
             <div class="settings-grid design-settings-grid">
                 <div class="control-group">
-                    <label for="themeSelect">デザインパターン</label>
+                    <div class="theme-picker-label">デザインパターン</div>
                     <select id="themeSelect" class="theme-picker-native-select" aria-hidden="true" tabindex="-1">
                         <optgroup label="見やすい・シンプル">
                             <option value="market">白×赤｜スタンダード</option>
@@ -15522,6 +15551,7 @@
                 normalizeLayout(settings.layout);
         }
         document.getElementById("themeSelect").value = normalizeTheme(settings.theme);
+        renderThemePickerGallery();
         document.getElementById("titleStyleSelect").value =
             normalizeTitleStyle(settings.titleStyle);
         applyTitleCustomizationSettings(
