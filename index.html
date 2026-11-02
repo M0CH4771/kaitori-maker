@@ -14888,7 +14888,7 @@
                 name: String(card.name || ""),
                 type: String(card.type || ""),
                 price: String(card.price || ""),
-                aMinusPrice: normalizeOptionalAMinusPrice(card.aMinusPrice),
+                aMinusPrice: normalizeAMinusPriceForDisplay(card.aMinusPrice),
                 imgUrl: String(card.imgUrl || ""),
                 hidden: Boolean(card.hidden),
                 resolvedImg: null,
@@ -15900,6 +15900,10 @@
             return "";
         }
         return cleaned;
+    }
+
+    function normalizeAMinusPriceForDisplay(value) {
+        return String(value ?? "").replace(/"/g, "").trim();
     }
 
     function normalizeDiffKeyPart(value) {
@@ -17160,7 +17164,7 @@
                 ["強化買取金額", "買取金額", "買取価格", "金額", "価格"],
                 columnName => !isStateAMinusHeader(columnName)
             );
-            const aMinusPrice = normalizeOptionalAMinusPrice(
+            const aMinusPrice = normalizeAMinusPriceForDisplay(
                 getValueByHeaderMatcher(parts, isStateAMinusHeader)
             );
 
@@ -17414,7 +17418,7 @@
             card.name = String(previousCard.name || "");
             card.type = String(previousCard.type || "");
             card.price = String(previousCard.price || "");
-            card.aMinusPrice = normalizeOptionalAMinusPrice(
+            card.aMinusPrice = normalizeAMinusPriceForDisplay(
                 previousCard.aMinusPrice
             );
             card.hidden = Boolean(previousCard.hidden);
@@ -18400,7 +18404,7 @@ BOXのお持ち込みお待ちしております！
     function renderSinglePriceMarkup(card, settings) {
         const priceText = normalizeSinglePriceDisplay(card.price);
         const aMinusPriceText = normalizeSinglePriceDisplay(
-            normalizeOptionalAMinusPrice(card.aMinusPrice)
+            normalizeAMinusPriceForDisplay(card.aMinusPrice)
         );
         const price = escapeHtml(priceText);
         const priceLabel = escapeHtml(settings.priceLabel);
@@ -18816,7 +18820,7 @@ BOXのお持ち込みお待ちしております！
             const imageSource = card.resolvedImg || LOADING_IMAGE;
             const imageUrl = escapeHtml(card.imgUrl || "");
             const groupHasAMinus = group.some(item =>
-                Boolean(normalizeOptionalAMinusPrice(item.aMinusPrice))
+                Boolean(normalizeAMinusPriceForDisplay(item.aMinusPrice))
             );
             const multiLayout = isMulti
                 ? getSingleMultiLayout(settings.size, group.length)
@@ -19421,7 +19425,7 @@ BOXのお持ち込みお待ちしております！
         pages.forEach((pageCards, pageIndex) => {
             const pageNumber = pageIndex + 1;
             const pageHasAMinus = hideCardNames && pageCards.some(card =>
-                Boolean(normalizeOptionalAMinusPrice(card.aMinusPrice))
+                Boolean(normalizeAMinusPriceForDisplay(card.aMinusPrice))
             );
             const pageEmblem = getPageEmblemContent(
                 pageCards,
@@ -19457,7 +19461,7 @@ BOXのお持ち込みお待ちしております！
                 const name = escapeHtml(card.name || "");
                 const priceText = normalizeBuylistPriceDisplay(card.price);
                 const price = escapeHtml(priceText);
-                const normalizedAMinusPrice = normalizeOptionalAMinusPrice(
+                const normalizedAMinusPrice = normalizeAMinusPriceForDisplay(
                     card.aMinusPrice
                 );
                 const aMinusPriceText = hideCardNames
