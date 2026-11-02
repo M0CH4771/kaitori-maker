@@ -1081,10 +1081,84 @@
             background-size: 24px 24px;
         }
 
+        .preview-page-navigation {
+            position: sticky;
+            top: 10px;
+            z-index: 20;
+            display: flex;
+            width: min(100%, 1100px);
+            min-height: 54px;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            align-self: stretch;
+            margin: 0 auto -18px;
+            padding: 8px 12px;
+            color: #e8edf7;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 12px;
+            background: rgba(10,15,24,0.94);
+            box-shadow: 0 8px 20px rgba(7,11,18,0.2);
+            backdrop-filter: blur(8px);
+        }
+
+        .preview-page-nav-button {
+            min-height: 36px;
+            padding: 7px 12px;
+            color: #f5f7fa;
+            border: 1px solid rgba(255,255,255,0.18);
+            border-radius: 8px;
+            background: rgba(255,255,255,0.08);
+            cursor: pointer;
+            font: inherit;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .preview-page-nav-button:hover:not(:disabled) {
+            border-color: #d9ad4a;
+            background: rgba(217,173,74,0.15);
+        }
+
+        .preview-page-nav-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .preview-page-nav-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #aeb8ca;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .preview-page-nav-label select {
+            min-height: 34px;
+            padding: 6px 28px 6px 10px;
+            color: #111827;
+            border: 1px solid #cbd5e1;
+            border-radius: 7px;
+            background: #fff;
+            font: inherit;
+            font-size: 12px;
+        }
+
+        .preview-page-nav-count {
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
         .preview-page {
             position: relative;
             flex: 0 0 auto;
             overflow: visible;
+            scroll-margin-top: 82px;
         }
 
         .preview-page > .exportArea {
@@ -2680,7 +2754,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) {
             color: var(--buy-ink);
             border-color: var(--buy-accent);
@@ -2691,7 +2768,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         )::before {
             border-color: var(--buy-border);
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
@@ -2701,7 +2781,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         )::after {
             background: var(--buy-accent);
         }
@@ -2710,7 +2793,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .header-area {
             border-color: var(--buy-border);
             border-bottom-color: var(--buy-accent);
@@ -2721,7 +2807,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .header-area::before {
             background: var(--buy-accent-2);
         }
@@ -2730,7 +2819,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .title-container h1 {
             color: #fff;
             text-shadow: 0 3px 0 rgba(0,0,0,0.35);
@@ -2740,7 +2832,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .page-emblem {
             color: var(--buy-panel);
             border-color: var(--buy-accent-2);
@@ -2752,7 +2847,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-item {
             color: var(--buy-ink);
             border-color: var(--buy-border);
@@ -2764,7 +2862,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-item::before {
             background: var(--buy-accent);
         }
@@ -2773,7 +2874,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-name {
             color: var(--buy-ink);
         }
@@ -2782,7 +2886,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-grade {
             color: #fff;
             border-color: var(--buy-accent);
@@ -2793,7 +2900,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-price-container {
             border-color: var(--buy-price);
             background: var(--buy-price);
@@ -2803,7 +2913,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .status-badge {
             color: var(--buy-panel);
             border-color: var(--buy-accent);
@@ -2814,7 +2927,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .footer-area {
             color: var(--buy-note);
             border-color: var(--buy-border);
@@ -2826,13 +2942,19 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .disclaimer,
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .update-date {
             color: var(--buy-note);
         }
@@ -2841,13 +2963,19 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .update-label,
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .page-number {
             color: var(--buy-accent-2);
         }
@@ -4629,7 +4757,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) {
             --v4-bg: #08101b;
             --v4-header: #101827;
@@ -4658,7 +4789,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         )::before {
             z-index: 0;
             inset: 12px;
@@ -4673,7 +4807,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         )::after {
             z-index: 1;
             height: 10px;
@@ -4690,7 +4827,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .header-area {
             z-index: 2;
             min-height: 158px;
@@ -4712,7 +4852,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .header-area::before {
             bottom: -5px;
             width: 38%;
@@ -4724,7 +4867,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .logo-container {
             width: 350px;
             height: 122px;
@@ -4735,7 +4881,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .logo-container img {
             max-height: 120px;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.16));
@@ -4745,7 +4894,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .title-container h1 {
             line-height: 0.98;
         }
@@ -4754,7 +4906,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .page-emblem {
             width: 94px;
             height: 94px;
@@ -4771,7 +4926,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-grid {
             z-index: 2;
             gap: 10px;
@@ -4783,7 +4941,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-item {
             padding: 7px;
             color: var(--v4-ink);
@@ -4800,7 +4961,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-item::before {
             height: 5px;
             background: linear-gradient(90deg, var(--v4-accent), var(--v4-accent-2));
@@ -4810,7 +4974,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-img-container {
             margin-bottom: 5px;
             border: 1px solid var(--v4-border);
@@ -4824,7 +4991,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-name {
             display: -webkit-box;
             min-height: 25px;
@@ -4843,7 +5013,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-meta {
             min-height: 18px;
             margin-bottom: 4px;
@@ -4853,7 +5026,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-grade {
             padding: 3px 8px;
             color: #fff;
@@ -4867,7 +5043,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-price-container {
             height: 34px;
             padding: 2px 5px;
@@ -4885,7 +5064,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-price-text {
             color: var(--v4-price-text);
             font-size: 23px;
@@ -4898,7 +5080,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .status-badge {
             top: 10px;
             right: auto;
@@ -4918,7 +5103,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .footer-area {
             z-index: 2;
             min-height: 102px;
@@ -4936,13 +5124,19 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .disclaimer,
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .update-date {
             color: var(--v4-footer-text);
         }
@@ -4951,7 +5145,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .update-label {
             color: var(--v4-accent-2);
         }
@@ -4960,7 +5157,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .page-number {
             color: var(--v4-footer-text);
             opacity: 0.7;
@@ -5221,7 +5421,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-name {
             font-size: 9px;
         }
@@ -5230,7 +5433,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-price-text {
             font-size: 21px;
         }
@@ -6113,7 +6319,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .status-badge {
             --boost-bg: #e0b54f;
             --boost-bg-2: #b88628;
@@ -6154,7 +6363,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .status-badge::after {
             position: absolute;
             right: 0;
@@ -6529,6 +6741,50 @@
             background: #b8f542;
         }
 
+        /* 読みやすさを重視したフラットな配色 */
+        .exportArea[data-theme="clearblue"] {
+            --v4-bg:#edf5fb; --v4-header:#183b5b; --v4-header-text:#fff;
+            --v4-card:#fff; --v4-ink:#14283a; --v4-muted:#42566b; --v4-image:#f3f8fc;
+            --v4-accent:#5c9dcf; --v4-accent-2:#bce2f8; --v4-border:#8db6d1;
+            --v4-price:#125b91; --v4-price-text:#fff; --v4-footer:#183b5b;
+            --v4-footer-text:#fff; background-image:none;
+        }
+        .exportArea[data-theme="ivoryclean"] {
+            --v4-bg:#f3efe5; --v4-header:#31302c; --v4-header-text:#fff;
+            --v4-card:#fffdf8; --v4-ink:#282722; --v4-muted:#625d52; --v4-image:#f7f3e9;
+            --v4-accent:#b38b50; --v4-accent-2:#ead7ad; --v4-border:#c4b18a;
+            --v4-price:#7f1d1d; --v4-price-text:#fff; --v4-footer:#31302c;
+            --v4-footer-text:#fffdf8; background-image:none;
+        }
+        .exportArea[data-theme="sageclean"] {
+            --v4-bg:#edf3ed; --v4-header:#284d3c; --v4-header-text:#fff;
+            --v4-card:#fff; --v4-ink:#20362b; --v4-muted:#52675b; --v4-image:#f3f7f2;
+            --v4-accent:#669779; --v4-accent-2:#cce4d1; --v4-border:#9eb6a1;
+            --v4-price:#2f6d4f; --v4-price-text:#fff; --v4-footer:#284d3c;
+            --v4-footer-text:#fff; background-image:none;
+        }
+        .exportArea[data-theme="coralclean"] {
+            --v4-bg:#fff3ef; --v4-header:#492b28; --v4-header-text:#fff;
+            --v4-card:#fff; --v4-ink:#352321; --v4-muted:#70534f; --v4-image:#fff8f5;
+            --v4-accent:#d8735d; --v4-accent-2:#f5c2b5; --v4-border:#d5a29a;
+            --v4-price:#a9342a; --v4-price-text:#fff; --v4-footer:#492b28;
+            --v4-footer-text:#fff; background-image:none;
+        }
+        .exportArea[data-theme="slateclean"] {
+            --v4-bg:#eef0f4; --v4-header:#263246; --v4-header-text:#fff;
+            --v4-card:#fff; --v4-ink:#202b3b; --v4-muted:#526071; --v4-image:#f5f6f8;
+            --v4-accent:#6483ad; --v4-accent-2:#cfdae8; --v4-border:#aeb9c9;
+            --v4-price:#263246; --v4-price-text:#fff; --v4-footer:#263246;
+            --v4-footer-text:#fff; background-image:none;
+        }
+        .exportArea[data-theme="highcontrast"] {
+            --v4-bg:#fff; --v4-header:#000; --v4-header-text:#fff;
+            --v4-card:#fff; --v4-ink:#000; --v4-muted:#333; --v4-image:#f5f5f5;
+            --v4-accent:#ffcf00; --v4-accent-2:#fff; --v4-border:#000;
+            --v4-price:#c00000; --v4-price-text:#fff; --v4-footer:#000;
+            --v4-footer-text:#fff; background-image:none;
+        }
+
         /* =========================================================
            PRICE CONTRAST V6
            全デザインで価格面と文字のコントラストを個別保証する
@@ -6657,7 +6913,10 @@
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
             [data-theme="alert"], [data-theme="editorial"], [data-theme="wa"],
             [data-theme="cyber"], [data-theme="soft"], [data-theme="ticket"],
-            [data-theme="scoreboard"]
+            [data-theme="scoreboard"],
+            [data-theme="clearblue"], [data-theme="ivoryclean"],
+            [data-theme="sageclean"], [data-theme="coralclean"],
+            [data-theme="slateclean"], [data-theme="highcontrast"]
         ) .card-price-container {
             height: 66px;
         }
@@ -11125,6 +11384,14 @@
                 <div class="control-group">
                     <label for="themeSelect">デザインパターン</label>
                     <select id="themeSelect">
+                        <optgroup label="見やすさ重視">
+                            <option value="clearblue">31 白×青｜クリア</option>
+                            <option value="ivoryclean">32 生成り×墨｜落ち着き</option>
+                            <option value="sageclean">33 白×緑｜ナチュラル</option>
+                            <option value="coralclean">34 白×朱｜コーラル</option>
+                            <option value="slateclean">35 白×紺｜スレート</option>
+                            <option value="highcontrast">36 白×黒｜高コントラスト</option>
+                        </optgroup>
                         <optgroup label="ダーク・クラシック">
                             <option value="signal">01 黒×金｜クラシック</option>
                             <option value="editorial">05 白×黒｜エディトリアル</option>
@@ -12221,7 +12488,9 @@
         "luxury", "fire", "royal", "clean", "neon",
         "sakura", "forest", "pop", "retro", "hologram",
         "mono", "ocean", "sunset", "mint", "lavender",
-        "ice", "chocolate", "japan", "galaxy", "lime"
+        "ice", "chocolate", "japan", "galaxy", "lime",
+        "clearblue", "ivoryclean", "sageclean",
+        "coralclean", "slateclean", "highcontrast"
     ];
     const LAYOUTS = {
         portrait_10x6: {
@@ -12289,7 +12558,9 @@
     const DUAL_PRICE_SECONDARY_SCALE = 1;
     const LARGE_PRICE_THEMES = new Set([
         "signal", "trust", "market", "alert", "editorial",
-        "wa", "cyber", "soft", "ticket", "scoreboard"
+        "wa", "cyber", "soft", "ticket", "scoreboard",
+        "clearblue", "ivoryclean", "sageclean",
+        "coralclean", "slateclean", "highcontrast"
     ]);
     const LEGACY_THEME_MAP = {
         luxury: "signal",
@@ -19391,6 +19662,59 @@ BOXのお持ち込みお待ちしております！
         return pages;
     }
 
+    function addPreviewPageNavigation(container, pageCount) {
+        if (pageCount <= 1) return;
+
+        const currentPage = Math.min(
+            pageCount,
+            Math.max(1, Number(container.dataset.activePreviewPage) || 1)
+        );
+        container.dataset.activePreviewPage = String(currentPage);
+
+        const navigation = document.createElement("div");
+        navigation.className = "preview-page-navigation";
+        navigation.setAttribute("aria-label", "買取表プレビューのページ切替");
+        navigation.innerHTML = `
+            <button type="button" class="preview-page-nav-button" data-page-step="-1">‹ 前のページ</button>
+            <label class="preview-page-nav-label">
+                <span>確認するページ</span>
+                <select aria-label="確認するページ"></select>
+            </label>
+            <span class="preview-page-nav-count">全 ${pageCount} ページ</span>
+            <button type="button" class="preview-page-nav-button" data-page-step="1">次のページ ›</button>
+        `;
+
+        const select = navigation.querySelector("select");
+        for (let pageNumber = 1; pageNumber <= pageCount; pageNumber++) {
+            const option = document.createElement("option");
+            option.value = String(pageNumber);
+            option.textContent = `${pageNumber} ページ目`;
+            select.appendChild(option);
+        }
+
+        const previousButton = navigation.querySelector('[data-page-step="-1"]');
+        const nextButton = navigation.querySelector('[data-page-step="1"]');
+        const updateControls = pageNumber => {
+            container.dataset.activePreviewPage = String(pageNumber);
+            select.value = String(pageNumber);
+            previousButton.disabled = pageNumber <= 1;
+            nextButton.disabled = pageNumber >= pageCount;
+        };
+        const goToPage = pageNumber => {
+            const targetPage = Math.min(pageCount, Math.max(1, pageNumber));
+            updateControls(targetPage);
+            container.querySelector(`#exportArea_${targetPage}`)
+                ?.closest(".preview-page")
+                ?.scrollIntoView({behavior: "smooth", block: "start"});
+        };
+
+        updateControls(currentPage);
+        previousButton.addEventListener("click", () => goToPage(Number(select.value) - 1));
+        nextButton.addEventListener("click", () => goToPage(Number(select.value) + 1));
+        select.addEventListener("change", () => goToPage(Number(select.value)));
+        container.appendChild(navigation);
+    }
+
     function renderPages() {
         const layoutConfig = getSelectedLayoutConfig();
         const cols = layoutConfig.cols;
@@ -19421,6 +19745,7 @@ BOXのお持ち込みお待ちしております！
         }
 
         container.innerHTML = "";
+        addPreviewPageNavigation(container, pages.length);
 
         pages.forEach((pageCards, pageIndex) => {
             const pageNumber = pageIndex + 1;
