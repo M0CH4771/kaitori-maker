@@ -16703,6 +16703,36 @@
         });
     }
 
+    function updateThemeGalleryWatermarks(settings = getWatermarkSettings()) {
+        document.querySelectorAll("#themePickerGallery .theme-picker-preview-sheet")
+            .forEach(preview => {
+                let watermark = preview.querySelector(".theme-picker-watermark");
+                if (!settings.enabled || !logoDataUrl) {
+                    watermark?.remove();
+                    return;
+                }
+                if (!watermark) {
+                    watermark = document.createElement("div");
+                    watermark.className = "theme-picker-watermark";
+                    watermark.setAttribute("aria-hidden", "true");
+                    preview.prepend(watermark);
+                }
+                watermark.classList.toggle(
+                    "is-diagonal",
+                    settings.pattern === "diagonal"
+                );
+                watermark.style.backgroundImage = `url("${logoDataUrl}")`;
+                watermark.style.setProperty(
+                    "--watermark-size",
+                    `${settings.size / 3}px`
+                );
+                watermark.style.setProperty(
+                    "--watermark-opacity",
+                    String(getWatermarkOpacity(preview.dataset.theme, settings.opacity))
+                );
+            });
+    }
+
     function getSelectedTheme() {
         const theme = document.getElementById("themeSelect").value;
         return normalizeTheme(theme);
@@ -16787,7 +16817,7 @@
 
     function applyWatermarkToPages() {
         const settings = getWatermarkSettings();
-        renderThemePickerGallery();
+        updateThemeGalleryWatermarks(settings);
         document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             applyBrandWatermarkPattern(page, settings);
         });
