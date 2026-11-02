@@ -15714,11 +15714,28 @@
         return normalizeTheme(theme);
     }
 
+    function applyBrandWatermarkPattern(page, enabled) {
+        if (!page) return;
+        let pattern = page.querySelector(".brand-watermark-pattern");
+        if (!enabled) {
+            pattern?.remove();
+            return;
+        }
+        if (!pattern) {
+            pattern = document.createElement("div");
+            pattern.className = "brand-watermark-pattern";
+            pattern.setAttribute("aria-hidden", "true");
+            page.prepend(pattern);
+        }
+        pattern.style.backgroundImage = `url("${logoDataUrl}")`;
+    }
+
     function applyThemeToPages() {
         renderThemePickerGallery();
         const theme = getSelectedTheme();
         document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.dataset.theme = theme;
+            applyBrandWatermarkPattern(page, theme === "brandwatermark");
         });
         applyPriceCustomization();
         requestAnimationFrame(() => adjustTextSize());
@@ -20255,13 +20272,10 @@ BOXのお持ち込みお待ちしております！
                 </div>
             `;
 
-            if (selectedTheme === "brandwatermark") {
-                const watermarkPattern = document.createElement("div");
-                watermarkPattern.className = "brand-watermark-pattern";
-                watermarkPattern.setAttribute("aria-hidden", "true");
-                watermarkPattern.style.backgroundImage = `url("${logoDataUrl}")`;
-                pageDiv.prepend(watermarkPattern);
-            }
+            applyBrandWatermarkPattern(
+                pageDiv,
+                selectedTheme === "brandwatermark"
+            );
 
             const previewShell = document.createElement("div");
             previewShell.className = "preview-page";
