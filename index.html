@@ -16591,51 +16591,45 @@
         const select=document.getElementById("themeSelect");
         if(!gallery||!select)return;
         gallery.innerHTML="";
-        const selectedTheme=select.value;
-        const watermarkSettings=getWatermarkSettings();
         Array.from(select.querySelectorAll("optgroup")).forEach(group=>{
             const options=Array.from(group.querySelectorAll("option"));
             if(!options.length)return;
-            const section=document.createElement("details");
-            section.className="theme-picker-category";
-            const activeOption=options.find(option=>option.value===selectedTheme);
-            section.open=Boolean(activeOption);
-            const summary=document.createElement("summary");
-            summary.className="theme-picker-category-title";
-            summary.textContent=group.label;
-            if(activeOption){const current=document.createElement("span");current.className="theme-picker-category-current";current.textContent=activeOption.textContent.trim();summary.appendChild(current);}
-            const grid=document.createElement("div");
-            grid.className="theme-picker-option-grid";
-            grid.setAttribute("role","group");
-            grid.setAttribute("aria-label",group.label);
+            const category=document.createElement("details");
+            category.className="theme-picker-category";
+            const activeOption=options.find(option=>option.value===select.value);
+            category.open=Boolean(activeOption);
+            const heading=document.createElement("summary");
+            heading.className="theme-picker-category-title";
+            heading.textContent=group.label;
+            if(activeOption){const current=document.createElement("span");current.className="theme-picker-category-current";current.textContent=activeOption.textContent.trim();heading.appendChild(current);}
+            const grid=document.createElement("div");grid.className="theme-picker-option-grid";
             const buildCards=()=>{
                 if(grid.dataset.built==="true")return;
                 options.forEach(option=>{
                     const theme=option.value;
-                    const button=document.createElement("button");
-                    button.type="button";button.className="theme-picker-option";
-                    button.setAttribute("aria-pressed",String(theme===selectedTheme));
-                    button.setAttribute("aria-label",option.textContent.trim());
-                    const sheet=document.createElement("div");
-                    sheet.className="theme-picker-preview-sheet exportArea";sheet.dataset.theme=theme;
-                    sheet.innerHTML='<div class="header-area"><span class="theme-picker-preview-logo">買取表</span><span class="theme-picker-preview-title">カード買取価格</span><span class="page-number">01</span></div><div class="card-grid">'+["CARD 01","CARD 02","CARD 03"].map((name,i)=>'<div class="card-item"><div class="theme-picker-art">CARD</div><div class="card-name">'+name+'</div><div class="card-price-container"><span class="card-price-text">'+["¥12,000","¥8,500","ask"][i]+'</span></div></div>').join("")+'</div>';
-                    applyGeneratedThemeAppearance(sheet,theme);
+                    const button=document.createElement("button");button.type="button";button.className="theme-picker-option";button.dataset.theme=theme;
+                    button.setAttribute("aria-pressed",String(select.value===theme));button.setAttribute("aria-label",option.textContent.trim()+"を選択");
+                    const preview=document.createElement("div");preview.className="theme-picker-preview-sheet exportArea";preview.dataset.theme=theme;
+                    applyGeneratedThemeAppearance(preview,theme);
+                    preview.innerHTML='<div class="header-area"><span class="theme-picker-preview-logo">TCK</span><strong class="theme-picker-preview-title">高価買取表</strong><span>01</span></div><div class="card-grid">'+
+                        ['ピカチュウ','リザードン','ミュウ'].map((name,index)=>'<div class="card-item"><div class="theme-picker-art card-img-container">CARD</div><div class="card-name">'+name+'</div><div class="card-price-container"><span class="card-price-text">'+['¥12,000','¥8,500','¥4,200'][index]+'</span></div></div>').join('')+'</div><div class="footer-area"></div>';
+                    const watermarkSettings=getWatermarkSettings();
                     if(watermarkSettings.enabled&&logoDataUrl){
                         const watermark=document.createElement("div");watermark.className="theme-picker-watermark";
-                        if(watermarkSettings.pattern==="diagonal")watermark.classList.add("is-diagonal");
+                        watermark.classList.toggle("is-diagonal",watermarkSettings.pattern==="diagonal");
                         watermark.setAttribute("aria-hidden","true");watermark.style.backgroundImage='url("'+logoDataUrl+'")';
                         watermark.style.setProperty("--watermark-size",(watermarkSettings.size/3)+"px");
-                        watermark.style.setProperty("--watermark-opacity",String(getWatermarkOpacity(theme,watermarkSettings.opacity)));sheet.prepend(watermark);
+                        watermark.style.setProperty("--watermark-opacity",String(getWatermarkOpacity(theme,watermarkSettings.opacity)));preview.prepend(watermark);
                     }
                     const name=document.createElement("span");name.className="theme-picker-option-name";name.textContent=option.textContent.trim();
-                    button.append(sheet,name);
-                    button.addEventListener("click",()=>{select.value=theme;select.dispatchEvent(new Event("change",{bubbles:true}));});
+                    button.append(preview,name);
+                    button.addEventListener("click",()=>{if(select.value!==theme){select.value=theme;select.dispatchEvent(new Event("change",{bubbles:true}));}else{renderThemePickerGallery();}});
                     grid.appendChild(button);
                 });
                 grid.dataset.built="true";
             };
-            section.addEventListener("toggle",()=>{if(section.open)buildCards();});
-            section.append(summary,grid);gallery.appendChild(section);if(section.open)buildCards();
+            category.addEventListener("toggle",()=>{if(category.open)buildCards();});
+            category.append(heading,grid);gallery.appendChild(category);if(category.open)buildCards();
         });
     }
     function getSelectedTheme() {
@@ -16720,10 +16714,16 @@
         );
     }
 
-    function updateThemeGalleryWatermarks() {
-        renderThemePickerGallery();
+    function updateThemeGalleryWatermarks(settings = getWatermarkSettings()) {
+        document.querySelectorAll("#themePickerGallery .theme-picker-preview-sheet").forEach(preview=>{
+            let watermark=preview.querySelector(".theme-picker-watermark");
+            if(!settings.enabled||!logoDataUrl){watermark?.remove();return;}
+            if(!watermark){watermark=document.createElement("div");watermark.className="theme-picker-watermark";watermark.setAttribute("aria-hidden","true");preview.prepend(watermark);}
+            watermark.classList.toggle("is-diagonal",settings.pattern==="diagonal");watermark.style.backgroundImage='url("'+logoDataUrl+'")';
+            watermark.style.setProperty("--watermark-size",(settings.size/3)+"px");
+            watermark.style.setProperty("--watermark-opacity",String(getWatermarkOpacity(preview.dataset.theme,settings.opacity)));
+        });
     }
-
     function applyWatermarkToPages() {
         const settings = getWatermarkSettings();
         updateThemeGalleryWatermarks(settings);
