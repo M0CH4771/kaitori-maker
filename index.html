@@ -1081,6 +1081,240 @@
             background-size: 24px 24px;
         }
 
+        .theme-picker-native-select {
+            display: none !important;
+        }
+
+        .theme-picker-gallery {
+            display: grid;
+            gap: 14px;
+            margin-top: 8px;
+        }
+
+        .theme-picker-category {
+            display: grid;
+            gap: 7px;
+        }
+
+        .theme-picker-category-title {
+            margin: 0;
+            color: #d5deeb;
+            font-size: 11px;
+            font-weight: 900;
+        }
+
+        .theme-picker-option-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .theme-picker-option {
+            min-width: 0;
+            padding: 5px;
+            color: #e8edf7;
+            border: 1px solid rgba(255,255,255,0.13);
+            border-radius: 9px;
+            background: rgba(255,255,255,0.045);
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .theme-picker-option:hover {
+            border-color: rgba(217,173,74,0.72);
+            background: rgba(255,255,255,0.075);
+        }
+
+        .theme-picker-option-name {
+            display: block;
+            margin: 5px 2px 1px;
+            color: #e8edf7;
+            font-size: 10px;
+            font-weight: 900;
+            line-height: 1.25;
+        }
+
+        .theme-picker-option[aria-pressed="true"] {
+            border-color: #f3c75f;
+            background: rgba(217,173,74,0.13);
+            box-shadow: 0 0 0 1px rgba(217,173,74,0.3);
+        }
+
+        .theme-picker-preview-sheet.exportArea {
+            position: relative !important;
+            display: flex !important;
+            width: 100% !important;
+            height: 92px !important;
+            min-height: 92px !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            overflow: hidden !important;
+            padding: 6px !important;
+            color: var(--v4-ink,#111827) !important;
+            border: 1px solid var(--v4-border,#cbd5e1) !important;
+            border-radius: 6px !important;
+            background-color: var(--v4-bg,#f1f5f9) !important;
+            background-image: none !important;
+            box-shadow: none !important;
+        }
+
+        .theme-picker-preview-sheet.exportArea .header-area {
+            position: relative !important;
+            z-index: 2 !important;
+            display: flex !important;
+            width: 100% !important;
+            height: 18px !important;
+            min-height: 18px !important;
+            justify-content: space-between !important;
+            margin: 0 !important;
+            padding: 2px 5px !important;
+            overflow: hidden !important;
+            color: var(--v4-header-text,#fff) !important;
+            border: 0 !important;
+            border-radius: 3px !important;
+            background: var(--v4-header,#111827) !important;
+            box-shadow: none !important;
+            font-size: 6px !important;
+        }
+
+        .theme-picker-preview-logo {
+            font-size: 6px;
+            font-weight: 1000;
+            letter-spacing: .04em;
+        }
+
+        .theme-picker-preview-title {
+            overflow: hidden;
+            font-size: 6px;
+            font-weight: 1000;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .theme-picker-preview-sheet.exportArea .card-grid {
+            position: relative !important;
+            z-index: 2 !important;
+            display: grid !important;
+            width: 100% !important;
+            flex: 1 1 auto !important;
+            grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+            grid-template-rows: minmax(0,1fr) !important;
+            gap: 4px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .theme-picker-preview-sheet.exportArea .card-item {
+            position: relative !important;
+            display: flex !important;
+            min-width: 0 !important;
+            min-height: 0 !important;
+            flex-direction: column !important;
+            gap: 2px !important;
+            overflow: hidden !important;
+            margin: 0 !important;
+            padding: 3px !important;
+            border: 1px solid var(--v4-border,#cbd5e1) !important;
+            border-radius: 4px !important;
+            background: var(--v4-card,#fff) !important;
+            box-shadow: none !important;
+        }
+
+        .theme-picker-art {
+            display: grid;
+            min-height: 0;
+            flex: 1 1 auto;
+            place-items: center;
+            color: var(--v4-muted,#4b5565);
+            border: 1px solid var(--v4-border,#cbd5e1);
+            border-radius: 2px;
+            background: linear-gradient(135deg,var(--v4-image,#f3f5f8),var(--v4-card,#fff));
+            font-size: 4px;
+            font-weight: 900;
+            letter-spacing: .06em;
+        }
+
+        .theme-picker-preview-sheet.exportArea .card-name {
+            min-height: 5px !important;
+            max-height: 5px !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+            color: var(--v4-ink,#111827) !important;
+            font-size: 4px !important;
+            font-weight: 900 !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+        }
+
+        .theme-picker-preview-sheet.exportArea .card-price-container {
+            display: flex !important;
+            height: 12px !important;
+            min-height: 12px !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin: 0 !important;
+            padding: 1px 2px !important;
+            border: 0 !important;
+            border-radius: 2px !important;
+            background: var(--v4-price,#d90829) !important;
+            box-shadow: none !important;
+        }
+
+        .theme-picker-preview-sheet.exportArea .card-price-text {
+            color: var(--v4-price-text,#fff) !important;
+            font-size: 6px !important;
+            font-weight: 1000 !important;
+            line-height: 1 !important;
+            text-shadow: none !important;
+        }
+
+        .theme-picker-preview-sheet.exportArea .footer-area {
+            position: relative !important;
+            z-index: 2 !important;
+            display: block !important;
+            width: 100% !important;
+            height: 5px !important;
+            min-height: 5px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: 0 !important;
+            background: var(--v4-footer,#111827) !important;
+        }
+
+        .theme-picker-watermark {
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            pointer-events: none;
+            background-position: center;
+            background-repeat: repeat;
+            background-size: 62px auto;
+            opacity: .07;
+        }
+
+        .brand-watermark-pattern {
+            position: absolute;
+            z-index: 1;
+            inset: 0;
+            pointer-events: none;
+            background-position: center;
+            background-repeat: repeat;
+            background-size: 180px auto;
+            opacity: .045;
+        }
+
+        .theme-picker-preview-sheet .header-area,
+        .theme-picker-preview-sheet .card-grid,
+        .theme-picker-preview-sheet .footer-area {
+            isolation: isolate;
+        }
+
+        @media (max-width: 540px) {
+            .theme-picker-option-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
         .preview-page-navigation {
             position: sticky;
             top: 10px;
@@ -2757,7 +2991,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) {
             color: var(--buy-ink);
             border-color: var(--buy-accent);
@@ -2771,7 +3006,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         )::before {
             border-color: var(--buy-border);
             box-shadow: inset 0 0 0 1px rgba(255,255,255,0.16);
@@ -2784,7 +3020,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         )::after {
             background: var(--buy-accent);
         }
@@ -2796,7 +3033,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .header-area {
             border-color: var(--buy-border);
             border-bottom-color: var(--buy-accent);
@@ -2810,7 +3048,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .header-area::before {
             background: var(--buy-accent-2);
         }
@@ -2822,7 +3061,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .title-container h1 {
             color: #fff;
             text-shadow: 0 3px 0 rgba(0,0,0,0.35);
@@ -2835,7 +3075,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .page-emblem {
             color: var(--buy-panel);
             border-color: var(--buy-accent-2);
@@ -2850,7 +3091,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-item {
             color: var(--buy-ink);
             border-color: var(--buy-border);
@@ -2865,7 +3107,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-item::before {
             background: var(--buy-accent);
         }
@@ -2877,7 +3120,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-name {
             color: var(--buy-ink);
         }
@@ -2889,7 +3133,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-grade {
             color: #fff;
             border-color: var(--buy-accent);
@@ -2903,7 +3148,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-price-container {
             border-color: var(--buy-price);
             background: var(--buy-price);
@@ -2916,7 +3162,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .status-badge {
             color: var(--buy-panel);
             border-color: var(--buy-accent);
@@ -2930,7 +3177,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .footer-area {
             color: var(--buy-note);
             border-color: var(--buy-border);
@@ -2945,7 +3193,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .disclaimer,
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
@@ -2954,7 +3203,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .update-date {
             color: var(--buy-note);
         }
@@ -2966,7 +3216,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .update-label,
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
@@ -2975,7 +3226,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .page-number {
             color: var(--buy-accent-2);
         }
@@ -4760,7 +5012,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) {
             --v4-bg: #08101b;
             --v4-header: #101827;
@@ -4792,7 +5045,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         )::before {
             z-index: 0;
             inset: 12px;
@@ -4810,7 +5064,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         )::after {
             z-index: 1;
             height: 10px;
@@ -4830,7 +5085,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .header-area {
             z-index: 2;
             min-height: 158px;
@@ -4855,7 +5111,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .header-area::before {
             bottom: -5px;
             width: 38%;
@@ -4870,7 +5127,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .logo-container {
             width: 350px;
             height: 122px;
@@ -4884,7 +5142,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .logo-container img {
             max-height: 120px;
             filter: drop-shadow(0 5px 10px rgba(0,0,0,0.16));
@@ -4897,7 +5156,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .title-container h1 {
             line-height: 0.98;
         }
@@ -4909,7 +5169,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .page-emblem {
             width: 94px;
             height: 94px;
@@ -4929,7 +5190,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-grid {
             z-index: 2;
             gap: 10px;
@@ -4944,7 +5206,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-item {
             padding: 7px;
             color: var(--v4-ink);
@@ -4964,7 +5227,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-item::before {
             height: 5px;
             background: linear-gradient(90deg, var(--v4-accent), var(--v4-accent-2));
@@ -4977,7 +5241,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-img-container {
             margin-bottom: 5px;
             border: 1px solid var(--v4-border);
@@ -4994,7 +5259,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-name {
             display: -webkit-box;
             min-height: 25px;
@@ -5016,7 +5282,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-meta {
             min-height: 18px;
             margin-bottom: 4px;
@@ -5029,7 +5296,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-grade {
             padding: 3px 8px;
             color: #fff;
@@ -5046,7 +5314,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-price-container {
             height: 34px;
             padding: 2px 5px;
@@ -5067,7 +5336,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-price-text {
             color: var(--v4-price-text);
             font-size: 23px;
@@ -5083,7 +5353,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .status-badge {
             top: 10px;
             right: auto;
@@ -5106,7 +5377,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .footer-area {
             z-index: 2;
             min-height: 102px;
@@ -5127,7 +5399,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .disclaimer,
         .exportArea:is(
             [data-theme="signal"], [data-theme="trust"], [data-theme="market"],
@@ -5136,7 +5409,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .update-date {
             color: var(--v4-footer-text);
         }
@@ -5148,7 +5422,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .update-label {
             color: var(--v4-accent-2);
         }
@@ -5160,7 +5435,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .page-number {
             color: var(--v4-footer-text);
             opacity: 0.7;
@@ -5424,7 +5700,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-name {
             font-size: 9px;
         }
@@ -5436,7 +5713,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-price-text {
             font-size: 21px;
         }
@@ -6322,7 +6600,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .status-badge {
             --boost-bg: #e0b54f;
             --boost-bg-2: #b88628;
@@ -6366,7 +6645,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .status-badge::after {
             position: absolute;
             right: 0;
@@ -6785,6 +7065,19 @@
             --v4-footer-text:#fff; background-image:none;
         }
 
+        .exportArea[data-theme="brandwatermark"] {
+            --v4-bg:#edf3f7; --v4-header:#183b5b; --v4-header-text:#fff;
+            --v4-card:#fff; --v4-ink:#14283a; --v4-muted:#42566b; --v4-image:#f3f8fc;
+            --v4-accent:#5c9dcf; --v4-accent-2:#bce2f8; --v4-border:#8db6d1;
+            --v4-price:#125b91; --v4-price-text:#fff; --v4-footer:#183b5b;
+            --v4-footer-text:#fff; background-image:none;
+        }
+        .exportArea[data-theme="brandwatermark"] .header-area,
+        .exportArea[data-theme="brandwatermark"] .footer-area {
+            position:relative;
+            z-index:2;
+        }
+
         /* =========================================================
            PRICE CONTRAST V6
            全デザインで価格面と文字のコントラストを個別保証する
@@ -6916,7 +7209,8 @@
             [data-theme="scoreboard"],
             [data-theme="clearblue"], [data-theme="ivoryclean"],
             [data-theme="sageclean"], [data-theme="coralclean"],
-            [data-theme="slateclean"], [data-theme="highcontrast"]
+            [data-theme="slateclean"], [data-theme="highcontrast"],
+            [data-theme="brandwatermark"]
         ) .card-price-container {
             height: 66px;
         }
@@ -11383,57 +11677,33 @@
             <div class="settings-grid design-settings-grid">
                 <div class="control-group">
                     <label for="themeSelect">デザインパターン</label>
-                    <select id="themeSelect">
-                        <optgroup label="見やすさ重視">
-                            <option value="clearblue">31 白×青｜クリア</option>
-                            <option value="ivoryclean">32 生成り×墨｜落ち着き</option>
-                            <option value="sageclean">33 白×緑｜ナチュラル</option>
-                            <option value="coralclean">34 白×朱｜コーラル</option>
-                            <option value="slateclean">35 白×紺｜スレート</option>
-                            <option value="highcontrast">36 白×黒｜高コントラスト</option>
+                    <select id="themeSelect" class="theme-picker-native-select" aria-hidden="true" tabindex="-1">
+                        <optgroup label="見やすい・シンプル">
+                            <option value="market">白×赤｜スタンダード</option>
+                            <option value="trust">青×白｜ベーシック</option>
+                            <option value="clearblue">白×青｜クリア</option>
+                            <option value="slateclean">白×紺｜スレート</option>
+                            <option value="highcontrast">白×黒｜高コントラスト</option>
+                            <option value="editorial">白×黒｜エディトリアル</option>
+                            <option value="ivoryclean">生成り×墨｜落ち着き</option>
+                            <option value="sageclean">白×緑｜ナチュラル</option>
+                            <option value="coralclean">白×朱｜コーラル</option>
                         </optgroup>
-                        <optgroup label="ダーク・クラシック">
-                            <option value="signal">01 黒×金｜クラシック</option>
-                            <option value="editorial">05 白×黒｜エディトリアル</option>
-                            <option value="luxury">11 黒×金｜ダーク</option>
-                            <option value="royal">13 紺×金｜クラシック</option>
-                            <option value="forest">17 深緑×金｜クラシック</option>
-                            <option value="chocolate">27 茶×生成り｜クラフト</option>
+                        <optgroup label="ブランド・定番">
+                            <option value="signal">黒×金｜クラシック</option>
+                            <option value="wa">赤×白｜和風</option>
+                            <option value="ticket">ベージュ×赤｜チケット</option>
+                            <option value="brandwatermark">白×紺｜ロゴ透かし</option>
                         </optgroup>
-                        <optgroup label="シンプル">
-                            <option value="trust">02 青×白｜ベーシック</option>
-                            <option value="market">03 白×赤｜スタンダード</option>
-                            <option value="clean">14 白×グレー｜ミニマル</option>
-                            <option value="mono">21 白×黒｜グリッド</option>
-                            <option value="mint">24 ミント×白｜テクニカル</option>
-                            <option value="ice">26 水色×白｜シャープ</option>
-                        </optgroup>
-                        <optgroup label="ポップ">
-                            <option value="alert">04 赤×黄｜セール</option>
-                            <option value="soft">08 ピンク×白｜ソフト</option>
-                            <option value="scoreboard">10 黒×黄｜スポーツ</option>
-                            <option value="fire">12 赤×黒｜フレイム</option>
-                            <option value="pop">18 黄×赤｜コミック</option>
-                            <option value="sunset">23 オレンジ×紫｜ポスター</option>
-                            <option value="lavender">25 紫×白｜ソフト</option>
-                        </optgroup>
-                        <optgroup label="和風・ヴィンテージ">
-                            <option value="wa">06 赤×白｜和風</option>
-                            <option value="ticket">09 ベージュ×赤｜チケット</option>
-                            <option value="sakura">16 ピンク×白｜和風</option>
-                            <option value="retro">19 茶×生成り｜レトロ</option>
-                            <option value="japan">28 白×黒×朱｜和風</option>
-                        </optgroup>
-                        <optgroup label="デジタル">
-                            <option value="cyber">07 紫×シアン｜デジタル</option>
-                            <option value="neon">15 黒×ネオン｜シティ</option>
-                            <option value="hologram">20 シルバー×虹色｜ホログラム</option>
-                            <option value="ocean">22 青×水色｜ウェーブ</option>
-                            <option value="galaxy">29 紺×紫｜ギャラクシー</option>
-                            <option value="lime">30 黒×黄緑｜ターミナル</option>
+                        <optgroup label="アクセント">
+                            <option value="alert">赤×黄｜セール</option>
+                            <option value="soft">ピンク×白｜ソフト</option>
+                            <option value="cyber">紫×シアン｜デジタル</option>
+                            <option value="scoreboard">黒×黄｜スポーツ</option>
                         </optgroup>
                     </select>
-                    <small class="help">配色・枠・余白・価格面・ヘッダーが切り替わります。</small>
+                    <div id="themePickerGallery" class="theme-picker-gallery" role="group" aria-label="買取表デザイン"></div>
+                    <small class="help">見本をクリックするとデザインが切り替わります。</small>
                 </div>
 
                 <div class="control-group">
@@ -12483,14 +12753,10 @@
     `);
 
     const THEMES = [
-        "signal", "trust", "market", "alert", "editorial",
-        "wa", "cyber", "soft", "ticket", "scoreboard",
-        "luxury", "fire", "royal", "clean", "neon",
-        "sakura", "forest", "pop", "retro", "hologram",
-        "mono", "ocean", "sunset", "mint", "lavender",
-        "ice", "chocolate", "japan", "galaxy", "lime",
-        "clearblue", "ivoryclean", "sageclean",
-        "coralclean", "slateclean", "highcontrast"
+        "market", "trust", "clearblue", "slateclean", "highcontrast",
+        "editorial", "ivoryclean", "sageclean", "coralclean",
+        "signal", "wa", "ticket", "brandwatermark",
+        "alert", "soft", "cyber", "scoreboard"
     ];
     const LAYOUTS = {
         portrait_10x6: {
@@ -12560,7 +12826,7 @@
         "signal", "trust", "market", "alert", "editorial",
         "wa", "cyber", "soft", "ticket", "scoreboard",
         "clearblue", "ivoryclean", "sageclean",
-        "coralclean", "slateclean", "highcontrast"
+        "coralclean", "slateclean", "highcontrast", "brandwatermark"
     ]);
     const LEGACY_THEME_MAP = {
         luxury: "signal",
@@ -14920,6 +15186,7 @@
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
         document.getElementById("themeSelect").value = normalizeTheme(savedTheme);
+        renderThemePickerGallery();
         document.getElementById("titleStyleSelect").value =
             normalizeTitleStyle(savedTitleStyle);
         applyTitleCustomizationSettings({
@@ -15327,12 +15594,97 @@
         applyCardNameVisibility();
     }
 
+    function renderThemePickerGallery() {
+        const gallery = document.getElementById("themePickerGallery");
+        const select = document.getElementById("themeSelect");
+        if (!gallery || !select) return;
+
+        gallery.innerHTML = "";
+        Array.from(select.querySelectorAll("optgroup")).forEach(group => {
+            const category = document.createElement("section");
+            category.className = "theme-picker-category";
+
+            const heading = document.createElement("h4");
+            heading.className = "theme-picker-category-title";
+            heading.textContent = group.label;
+            category.appendChild(heading);
+
+            const grid = document.createElement("div");
+            grid.className = "theme-picker-option-grid";
+
+            Array.from(group.querySelectorAll("option")).forEach(option => {
+                const theme = option.value;
+                const button = document.createElement("button");
+                button.type = "button";
+                button.className = "theme-picker-option";
+                button.dataset.theme = theme;
+                button.setAttribute("aria-pressed", String(select.value === theme));
+                button.setAttribute("aria-label", `${option.textContent.trim()}を選択`);
+
+                const preview = document.createElement("div");
+                preview.className = "theme-picker-preview-sheet exportArea";
+                preview.dataset.theme = theme;
+                preview.innerHTML = `
+                    <div class="header-area">
+                        <span class="theme-picker-preview-logo">TCK</span>
+                        <strong class="theme-picker-preview-title">高価買取表</strong>
+                        <span>01</span>
+                    </div>
+                    <div class="card-grid">
+                        <div class="card-item">
+                            <div class="theme-picker-art card-img-container">CARD</div>
+                            <div class="card-name">ピカチュウ</div>
+                            <div class="card-price-container"><span class="card-price-text">¥12,000</span></div>
+                        </div>
+                        <div class="card-item">
+                            <div class="theme-picker-art card-img-container">CARD</div>
+                            <div class="card-name">リザードン</div>
+                            <div class="card-price-container"><span class="card-price-text">¥8,500</span></div>
+                        </div>
+                        <div class="card-item">
+                            <div class="theme-picker-art card-img-container">CARD</div>
+                            <div class="card-name">ミュウ</div>
+                            <div class="card-price-container"><span class="card-price-text">¥4,200</span></div>
+                        </div>
+                    </div>
+                    <div class="footer-area"></div>
+                `;
+
+                if (theme === "brandwatermark") {
+                    const watermark = document.createElement("div");
+                    watermark.className = "theme-picker-watermark";
+                    watermark.setAttribute("aria-hidden", "true");
+                    watermark.style.backgroundImage = `url("${logoDataUrl}")`;
+                    preview.prepend(watermark);
+                }
+
+                const name = document.createElement("span");
+                name.className = "theme-picker-option-name";
+                name.textContent = option.textContent.trim();
+                button.append(preview, name);
+                button.addEventListener("click", () => {
+                    if (select.value !== theme) {
+                        select.value = theme;
+                        select.dispatchEvent(new Event("change", {bubbles: true}));
+                    } else {
+                        renderThemePickerGallery();
+                    }
+                });
+                grid.appendChild(button);
+            });
+
+            category.appendChild(grid);
+            gallery.appendChild(category);
+        });
+    }
+
     function getSelectedTheme() {
         const theme = document.getElementById("themeSelect").value;
         return normalizeTheme(theme);
     }
 
     function applyThemeToPages() {
+        renderThemePickerGallery();
         const theme = getSelectedTheme();
         document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.dataset.theme = theme;
@@ -19871,6 +20223,14 @@ BOXのお持ち込みお待ちしております！
                     </div>
                 </div>
             `;
+
+            if (selectedTheme === "brandwatermark") {
+                const watermarkPattern = document.createElement("div");
+                watermarkPattern.className = "brand-watermark-pattern";
+                watermarkPattern.setAttribute("aria-hidden", "true");
+                watermarkPattern.style.backgroundImage = `url("${logoDataUrl}")`;
+                pageDiv.prepend(watermarkPattern);
+            }
 
             const previewShell = document.createElement("div");
             previewShell.className = "preview-page";
