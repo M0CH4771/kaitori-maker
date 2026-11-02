@@ -1301,8 +1301,9 @@
             pointer-events: none;
             background-position: center;
             background-repeat: repeat;
-            background-size: 52px auto;
-            opacity: .22;
+            background-size: var(--watermark-size, 145px) auto;
+            opacity: .12;
+            mix-blend-mode: multiply;
         }
 
         .brand-watermark-pattern {
@@ -1312,9 +1313,15 @@
             pointer-events: none;
             background-position: center;
             background-repeat: repeat;
-            background-size: 145px auto;
+            background-size: var(--watermark-size, 145px) auto;
             opacity: .12;
             mix-blend-mode: multiply;
+        }
+
+        .theme-picker-watermark.is-diagonal,
+        .brand-watermark-pattern.is-diagonal {
+            inset: -20%;
+            transform: rotate(-22deg);
         }
 
         .theme-picker-preview-sheet .header-area,
@@ -11723,7 +11730,6 @@
                             <option value="signal">黒×金｜クラシック</option>
                             <option value="wa">赤×白｜和風</option>
                             <option value="ticket">ベージュ×赤｜チケット</option>
-                            <option value="brandwatermark">白×紺｜ロゴ透かし</option>
                         </optgroup>
                         <optgroup label="アクセント">
                             <option value="alert">赤×黄｜セール</option>
@@ -11734,6 +11740,28 @@
                     </select>
                     <div id="themePickerGallery" class="theme-picker-gallery" role="group" aria-label="買取表デザイン"></div>
                     <small class="help">見本をクリックするとデザインが切り替わります。</small>
+                </div>
+
+                <div class="control-group watermark-settings-group">
+                    <label><span>ロゴの透かし</span></label>
+                    <div class="watermark-settings-grid">
+                        <label class="watermark-toggle" for="watermarkEnabledInput">
+                            <input type="checkbox" id="watermarkEnabledInput">
+                            <span>買取表全体にロゴを透かす</span>
+                        </label>
+                        <div>
+                            <label for="watermarkPatternSelect">並べ方</label>
+                            <select id="watermarkPatternSelect">
+                                <option value="grid">整列</option>
+                                <option value="diagonal">斜め</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="watermarkSizeInput">ロゴの大きさ <output id="watermarkSizeOutput">145px</output></label>
+                            <input type="range" id="watermarkSizeInput" min="60" max="320" step="5" value="145">
+                        </div>
+                    </div>
+                    <small class="help">どのデザインにも反映されます。薄く並べて、カードや価格が読める濃さで表示します。</small>
                 </div>
 
                 <div class="control-group">
@@ -12843,6 +12871,8 @@
         outlineColor: "#111827",
         outlineWidth: 2
     };
+    const DEFAULT_WATERMARK_SETTINGS = { enabled: false, pattern: "grid", size: 145 };
+    const WATERMARK_PATTERN_OPTIONS = ["grid", "diagonal"];
     const DEFAULT_PRICE_CUSTOM = {
         scale: 100,
         colorMode: "theme",
@@ -12856,7 +12886,7 @@
         "signal", "trust", "market", "alert", "editorial",
         "wa", "cyber", "soft", "ticket", "scoreboard",
         "clearblue", "ivoryclean", "sageclean",
-        "coralclean", "slateclean", "highcontrast", "brandwatermark"
+        "coralclean", "slateclean", "highcontrast"
     ]);
     const LEGACY_THEME_MAP = {
         luxury: "signal",
@@ -12878,7 +12908,8 @@
         chocolate: "editorial",
         japan: "wa",
         galaxy: "cyber",
-        lime: "scoreboard"
+        lime: "scoreboard",
+        brandwatermark: "clearblue"
     };
     const PAGE_SPLIT_MODES = ["fill", "group_pack", "group_page"];
     const SORT_MODES = ["group_csv", "csv_all", "price_desc", "price_asc", "name"];
@@ -15194,6 +15225,9 @@
         const savedLogo = getScopedItem("kaitori_logo");
         const savedLayout = getScopedItem("kaitori_layout");
         const savedTheme = getScopedItem("kaitori_theme");
+        const savedWatermarkEnabled = getScopedItem("kaitori_watermark_enabled");
+        const savedWatermarkPattern = getScopedItem("kaitori_watermark_pattern");
+        const savedWatermarkSize = getScopedItem("kaitori_watermark_size");
         const savedTitleStyle = getScopedItem("kaitori_title_style");
         const savedTitleColor = getScopedItem("kaitori_title_color");
         const savedTitleFont = getScopedItem("kaitori_title_font");
@@ -15216,6 +15250,11 @@
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
         if (savedLogo) logoDataUrl = savedLogo;
         document.getElementById("themeSelect").value = normalizeTheme(savedTheme);
+        applyWatermarkSettings({
+            enabled: savedWatermarkEnabled === "true",
+            pattern: savedWatermarkPattern,
+            size: savedWatermarkSize
+        }, false);
         renderThemePickerGallery();
         document.getElementById("titleStyleSelect").value =
             normalizeTitleStyle(savedTitleStyle);
@@ -15351,6 +15390,7 @@
             pageSplit: getPageSplitMode(),
             sortOrder: getSortOrder(),
             priceChangeDisplay: getSelectedPriceChangeDisplayMode(),
+            watermark: getWatermarkSettings(),
             savedAt: new Date().toISOString()
         };
     }
@@ -15361,6 +15401,10 @@
         setScopedItem("kaitori_logo", logoDataUrl);
         setScopedItem("kaitori_layout", settings.layout);
         setScopedItem("kaitori_theme", settings.theme);
+        const watermark = normalizeWatermarkSettings(settings.watermark || {});
+        setScopedItem("kaitori_watermark_enabled", String(watermark.enabled));
+        setScopedItem("kaitori_watermark_pattern", watermark.pattern);
+        setScopedItem("kaitori_watermark_size", String(watermark.size));
         setScopedItem("kaitori_title_style", settings.titleStyle);
         saveTitleCustomization(
             normalizeTitleCustomization(settings.titleCustom || {})
@@ -15552,6 +15596,7 @@
                 normalizeLayout(settings.layout);
         }
         document.getElementById("themeSelect").value = normalizeTheme(settings.theme);
+        applyWatermarkSettings(settings.watermark || {}, false);
         renderThemePickerGallery();
         document.getElementById("titleStyleSelect").value =
             normalizeTitleStyle(settings.titleStyle);
@@ -15681,11 +15726,13 @@
                     <div class="footer-area"></div>
                 `;
 
-                if (theme === "brandwatermark") {
+                const watermarkSettings = getWatermarkSettings();
+                if (watermarkSettings.enabled) {
                     const watermark = document.createElement("div");
-                    watermark.className = "theme-picker-watermark";
+                    watermark.className = `theme-picker-watermark${watermarkSettings.pattern === "diagonal" ? " is-diagonal" : ""}`;
                     watermark.setAttribute("aria-hidden", "true");
                     watermark.style.backgroundImage = `url("${logoDataUrl}")`;
+                    watermark.style.setProperty("--watermark-size", `${watermarkSettings.size / 3}px`);
                     preview.prepend(watermark);
                 }
 
@@ -15714,10 +15761,49 @@
         return normalizeTheme(theme);
     }
 
-    function applyBrandWatermarkPattern(page, enabled) {
+    function normalizeWatermarkSettings(settings = {}) {
+        return {
+            enabled: typeof settings.enabled === "boolean"
+                ? settings.enabled
+                : DEFAULT_WATERMARK_SETTINGS.enabled,
+            pattern: WATERMARK_PATTERN_OPTIONS.includes(settings.pattern)
+                ? settings.pattern
+                : DEFAULT_WATERMARK_SETTINGS.pattern,
+            size: clampTitleNumber(
+                settings.size,
+                60,
+                320,
+                DEFAULT_WATERMARK_SETTINGS.size
+            )
+        };
+    }
+
+    function getWatermarkSettings() {
+        return normalizeWatermarkSettings({
+            enabled: document.getElementById("watermarkEnabledInput")?.checked,
+            pattern: document.getElementById("watermarkPatternSelect")?.value,
+            size: document.getElementById("watermarkSizeInput")?.value
+        });
+    }
+
+    function applyWatermarkSettings(settings = {}, updatePages = true) {
+        const normalized = normalizeWatermarkSettings(settings);
+        const enabledInput = document.getElementById("watermarkEnabledInput");
+        const patternSelect = document.getElementById("watermarkPatternSelect");
+        const sizeInput = document.getElementById("watermarkSizeInput");
+        if (enabledInput) enabledInput.checked = normalized.enabled;
+        if (patternSelect) patternSelect.value = normalized.pattern;
+        if (sizeInput) sizeInput.value = String(normalized.size);
+        const output = document.getElementById("watermarkSizeOutput");
+        if (output) output.textContent = `${normalized.size}px`;
+        if (updatePages) applyWatermarkToPages();
+    }
+
+    function applyBrandWatermarkPattern(page, settings = getWatermarkSettings()) {
         if (!page) return;
+        const normalized = normalizeWatermarkSettings(settings);
         let pattern = page.querySelector(".brand-watermark-pattern");
-        if (!enabled) {
+        if (!normalized.enabled || !logoDataUrl) {
             pattern?.remove();
             return;
         }
@@ -15727,7 +15813,17 @@
             pattern.setAttribute("aria-hidden", "true");
             page.prepend(pattern);
         }
+        pattern.classList.toggle("is-diagonal", normalized.pattern === "diagonal");
         pattern.style.backgroundImage = `url("${logoDataUrl}")`;
+        pattern.style.setProperty("--watermark-size", `${normalized.size}px`);
+    }
+
+    function applyWatermarkToPages() {
+        const settings = getWatermarkSettings();
+        renderThemePickerGallery();
+        document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
+            applyBrandWatermarkPattern(page, settings);
+        });
     }
 
     function applyThemeToPages() {
@@ -15735,7 +15831,7 @@
         const theme = getSelectedTheme();
         document.querySelectorAll("#pagesContainer .exportArea").forEach(page => {
             page.dataset.theme = theme;
-            applyBrandWatermarkPattern(page, theme === "brandwatermark");
+            applyBrandWatermarkPattern(page);
         });
         applyPriceCustomization();
         requestAnimationFrame(() => adjustTextSize());
@@ -15827,6 +15923,20 @@
         applyThemeToPages();
         scheduleWorkspaceAutosave();
     });
+    const updateWatermark = () => {
+        applyWatermarkToPages();
+        scheduleWorkspaceAutosave();
+    };
+    document.getElementById("watermarkEnabledInput")
+        .addEventListener("change", updateWatermark);
+    document.getElementById("watermarkPatternSelect")
+        .addEventListener("change", updateWatermark);
+    document.getElementById("watermarkSizeInput")
+        .addEventListener("input", event => {
+            document.getElementById("watermarkSizeOutput").textContent =
+                `${event.target.value}px`;
+            updateWatermark();
+        });
     const updateTitleCustomization = () => {
         const settings = collectTitleCustomization();
         applyTitleCustomizationSettings(settings);
@@ -20272,10 +20382,7 @@ BOXのお持ち込みお待ちしております！
                 </div>
             `;
 
-            applyBrandWatermarkPattern(
-                pageDiv,
-                selectedTheme === "brandwatermark"
-            );
+            applyBrandWatermarkPattern(pageDiv);
 
             const previewShell = document.createElement("div");
             previewShell.className = "preview-page";
