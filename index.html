@@ -1302,8 +1302,7 @@
             background-position: center;
             background-repeat: repeat;
             background-size: var(--watermark-size, 145px) auto;
-            opacity: .12;
-            mix-blend-mode: multiply;
+            opacity: var(--watermark-opacity, .16);
         }
 
         .brand-watermark-pattern {
@@ -1314,8 +1313,7 @@
             background-position: center;
             background-repeat: repeat;
             background-size: var(--watermark-size, 145px) auto;
-            opacity: .12;
-            mix-blend-mode: multiply;
+            opacity: var(--watermark-opacity, .16);
         }
 
         .theme-picker-watermark.is-diagonal,
@@ -11760,8 +11758,12 @@
                             <label for="watermarkSizeInput">ロゴの大きさ <output id="watermarkSizeOutput">145px</output></label>
                             <input type="range" id="watermarkSizeInput" min="60" max="320" step="5" value="145">
                         </div>
+                        <div>
+                            <label for="watermarkOpacityInput">透かしの濃さ <output id="watermarkOpacityOutput">16%</output></label>
+                            <input type="range" id="watermarkOpacityInput" min="3" max="40" step="1" value="16">
+                        </div>
                     </div>
-                    <small class="help">どのデザインにも反映されます。薄く並べて、カードや価格が読める濃さで表示します。</small>
+                    <small class="help">数値を上げるほど見えやすくなります。暗いデザインではロゴが埋もれないよう自動で濃さを補正します。</small>
                 </div>
 
                 <div class="control-group">
@@ -12871,7 +12873,15 @@
         outlineColor: "#111827",
         outlineWidth: 2
     };
-    const DEFAULT_WATERMARK_SETTINGS = { enabled: false, pattern: "grid", size: 145 };
+    const DEFAULT_WATERMARK_SETTINGS = {
+        enabled: false,
+        pattern: "grid",
+        size: 145,
+        opacity: 16
+    };
+    const DARK_WATERMARK_THEMES = new Set([
+        "signal", "alert", "cyber", "scoreboard"
+    ]);
     const WATERMARK_PATTERN_OPTIONS = ["grid", "diagonal"];
     const DEFAULT_PRICE_CUSTOM = {
         scale: 100,
@@ -15733,6 +15743,10 @@
                     watermark.setAttribute("aria-hidden", "true");
                     watermark.style.backgroundImage = `url("${logoDataUrl}")`;
                     watermark.style.setProperty("--watermark-size", `${watermarkSettings.size / 3}px`);
+                    watermark.style.setProperty(
+                        "--watermark-opacity",
+                        String(getWatermarkOpacity(theme, watermarkSettings.opacity))
+                    );
                     preview.prepend(watermark);
                 }
 
@@ -15774,6 +15788,12 @@
                 60,
                 320,
                 DEFAULT_WATERMARK_SETTINGS.size
+            ),
+            opacity: clampTitleNumber(
+                settings.opacity,
+                3,
+                40,
+                DEFAULT_WATERMARK_SETTINGS.opacity
             )
         };
     }
@@ -15782,7 +15802,8 @@
         return normalizeWatermarkSettings({
             enabled: document.getElementById("watermarkEnabledInput")?.checked,
             pattern: document.getElementById("watermarkPatternSelect")?.value,
-            size: document.getElementById("watermarkSizeInput")?.value
+            size: document.getElementById("watermarkSizeInput")?.value,
+            opacity: document.getElementById("watermarkOpacityInput")?.value
         });
     }
 
@@ -15791,12 +15812,21 @@
         const enabledInput = document.getElementById("watermarkEnabledInput");
         const patternSelect = document.getElementById("watermarkPatternSelect");
         const sizeInput = document.getElementById("watermarkSizeInput");
+        const opacityInput = document.getElementById("watermarkOpacityInput");
         if (enabledInput) enabledInput.checked = normalized.enabled;
         if (patternSelect) patternSelect.value = normalized.pattern;
         if (sizeInput) sizeInput.value = String(normalized.size);
+        if (opacityInput) opacityInput.value = String(normalized.opacity);
         const output = document.getElementById("watermarkSizeOutput");
         if (output) output.textContent = `${normalized.size}px`;
+        const opacityOutput = document.getElementById("watermarkOpacityOutput");
+        if (opacityOutput) opacityOutput.textContent = `${normalized.opacity}%`;
         if (updatePages) applyWatermarkToPages();
+    }
+
+    function getWatermarkOpacity(theme, opacity) {
+        const multiplier = DARK_WATERMARK_THEMES.has(theme) ? 1.4 : 1;
+        return Math.min(0.48, opacity / 100 * multiplier);
     }
 
     function applyBrandWatermarkPattern(page, settings = getWatermarkSettings()) {
@@ -15816,6 +15846,10 @@
         pattern.classList.toggle("is-diagonal", normalized.pattern === "diagonal");
         pattern.style.backgroundImage = `url("${logoDataUrl}")`;
         pattern.style.setProperty("--watermark-size", `${normalized.size}px`);
+        pattern.style.setProperty(
+            "--watermark-opacity",
+            String(getWatermarkOpacity(page.dataset.theme, normalized.opacity))
+        );
     }
 
     function applyWatermarkToPages() {
@@ -15935,6 +15969,12 @@
         .addEventListener("input", event => {
             document.getElementById("watermarkSizeOutput").textContent =
                 `${event.target.value}px`;
+            updateWatermark();
+        });
+    document.getElementById("watermarkOpacityInput")
+        .addEventListener("input", event => {
+            document.getElementById("watermarkOpacityOutput").textContent =
+                `${event.target.value}%`;
             updateWatermark();
         });
     const updateTitleCustomization = () => {
