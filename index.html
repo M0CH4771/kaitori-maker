@@ -1095,14 +1095,22 @@
 
         .theme-picker-gallery {
             display: grid;
-            gap: 14px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
             margin-top: 8px;
         }
 
         .theme-picker-category {
-            display: grid;
-            gap: 7px;
+            display: grid; align-content: start; gap: 6px; min-width: 0;
+            padding: 9px; border: 1px solid rgba(255,255,255,.11);
+            border-radius: 9px; background: rgba(255,255,255,.035);
         }
+        .theme-category-select {
+            width: 100%; min-width: 0; padding: 8px 26px 8px 9px;
+            color: #edf2fa; border: 1px solid #384355; border-radius: 7px;
+            background: #111722; font-size: 11px; font-weight: 800;
+        }
+        @media (max-width: 540px) { .theme-picker-gallery { grid-template-columns: 1fr; } }
 
         .theme-picker-category-title {
             margin: 0;
@@ -3040,6 +3048,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) {
             color: var(--buy-ink);
@@ -3068,6 +3077,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         )::before {
             border-color: var(--buy-border);
@@ -3095,6 +3105,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         )::after {
             background: var(--buy-accent);
@@ -3121,6 +3132,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .header-area {
             border-color: var(--buy-border);
@@ -3149,6 +3161,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .header-area::before {
             background: var(--buy-accent-2);
@@ -3175,6 +3188,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .title-container h1 {
             color: #fff;
@@ -3202,6 +3216,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .page-emblem {
             color: var(--buy-panel);
@@ -3231,6 +3246,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-item {
             color: var(--buy-ink);
@@ -3260,6 +3276,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-item::before {
             background: var(--buy-accent);
@@ -3286,6 +3303,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-name {
             color: var(--buy-ink);
@@ -3312,6 +3330,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-grade {
             color: #fff;
@@ -3340,6 +3359,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-price-container {
             border-color: var(--buy-price);
@@ -3367,6 +3387,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .status-badge {
             color: var(--buy-panel);
@@ -3395,6 +3416,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .footer-area {
             color: var(--buy-note);
@@ -3424,6 +3446,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .disclaimer,
         .exportArea:is(
@@ -3447,6 +3470,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .update-date {
             color: var(--buy-note);
@@ -3473,6 +3497,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .update-label,
         .exportArea:is(
@@ -3496,6 +3521,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .page-number {
             color: var(--buy-accent-2);
@@ -5295,6 +5321,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) {
             --v4-bg: #08101b;
@@ -5341,6 +5368,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         )::before {
             z-index: 0;
@@ -5373,6 +5401,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         )::after {
             z-index: 1;
@@ -5407,6 +5436,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .header-area {
             z-index: 2;
@@ -5446,6 +5476,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .header-area::before {
             bottom: -5px;
@@ -5475,6 +5506,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .logo-container {
             width: 350px;
@@ -5503,6 +5535,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .logo-container img {
             max-height: 120px;
@@ -5530,6 +5563,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .title-container h1 {
             line-height: 0.98;
@@ -5556,6 +5590,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .page-emblem {
             width: 94px;
@@ -5590,6 +5625,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-grid {
             z-index: 2;
@@ -5619,6 +5655,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-item {
             padding: 7px;
@@ -5653,6 +5690,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-item::before {
             height: 5px;
@@ -5680,6 +5718,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-img-container {
             margin-bottom: 5px;
@@ -5711,6 +5750,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-name {
             display: -webkit-box;
@@ -5747,6 +5787,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-meta {
             min-height: 18px;
@@ -5774,6 +5815,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-grade {
             padding: 3px 8px;
@@ -5805,6 +5847,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-price-container {
             height: 34px;
@@ -5840,6 +5883,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-price-text {
             color: var(--v4-price-text);
@@ -5870,6 +5914,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .status-badge {
             top: 10px;
@@ -5907,6 +5952,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .footer-area {
             z-index: 2;
@@ -5942,6 +5988,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .disclaimer,
         .exportArea:is(
@@ -5965,6 +6012,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .update-date {
             color: var(--v4-footer-text);
@@ -5991,6 +6039,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .update-label {
             color: var(--v4-accent-2);
@@ -6017,6 +6066,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .page-number {
             color: var(--v4-footer-text);
@@ -6295,6 +6345,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-name {
             font-size: 9px;
@@ -6321,6 +6372,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-price-text {
             font-size: 21px;
@@ -7221,6 +7273,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .status-badge {
             --boost-bg: #e0b54f;
@@ -7279,6 +7332,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .status-badge::after {
             position: absolute;
@@ -7845,53 +7899,24 @@
         .exportArea[data-theme="royalblue"] .header-area { border-left:7px solid #c9d9ed; }
         .exportArea[data-theme="royalblue"] .page-emblem { border-radius:4px; background:#c9d9ed; color:#173b68; }
 
-        /* 72 variations generated from 18 palettes and four layout treatments */
-        .exportArea[data-theme^="theme100_"] {
-            background-image:var(--generated-page-image)!important;
-            background-size:var(--generated-page-size,auto)!important;
-        }
-        .exportArea[data-theme^="theme100_"] .header-area {
-            background:var(--generated-header-image)!important;
-            border:1px solid var(--v4-accent)!important;
-            border-radius:var(--generated-header-radius)!important;
-            box-shadow:none!important;
-        }
-        .exportArea[data-theme^="theme100_"] .footer-area {
-            background:var(--v4-footer)!important;
-            border-color:var(--v4-border)!important;
-            border-top-color:var(--v4-accent)!important;
-        }
-        .exportArea[data-theme^="theme100_"] .card-item {
-            background:var(--v4-card)!important;
-            border:1px solid var(--v4-border)!important;
-            border-radius:var(--generated-card-radius)!important;
-            box-shadow:0 2px 7px rgba(20,30,40,.09)!important;
-        }
-        .exportArea[data-theme^="theme100_"] .card-img-container {
-            background:var(--v4-image)!important;
-            border-color:var(--v4-border)!important;
-        }
-        .exportArea[data-theme^="theme100_"] .card-price-container {
-            background:var(--price-surface)!important;
-            border-color:var(--price-border)!important;
-        }
-        .exportArea[data-theme^="theme100_"] .page-emblem {
-            color:var(--v4-header-text)!important;
-            border-color:var(--v4-accent)!important;
-            background:var(--v4-header)!important;
-            border-radius:var(--generated-emblem-radius)!important;
-        }
-        .exportArea[data-theme^="theme100_"][data-theme-treatment="line"] .header-area {
-            border-left-width:8px!important;
-        }
-        .exportArea[data-theme^="theme100_"][data-theme-treatment="grid"] .card-item {
-            box-shadow:none!important;
-        }
-        .exportArea[data-theme^="theme100_"][data-theme-treatment="round"] .page-emblem {
-            border-radius:999px!important;
-        }
+        /* 72 individually catalogued design treatments */
+        .exportArea[data-theme^="design_"] { background-image:var(--generated-page-image)!important; background-size:var(--generated-page-size,auto)!important; }
+        .exportArea[data-theme^="design_"] .header-area { background:var(--generated-header-image)!important; border:1px solid var(--v4-accent)!important; border-radius:var(--generated-header-radius)!important; box-shadow:var(--generated-header-shadow)!important; }
+        .exportArea[data-theme^="design_"] .footer-area { background:var(--v4-footer)!important; border-color:var(--v4-border)!important; border-top-color:var(--v4-accent)!important; }
+        .exportArea[data-theme^="design_"] .card-item { background:var(--v4-card)!important; border:1px solid var(--v4-border)!important; border-radius:var(--generated-card-radius)!important; box-shadow:var(--generated-card-shadow)!important; }
+        .exportArea[data-theme^="design_"] .card-img-container { background:var(--v4-image)!important; border-color:var(--v4-border)!important; }
+        .exportArea[data-theme^="design_"] .card-price-container { background:var(--price-surface)!important; border-color:var(--price-border)!important; }
+        .exportArea[data-theme^="design_"] .page-emblem { color:var(--v4-header-text)!important; border-color:var(--v4-accent)!important; background:var(--generated-emblem-bg)!important; border-radius:var(--generated-emblem-radius)!important; box-shadow:var(--generated-emblem-shadow)!important; }
+        .exportArea[data-theme-family="luxury"]::before { border-width:3px!important; box-shadow:inset 0 0 0 5px var(--v4-bg),inset 0 0 0 6px var(--v4-accent)!important; }
+        .exportArea[data-theme-family="japanese"]::before { border-style:double!important; border-width:4px!important; }
+        .exportArea[data-theme-family="editorial"] .header-area,.exportArea[data-theme-family="editorial"] .footer-area,.exportArea[data-theme-family="editorial"] .card-item { border-radius:0!important; box-shadow:none!important; }
+        .exportArea[data-theme-family="pop"] .card-item { box-shadow:3px 3px 0 var(--v4-accent-2)!important; }
+        .exportArea[data-theme-family="nature"] .card-item { box-shadow:0 3px 10px rgba(25,55,40,.1)!important; }
+        .exportArea[data-theme-family="digital"] .header-area { border-bottom-width:3px!important; }
+        .exportArea[data-theme-family="seasonal"] .page-emblem { border-radius:50%!important; }
 
         /* =========================================================
+           PRICE CONTRAST V6        /* =========================================================
            PRICE CONTRAST V6
            全デザインで価格面と文字のコントラストを個別保証する
            ========================================================= */
@@ -8036,6 +8061,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
+            [data-theme^="design_"]
             [data-theme^="theme100_"]
         ) .card-price-container {
             height: 66px;
@@ -12503,60 +12529,24 @@
             <div class="settings-grid design-settings-grid">
                 <div class="control-group">
                     <div class="theme-picker-label">デザインパターン（全100種類）</div>
-                    <select id="themeSelect" class="theme-picker-native-select" aria-hidden="true" tabindex="-1">
-                        <optgroup label="見やすい・シンプル">
-                            <option value="market">白×赤｜スタンダード</option>
-                            <option value="trust">青×白｜ベーシック</option>
-                            <option value="clearblue">白×青｜クリア</option>
-                            <option value="slateclean">白×紺｜スレート</option>
-                            <option value="highcontrast">白×黒｜高コントラスト</option>
-                            <option value="editorial">白×黒｜エディトリアル</option>
-                            <option value="ivoryclean">生成り×墨｜落ち着き</option>
-                            <option value="sageclean">白×緑｜ナチュラル</option>
-                            <option value="coralclean">白×朱｜コーラル</option>
+                                        <select id="themeSelect" class="theme-picker-native-select" aria-hidden="true" tabindex="-1">
+                        <optgroup label="見やすい・シンプル" data-design-category="classic">
+                            <option value="market">白×赤｜スタンダード</option><option value="trust">青×白｜ベーシック</option><option value="clearblue">白×青｜クリア</option><option value="slateclean">白×紺｜スレート</option><option value="highcontrast">白×黒｜高コントラスト</option><option value="editorial">白×黒｜エディトリアル</option><option value="ivoryclean">生成り×墨｜落ち着き</option><option value="sageclean">白×緑｜ナチュラル</option><option value="coralclean">白×朱｜コーラル</option>
                         </optgroup>
-                        <optgroup label="ブランド・定番">
-                            <option value="signal">黒×金｜クラシック</option>
-                            <option value="wa">赤×白｜和風</option>
-                            <option value="ticket">ベージュ×赤｜チケット</option>
-                        </optgroup>
-                        <optgroup label="アクセント">
-                            <option value="alert">赤×黄｜セール</option>
-                            <option value="soft">ピンク×白｜ソフト</option>
-                            <option value="cyber">紫×シアン｜デジタル</option>
-                            <option value="scoreboard">黒×黄｜スポーツ</option>
-                        </optgroup>
-                        <optgroup label="新デザイン｜鮮やか">
-                            <option value="midnight">紺×氷青｜ミッドナイト</option>
-                            <option value="tropical">青緑×ライム｜トロピカル</option>
-                            <option value="plum">紫×藤色｜プラム</option>
-                            <option value="copper">焦茶×銅｜コッパー</option>
-                            <option value="mintpop">ミント×緑｜ミントポップ</option>
-                            <option value="berry">ボルドー×ベリー｜ベリー</option>
-                        </optgroup>
-                        <optgroup label="新デザイン｜落ち着き">
-                            <option value="forestnight">深緑×セージ｜フォレスト</option>
-                            <option value="carbon">黒×ライム｜カーボン</option>
-                            <option value="skyline">空色×橙｜スカイライン</option>
-                            <option value="vintage">生成り×葡萄色｜ヴィンテージ</option>
-                            <option value="cherry">桜色×紅｜チェリー</option>
-                            <option value="royalblue">青×銀｜ロイヤルブルー</option>
-                        </optgroup>
-                        <optgroup label="追加72種｜クリーン">
-                            <!-- JavaScriptで18配色を追加 -->
-                        </optgroup>
-                        <optgroup label="追加72種｜斜めライン">
-                            <!-- JavaScriptで18配色を追加 -->
-                        </optgroup>
-                        <optgroup label="追加72種｜ラウンド">
-                            <!-- JavaScriptで18配色を追加 -->
-                        </optgroup>
-                        <optgroup label="追加72種｜グリッド">
-                            <!-- JavaScriptで18配色を追加 -->
-                        </optgroup>
+                        <optgroup label="ブランド・定番" data-design-category="brand"><option value="signal">黒×金｜クラシック</option><option value="wa">赤×白｜和風</option><option value="ticket">ベージュ×赤｜チケット</option></optgroup>
+                        <optgroup label="アクセント・イベント" data-design-category="accent"><option value="alert">赤×黄｜セール</option><option value="soft">ピンク×白｜ソフト</option><option value="cyber">紫×シアン｜デジタル</option><option value="scoreboard">黒×黄｜スポーツ</option></optgroup>
+                        <optgroup label="新配色・鮮やか" data-design-category="bright"><option value="midnight">紺×氷青｜ミッドナイト</option><option value="tropical">青緑×ライム｜トロピカル</option><option value="plum">紫×藤色｜プラム</option><option value="copper">焦茶×銅｜コッパー</option><option value="mintpop">ミント×緑｜ミントポップ</option><option value="berry">ボルドー×ベリー｜ベリー</option><option value="forestnight">深緑×セージ｜フォレスト</option><option value="carbon">黒×ライム｜カーボン</option><option value="skyline">空色×橙｜スカイライン</option><option value="vintage">生成り×葡萄色｜ヴィンテージ</option><option value="cherry">桜色×紅｜チェリー</option><option value="royalblue">青×銀｜ロイヤルブルー</option></optgroup>
+                        <optgroup label="幾何学・シャープ" data-design-category="geometry"></optgroup>
+                        <optgroup label="ラグジュアリー" data-design-category="luxury"></optgroup>
+                        <optgroup label="和風・伝統" data-design-category="japanese"></optgroup>
+                        <optgroup label="雑誌・エディトリアル" data-design-category="editorial"></optgroup>
+                        <optgroup label="ポップ・セール" data-design-category="pop"></optgroup>
+                        <optgroup label="自然・ボタニカル" data-design-category="nature"></optgroup>
+                        <optgroup label="デジタル・未来" data-design-category="digital"></optgroup>
+                        <optgroup label="季節・イベント" data-design-category="seasonal"></optgroup>
                     </select>
                     <div id="themePickerGallery" class="theme-picker-gallery" role="group" aria-label="買取表デザイン"></div>
-                    <small class="help">見本をクリックするとデザインが切り替わります。</small>
+                    <small class="help">カテゴリごとのプルダウンからデザインを選ぶと、右のプレビューに反映されます。</small>
                 </div>
 
                 <div class="control-group watermark-settings-group">
@@ -13631,18 +13621,10 @@
         </svg>
     `);
 
-    const GENERATED_THEME_PALETTES = [{"id":"sapphire","label":"サファイア","bg":"#edf3ff","header":"#173c77","headerDark":"#0e2854","card":"#ffffff","ink":"#17243a","muted":"#52657c","image":"#f3f7ff","accent":"#4d7dc0","accent2":"#cfe0fa","border":"#96add1","price":"#173c77","footer":"#123263","footerText":"#f4f8ff","dark":false},{"id":"peacock","label":"ピーコック","bg":"#e9f7f3","header":"#075953","headerDark":"#06423e","card":"#ffffff","ink":"#173632","muted":"#4d6c67","image":"#f1fbf8","accent":"#1c9a88","accent2":"#c5ed79","border":"#80c3b4","price":"#08716a","footer":"#064943","footerText":"#f2fffc","dark":false},{"id":"orchid","label":"オーキッド","bg":"#f4eef9","header":"#593878","headerDark":"#3d2558","card":"#ffffff","ink":"#31243e","muted":"#685875","image":"#faf6fc","accent":"#9a70b7","accent2":"#e4d2f2","border":"#b89bca","price":"#70468e","footer":"#442c5e","footerText":"#fff8ff","dark":false},{"id":"sunsetglow","label":"サンセット","bg":"#fff1e8","header":"#8e3d2a","headerDark":"#65291e","card":"#fffdfb","ink":"#3f2a24","muted":"#73594f","image":"#fff7f0","accent":"#dc7948","accent2":"#ffd09d","border":"#dfad8e","price":"#a64428","footer":"#713020","footerText":"#fff8f0","dark":false},{"id":"crimson","label":"クリムゾン","bg":"#faeef0","header":"#76293d","headerDark":"#501a2b","card":"#fffdfd","ink":"#38222a","muted":"#70525c","image":"#fff7f7","accent":"#b74b65","accent2":"#f2c3cb","border":"#d399a5","price":"#92243d","footer":"#5b1e30","footerText":"#fff7f8","dark":false},{"id":"citron","label":"シトロン","bg":"#f3f7e7","header":"#3e5421","headerDark":"#293b15","card":"#ffffff","ink":"#29321d","muted":"#5c684c","image":"#f8faef","accent":"#8da83b","accent2":"#e3ef9d","border":"#b2c47b","price":"#506b20","footer":"#35491c","footerText":"#f8ffeb","dark":false},{"id":"champagne","label":"シャンパン","bg":"#f5efdf","header":"#4f402a","headerDark":"#352a1d","card":"#fffdf7","ink":"#332c21","muted":"#6b6252","image":"#faf5e9","accent":"#b79754","accent2":"#f0dfb0","border":"#c9b581","price":"#856326","footer":"#403321","footerText":"#fffaf0","dark":false},{"id":"steel","label":"スチール","bg":"#edf1f5","header":"#36495f","headerDark":"#243346","card":"#ffffff","ink":"#202b38","muted":"#5c6875","image":"#f4f6f8","accent":"#6685a5","accent2":"#d2deea","border":"#aab9c8","price":"#405f80","footer":"#2c3e52","footerText":"#f7faff","dark":false},{"id":"lagoon","label":"ラグーン","bg":"#e7f6f8","header":"#07566b","headerDark":"#063c4d","card":"#ffffff","ink":"#16343a","muted":"#4f6d72","image":"#effafb","accent":"#26a2b3","accent2":"#b7e9e7","border":"#83c8d0","price":"#08758b","footer":"#064655","footerText":"#f1feff","dark":false},{"id":"ruby","label":"ルビー","bg":"#fff0ed","header":"#842b30","headerDark":"#5d1c23","card":"#ffffff","ink":"#3a2224","muted":"#765456","image":"#fff7f4","accent":"#c44a43","accent2":"#f5c3a8","border":"#d4948c","price":"#a12c32","footer":"#672024","footerText":"#fff8f3","dark":false},{"id":"moss","label":"モスグリーン","bg":"#edf3e9","header":"#38563d","headerDark":"#263e2d","card":"#ffffff","ink":"#233529","muted":"#586b5b","image":"#f5f8f1","accent":"#71966c","accent2":"#d2e2a5","border":"#a5bd9a","price":"#416c4c","footer":"#2e4935","footerText":"#f7fff2","dark":false},{"id":"cobalt","label":"コバルト","bg":"#eaf1fc","header":"#164e91","headerDark":"#0d356c","card":"#ffffff","ink":"#192d46","muted":"#526983","image":"#f3f7fd","accent":"#3478c4","accent2":"#c3d9f6","border":"#91b2dc","price":"#185ca4","footer":"#123e74","footerText":"#f4f8ff","dark":false},{"id":"terracotta","label":"テラコッタ","bg":"#f5ece5","header":"#713d2d","headerDark":"#4e2b22","card":"#fffaf6","ink":"#372922","muted":"#6d574c","image":"#faf3ed","accent":"#b96c4c","accent2":"#ecc7a6","border":"#c99a7e","price":"#91432c","footer":"#593125","footerText":"#fff7f0","dark":false},{"id":"graphite","label":"グラファイト","bg":"#111519","header":"#252d34","headerDark":"#171d22","card":"#f7f8f6","ink":"#202529","muted":"#596167","image":"#edf0ef","accent":"#a2b3bd","accent2":"#e2ed70","border":"#697c84","price":"#303e47","footer":"#1d2429","footerText":"#f5f8f8","dark":true},{"id":"nightsea","label":"ナイトシー","bg":"#0c1d28","header":"#123b4b","headerDark":"#0b2a37","card":"#f5fbfa","ink":"#173239","muted":"#4c6870","image":"#eaf4f4","accent":"#4eacb1","accent2":"#b3e9d9","border":"#4d8991","price":"#155f70","footer":"#0d303d","footerText":"#f2ffff","dark":true},{"id":"emerald","label":"エメラルド","bg":"#e9f5ef","header":"#075c47","headerDark":"#064231","card":"#ffffff","ink":"#17392f","muted":"#4f6d62","image":"#f2faf5","accent":"#22a47e","accent2":"#bce8cb","border":"#82c1a4","price":"#087357","footer":"#064a39","footerText":"#f1fff7","dark":false},{"id":"sand","label":"サンドベージュ","bg":"#f2eadc","header":"#574632","headerDark":"#3b3022","card":"#fffaf0","ink":"#352d23","muted":"#6b6152","image":"#faf5e9","accent":"#a78454","accent2":"#e7d29e","border":"#c0a77e","price":"#80552c","footer":"#453725","footerText":"#fffaf0","dark":false},{"id":"neon","label":"ネオン","bg":"#151522","header":"#26263e","headerDark":"#19192e","card":"#faf9ff","ink":"#211f2d","muted":"#625c70","image":"#f1eff7","accent":"#b25ad1","accent2":"#c6ef54","border":"#79528c","price":"#513167","footer":"#1f1d34","footerText":"#fcf8ff","dark":true}];
-    const GENERATED_THEME_TREATMENTS = [{"id":"clean","label":"クリーン"},{"id":"line","label":"斜めライン"},{"id":"round","label":"ラウンド"},{"id":"grid","label":"グリッド"}];
-    const GENERATED_THEME_DEFINITIONS = GENERATED_THEME_PALETTES.flatMap(palette =>
-        GENERATED_THEME_TREATMENTS.map(treatment => ({
-            id: `theme100_${palette.id}_${treatment.id}`,
-            label: `${palette.label}｜${treatment.label}`,
-            palette,
-            treatment
-        }))
-    );
+    const DESIGN_CATEGORIES = [{"id":"geometry","label":"幾何学・シャープ"},{"id":"luxury","label":"ラグジュアリー"},{"id":"japanese","label":"和風・伝統"},{"id":"editorial","label":"雑誌・エディトリアル"},{"id":"pop","label":"ポップ・セール"},{"id":"nature","label":"自然・ボタニカル"},{"id":"digital","label":"デジタル・未来"},{"id":"seasonal","label":"季節・イベント"}];
+    const GENERATED_THEME_DEFINITIONS = [{"id":"geo_grid","label":"格子設計","category":"geometry","family":"geometry","motif":"01","bg":"#f1f4f6","header":"#263b50","accent":"#7192a9","accent2":"#d2e1ea","price":"#a92336","dark":false},{"id":"geo_arch","label":"アーチ構成","category":"geometry","family":"geometry","motif":"02","bg":"#f2eff8","header":"#372a5a","accent":"#9782c2","accent2":"#e2d8f1","price":"#653f91","dark":false},{"id":"geo_rail","label":"サイドレール","category":"geometry","family":"geometry","motif":"03","bg":"#edf4f6","header":"#174b65","accent":"#438da6","accent2":"#cce8ec","price":"#a53832","dark":false},{"id":"geo_step","label":"ステップライン","category":"geometry","family":"geometry","motif":"04","bg":"#f7f0e8","header":"#67452f","accent":"#cd8754","accent2":"#f0d6b8","price":"#9a3d24","dark":false},{"id":"geo_cross","label":"クロスフレーム","category":"geometry","family":"geometry","motif":"05","bg":"#eef1f8","header":"#293a68","accent":"#7385bd","accent2":"#d8dff2","price":"#3d4e8b","dark":false},{"id":"geo_portal","label":"ポータル","category":"geometry","family":"geometry","motif":"06","bg":"#eff5f1","header":"#285144","accent":"#68a18c","accent2":"#d2e8dc","price":"#315c4b","dark":false},{"id":"geo_cut","label":"カットコーナー","category":"geometry","family":"geometry","motif":"07","bg":"#f7f2e9","header":"#5b4a31","accent":"#b38e4f","accent2":"#e8d9b0","price":"#805d28","dark":false},{"id":"geo_axis","label":"センター軸","category":"geometry","family":"geometry","motif":"08","bg":"#f2f2f0","header":"#353535","accent":"#8b8b82","accent2":"#dddcd4","price":"#a52c2c","dark":false},{"id":"geo_mosaic","label":"モザイク","category":"geometry","family":"geometry","motif":"09","bg":"#edf5f4","header":"#244d4c","accent":"#57a59d","accent2":"#c7e5de","price":"#226762","dark":false},{"id":"lux_blackgold","label":"黒曜ゴールド","category":"luxury","family":"luxury","motif":"01","bg":"#111317","header":"#201e1b","accent":"#c7a45a","accent2":"#f0dfad","price":"#a3212d","dark":true},{"id":"lux_royal","label":"ロイヤルブルー","category":"luxury","family":"luxury","motif":"02","bg":"#101b35","header":"#172d54","accent":"#b6a0ed","accent2":"#e4dcf8","price":"#294c9a","dark":true},{"id":"lux_emerald","label":"エメラルド箔","category":"luxury","family":"luxury","motif":"03","bg":"#10251f","header":"#173b30","accent":"#b9ca7a","accent2":"#e6edbf","price":"#176650","dark":true},{"id":"lux_burgundy","label":"バーガンディ","category":"luxury","family":"luxury","motif":"04","bg":"#2a151d","header":"#48202f","accent":"#d09a6a","accent2":"#eddbc1","price":"#a22d48","dark":true},{"id":"lux_sapphire","label":"サファイアケース","category":"luxury","family":"luxury","motif":"05","bg":"#112434","header":"#173e5d","accent":"#7ab9ce","accent2":"#d3e9ec","price":"#176488","dark":true},{"id":"lux_rose","label":"ローズゴールド","category":"luxury","family":"luxury","motif":"06","bg":"#311b22","header":"#532632","accent":"#dc9a9c","accent2":"#f1d4c8","price":"#a23e54","dark":true},{"id":"lux_amber","label":"琥珀","category":"luxury","family":"luxury","motif":"07","bg":"#251c10","header":"#49331a","accent":"#d7a53e","accent2":"#f1dc9b","price":"#956016","dark":true},{"id":"lux_silver","label":"銀箔","category":"luxury","family":"luxury","motif":"08","bg":"#242a31","header":"#39434d","accent":"#c3cbd1","accent2":"#eef0ee","price":"#526472","dark":true},{"id":"lux_violet","label":"アメジスト","category":"luxury","family":"luxury","motif":"09","bg":"#211831","header":"#38234e","accent":"#bf9bdd","accent2":"#eddcf2","price":"#713a92","dark":true},{"id":"jp_washi","label":"和紙・墨","category":"japanese","family":"japanese","motif":"01","bg":"#f2eadb","header":"#34302a","accent":"#9e8054","accent2":"#e4d2ac","price":"#77312d","dark":false},{"id":"jp_sakura","label":"桜吹雪","category":"japanese","family":"japanese","motif":"02","bg":"#fff1f2","header":"#7b2638","accent":"#d76c83","accent2":"#f6cfda","price":"#a32b4d","dark":false},{"id":"jp_seigaiha","label":"青海波","category":"japanese","family":"japanese","motif":"03","bg":"#eef5f5","header":"#153f50","accent":"#43899a","accent2":"#cbe3e5","price":"#164f6c","dark":false},{"id":"jp_momiji","label":"紅葉","category":"japanese","family":"japanese","motif":"04","bg":"#f5eee2","header":"#59362b","accent":"#c46b38","accent2":"#edd0a1","price":"#943d24","dark":false},{"id":"jp_fuji","label":"藤棚","category":"japanese","family":"japanese","motif":"05","bg":"#f1eff8","header":"#453769","accent":"#9280b5","accent2":"#ddd4ef","price":"#65518e","dark":false},{"id":"jp_matcha","label":"抹茶","category":"japanese","family":"japanese","motif":"06","bg":"#eef1e5","header":"#3e4a2d","accent":"#8e9c55","accent2":"#d9e1bc","price":"#4e632f","dark":false},{"id":"jp_hanabi","label":"花火","category":"japanese","family":"japanese","motif":"07","bg":"#181b31","header":"#262d53","accent":"#e08b58","accent2":"#f1c995","price":"#b1343c","dark":true},{"id":"jp_shippou","label":"七宝","category":"japanese","family":"japanese","motif":"08","bg":"#f5f0e6","header":"#5a352b","accent":"#bf9d5e","accent2":"#e9d8ad","price":"#9d3531","dark":false},{"id":"jp_kinako","label":"金襴","category":"japanese","family":"japanese","motif":"09","bg":"#eee6d4","header":"#403522","accent":"#b59347","accent2":"#ddca8e","price":"#754027","dark":false},{"id":"ed_newspaper","label":"新聞活字","category":"editorial","family":"editorial","motif":"01","bg":"#f4f1e8","header":"#252525","accent":"#696761","accent2":"#d8d5ca","price":"#a52b30","dark":false},{"id":"ed_magazine","label":"ファッション誌","category":"editorial","family":"editorial","motif":"02","bg":"#f7f0eb","header":"#47272c","accent":"#b57872","accent2":"#e9d4ce","price":"#8f263d","dark":false},{"id":"ed_archive","label":"アーカイブ","category":"editorial","family":"editorial","motif":"03","bg":"#eee9de","header":"#343b43","accent":"#7d8c91","accent2":"#d5d9d5","price":"#5b3940","dark":false},{"id":"ed_catalog","label":"商品カタログ","category":"editorial","family":"editorial","motif":"04","bg":"#f0f2f3","header":"#253c52","accent":"#6c879d","accent2":"#d1dce4","price":"#b4352d","dark":false},{"id":"ed_gallery","label":"ギャラリー","category":"editorial","family":"editorial","motif":"05","bg":"#f7f5ef","header":"#1e252c","accent":"#ae8c5c","accent2":"#ded2b5","price":"#79363b","dark":false},{"id":"ed_poster","label":"タイポポスター","category":"editorial","family":"editorial","motif":"06","bg":"#f5ede8","header":"#8d2c2b","accent":"#d47a4e","accent2":"#efcfad","price":"#2b3038","dark":false},{"id":"ed_blueprint","label":"設計図","category":"editorial","family":"editorial","motif":"07","bg":"#eaf0f3","header":"#254665","accent":"#5b92b5","accent2":"#d2e1e9","price":"#a63331","dark":false},{"id":"ed_modernist","label":"モダニスト","category":"editorial","family":"editorial","motif":"08","bg":"#efefeb","header":"#252525","accent":"#df4b36","accent2":"#e9b146","price":"#252525","dark":false},{"id":"ed_book","label":"ブックカバー","category":"editorial","family":"editorial","motif":"09","bg":"#f1eadb","header":"#543c31","accent":"#a88961","accent2":"#dfcfad","price":"#7c2f36","dark":false},{"id":"pop_burst","label":"バースト","category":"pop","family":"pop","motif":"01","bg":"#fff4dc","header":"#aa2f32","accent":"#f1bb36","accent2":"#ffdf80","price":"#bd1e2d","dark":false},{"id":"pop_candy","label":"キャンディ","category":"pop","family":"pop","motif":"02","bg":"#fff0f4","header":"#b13164","accent":"#eb82b0","accent2":"#f7d4e2","price":"#95234c","dark":false},{"id":"pop_festival","label":"フェス","category":"pop","family":"pop","motif":"03","bg":"#fff1e4","header":"#d14928","accent":"#f2a334","accent2":"#ffe09a","price":"#a52b26","dark":false},{"id":"pop_sticker","label":"ステッカー","category":"pop","family":"pop","motif":"04","bg":"#f6f1ff","header":"#54378a","accent":"#a66be1","accent2":"#e3d1fb","price":"#7136a4","dark":false},{"id":"pop_soda","label":"ソーダ","category":"pop","family":"pop","motif":"05","bg":"#e9f8fb","header":"#14728a","accent":"#3bb9c8","accent2":"#c8f0ea","price":"#145d8b","dark":false},{"id":"pop_lemon","label":"レモンスカッシュ","category":"pop","family":"pop","motif":"06","bg":"#fbf8df","header":"#35451e","accent":"#aecb35","accent2":"#e8f39d","price":"#436719","dark":false},{"id":"pop_chocolate","label":"チョコレート","category":"pop","family":"pop","motif":"07","bg":"#f6eee8","header":"#583429","accent":"#c98255","accent2":"#edc89f","price":"#893628","dark":false},{"id":"pop_toy","label":"トイボックス","category":"pop","family":"pop","motif":"08","bg":"#f2f6fc","header":"#2f54a0","accent":"#e55d67","accent2":"#f1c348","price":"#293c7b","dark":false},{"id":"pop_lime","label":"ライムパンチ","category":"pop","family":"pop","motif":"09","bg":"#eff8e5","header":"#31552a","accent":"#76b83e","accent2":"#d6ee8f","price":"#3c6b27","dark":false},{"id":"nat_forest","label":"森の小径","category":"nature","family":"nature","motif":"01","bg":"#edf2e7","header":"#38503a","accent":"#78945c","accent2":"#d5e1b9","price":"#405f3e","dark":false},{"id":"nat_botanical","label":"ボタニカル","category":"nature","family":"nature","motif":"02","bg":"#f4f1e6","header":"#475a45","accent":"#7e9e76","accent2":"#dce8cf","price":"#576d47","dark":false},{"id":"nat_ocean","label":"深海","category":"nature","family":"nature","motif":"03","bg":"#e7f1f1","header":"#164a58","accent":"#318b91","accent2":"#c4e4df","price":"#135f73","dark":false},{"id":"nat_desert","label":"砂丘","category":"nature","family":"nature","motif":"04","bg":"#f4ead8","header":"#725436","accent":"#c49a5b","accent2":"#ecd9ae","price":"#936027","dark":false},{"id":"nat_herb","label":"ハーブガーデン","category":"nature","family":"nature","motif":"05","bg":"#eef4ec","header":"#426254","accent":"#6ca18a","accent2":"#d2e7d8","price":"#346b58","dark":false},{"id":"nat_sky","label":"高原の空","category":"nature","family":"nature","motif":"06","bg":"#edf4f7","header":"#375c70","accent":"#7fa8b8","accent2":"#d4e5e8","price":"#3e7187","dark":false},{"id":"nat_wood","label":"木目","category":"nature","family":"nature","motif":"07","bg":"#f1e9db","header":"#553b2e","accent":"#a87951","accent2":"#dfc6a5","price":"#79432e","dark":false},{"id":"nat_marine","label":"サンゴ礁","category":"nature","family":"nature","motif":"08","bg":"#e9f5f3","header":"#165c61","accent":"#43a695","accent2":"#c5e6d8","price":"#c34f3d","dark":false},{"id":"nat_moon","label":"月夜の森","category":"nature","family":"nature","motif":"09","bg":"#14221d","header":"#243a2d","accent":"#9ab17b","accent2":"#d4dfad","price":"#9e7a3a","dark":true},{"id":"dig_terminal","label":"ターミナル","category":"digital","family":"digital","motif":"01","bg":"#10171b","header":"#202c31","accent":"#49b69a","accent2":"#b8e4ca","price":"#247c66","dark":true},{"id":"dig_matrix","label":"マトリクス","category":"digital","family":"digital","motif":"02","bg":"#0d1a1d","header":"#102d2c","accent":"#48c789","accent2":"#a8f1bc","price":"#176d55","dark":true},{"id":"dig_synthwave","label":"シンセウェーブ","category":"digital","family":"digital","motif":"03","bg":"#17142c","header":"#29204c","accent":"#d35da8","accent2":"#f7b85d","price":"#6943a8","dark":true},{"id":"dig_arcade","label":"アーケード","category":"digital","family":"digital","motif":"04","bg":"#111a32","header":"#20345d","accent":"#47a9e7","accent2":"#ffe36b","price":"#315eb7","dark":true},{"id":"dig_circuit","label":"サーキット","category":"digital","family":"digital","motif":"05","bg":"#111b28","header":"#1e3348","accent":"#42bfd0","accent2":"#c2eff2","price":"#126d8a","dark":true},{"id":"dig_hologram","label":"ホログラム","category":"digital","family":"digital","motif":"06","bg":"#18202d","header":"#2a3847","accent":"#8ad5dd","accent2":"#e4c7f5","price":"#3b728c","dark":true},{"id":"dig_glitch","label":"グリッチ","category":"digital","family":"digital","motif":"07","bg":"#1e1323","header":"#35203a","accent":"#e35a70","accent2":"#f1c04e","price":"#8b2c72","dark":true},{"id":"dig_space","label":"スペース","category":"digital","family":"digital","motif":"08","bg":"#10152a","header":"#202d50","accent":"#8f83dc","accent2":"#d8d4ff","price":"#5041a2","dark":true},{"id":"dig_tech","label":"テックラボ","category":"digital","family":"digital","motif":"09","bg":"#101d24","header":"#1e3a45","accent":"#55b9a6","accent2":"#d6ed80","price":"#176d70","dark":true},{"id":"sea_spring","label":"春・若葉","category":"seasonal","family":"seasonal","motif":"01","bg":"#f1f4e6","header":"#52663a","accent":"#9aaa57","accent2":"#e0e9b8","price":"#59753b","dark":false},{"id":"sea_sakura","label":"春・桜色","category":"seasonal","family":"seasonal","motif":"02","bg":"#fff0f3","header":"#8d3651","accent":"#d57591","accent2":"#f6d4dc","price":"#b52e4f","dark":false},{"id":"sea_summer","label":"夏・青空","category":"seasonal","family":"seasonal","motif":"03","bg":"#eaf5fa","header":"#1c547d","accent":"#4e9bc7","accent2":"#c9e5f0","price":"#145f8e","dark":false},{"id":"sea_matsuri","label":"夏祭り","category":"seasonal","family":"seasonal","motif":"04","bg":"#fff0de","header":"#a4332d","accent":"#e28d33","accent2":"#f6cd77","price":"#793029","dark":false},{"id":"sea_autumn","label":"秋・銀杏","category":"seasonal","family":"seasonal","motif":"05","bg":"#f3ecdd","header":"#57432d","accent":"#be9645","accent2":"#e8d3a0","price":"#8b5b24","dark":false},{"id":"sea_halloween","label":"ハロウィン","category":"seasonal","family":"seasonal","motif":"06","bg":"#211a2c","header":"#382444","accent":"#cf7c35","accent2":"#f0c179","price":"#722d5b","dark":true},{"id":"sea_winter","label":"冬・雪景色","category":"seasonal","family":"seasonal","motif":"07","bg":"#edf3f8","header":"#344f70","accent":"#8eb3d3","accent2":"#dbeaf4","price":"#466b94","dark":false},{"id":"sea_xmas","label":"クリスマス","category":"seasonal","family":"seasonal","motif":"08","bg":"#f2eee5","header":"#274438","accent":"#b34b43","accent2":"#d5c57e","price":"#a02d35","dark":false},{"id":"sea_newyear","label":"お正月","category":"seasonal","family":"seasonal","motif":"09","bg":"#f5eee0","header":"#7e272d","accent":"#c69b46","accent2":"#ead7a2","price":"#ac282e","dark":false}];
     const GENERATED_THEME_BY_ID = new Map(
-        GENERATED_THEME_DEFINITIONS.map(theme => [theme.id, theme])
+        GENERATED_THEME_DEFINITIONS.map(theme => [`design_${theme.id}`, theme])
     );
 
     const THEMES = [
@@ -13650,7 +13632,7 @@
         "editorial", "ivoryclean", "sageclean", "coralclean",
         "signal", "wa", "ticket", "alert", "soft", "cyber", "scoreboard",
         "midnight", "tropical", "plum", "copper", "mintpop", "berry", "forestnight", "carbon", "skyline", "vintage", "cherry", "royalblue",
-        ...GENERATED_THEME_DEFINITIONS.map(theme => theme.id)
+        ...GENERATED_THEME_DEFINITIONS.map(theme => `design_${theme.id}`)
     ];
     const LAYOUTS = {
         portrait_10x6: {
@@ -13716,7 +13698,7 @@
     const DARK_WATERMARK_THEMES = new Set([
         "signal", "alert", "cyber", "scoreboard",
         "midnight", "forestnight", "carbon",
-        ...GENERATED_THEME_DEFINITIONS.filter(theme => theme.palette.dark).map(theme => theme.id)
+        ...GENERATED_THEME_DEFINITIONS.filter(theme => theme.dark).map(theme => `design_${theme.id}`)
     ]);
     const WATERMARK_PATTERN_OPTIONS = ["grid", "diagonal"];
     const DEFAULT_PRICE_CUSTOM = {
@@ -13734,7 +13716,7 @@
         "clearblue", "ivoryclean", "sageclean",
         "coralclean", "slateclean", "highcontrast",
         "midnight", "tropical", "plum", "copper", "mintpop", "berry", "forestnight", "carbon", "skyline", "vintage", "cherry", "royalblue",
-        ...GENERATED_THEME_DEFINITIONS.map(theme => theme.id)
+        ...GENERATED_THEME_DEFINITIONS.map(theme => `design_${theme.id}`)
     ]);
     const LEGACY_THEME_MAP = {
         luxury: "signal",
@@ -16525,212 +16507,123 @@
     function populateGeneratedThemeOptions() {
         const select = document.getElementById("themeSelect");
         if (!select) return;
-        GENERATED_THEME_TREATMENTS.forEach(treatment => {
-            const group = Array.from(select.querySelectorAll("optgroup"))
-                .find(item => item.label === `追加72種｜${treatment.label}`);
+        DESIGN_CATEGORIES.forEach(category => {
+            const group = select.querySelector(`optgroup[data-design-category="${category.id}"]`);
             if (!group) return;
-            GENERATED_THEME_PALETTES.forEach(palette => {
-                const theme = GENERATED_THEME_DEFINITIONS.find(item =>
-                    item.palette.id === palette.id &&
-                    item.treatment.id === treatment.id
-                );
-                if (!theme) return;
-                const option = document.createElement("option");
-                option.value = theme.id;
-                option.textContent = theme.label;
-                group.appendChild(option);
-            });
+            GENERATED_THEME_DEFINITIONS.filter(theme => theme.category === category.id)
+                .forEach(theme => {
+                    const option = document.createElement("option");
+                    option.value = `design_${theme.id}`;
+                    option.textContent = theme.label;
+                    group.appendChild(option);
+                });
         });
     }
 
     function rgbaFromHex(hex, alpha) {
         const value = String(hex || "#000000").replace("#", "");
-        const normalized = value.length === 3
-            ? value.split("").map(char => char + char).join("")
-            : value;
-        const number = Number.parseInt(normalized, 16);
-        return `rgba(${(number >> 16) & 255},${(number >> 8) & 255},${number & 255},${alpha})`;
+        const normalized = value.length === 3 ? value.split("").map(char => char+char).join("") : value;
+        const number = Number.parseInt(normalized,16);
+        return `rgba(${(number>>16)&255},${(number>>8)&255},${number&255},${alpha})`;
+    }
+
+    function generatedPagePattern(theme) {
+        const {family,motif,bg,accent,accent2}=theme;
+        const index=Number(motif)||1;
+        const angle=[28,42,58,72,118,132,148,162,94][(index-1)%9];
+        const shade=rgbaFromHex(accent,(family==="digital"||family==="luxury")?0.12:0.07);
+        const highlight=rgbaFromHex(accent2,0.11);
+        const dots=`radial-gradient(circle,${shade} 1px,transparent 1.8px)`;
+        const diagonal=`repeating-linear-gradient(${angle}deg,${shade} 0 2px,transparent 2px 16px)`;
+        const cross=`linear-gradient(${angle}deg,${highlight} 1px,transparent 1px 22px),linear-gradient(${angle+90}deg,${highlight} 1px,transparent 1px 22px)`;
+        const ring=`radial-gradient(circle at ${(index*11)%100}% ${(index*17)%100}%,${highlight} 0 2px,transparent 3px 30px)`;
+        const pattern=[diagonal,dots,cross,ring][(index-1)%4],base=`linear-gradient(${bg},${bg})`;
+        if(family==="geometry")return `${pattern},${base}`;
+        if(family==="luxury")return `radial-gradient(circle at 90% 5%,${highlight},transparent 28%),${pattern},${base}`;
+        if(family==="japanese")return `repeating-linear-gradient(90deg,transparent 0 18px,${rgbaFromHex(accent,0.045)} 18px 19px),${ring},${base}`;
+        if(family==="editorial")return `linear-gradient(0deg,${rgbaFromHex(accent,0.05)} 1px,transparent 1px 30px),${base}`;
+        if(family==="pop")return `conic-gradient(from ${angle}deg at 92% 8%,${highlight},transparent 18%,${shade} 30%,transparent 42%),${base}`;
+        if(family==="nature")return `radial-gradient(ellipse at 0% 0%,${highlight},transparent 28%),radial-gradient(ellipse at 100% 100%,${shade},transparent 25%),${base}`;
+        if(family==="digital")return `linear-gradient(${shade} 1px,transparent 1px),linear-gradient(90deg,${shade} 1px,transparent 1px),${diagonal},${base}`;
+        return `${ring},${diagonal},${base}`;
     }
 
     function applyGeneratedThemeAppearance(element, themeId) {
         if (!element) return;
-        const definition = GENERATED_THEME_BY_ID.get(themeId);
-        const wasGenerated = String(element.dataset.theme || "").startsWith("theme100_");
-        if (!definition) {
-            if (wasGenerated) {
-                [
-                    "--generated-page-image", "--generated-page-size",
-                    "--generated-header-image", "--generated-header-radius",
-                    "--generated-card-radius", "--generated-emblem-radius"
-                ].forEach(property => element.style.removeProperty(property));
-                element.style.removeProperty("background-image");
-                element.style.removeProperty("background-size");
+        const theme=GENERATED_THEME_BY_ID.get(String(themeId).replace(/^design_/,""));
+        const wasGenerated=String(element.dataset.theme||"").startsWith("design_");
+        if(!theme){
+            if(wasGenerated){
+                ["--generated-page-image","--generated-page-size","--generated-header-image","--generated-header-radius","--generated-card-radius","--generated-emblem-radius","--generated-header-shadow","--generated-card-shadow","--generated-emblem-bg","--generated-emblem-shadow"].forEach(p=>element.style.removeProperty(p));
+                element.style.removeProperty("background-image");element.style.removeProperty("background-size");
             }
-            delete element.dataset.themeTreatment;
-            return;
+            delete element.dataset.themeFamily;delete element.dataset.themeMotif;return;
         }
-
-        const palette = definition.palette;
-        const treatment = definition.treatment;
-        const variables = {
-            "--buy-bg":palette.bg, "--buy-panel":palette.header,
-            "--buy-card":palette.card, "--buy-ink":palette.ink,
-            "--buy-accent":palette.accent, "--buy-accent-2":palette.accent2,
-            "--buy-price":palette.price, "--buy-note":palette.footerText,
-            "--buy-border":palette.border,
-            "--v4-bg":palette.bg, "--v4-header":palette.header,
-            "--v4-header-text":palette.footerText, "--v4-card":palette.card,
-            "--v4-ink":palette.ink, "--v4-muted":palette.muted,
-            "--v4-image":palette.image, "--v4-accent":palette.accent,
-            "--v4-accent-2":palette.accent2, "--v4-border":palette.border,
-            "--v4-price":palette.price, "--v4-price-text":"#ffffff",
-            "--v4-footer":palette.footer, "--v4-footer-text":palette.footerText,
-            "--price-surface":palette.price, "--price-ink":"#ffffff",
-            "--price-border":palette.accent2,
-            "--generated-header-image":`linear-gradient(110deg,${palette.headerDark},${palette.header} 52%,${palette.headerDark})`,
-            "--generated-card-radius":treatment.id==="round"?"13px":treatment.id==="clean"?"7px":"3px",
-            "--generated-header-radius":treatment.id==="round"?"15px":treatment.id==="line"?"3px":"8px",
-            "--generated-emblem-radius":treatment.id==="round"?"999px":treatment.id==="grid"?"2px":"7px"
+        const {family,motif,bg,header,accent,accent2,price,dark}=theme;
+        const n=(Number(motif)-1)%9;
+        const cardRadii=["2px","6px","12px","0","16px","4px","9px","3px","14px"];
+        const headerRadii=["2px 14px 2px 14px","8px","4px","0","18px 18px 3px 3px","3px","12px 3px 12px 3px","2px","14px 4px"];
+        const emblemRadii=["50%","4px","999px","2px","8px","0","50% 50% 4px 4px","14px","3px"];
+        const headerImage=family==="editorial"
+            ? `linear-gradient(90deg,${header} 0 92%,${accent} 92% 100%)`
+            : family==="japanese"
+                ? `linear-gradient(100deg,${header},${rgbaFromHex(header,0.92)})`
+                : family==="pop"
+                    ? `linear-gradient(115deg,${header},${accent} 65%,${header})`
+                    : family==="digital"
+                        ? `linear-gradient(110deg,${header},${accent} 50%,${header})`
+                        : `linear-gradient(110deg,${header},${rgbaFromHex(accent,0.75)} 52%,${header})`;
+        const vars={
+            "--buy-bg":bg,"--buy-panel":header,"--buy-card":"#ffffff","--buy-ink":dark?"#18212b":"#252b32",
+            "--buy-accent":accent,"--buy-accent-2":accent2,"--buy-price":price,"--buy-note":"#f9faf8","--buy-border":accent,
+            "--v4-bg":bg,"--v4-header":header,"--v4-header-text":"#ffffff","--v4-card":"#ffffff","--v4-ink":dark?"#18212b":"#252b32",
+            "--v4-muted":"#56616b","--v4-image":"#f7f8f6","--v4-accent":accent,"--v4-accent-2":accent2,"--v4-border":accent,
+            "--v4-price":price,"--v4-price-text":"#ffffff","--v4-footer":header,"--v4-footer-text":"#f9faf8",
+            "--price-surface":price,"--price-ink":"#ffffff","--price-border":accent2,
+            "--generated-page-image":generatedPagePattern(theme),"--generated-page-size":family==="digital"?"20px 20px,20px 20px,auto":"auto",
+            "--generated-header-image":headerImage,"--generated-card-radius":family==="editorial"?"0":cardRadii[n],
+            "--generated-header-radius":headerRadii[n],"--generated-emblem-radius":emblemRadii[n],
+            "--generated-header-shadow":family==="luxury"?`inset 0 -2px 0 ${accent2}`:"0 3px 8px rgba(0,0,0,.12)",
+            "--generated-card-shadow":family==="editorial"?"none":family==="pop"?`3px 3px 0 ${accent2}`:"0 2px 8px rgba(20,30,40,.10)",
+            "--generated-emblem-bg":family==="pop"?accent2:header,
+            "--generated-emblem-shadow":family==="luxury"?`0 0 0 2px ${bg},0 0 0 3px ${accent2}`:"none"
         };
-        const lightAccent = rgbaFromHex(palette.accent,treatment.id === "round" ? 0.14 : 0.065);
-        let pageImage = `linear-gradient(${palette.bg},${palette.bg})`;
-        let pageSize = "auto";
-        if (treatment.id === "line") {
-            pageImage = `repeating-linear-gradient(135deg,${rgbaFromHex(palette.accent,.055)} 0 2px,transparent 2px 15px),linear-gradient(${palette.bg},${palette.bg})`;
-        } else if (treatment.id === "round") {
-            pageImage = `radial-gradient(circle at 100% 0,${lightAccent},transparent 35%),linear-gradient(${palette.bg},${palette.bg})`;
-        } else if (treatment.id === "grid") {
-            const gridColor = rgbaFromHex(palette.accent,.075);
-            pageImage = `linear-gradient(${gridColor} 1px,transparent 1px),linear-gradient(90deg,${gridColor} 1px,transparent 1px),linear-gradient(${palette.bg},${palette.bg})`;
-            pageSize = "22px 22px,22px 22px,auto";
-        }
-        variables["--generated-page-image"] = pageImage;
-        variables["--generated-page-size"] = pageSize;
-        Object.entries(variables).forEach(([property,value]) =>
-            element.style.setProperty(property,value)
-        );
-        element.dataset.themeTreatment = treatment.id;
+        Object.entries(vars).forEach(([key,value])=>element.style.setProperty(key,value));
+        element.dataset.themeFamily=family;element.dataset.themeMotif=motif;
     }
 
     function renderThemePickerGallery() {
-        const gallery = document.getElementById("themePickerGallery");
-        const select = document.getElementById("themeSelect");
-        if (!gallery || !select) return;
-
-        gallery.innerHTML = "";
-        Array.from(select.querySelectorAll("optgroup")).forEach(group => {
-            const category = document.createElement("section");
-            category.className = "theme-picker-category";
-
-            const heading = document.createElement("h4");
-            heading.className = "theme-picker-category-title";
-            heading.textContent = group.label;
-            category.appendChild(heading);
-
-            const grid = document.createElement("div");
-            grid.className = "theme-picker-option-grid";
-
-            Array.from(group.querySelectorAll("option")).forEach(option => {
-                const theme = option.value;
-                const button = document.createElement("button");
-                button.type = "button";
-                button.className = "theme-picker-option";
-                button.dataset.theme = theme;
-                button.setAttribute("aria-pressed", String(select.value === theme));
-                button.setAttribute("aria-label", `${option.textContent.trim()}を選択`);
-
-                const preview = document.createElement("div");
-                preview.className = "theme-picker-preview-sheet exportArea";
-                preview.dataset.theme = theme;
-                applyGeneratedThemeAppearance(preview, theme);
-                preview.innerHTML = `
-                    <div class="header-area">
-                        <span class="theme-picker-preview-logo">TCK</span>
-                        <strong class="theme-picker-preview-title">高価買取表</strong>
-                        <span>01</span>
-                    </div>
-                    <div class="card-grid">
-                        <div class="card-item">
-                            <div class="theme-picker-art card-img-container">CARD</div>
-                            <div class="card-name">ピカチュウ</div>
-                            <div class="card-price-container"><span class="card-price-text">¥12,000</span></div>
-                        </div>
-                        <div class="card-item">
-                            <div class="theme-picker-art card-img-container">CARD</div>
-                            <div class="card-name">リザードン</div>
-                            <div class="card-price-container"><span class="card-price-text">¥8,500</span></div>
-                        </div>
-                        <div class="card-item">
-                            <div class="theme-picker-art card-img-container">CARD</div>
-                            <div class="card-name">ミュウ</div>
-                            <div class="card-price-container"><span class="card-price-text">¥4,200</span></div>
-                        </div>
-                    </div>
-                    <div class="footer-area"></div>
-                `;
-
-                const watermarkSettings = getWatermarkSettings();
-                if (watermarkSettings.enabled) {
-                    const watermark = document.createElement("div");
-                    watermark.className = `theme-picker-watermark${watermarkSettings.pattern === "diagonal" ? " is-diagonal" : ""}`;
-                    watermark.setAttribute("aria-hidden", "true");
-                    watermark.style.backgroundImage = `url("${logoDataUrl}")`;
-                    watermark.style.setProperty("--watermark-size", `${watermarkSettings.size / 3}px`);
-                    watermark.style.setProperty(
-                        "--watermark-opacity",
-                        String(getWatermarkOpacity(theme, watermarkSettings.opacity))
-                    );
-                    preview.prepend(watermark);
-                }
-
-                const name = document.createElement("span");
-                name.className = "theme-picker-option-name";
-                name.textContent = option.textContent.trim();
-                button.append(preview, name);
-                button.addEventListener("click", () => {
-                    if (select.value !== theme) {
-                        select.value = theme;
-                        select.dispatchEvent(new Event("change", {bubbles: true}));
-                    } else {
-                        renderThemePickerGallery();
-                    }
-                });
-                grid.appendChild(button);
+        const gallery=document.getElementById("themePickerGallery");
+        const select=document.getElementById("themeSelect");
+        if(!gallery||!select)return;
+        gallery.innerHTML="";
+        Array.from(select.querySelectorAll("optgroup")).forEach((group,index)=>{
+            const section=document.createElement("section");
+            section.className="theme-picker-category";
+            const label=document.createElement("label");
+            label.className="theme-picker-category-title";
+            label.textContent=group.label;
+            const picker=document.createElement("select");
+            picker.className="theme-category-select";
+            picker.id=`themeCategorySelect_${index}`;
+            picker.setAttribute("aria-label",group.label);
+            const placeholder=document.createElement("option");
+            placeholder.value="";placeholder.textContent="このカテゴリから選択";
+            picker.appendChild(placeholder);
+            Array.from(group.querySelectorAll("option")).forEach(option=>{
+                const item=document.createElement("option");
+                item.value=option.value;item.textContent=option.textContent.trim();
+                picker.appendChild(item);
             });
-
-            category.appendChild(grid);
-            gallery.appendChild(category);
+            if(Array.from(picker.options).some(option=>option.value===select.value))picker.value=select.value;
+            label.htmlFor=picker.id;
+            picker.addEventListener("change",()=>{
+                if(!picker.value)return;
+                select.value=picker.value;
+                select.dispatchEvent(new Event("change",{bubbles:true}));
+            });
+            section.append(label,picker);gallery.appendChild(section);
         });
-    }
-
-    function updateThemeGalleryWatermarks(settings = getWatermarkSettings()) {
-        document.querySelectorAll("#themePickerGallery .theme-picker-preview-sheet")
-            .forEach(preview => {
-                let watermark = preview.querySelector(".theme-picker-watermark");
-                if (!settings.enabled || !logoDataUrl) {
-                    watermark?.remove();
-                    return;
-                }
-                if (!watermark) {
-                    watermark = document.createElement("div");
-                    watermark.className = "theme-picker-watermark";
-                    watermark.setAttribute("aria-hidden", "true");
-                    preview.prepend(watermark);
-                }
-                watermark.classList.toggle(
-                    "is-diagonal",
-                    settings.pattern === "diagonal"
-                );
-                watermark.style.backgroundImage = `url("${logoDataUrl}")`;
-                watermark.style.setProperty(
-                    "--watermark-size",
-                    `${settings.size / 3}px`
-                );
-                watermark.style.setProperty(
-                    "--watermark-opacity",
-                    String(getWatermarkOpacity(preview.dataset.theme, settings.opacity))
-                );
-            });
     }
 
     function getSelectedTheme() {
