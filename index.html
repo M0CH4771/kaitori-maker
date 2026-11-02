@@ -1094,30 +1094,23 @@
         }
 
         .theme-picker-gallery {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 9px;
-            margin-top: 8px;
+            display: grid; grid-template-columns: 1fr; gap: 8px; margin-top: 8px;
         }
 
         .theme-picker-category {
-            display: grid; align-content: start; gap: 6px; min-width: 0;
-            padding: 9px; border: 1px solid rgba(255,255,255,.11);
+            min-width: 0; padding: 8px 10px; border: 1px solid rgba(255,255,255,.11);
             border-radius: 9px; background: rgba(255,255,255,.035);
         }
-        .theme-category-select {
-            width: 100%; min-width: 0; padding: 8px 26px 8px 9px;
-            color: #edf2fa; border: 1px solid #384355; border-radius: 7px;
-            background: #111722; font-size: 11px; font-weight: 800;
-        }
-        @media (max-width: 540px) { .theme-picker-gallery { grid-template-columns: 1fr; } }
-
+        .theme-picker-category[open] { background: rgba(255,255,255,.045); }
         .theme-picker-category-title {
-            margin: 0;
-            color: #d5deeb;
-            font-size: 11px;
-            font-weight: 900;
+            display: flex; align-items: center; gap: 8px; min-height: 24px;
+            color: #d5deeb; font-size: 11px; font-weight: 900; cursor: pointer;
+            list-style: none;
         }
+        .theme-picker-category-title::-webkit-details-marker { display: none; }
+        .theme-picker-category-title::before { content: "＋"; color: #f3c75f; width: 12px; }
+        .theme-picker-category[open] > .theme-picker-category-title::before { content: "−"; }
+        .theme-picker-category-current { margin-left: auto; overflow: hidden; color: #f3c75f; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 
         .theme-picker-option-grid {
             display: grid;
@@ -12546,7 +12539,7 @@
                         <optgroup label="季節・イベント" data-design-category="seasonal"></optgroup>
                     </select>
                     <div id="themePickerGallery" class="theme-picker-gallery" role="group" aria-label="買取表デザイン"></div>
-                    <small class="help">カテゴリごとのプルダウンからデザインを選ぶと、右のプレビューに反映されます。</small>
+                    <small class="help">カテゴリを開いて見本を選ぶと、右のプレビューに反映されます。</small>
                 </div>
 
                 <div class="control-group watermark-settings-group">
@@ -16598,35 +16591,53 @@
         const select=document.getElementById("themeSelect");
         if(!gallery||!select)return;
         gallery.innerHTML="";
-        Array.from(select.querySelectorAll("optgroup")).forEach((group,index)=>{
-            const section=document.createElement("section");
+        const selectedTheme=select.value;
+        const watermarkSettings=getWatermarkSettings();
+        Array.from(select.querySelectorAll("optgroup")).forEach(group=>{
+            const options=Array.from(group.querySelectorAll("option"));
+            if(!options.length)return;
+            const section=document.createElement("details");
             section.className="theme-picker-category";
-            const label=document.createElement("label");
-            label.className="theme-picker-category-title";
-            label.textContent=group.label;
-            const picker=document.createElement("select");
-            picker.className="theme-category-select";
-            picker.id=`themeCategorySelect_${index}`;
-            picker.setAttribute("aria-label",group.label);
-            const placeholder=document.createElement("option");
-            placeholder.value="";placeholder.textContent="このカテゴリから選択";
-            picker.appendChild(placeholder);
-            Array.from(group.querySelectorAll("option")).forEach(option=>{
-                const item=document.createElement("option");
-                item.value=option.value;item.textContent=option.textContent.trim();
-                picker.appendChild(item);
-            });
-            if(Array.from(picker.options).some(option=>option.value===select.value))picker.value=select.value;
-            label.htmlFor=picker.id;
-            picker.addEventListener("change",()=>{
-                if(!picker.value)return;
-                select.value=picker.value;
-                select.dispatchEvent(new Event("change",{bubbles:true}));
-            });
-            section.append(label,picker);gallery.appendChild(section);
+            const activeOption=options.find(option=>option.value===selectedTheme);
+            section.open=Boolean(activeOption);
+            const summary=document.createElement("summary");
+            summary.className="theme-picker-category-title";
+            summary.textContent=group.label;
+            if(activeOption){const current=document.createElement("span");current.className="theme-picker-category-current";current.textContent=activeOption.textContent.trim();summary.appendChild(current);}
+            const grid=document.createElement("div");
+            grid.className="theme-picker-option-grid";
+            grid.setAttribute("role","group");
+            grid.setAttribute("aria-label",group.label);
+            const buildCards=()=>{
+                if(grid.dataset.built==="true")return;
+                options.forEach(option=>{
+                    const theme=option.value;
+                    const button=document.createElement("button");
+                    button.type="button";button.className="theme-picker-option";
+                    button.setAttribute("aria-pressed",String(theme===selectedTheme));
+                    button.setAttribute("aria-label",option.textContent.trim());
+                    const sheet=document.createElement("div");
+                    sheet.className="theme-picker-preview-sheet exportArea";sheet.dataset.theme=theme;
+                    sheet.innerHTML='<div class="header-area"><span class="theme-picker-preview-logo">買取表</span><span class="theme-picker-preview-title">カード買取価格</span><span class="page-number">01</span></div><div class="card-grid">'+["CARD 01","CARD 02","CARD 03"].map((name,i)=>'<div class="card-item"><div class="theme-picker-art">CARD</div><div class="card-name">'+name+'</div><div class="card-price-container"><span class="card-price-text">'+["¥12,000","¥8,500","ask"][i]+'</span></div></div>').join("")+'</div>';
+                    applyGeneratedThemeAppearance(sheet,theme);
+                    if(watermarkSettings.enabled&&logoDataUrl){
+                        const watermark=document.createElement("div");watermark.className="theme-picker-watermark";
+                        if(watermarkSettings.pattern==="diagonal")watermark.classList.add("is-diagonal");
+                        watermark.setAttribute("aria-hidden","true");watermark.style.backgroundImage='url("'+logoDataUrl+'")';
+                        watermark.style.setProperty("--watermark-size",(watermarkSettings.size/3)+"px");
+                        watermark.style.setProperty("--watermark-opacity",String(getWatermarkOpacity(theme,watermarkSettings.opacity)));sheet.prepend(watermark);
+                    }
+                    const name=document.createElement("span");name.className="theme-picker-option-name";name.textContent=option.textContent.trim();
+                    button.append(sheet,name);
+                    button.addEventListener("click",()=>{select.value=theme;select.dispatchEvent(new Event("change",{bubbles:true}));});
+                    grid.appendChild(button);
+                });
+                grid.dataset.built="true";
+            };
+            section.addEventListener("toggle",()=>{if(section.open)buildCards();});
+            section.append(summary,grid);gallery.appendChild(section);if(section.open)buildCards();
         });
     }
-
     function getSelectedTheme() {
         const theme = document.getElementById("themeSelect").value;
         return normalizeTheme(theme);
