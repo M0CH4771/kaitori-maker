@@ -1306,6 +1306,12 @@
             opacity: var(--watermark-opacity, .16);
         }
 
+        /* Keep logos behind all direct page content. */
+        .exportArea > :not(.brand-watermark-pattern):not(.theme-picker-watermark) {
+            position: relative;
+            z-index: 2;
+        }
+
         .brand-watermark-pattern {
             position: absolute;
             z-index: 1;
@@ -3041,7 +3047,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) {
             color: var(--buy-ink);
@@ -3070,7 +3076,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         )::before {
             border-color: var(--buy-border);
@@ -3098,7 +3104,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         )::after {
             background: var(--buy-accent);
@@ -3125,7 +3131,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .header-area {
             border-color: var(--buy-border);
@@ -3154,7 +3160,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .header-area::before {
             background: var(--buy-accent-2);
@@ -3181,7 +3187,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .title-container h1 {
             color: #fff;
@@ -3209,7 +3215,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .page-emblem {
             color: var(--buy-panel);
@@ -3239,7 +3245,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-item {
             color: var(--buy-ink);
@@ -3269,7 +3275,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-item::before {
             background: var(--buy-accent);
@@ -3296,7 +3302,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-name {
             color: var(--buy-ink);
@@ -3323,7 +3329,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-grade {
             color: #fff;
@@ -3352,7 +3358,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-price-container {
             border-color: var(--buy-price);
@@ -3380,7 +3386,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .status-badge {
             color: var(--buy-panel);
@@ -3409,7 +3415,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .footer-area {
             color: var(--buy-note);
@@ -3439,7 +3445,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .disclaimer,
         .exportArea:is(
@@ -3463,7 +3469,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .update-date {
             color: var(--buy-note);
@@ -3490,7 +3496,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .update-label,
         .exportArea:is(
@@ -3514,7 +3520,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .page-number {
             color: var(--buy-accent-2);
@@ -5314,7 +5320,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) {
             --v4-bg: #08101b;
@@ -5361,7 +5367,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         )::before {
             z-index: 0;
@@ -5394,7 +5400,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         )::after {
             z-index: 1;
@@ -5429,7 +5435,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .header-area {
             z-index: 2;
@@ -5469,7 +5475,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .header-area::before {
             bottom: -5px;
@@ -5499,7 +5505,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .logo-container {
             width: 350px;
@@ -5528,7 +5534,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .logo-container img {
             max-height: 120px;
@@ -5556,7 +5562,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .title-container h1 {
             line-height: 0.98;
@@ -5583,7 +5589,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .page-emblem {
             width: 94px;
@@ -5618,7 +5624,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-grid {
             z-index: 2;
@@ -5648,7 +5654,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-item {
             padding: 7px;
@@ -5683,7 +5689,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-item::before {
             height: 5px;
@@ -5711,7 +5717,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-img-container {
             margin-bottom: 5px;
@@ -5743,7 +5749,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-name {
             display: -webkit-box;
@@ -5780,7 +5786,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-meta {
             min-height: 18px;
@@ -5808,7 +5814,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-grade {
             padding: 3px 8px;
@@ -5840,7 +5846,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-price-container {
             height: 34px;
@@ -5876,7 +5882,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-price-text {
             color: var(--v4-price-text);
@@ -5907,7 +5913,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .status-badge {
             top: 10px;
@@ -5945,7 +5951,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .footer-area {
             z-index: 2;
@@ -5981,7 +5987,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .disclaimer,
         .exportArea:is(
@@ -6005,7 +6011,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .update-date {
             color: var(--v4-footer-text);
@@ -6032,7 +6038,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .update-label {
             color: var(--v4-accent-2);
@@ -6059,7 +6065,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .page-number {
             color: var(--v4-footer-text);
@@ -6338,7 +6344,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-name {
             font-size: 9px;
@@ -6365,7 +6371,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-price-text {
             font-size: 21px;
@@ -7266,7 +7272,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .status-badge {
             --boost-bg: #e0b54f;
@@ -7325,7 +7331,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .status-badge::after {
             position: absolute;
@@ -8054,7 +8060,7 @@
             [data-theme="vintage"],
             [data-theme="cherry"],
             [data-theme="royalblue"],
-            [data-theme^="design_"]
+            [data-theme^="design_"],
             [data-theme^="theme100_"]
         ) .card-price-container {
             height: 66px;
@@ -16547,10 +16553,9 @@
     function applyGeneratedThemeAppearance(element, themeId) {
         if (!element) return;
         const theme=GENERATED_THEME_BY_ID.get(String(themeId).replace(/^design_/,""));
-        const wasGenerated=String(element.dataset.theme||"").startsWith("design_");
         if(!theme){
             ["--generated-page-image","--generated-page-size","--generated-header-image","--generated-header-radius","--generated-card-radius","--generated-emblem-radius","--generated-header-shadow","--generated-card-shadow","--generated-emblem-bg","--generated-emblem-shadow"].forEach(p=>element.style.removeProperty(p));
-            element.style.removeProperty("background-image");element.style.removeProperty("background-size");
+            ["background-image","background-size","background-color","color","border-color"].forEach(p=>element.style.removeProperty(p));
             delete element.dataset.themeFamily;delete element.dataset.themeMotif;return;
         }
         const {family,motif,bg,header,accent,accent2,price,dark}=theme;
@@ -16583,6 +16588,11 @@
             "--generated-emblem-shadow":family==="luxury"?`0 0 0 2px ${bg},0 0 0 3px ${accent2}`:"none"
         };
         Object.entries(vars).forEach(([key,value])=>element.style.setProperty(key,value));
+        /* Keep the generated palette visible above legacy theme defaults. */
+        element.style.setProperty("background-color",bg,"important");
+        element.style.setProperty("background-image",generatedPagePattern(theme),"important");
+        element.style.setProperty("color",dark?"#ffffff":"#252b32","important");
+        element.style.setProperty("border-color",accent,"important");
         element.dataset.themeFamily=family;element.dataset.themeMotif=motif;
     }
 
