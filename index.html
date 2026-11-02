@@ -15238,6 +15238,7 @@
         const savedWatermarkEnabled = getScopedItem("kaitori_watermark_enabled");
         const savedWatermarkPattern = getScopedItem("kaitori_watermark_pattern");
         const savedWatermarkSize = getScopedItem("kaitori_watermark_size");
+        const savedWatermarkOpacity = getScopedItem("kaitori_watermark_opacity");
         const savedTitleStyle = getScopedItem("kaitori_title_style");
         const savedTitleColor = getScopedItem("kaitori_title_color");
         const savedTitleFont = getScopedItem("kaitori_title_font");
@@ -15263,7 +15264,8 @@
         applyWatermarkSettings({
             enabled: savedWatermarkEnabled === "true",
             pattern: savedWatermarkPattern,
-            size: savedWatermarkSize
+            size: savedWatermarkSize,
+            opacity: savedWatermarkOpacity
         }, false);
         renderThemePickerGallery();
         document.getElementById("titleStyleSelect").value =
@@ -15415,6 +15417,7 @@
         setScopedItem("kaitori_watermark_enabled", String(watermark.enabled));
         setScopedItem("kaitori_watermark_pattern", watermark.pattern);
         setScopedItem("kaitori_watermark_size", String(watermark.size));
+        setScopedItem("kaitori_watermark_opacity", String(watermark.opacity));
         setScopedItem("kaitori_title_style", settings.titleStyle);
         saveTitleCustomization(
             normalizeTitleCustomization(settings.titleCustom || {})
