@@ -6699,8 +6699,9 @@
 
         .card-price-grade-label {
             display: inline-flex;
-            min-width: 32px;
-            flex: 0 0 auto;
+            width: 40px;
+            min-width: 40px;
+            flex: 0 0 40px;
             align-items: center;
             justify-content: center;
             padding: 1.5px 2px;
@@ -6719,7 +6720,9 @@
             [data-layout="portrait_6x5"],
             [data-layout="landscape_10x3"]
         ) .card-price-grade-label {
-            min-width: 38px;
+            width: 48px;
+            min-width: 48px;
+            flex-basis: 48px;
             padding: 2px 3px;
             border-radius: 3px;
             font-size: 10.5px;
@@ -6740,17 +6743,15 @@
             transform-origin: center;
         }
 
-        .card-price-row-primary .card-price-text {
+        .card-price-row-primary .card-price-text,
+        .card-price-row-minus .card-price-text {
             font-weight: 1000;
         }
 
-        .card-price-row-minus .card-price-text {
-            font-weight: 950;
-            opacity: 0.98;
-        }
-
         .quick-price-preview-stage .has-a-minus .card-price-grade-label {
-            min-width: 44px;
+            width: 54px;
+            min-width: 54px;
+            flex-basis: 54px;
             padding: 2px 5px;
             font-size: 11px;
         }
@@ -6768,7 +6769,7 @@
             position: relative;
             min-width: 0;
             min-height: 0;
-            grid-template-columns: auto minmax(0, 1fr);
+            grid-template-columns: 5em minmax(0, 1fr);
             align-items: center;
             gap: 12px;
         }
@@ -6799,16 +6800,8 @@
             white-space: nowrap;
         }
 
-        .single-ad-price.is-dual
-        .single-ad-price-row-primary
-        .single-ad-price-value {
-            font-size: .76em;
-        }
-
-        .single-ad-price.is-dual
-        .single-ad-price-row-minus
-        .single-ad-price-value {
-            font-size: .68em;
+        .single-ad-price.is-dual .single-ad-price-value {
+            font-size: .72em;
         }
 
         .single-ad[data-design="blackgold"] {
@@ -19013,46 +19006,51 @@ BOXのお持ち込みお待ちしております！
             });
 
             if (container.classList.contains("is-dual")) {
-                container.querySelectorAll(".single-ad-price-row")
-                    .forEach(row => {
-                        const value = row.querySelector(
-                            ".single-ad-price-value"
-                        );
-                        const label = row.querySelector(
-                            ".single-ad-state-label"
-                        );
-                        if (!value) return;
+                const rows = Array.from(
+                    container.querySelectorAll(".single-ad-price-row")
+                );
+                const scales = rows.map(row => {
+                    const value = row.querySelector(
+                        ".single-ad-price-value"
+                    );
+                    if (!value) return 1;
 
-                        const availableWidth = Math.max(
-                            0,
-                            row.clientWidth -
-                            (label?.offsetWidth || 0) -
-                            12
-                        );
-                        const availableHeight = Math.max(
-                            0,
-                            row.clientHeight - 2
-                        );
-                        const textWidth = value.scrollWidth;
-                        const textHeight = value.scrollHeight;
-                        if (
-                            !availableWidth ||
-                            !availableHeight ||
-                            !textWidth ||
-                            !textHeight
-                        ) {
-                            return;
-                        }
+                    const label = row.querySelector(
+                        ".single-ad-state-label"
+                    );
+                    const availableWidth = Math.max(
+                        0,
+                        row.clientWidth -
+                        (label?.offsetWidth || 0) -
+                        12
+                    );
+                    const availableHeight = Math.max(
+                        0,
+                        row.clientHeight - 2
+                    );
+                    const textWidth = value.scrollWidth;
+                    const textHeight = value.scrollHeight;
+                    if (
+                        !availableWidth ||
+                        !availableHeight ||
+                        !textWidth ||
+                        !textHeight
+                    ) {
+                        return 1;
+                    }
 
-                        const scale = Math.min(
-                            1,
-                            availableWidth / textWidth,
-                            availableHeight / textHeight
-                        );
-                        if (scale < 1) {
-                            value.style.transform = `scale(${scale})`;
-                        }
+                    return Math.min(
+                        1,
+                        availableWidth / textWidth,
+                        availableHeight / textHeight
+                    );
+                });
+                const commonScale = Math.min(1, ...scales);
+                if (commonScale < 1) {
+                    values.forEach(value => {
+                        value.style.transform = `scale(${commonScale})`;
                     });
+                }
                 return;
             }
 
@@ -19584,10 +19582,13 @@ BOXのお持ち込みお待ちしております！
             });
 
             if (container.classList.contains("has-a-minus")) {
-                container.querySelectorAll(".card-price-row").forEach(row => {
+                const rows = Array.from(
+                    container.querySelectorAll(".card-price-row")
+                );
+                const scales = rows.map(row => {
                     const textElement = row.querySelector(".card-price-text");
                     const label = row.querySelector(".card-price-grade-label");
-                    if (!textElement) return;
+                    if (!textElement) return 1;
 
                     const availableWidth = Math.max(
                         0,
@@ -19602,22 +19603,21 @@ BOXのお持ち込みお待ちしております！
                         !textWidth ||
                         !textHeight
                     ) {
-                        return;
+                        return 1;
                     }
 
-                    const widthScale = Math.min(
+                    return Math.min(
                         1,
-                        availableWidth / textWidth
-                    );
-                    const heightScale = Math.min(
-                        1,
+                        availableWidth / textWidth,
                         availableHeight / textHeight
                     );
-                    const finalScale = Math.min(widthScale, heightScale);
-                    if (finalScale < 1) {
-                        textElement.style.transform = `scale(${finalScale})`;
-                    }
                 });
+                const commonScale = Math.min(1, ...scales);
+                if (commonScale < 1) {
+                    textElements.forEach(textElement => {
+                        textElement.style.transform = `scale(${commonScale})`;
+                    });
+                }
                 return;
             }
 
