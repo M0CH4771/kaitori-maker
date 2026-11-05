@@ -12723,7 +12723,7 @@
                                 <input
                                     type="range"
                                     id="priceSizeRange"
-                                    min="60"
+                                    min="30"
                                     max="140"
                                     step="1"
                                     value="100"
@@ -12731,7 +12731,7 @@
                                 <input
                                     type="number"
                                     id="priceSizeInput"
-                                    min="60"
+                                    min="30"
                                     max="140"
                                     step="1"
                                     value="100"
@@ -15194,7 +15194,7 @@
         return {
             scale: clampTitleNumber(
                 settings.scale,
-                60,
+                30,
                 140,
                 DEFAULT_PRICE_CUSTOM.scale
             ),
@@ -15277,16 +15277,16 @@
     function getBuylistPriceBaseSize(page) {
         const theme = normalizeTheme(page?.dataset?.theme);
         const layout = String(page?.dataset?.layout || "");
-        if (layout === "portrait_6x5") return 28;
-        if (layout === "landscape_10x3") return 26;
+        if (layout === "portrait_6x5") return 24;
+        if (layout === "landscape_10x3") return 22;
         if (layout === "portrait_10x6") {
-            return LARGE_PRICE_THEMES.has(theme) ? 23 : 22;
+            return LARGE_PRICE_THEMES.has(theme) ? 20 : 19;
         }
-        if (layout === "landscape_15x4") return 20;
+        if (layout === "landscape_15x4") return 17;
         return page?.classList?.contains("portrait") &&
             LARGE_PRICE_THEMES.has(theme)
-            ? 23
-            : 21;
+            ? 20
+            : 18;
     }
 
     function getBuylistPriceTextSize(page, priceText, scale) {
@@ -16991,7 +16991,7 @@
     });
     document.getElementById("priceSizeInput").addEventListener("input", event => {
         const value = Number(event.target.value);
-        if (!Number.isFinite(value) || value < 60 || value > 140) return;
+        if (!Number.isFinite(value) || value < 30 || value > 140) return;
         document.getElementById("priceSizeRange").value =
             String(Math.round(value));
         updatePriceCustomization();
@@ -16999,7 +16999,7 @@
     document.getElementById("priceSizeInput").addEventListener("change", event => {
         const normalized = clampTitleNumber(
             event.target.value,
-            60,
+            30,
             140,
             DEFAULT_PRICE_CUSTOM.scale
         );
