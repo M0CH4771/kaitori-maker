@@ -12297,6 +12297,27 @@
     max-height: none !important;
     aspect-ratio: auto !important;
 }
+
+/* 出力デザインの文字影をなくし、2価格表示の境界線を全デザインで共通化 */
+.exportArea,
+.exportArea *,
+.single-ad,
+.single-ad * {
+    text-shadow: none !important;
+}
+
+.card-price-container.has-a-minus .card-price-row + .card-price-row::before {
+    z-index: 2 !important;
+    height: 2px !important;
+    background: var(--price-ink, #ffffff) !important;
+    opacity: 1 !important;
+    pointer-events: none !important;
+}
+
+.single-ad-price.is-dual .single-ad-price-row + .single-ad-price-row {
+    border-top: 2px solid currentColor !important;
+}
+
 </style>
 
 </head>
