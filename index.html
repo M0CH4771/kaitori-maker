@@ -12645,6 +12645,31 @@
                 <div class="appearance-panel">
                     <div class="appearance-panel-heading">
                         <div>
+                            <strong>カード情報の文字サイズ</strong>
+                            <span>カード名と型番を個別に調整</span>
+                        </div>
+                    </div>
+                    <div class="price-customizer-grid">
+                        <div class="title-custom-field">
+                            <label for="cardNameSizeRange"><span>カード名</span><output class="title-size-output" id="cardNameSizeOutput" for="cardNameSizeRange cardNameSizeInput">100%</output></label>
+                            <div class="title-size-controls">
+                                <input type="range" id="cardNameSizeRange" min="50" max="160" step="1" value="100">
+                                <input type="number" id="cardNameSizeInput" min="50" max="160" step="1" value="100" aria-label="カード名の文字サイズ（パーセント）">
+                            </div>
+                        </div>
+                        <div class="title-custom-field">
+                            <label for="cardTypeSizeRange"><span>型番</span><output class="title-size-output" id="cardTypeSizeOutput" for="cardTypeSizeRange cardTypeSizeInput">100%</output></label>
+                            <div class="title-size-controls">
+                                <input type="range" id="cardTypeSizeRange" min="50" max="160" step="1" value="100">
+                                <input type="number" id="cardTypeSizeInput" min="50" max="160" step="1" value="100" aria-label="型番の文字サイズ（パーセント）">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="appearance-panel">
+                    <div class="appearance-panel-heading">
+                        <div>
                             <strong>タイトルの見た目</strong>
                             <span>文字色・フォント・サイズ・縁取り</span>
                         </div>
@@ -13748,6 +13773,7 @@
         ...GENERATED_THEME_DEFINITIONS.filter(theme => theme.dark).map(theme => `design_${theme.id}`)
     ]);
     const WATERMARK_PATTERN_OPTIONS = ["grid", "diagonal"];
+    const DEFAULT_CARD_TEXT_CUSTOM = { nameScale: 100, typeScale: 100 };
     const DEFAULT_PRICE_CUSTOM = {
         scale: 100,
         colorMode: "theme",
@@ -15211,6 +15237,48 @@
         setScopedItem("kaitori_title_outline_width", String(settings.outlineWidth));
     }
 
+    function normalizeCardTextCustomization(settings = {}) {
+        return {
+            nameScale: clampTitleNumber(settings.nameScale, 50, 160, 100),
+            typeScale: clampTitleNumber(settings.typeScale, 50, 160, 100)
+        };
+    }
+
+    function collectCardTextCustomization() {
+        return normalizeCardTextCustomization({
+            nameScale: document.getElementById("cardNameSizeInput")?.value,
+            typeScale: document.getElementById("cardTypeSizeInput")?.value
+        });
+    }
+
+    function applyCardTextCustomizationSettings(settings = {}) {
+        const normalized = normalizeCardTextCustomization(settings);
+        [["cardNameSize", normalized.nameScale], ["cardTypeSize", normalized.typeScale]]
+            .forEach(([prefix, value]) => {
+                document.getElementById(`${prefix}Range`).value = String(value);
+                document.getElementById(`${prefix}Input`).value = String(value);
+                document.getElementById(`${prefix}Output`).textContent = `${value}%`;
+            });
+    }
+
+    function saveCardTextCustomization(settings = collectCardTextCustomization()) {
+        setScopedItem("kaitori_card_text_custom", JSON.stringify(settings));
+    }
+
+    function applyCardTextCustomization(root = document, settings = collectCardTextCustomization()) {
+        const normalized = normalizeCardTextCustomization(settings);
+        getExportAreas(root).forEach(page => {
+            page.querySelectorAll(".card-name").forEach(element => {
+                const size = 9 * normalized.nameScale / 100;
+                element.style.setProperty("font-size", `${size}px`, "important");
+                element.style.setProperty("min-height", `${Math.max(13, size * 1.2)}px`, "important");
+            });
+            page.querySelectorAll(".card-grade").forEach(element => {
+                element.style.setProperty("font-size", `${10 * normalized.typeScale / 100}px`, "important");
+            });
+        });
+    }
+
     function normalizePriceCustomization(settings = {}) {
         return {
             scale: clampTitleNumber(
@@ -16125,6 +16193,12 @@
         const savedTitleSize = getScopedItem("kaitori_title_size");
         const savedTitleOutlineColor = getScopedItem("kaitori_title_outline_color");
         const savedTitleOutlineWidth = getScopedItem("kaitori_title_outline_width");
+        let savedCardTextCustom = {};
+        try {
+            savedCardTextCustom = JSON.parse(getScopedItem("kaitori_card_text_custom") || "{}");
+        } catch (error) {
+            savedCardTextCustom = {};
+        }
         const savedPriceScale = getScopedItem("kaitori_price_scale");
         const savedPriceColorMode =
             getScopedItem("kaitori_price_color_mode");
@@ -16159,6 +16233,7 @@
             outlineWidth:
                 savedTitleOutlineWidth ?? DEFAULT_TITLE_CUSTOM.outlineWidth
         });
+        applyCardTextCustomizationSettings(savedCardTextCustom);
         applyPriceCustomizationSettings({
             scale: savedPriceScale ?? DEFAULT_PRICE_CUSTOM.scale,
             colorMode:
@@ -16277,6 +16352,7 @@
             theme: getSelectedTheme(),
             titleStyle: getSelectedTitleStyle(),
             titleCustom: collectTitleCustomization(),
+            cardTextCustom: collectCardTextCustomization(),
             priceCustom: collectPriceCustomization(),
             cardNameDisplay: getCardNameDisplay(),
             pageSplit: getPageSplitMode(),
@@ -16302,6 +16378,12 @@
         saveTitleCustomization(
             normalizeTitleCustomization(settings.titleCustom || {})
         );
+        const cardTextCustom = normalizeCardTextCustomization(
+            settings.cardTextCustom || collectCardTextCustomization()
+        );
+        applyCardTextCustomizationSettings(cardTextCustom);
+        saveCardTextCustomization(cardTextCustom);
+        applyCardTextCustomization(document, cardTextCustom);
         savePriceCustomization(
             normalizePriceCustomization(settings.priceCustom || {})
         );
@@ -16496,6 +16578,9 @@
         applyTitleCustomizationSettings(
             settings.titleCustom || collectTitleCustomization()
         );
+        applyCardTextCustomizationSettings(settings.cardTextCustom || DEFAULT_CARD_TEXT_CUSTOM);
+        saveCardTextCustomization(collectCardTextCustomization());
+        applyCardTextCustomization(document, collectCardTextCustomization());
         applyPriceCustomizationSettings(
             settings.priceCustom || collectPriceCustomization()
         );
@@ -16847,6 +16932,7 @@
             applyBrandWatermarkPattern(page);
         });
         applyPriceCustomization();
+        applyCardTextCustomization();
         requestAnimationFrame(() => adjustTextSize());
         syncQuickHeaderPreview();
     }
@@ -17028,6 +17114,32 @@
         document.getElementById("priceSizeRange").value = String(normalized);
         updatePriceCustomization();
     });
+    const updateCardTextCustomization = () => {
+        const settings = collectCardTextCustomization();
+        applyCardTextCustomizationSettings(settings);
+        saveCardTextCustomization(settings);
+        applyCardTextCustomization(document, settings);
+        scheduleWorkspaceAutosave();
+    };
+    ["cardNameSize", "cardTypeSize"].forEach(prefix => {
+        document.getElementById(`${prefix}Range`).addEventListener("input", event => {
+            document.getElementById(`${prefix}Input`).value = event.target.value;
+            updateCardTextCustomization();
+        });
+        document.getElementById(`${prefix}Input`).addEventListener("input", event => {
+            const value = Number(event.target.value);
+            if (!Number.isFinite(value) || value < 50 || value > 160) return;
+            document.getElementById(`${prefix}Range`).value = String(Math.round(value));
+            updateCardTextCustomization();
+        });
+        document.getElementById(`${prefix}Input`).addEventListener("change", event => {
+            const normalized = clampTitleNumber(event.target.value, 50, 160, 100);
+            event.target.value = String(normalized);
+            document.getElementById(`${prefix}Range`).value = String(normalized);
+            updateCardTextCustomization();
+        });
+    });
+
     document.getElementById("priceColorModeSelect")
         .addEventListener("change", updatePriceCustomization);
     document.getElementById("priceColorInput")
@@ -21412,6 +21524,7 @@ BOXのお持ち込みお待ちしております！
 
         applyTitleCustomization(container);
         applyPriceCustomization(container);
+        applyCardTextCustomization(container);
         requestAnimationFrame(() => {
             adjustTitleSizes();
             adjustTextSize();
@@ -21747,6 +21860,7 @@ BOXのお持ち込みお待ちしております！
             applySingleHeadlineSizes(exportClone);
             adjustTitleSizes(exportClone);
             applyPriceCustomization(exportClone);
+            applyCardTextCustomization(exportClone);
             adjustTextSize(exportClone);
             adjustSingleAdPriceSizes(exportClone);
             await new Promise(resolve => setTimeout(resolve, 250));
