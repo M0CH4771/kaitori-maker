@@ -519,11 +519,18 @@ async function saveCurrentTemplateShared() {
     logoDataUrl: state.logoDataUrl,
     updatedAt: new Date().toISOString()
   });
+  const previousUpdatedAt = state.sharedTemplates.find(item => item.id === `shared:${template.id}`)?.updatedAt || "";
   elements.saveSharedTemplateButton.disabled = true;
   try {
     await postSharedTemplate("save", template);
-    elements.templateNameInput.value = "";
     await loadSharedTemplates(`shared:${template.id}`);
+    // no-corsのためサーバーのエラー応答は読めない。一覧を取り直して、保存できたかを確認する。
+    const saved = state.sharedTemplates.find(item => item.id === `shared:${template.id}`);
+    if (!saved || (previousUpdatedAt && saved.updatedAt === previousUpdatedAt)) {
+      throw new Error(`「${name}」を共有保存できませんでした。同じ名前の共有テンプレートが他の端末で作られたか、保存容量・管理キーに問題があります。一覧を確認してからもう一度お試しください。`);
+    }
+    elements.templateNameInput.value = "";
+    elements.templateStatus.className = "template-status is-ready";
     elements.templateStatus.textContent = `「${name}」を全端末共有で保存しました。`;
   } catch (error) {
     elements.templateStatus.className = "template-status is-error";

@@ -15082,6 +15082,15 @@
             .replace(/'/g, "&#039;");
     }
 
+    // 共有同期などの外部由来の値でHTML属性・CSSのurl()を壊されないよう、
+    // 画像のデータURL（base64またはURLエンコード形式）だけを許可する。
+    function sanitizeImageDataUrl(value, fallback = "") {
+        const text = String(value || "");
+        return /^data:image\/[a-z0-9.+-]+(?:;[a-z0-9=._-]+)*,[^"<>\\\s`]*$/i.test(text)
+            ? text
+            : fallback;
+    }
+
     function pageNumberText(number) {
         return String(number).padStart(2, "0");
     }
@@ -16213,7 +16222,7 @@
 
         if (savedTitle) document.getElementById("titleInput").value = savedTitle;
         if (savedDisclaimer) document.getElementById("disclaimerInput").value = savedDisclaimer;
-        if (savedLogo) logoDataUrl = savedLogo;
+        if (savedLogo) logoDataUrl = sanitizeImageDataUrl(savedLogo, DEFAULT_LOGO);
         document.getElementById("themeSelect").value = normalizeTheme(savedTheme);
         applyWatermarkSettings({
             enabled: savedWatermarkEnabled === "true",
@@ -20808,7 +20817,7 @@ BOXのお持ち込みお待ちしております！
                     >
                         <header class="single-ad-header">
                             <div class="single-ad-logo-box">
-                                <img class="single-ad-logo" src="${logoDataUrl}" alt="ショップロゴ">
+                                <img class="single-ad-logo" src="${escapeHtml(logoDataUrl)}" alt="ショップロゴ">
                             </div>
                             <div class="single-ad-date">${escapeHtml(dateText)} UPDATED</div>
                         </header>
@@ -21487,7 +21496,7 @@ BOXのお持ち込みお待ちしております！
             pageDiv.innerHTML = `
                 <div class="header-area">
                     <div class="logo-container">
-                        <img class="logo-img" src="${logoDataUrl}" alt="ショップロゴ">
+                        <img class="logo-img" src="${escapeHtml(logoDataUrl)}" alt="ショップロゴ">
                     </div>
                     <div class="title-container">
                         <h1 class="title-text">${escapeHtml(title)}</h1>
