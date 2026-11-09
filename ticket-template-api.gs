@@ -6,6 +6,7 @@ const TEMPLATE_CHUNK_BYTES = 8000;
 // プロパティストア全体の上限（約500KB）から、管理キーやチャンク名の分を差し引いた保存上限。
 const MAX_TEMPLATE_BYTES = 440000;
 const LOCK_TIMEOUT_MS = 15000;
+const IMAGE_PROXY_MAX_BYTES = 3 * 1024 * 1024;
 
 function setupTicketTemplateApi() {
   const properties = PropertiesService.getScriptProperties();
@@ -20,8 +21,11 @@ function setupTicketTemplateApi() {
 
 function doGet(e) {
   let result;
+  const action = String((e && e.parameter && e.parameter.action) || '');
   try {
-    result = { ok: true, templates: withLock_(() => readTemplates_()) };
+    result = action === 'image'
+      ? { ok: true, dataUrl: fetchImageDataUrl_(e.parameter.url) }
+      : { ok: true, templates: withLock_(() => readTemplates_()) };
   } catch (error) {
     result = { ok: false, error: String(error.message || error) };
   }
@@ -49,6 +53,30 @@ function doPost(e) {
   } catch (error) {
     return json_({ ok: false, error: String(error.message || error) });
   }
+}
+
+// CORS制限で画像を直接取得できない場合の取得口。外部の無料プロキシより先に使う。
+// 画像以外・大きすぎる画像は返さない。CacheServiceの上限（1値100KB）に収まるものだけ6時間キャッシュする。
+function fetchImageDataUrl_(rawUrl) {
+  const url = String(rawUrl || '').trim();
+  if (!/^https?:\/\/[^\s]+$/i.test(url) || url.length > 2000) throw new Error('画像URLが不正です。');
+  const cache = CacheService.getScriptCache();
+  const cacheKey = 'img_' + Utilities.base64EncodeWebSafe(
+    Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, url)
+  );
+  const cached = cache.get(cacheKey);
+  if (cached) return cached;
+
+  const response = UrlFetchApp.fetch(url, { muteHttpExceptions: true, followRedirects: true });
+  if (response.getResponseCode() !== 200) throw new Error('画像を取得できませんでした（' + response.getResponseCode() + '）。');
+  const blob = response.getBlob();
+  const contentType = String(blob.getContentType() || '').toLowerCase();
+  if (!/^image\/[a-z0-9.+-]+$/.test(contentType)) throw new Error('画像ではありません。');
+  const bytes = blob.getBytes();
+  if (!bytes.length || bytes.length > IMAGE_PROXY_MAX_BYTES) throw new Error('画像サイズが大きすぎます。');
+  const dataUrl = 'data:' + contentType + ';base64,' + Utilities.base64Encode(bytes);
+  if (dataUrl.length <= 95000) cache.put(cacheKey, dataUrl, 21600);
+  return dataUrl;
 }
 
 function withLock_(callback) {
