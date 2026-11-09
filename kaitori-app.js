@@ -7458,58 +7458,6 @@ BOXのお持ち込みお待ちしております！
         );
     }
 
-    const IMAGE_PROXY_API_URL = String(
-        document.querySelector(
-            'meta[name="kaitori-image-proxy-api-url"]'
-        )?.content || ""
-    ).trim();
-
-    // Apps Script（action=image）経由で画像を取得する。
-    // 未デプロイ・旧バージョンでdataUrlが返らない場合は空文字を返し、次の手段へ進む。
-    function fetchImageViaAppsScript(targetUrl) {
-        if (!IMAGE_PROXY_API_URL) return Promise.resolve("");
-        return new Promise(resolve => {
-            const callbackName =
-                `__kaitoriImageProxy_${Date.now()}_` +
-                Math.random().toString(36).slice(2, 9);
-            const script = document.createElement("script");
-            let settled = false;
-            const finish = value => {
-                if (settled) return;
-                settled = true;
-                window.clearTimeout(timeoutId);
-                // 遅れて届いた応答でエラーにならないよう、コールバックは空関数にしておく。
-                window[callbackName] = () => {};
-                script.remove();
-                resolve(value);
-            };
-            const timeoutId = window.setTimeout(
-                () => finish(""),
-                IMAGE_FETCH_TIMEOUT * 2
-            );
-            window[callbackName] = payload => {
-                finish(
-                    payload?.ok
-                        ? sanitizeImageDataUrl(payload.dataUrl, "")
-                        : ""
-                );
-            };
-            script.onerror = () => finish("");
-            try {
-                const url = new URL(IMAGE_PROXY_API_URL);
-                url.searchParams.set("action", "image");
-                url.searchParams.set("url", targetUrl);
-                url.searchParams.set("callback", callbackName);
-                script.async = true;
-                script.referrerPolicy = "no-referrer";
-                script.src = url.toString();
-                document.head.appendChild(script);
-            } catch (error) {
-                finish("");
-            }
-        });
-    }
-
     async function fetchImageBase64(imgUrl) {
         if (!imgUrl) return NO_IMAGE;
 
@@ -7536,10 +7484,7 @@ BOXのお持ち込みお待ちしております！
             // CORS時は下記プロキシへフォールバック
         }
 
-        const viaAppsScript = await fetchImageViaAppsScript(targetUrl);
-        if (viaAppsScript) return viaAppsScript;
-
-        // 最後の手段として外部の無料プロキシを試す（停止・仕様変更の可能性あり）。
+        // CORS制限時は外部の無料プロキシを試す（停止・仕様変更の可能性あり）。
         const encodedUrl = encodeURIComponent(targetUrl);
         const proxyUrls = [
             `https://wsrv.nl/?url=${encodedUrl}&output=webp&w=500`,
