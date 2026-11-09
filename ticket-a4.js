@@ -454,20 +454,21 @@ function saveSharedTemplateConfig() {
   if (url) loadSharedTemplates();
 }
 
-function jsonp(url) {
+function jsonp(url, action = "list", timeout = 12000) {
   return new Promise((resolve, reject) => {
     const callback = `ticketTemplateCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`;
     const script = document.createElement("script");
-    const timer = window.setTimeout(() => finish(new Error("timeout")), 12000);
+    const timer = window.setTimeout(() => finish(new Error("timeout")), timeout);
     function finish(error, value) {
       window.clearTimeout(timer);
-      delete window[callback];
+      // タイムアウト後に遅れて届いた応答でエラーにならないよう、空関数に置き換える。
+      window[callback] = () => {};
       script.remove();
       error ? reject(error) : resolve(value);
     }
     window[callback] = value => finish(null, value);
     script.onerror = () => finish(new Error("network"));
-    script.src = `${url}${url.includes("?") ? "&" : "?"}action=list&callback=${encodeURIComponent(callback)}&_=${Date.now()}`;
+    script.src = `${url}${url.includes("?") ? "&" : "?"}action=${encodeURIComponent(action)}&callback=${encodeURIComponent(callback)}&_=${Date.now()}`;
     document.head.appendChild(script);
   });
 }
@@ -1196,6 +1197,24 @@ function isUsableImageBlob(blob) {
   return Boolean(blob && blob.size > 0 && blob.size <= 12 * 1024 * 1024 && String(blob.type || "").toLowerCase().includes("image"));
 }
 
+function isSafeImageDataUrl(value) {
+  return /^data:image\/[a-z0-9.+-]+(?:;[a-z0-9=._-]+)*,[^"<>\\\s`]*$/i.test(String(value || ""));
+}
+
+// 共有テンプレート用のApps Script（action=image）経由で画像を取得する。
+// 旧バージョンのApps ScriptはdataUrlを返さないので、その場合は次の手段へ進む。
+async function fetchImageViaAppsScript(target) {
+  const { url } = getSharedConfig();
+  if (!url) return "";
+  try {
+    const separator = url.includes("?") ? "&" : "?";
+    const response = await jsonp(`${url}${separator}url=${encodeURIComponent(target)}`, "image", 20000);
+    return response?.ok && isSafeImageDataUrl(response.dataUrl) ? response.dataUrl : "";
+  } catch (error) {
+    return "";
+  }
+}
+
 async function fetchImageDataUrl(url) {
   const target = normalizeImageUrl(url);
   if (!target) return NO_IMAGE_DATA_URL;
@@ -1212,6 +1231,10 @@ async function fetchImageDataUrl(url) {
       // 公開画像側のCORS制限時は、既存作成機と同じ画像プロキシ候補を試す。
     }
 
+    const viaAppsScript = await fetchImageViaAppsScript(target);
+    if (viaAppsScript) return viaAppsScript;
+
+    // 最後の手段として外部の無料プロキシを試す（停止・仕様変更の可能性あり）。
     const encoded = encodeURIComponent(target);
     const proxies = [
       `https://wsrv.nl/?url=${encoded}&output=webp&w=700`,
